@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import glob
+import os
 
 pd.set_option('future.no_silent_downcasting', True)
 
@@ -90,6 +92,92 @@ class WeatherStation():
         self.clean_records['Direction'] = self.clean_records['Dir1'].map(maps_to_degrees)
 
         return self.clean_records
-
-
     
+
+
+
+
+class WeatherSensStation:
+    """
+    A class to handle reading and processing WeatherSens weather station data from Excel files (.xlsx).
+    Standardized to be consistent with Davis WeatherStation.
+
+    Notes
+    -----
+    16-Jul-2025 : Created - Daniela Rosero
+    """
+
+    def __init__(self, directory_path):
+        """
+        Initializes the WeatherSensStationXLSX object with the given directory path.
+
+        Parameters
+        ----------
+        directory_path : str
+            Path to the directory where weather station data is stored.
+        """
+        self.directory_path = directory_path
+
+    def read_records(self, file_name):
+        """
+        Reads WeatherSens station records from a specified Excel file.
+
+        Parameters
+        ----------
+        file_name : str
+            Name of the .xlsx file.
+
+        Returns
+        -------
+        df : pandas.DataFrame
+            A DataFrame with the raw data.
+        """
+        file_path = os.path.join(self.directory_path, file_name)
+        df = pd.read_excel(file_path, engine="openpyxl")
+
+        # Replace empty or invalid values with NaN
+        df.replace(["", "---", "NaN", "null"], np.nan, inplace=True)
+        return df
+
+    def get_clean_records(self):
+        """
+        Cleans and processes WeatherSens station records to be consistent with Davis.
+
+        Returns
+        -------
+        self.clean_records : pd.DataFrame
+            A cleaned DataFrame indexed by datetime.
+        """
+        # Find the first .xlsx file in the directory
+        files = glob.glob(os.path.join(self.directory_path, "*.xlsx"))
+        if not files:
+            raise FileNotFoundError("No .xlsx file found in the specified directory.")
+
+        file_name = os.path.basename(files[0])
+        self.records = self.read_records(file_name)
+
+        # Standardize column names to Davis style
+        column_map = {
+            'Date/Time': 'DateTime',
+            'Precipitación (mm)': 'Rain',
+            'Temperatura Aire (°C)': 'Temp',
+            'Humedad Aire (%)': 'Hum',
+            'Presion Barometrica (hPa)': 'Bar',
+            'Velocidad Viento (m/s)': 'Speed',
+            'Direccion Viento (°)': 'Direction',
+        }
+        self.records.rename(columns=column_map, inplace=True)
+
+        # Convert DateTime to pandas datetime
+        self.records['date'] = pd.to_datetime(self.records['DateTime'], errors='coerce')
+
+        # Drop original DateTime column and set index
+        self.clean_records = self.records.drop(['DateTime'], axis=1)
+        self.clean_records = self.clean_records.set_index('date')
+
+        # Convert numerical columns to float if possible
+        for col in ['Rain', 'Temp', 'Hum', 'Bar', 'Speed', 'Direction']:
+            if col in self.clean_records.columns:
+                self.clean_records[col] = pd.to_numeric(self.clean_records[col], errors='coerce')
+
+        return self.clean_records
