@@ -153,126 +153,125 @@ class WaveSpectralAnalyzer():
 
         return power,power_kp,freq,T,Kpmin,fmax_kp
 
-    # @extras.timing_decorator
-    # def compute_spectrum_from_welch(self,signal,window_type,window_length,overlap=None):
-    #     """
-    #     Compute PSD using Welch method and smooth across frequency bins.
+    @extras.timing_decorator
+    def compute_spectrum_from_welch(self,signal,window_type,window_length,overlap=None):
+        """
+        Compute PSD using Welch method and smooth across frequency bins.
 
-    #     Parameters
-    #     ----------
-    #     signal : ndarray
-    #         1D numpy array containing the signal.
-    #     window_type : str, optional
-    #         Type of window to use (default is 'hamming').
-    #         Can be any window name supported by scipy.signal.windows, e.g., 
-    #         'hann', 'blackman', 'boxcar', etc.
-    #     window_length : int
-    #         Length of the Hamming window in samples.
-    #     smoothing_bins : int
-    #         Number of adjacent frequency bins to smooth over.
+        Parameters
+        ----------
+        signal : ndarray
+            1D numpy array containing the signal.
+        window_type : str, optional
+            Type of window to use (default is 'hamming').
+            Can be any window name supported by scipy.signal.windows, e.g., 
+            'hann', 'blackman', 'boxcar', etc.
+        window_length : int
+            Length of the Hamming window in samples.
+        smoothing_bins : int
+            Number of adjacent frequency bins to smooth over.
 
-    #     Returns
-    #     -------
-    #     freqs : ndarray
-    #         Frequency array.
-    #     psd_smoothed : ndarray
-    #         PSD after smoothing.
-    #     dof : float
-    #         Estimated degrees of freedom.
-    #     """
+        Returns
+        -------
+        freqs : ndarray
+            Frequency array.
+        psd_smoothed : ndarray
+            PSD after smoothing.
+        dof : float
+            Estimated degrees of freedom.
+        """
 
-    #     # Welch PSD
-    #     freqs, psd = welch(x=signal,fs=self.sampling_freq,window=window_type,
-    #                         nperseg=window_length,
-    #                         noverlap=overlap,
-    #                         scaling='density')
-    #     # Estimate degrees of freedom:
-    #     # DOF ≈ (2 × number of segments) × (effective freq bins averaged / total bins)
-    #     # n_segments = 1 + (len(signal) - window_length) // (window_length - overlap)
-    #     # dof = 2 * n_segments * (1 / smoothing_bins)
-    #     return freqs, psd
+        # Welch PSD
+        freqs, psd = welch(x=signal,fs=self.sampling_freq,window=window_type,
+                            nperseg=window_length,
+                            noverlap=overlap,
+                            scaling='density')
+        # Estimate degrees of freedom:
+        # DOF ≈ (2 × number of segments) × (effective freq bins averaged / total bins)
+        # n_segments = 1 + (len(signal) - window_length) // (window_length - overlap)
+        # dof = 2 * n_segments * (1 / smoothing_bins)
+        return freqs, psd
 
+    def get_spectra_and_params_for_bursts(self,method,window_type=None,window_length=None,overlap=None,smoothing_bins=None):
+        """
+        Get wave spectra for each burst in the cleaned records.
 
-#     def get_spectra_and_params_for_bursts(self,method,window_type=None,window_length=None,overlap=None,smoothing_bins=None):
-#         """
-#         Get wave spectra for each burst in the cleaned records.
+        Parameters
+        ----------
 
-#         Parameters
-#         ----------
+        Returns
+        -------
+        wave_spectra_data : dict
+            Dictionary containing wave spectra data with keys:
+            - 'S': List of power spectral densities for each burst.
+            - 'dir': List of directions (currently not computed, placeholder).
+            - 'freq': List of frequency arrays for each burst.
+            - 'time': List of timestamps corresponding to each burst.
+        wave_params_data : pandas.DataFrame
+            DataFrame containing wave parameters with columns:
+            - 'Hm0': Zero-moment wave height.
+            - 'Hrms': Root mean square wave height.
+            - 'Hmean': Mean wave height.
+            - 'Tp': Peak period.
+            - 'Tm01': Mean period (first moment).
+            - 'Tm02': Mean period (second moment).
+            - Index is the timestamp corresponding to each burst.
+        """
 
-#         Returns
-#         -------
-#         wave_spectra_data : dict
-#             Dictionary containing wave spectra data with keys:
-#             - 'S': List of power spectral densities for each burst.
-#             - 'dir': List of directions (currently not computed, placeholder).
-#             - 'freq': List of frequency arrays for each burst.
-#             - 'time': List of timestamps corresponding to each burst.
-#         wave_params_data : pandas.DataFrame
-#             DataFrame containing wave parameters with columns:
-#             - 'Hm0': Zero-moment wave height.
-#             - 'Hrms': Root mean square wave height.
-#             - 'Hmean': Mean wave height.
-#             - 'Tp': Peak period.
-#             - 'Tm01': Mean period (first moment).
-#             - 'Tm02': Mean period (second moment).
-#             - Index is the timestamp corresponding to each burst.
-#         """
+        hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
+        wave_params=["Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
+        wave_params_data={param:np.zeros((hourly_timeindex.shape)) for param in wave_params}
 
-#         hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
-#         wave_params=["Hm0","Hrms","Hmean","Tp","Tm01","Tm02"]
-#         wave_params_data={param:np.zeros((hourly_timeindex.shape)) for param in wave_params}
+        wave_spectra_vars=["S","dir","freq","time"]
+        wave_spectra_data={var:[] for var in wave_spectra_vars}
 
-#         wave_spectra_vars=["S","dir","freq","time"]
-#         wave_spectra_data={var:[] for var in wave_spectra_vars}
+        wave_spectra_data['time'] = hourly_timeindex
+        wave_params_data['time'] = hourly_timeindex
 
-#         wave_spectra_data['time'] = hourly_timeindex
-#         wave_params_data['time'] = hourly_timeindex
+        if 'burstId' in self.measurement_signal.columns:
+            for idx,burst in enumerate(self.measurement_signal["burstId"].unique()):
+                burst_series = self.measurement_signal[self.measurement_signal['burstId'] == burst]
+                len_burst_series = len(burst_series)
 
-#         if 'burstId' in self.measurement_signal.columns:
-#             for idx,burst in enumerate(self.measurement_signal["burstId"].unique()):
-#                 burst_series = self.measurement_signal[self.measurement_signal['burstId'] == burst]
-#                 len_burst_series = len(burst_series)
+                # Create a time index for each expected burst based on the sampling frequency and burst length
+                # burst_start_time = burst_series.index[0]
+                # burst_end_time = burst_series.index[-1]
+                # expected_times = pd.date_range(start=burst_start_time, end=burst_end_time, freq=pd.Timedelta(seconds=1/sampling_data['sampling_freq']))
 
-#                 # Create a time index for each expected burst based on the sampling frequency and burst length
-#                 # burst_start_time = burst_series.index[0]
-#                 # burst_end_time = burst_series.index[-1]
-#                 # expected_times = pd.date_range(start=burst_start_time, end=burst_end_time, freq=pd.Timedelta(seconds=1/sampling_data['sampling_freq']))
+                # # Find which expected times are missing in the burst
+                # missing_times = expected_times.difference(burst_series.index)
+                # if not missing_times.empty:
+                #     print(f"Missing timestamps in burst {hourly_timeindex[idx]}: {missing_times}")
 
-#                 # # Find which expected times are missing in the burst
-#                 # missing_times = expected_times.difference(burst_series.index)
-#                 # if not missing_times.empty:
-#                 #     print(f"Missing timestamps in burst {hourly_timeindex[idx]}: {missing_times}")
+                if method == 'fft':
+                    # Compute the spectrum using FFT
+                    power, power_kp, freqs, T, kpmin, fmax_kp = self.compute_spectrum_from_direct_fft(burst_series['eta[m]'].values)
+                    wave_spectra_data["S"].append(power_kp)
 
-#                 if method == 'fft':
-#                     # Compute the spectrum using FFT
-#                     power, power_kp, freqs, T, kpmin, fmax_kp = self.compute_spectrum_from_direct_fft(burst_series['eta[m]'].values)
-#                     wave_spectra_data["S"].append(power_kp)
+                elif method == 'welch':
+                    # Compute the spectrum using Welch method
+                    freqs,power = self.compute_spectrum_from_welch(burst_series['eta[m]'].values, window_type, window_length)
+                    power = self.smooth_psd_spectrum(power,smoothing_bins)
+                    wave_spectra_data["S"].append(power)
+                else:
+                    pass
 
-#                 elif method == 'welch':
-#                     # Compute the spectrum using Welch method
-#                     freqs,power = self.compute_spectrum_from_welch(burst_series['eta[m]'].values, window_type, window_length)
-#                     power = self.smooth_psd_spectrum(power,smoothing_bins)
-#                     wave_spectra_data["S"].append(power)
-#                 else:
-#                     pass
+                # Compute wave parameters from the spectrum
+                Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = self.get_wave_params_from_spectrum_v1(power, freqs)
 
-#                 # Compute wave parameters from the spectrum
-#                 Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = self.get_wave_params_from_spectrum_v1(power, freqs)
-
-#                 # Store wave parameters
-#                 wave_params_data['Hm0'][idx] = Hm0
-#                 wave_params_data['Hrms'][idx] = Hrms
-#                 wave_params_data['Hmean'][idx] = Hmean
-#                 wave_params_data['Tp'][idx] = Tp
-#                 wave_params_data['Tm01'][idx] = Tm01
-#                 wave_params_data['Tm02'][idx] = Tm02
+                # Store wave parameters
+                wave_params_data['Hm0'][idx] = Hm0
+                wave_params_data['Hrms'][idx] = Hrms
+                wave_params_data['Hmean'][idx] = Hmean
+                wave_params_data['Tp'][idx] = Tp
+                wave_params_data['Tm01'][idx] = Tm01
+                wave_params_data['Tm02'][idx] = Tm02
             
-#             wave_spectra_data['freq'] = freqs
-#             wave_spectra_data['S']=np.array(wave_spectra_data['S'])
+            wave_spectra_data['freq'] = freqs
+            wave_spectra_data['S']=np.array(wave_spectra_data['S'])
 
-#             wave_params_data=pd.DataFrame(wave_params_data).set_index('time')
-#         return wave_spectra_data,wave_params_data
+            wave_params_data=pd.DataFrame(wave_params_data).set_index('time')
+        return wave_spectra_data,wave_params_data
 
 #     def decompose_into_IMFs_for_bursts(self,emd_type,maximum_IMFs,number_ensembles=None,amplitude_noise_std=None):
 #         hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
