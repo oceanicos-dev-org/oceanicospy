@@ -12,32 +12,37 @@ class AWAC():
     """
     A class to handle reading and processing the data files recorded by an ADCP AWAC (Nortek S.A). 
 
+    Parameters
+    ----------
+    directory_path : str
+        Path to the directory containing the .hdr and .wad files.
+    sampling_data : dict
+        Dictionary containing the information about the device installation
+
     Notes
     -----
-    04-Jan-2018 : Origination - Daniel Peláez
-    01-Sep-2023 : Migration to Python - Alejandro Henao
-    10-Dec-2024 : Class implementation - Franklin Ayala
 
+    - 04-Jan-2018 : Origination - Daniel Peláez
+    - 01-Sep-2023 : Migration to Python - Alejandro Henao
+    - 10-Dec-2024 : Class implementation - Franklin Ayala
+  
     """
     def __init__(self,directory_path,sampling_data):
-        """
-        Initializes the Awac class with the given directory path, sampling data.
 
-        Parameters
-        ----------
-        directory_path : str
-            Path to the directory containing the .hdr and .wad files.
-        sampling_data : dict
-            Dictionary containing the information about the device installation
-        """
-        self.directory_path = directory_path
+        self.directory_pathz = directory_path
         self.sampling_data = sampling_data
 
-    def get_raw_wave_records(self,from_single_wad):
+    def get_raw_wave_records(self,from_single_wad=True):
         """
         Reads and processes the .wad files to create a DataFrame containing the burst data.
 
         For each .wad file, the function reads the data, adds a 'burstId' column, and combines all the data into a single DataFrame.
+
+        Parameters
+        ----------
+        from_single_wad : bool, optional
+            If True, reads data from a single .wad file. If False, reads data from all .wad files in the directory.
+            Default is True, which means it reads from the first .wad file found in the directory.
 
         Returns
         -------
@@ -121,6 +126,25 @@ class AWAC():
         return x_component_df, y_component_df
 
     def get_clean_currents_records(self,compute_speed_dir=True):
+        """
+        Processes the raw current data by reading the x and y components, setting the index to a date range, and optionally computing speed and direction.
+
+        Parameters
+        ----------
+        compute_speed_dir : bool, optional
+            If True, computes the current speed and direction from the x and y components. Default is True.
+
+        Returns
+        -------
+        x_component_clean : pandas.DataFrame
+            Cleaned DataFrame of the x component of the current.
+        y_component_clean : pandas.DataFrame
+            Cleaned DataFrame of the y component of the current.
+        current_speed : pandas.DataFrame, optional
+            DataFrame of the current speed, only returned if compute_speed_dir is True.
+        current_dir : pandas.DataFrame, optional
+            DataFrame of the current direction, only returned if compute_speed_dir is True.
+        """
         
         x_component_raw, y_component_raw = self.get_raw_currents_records()
         date_range = pd.date_range(self.currents_header['start_time'],periods=x_component_raw.shape[0],

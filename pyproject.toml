@@ -24,3 +24,7 @@ dependencies = []  # Add packages here, like ["numpy", "requests"]
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.esbonio.sphinx]
+buildCommand = ["sphinx-build", "-M", "html", "docs", "${defaultBuildDir}"]
+pythonCommand = ["/Users/franklinayala/venvs/oceanicospy/bin/python"]
