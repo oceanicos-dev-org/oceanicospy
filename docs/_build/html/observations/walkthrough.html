@@ -323,12 +323,39 @@ document.write(`
   <section id="walkthrough-example">
 <h1>Walkthrough Example<a class="headerlink" href="#walkthrough-example" title="Link to this heading">#</a></h1>
 <p>This document provides a walkthrough of how to use the <cite>oceanicospy</cite> package to handle observations from various sensors.</p>
-<p>First, ensure you have the package installed. You can install it using pip:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>oceanicospy
+<p>First, ensure you have the package installed. You can install it using pip test with the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>!pip<span class="w"> </span>install<span class="w"> </span>--index-url<span class="w"> </span>https://test.pypi.org/simple/<span class="w"> </span>oceanicospy
 </pre></div>
 </div>
 <p>Next, you can import the necessary classes from the <cite>oceanicospy.observations</cite> module. For example, if you want to work with the AQUAlogger sensor, you can do so as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">oceanicospy.observations</span><span class="w"> </span><span class="kn">import</span> <span class="n">AQUAlogger</span>
+</pre></div>
+</div>
+<p>If you are not in Google Colab, you might have to import other libraries as well:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you are using Google Colab, you can skip the above imports as they are already included in the environment.
+You only need to import the modules from <code class="docutils literal notranslate"><span class="pre">datetime</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+</pre></div>
+</div>
+</div>
+<p>A variable <code class="docutils literal notranslate"><span class="pre">directory_path</span></code> is used to specify the path to the directory containing the observation files while the <code class="docutils literal notranslate"><span class="pre">sampling_dict</span></code> is used to definte the sampling configuration.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">directory_path</span> <span class="o">=</span> <span class="s1">&#39;/path/to/your/observation/files&#39;</span>
+<span class="n">sampling_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_time&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                 <span class="s1">&#39;end_time&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">),</span>
+                 <span class="s1">&#39;sampling_rate&#39;</span><span class="p">:</span> <span class="mi">1</span>
+                 <span class="p">}</span>
+</pre></div>
+</div>
+<p>Once both variables are set, you can create an instance of the <cite>AQUAlogger</cite> class by passing the directory path and sampling configuration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">aqualogger</span> <span class="o">=</span> <span class="n">AQUAlogger</span><span class="p">(</span><span class="n">directory_path</span><span class="p">,</span> <span class="n">sampling_dict</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
