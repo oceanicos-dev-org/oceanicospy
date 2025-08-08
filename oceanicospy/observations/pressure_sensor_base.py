@@ -6,33 +6,52 @@ from oceanicospy.utils import constants
 
 class BaseLogger(ABC):
     """
-    A class to handle reading and processing the data files recorded by any pressure sensor. 
+    Initializes the BaseLogger class with the given directory path, sampling data.
 
-    Notes 
-    -----
-    10-Dec-2024 : Origination - Franklin Ayala
-
+    Parameters
+    ----------
+    directory_path : str
+        Path to the directory containing the sensor pressure files.
+    sampling_data : dict
+        Dictionary containing information on device installation, including:
+        
+        - ``start_time``: The start time of the sampling period.
+        - ``end_time``: The end time of the sampling period.
+        - ``sampling_rate``: The sampling rate of the device (Hz)
+        - ``burst_duration``: The duration of each burst (seconds)
     """
     def __init__(self, directory_path: str, sampling_data: dict):
-        """
-        Initializes the BaseLogger class with the given directory path, sampling data.
 
-        Parameters
-        ----------
-        directory_path : str
-            Path to the directory containing the .hdr and .wad files.
-        sampling_data : dict
-            Dictionary containing the information about the device installation
-        """
         self.directory_path = directory_path
         self.sampling_data = sampling_data
 
     @property
     def first_record_time(self) -> pd.Timestamp:
-        return self.get_raw_records().index.min()
+        """
+        Returns the timestamp of the first record in the dataset.
 
+        Returns
+        -------
+        pandas.Timestamp
+            The timestamp of the first available record.
+        """
+        try:
+            time=self._load_raw_dataframe()['date']
+        except:
+            time=self._load_raw_dataframe()['Time']
+
+        return time.values[0]
+    
     @property
     def last_record_time(self) -> pd.Timestamp:
+        """
+        Returns the timestamp of the last record in the dataset.
+
+        Returns
+        -------
+        pandas.Timestamp
+            The timestamp of the first available record.
+        """
         try:
             time=self._load_raw_dataframe()['date']
         except:
@@ -57,6 +76,11 @@ class BaseLogger(ABC):
     def get_clean_records(self, detrended: bool = True) -> pd.DataFrame:
         """
         Processes the raw data by grouping the series per each burst
+
+        Parameters
+        ----------
+        detrended : bool, optional
+            If True, applies a linear detrending to the depth data within each burst. Default is ``True``.
 
         Returns
         -------
