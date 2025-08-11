@@ -6,35 +6,64 @@ import glob as glob
 import os
 
 from .. import utils
-from ..init_setup import InitialSetup
 from ....retrievals import *
 
-class WindForcing(InitialSetup):
-    """
-    Class representing wind forcing in SWAN model.
-    Args:
-        input_filename (str): Path to the input file.
-    Attributes:
-        input_filename (str): Path to the input file.
-        wind_params (dict): Dictionary containing wind parameters.
-    Methods:
-        write_ERA5_ascii: Writes ERA5 wind data to an ASCII file.
-        write_constant_wind: Writes constant wind data to an ASCII file.
-        fill_wind_section: Fills the wind section in the SWAN input file.
-    """
-    def __init__ (self,domain_number,wind_info=None,input_filename=None,*args,**kwargs):
+class WindForcing():
+    def __init__ (self,init,domain_number,wind_info=None,filename=None,use_link=True,override=False):
         """
-        Initialize WindForcing object.
-        Args:
-            input_filename (str): Path to the input file.
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
+        Parameters
+        ----------
+        init : object
+            An initialization object containing configuration data and folder paths.
+        domain_number : int
+            Identifier for the domain being processed.
+        wind_info : dict or None, optional
+            Dictionary containing wind information. If None, winds must be provided via `filename`.
+        filename : str or None, optional
+            Path to the file containing wind data. If None, wind must be provided via `wind_info`.
+        use_link: bool, optional
+            If True, creates symbolic links for wind files instead of copying them. Defaults to True.
+        override: bool, optional
+            If True, forces the download of wind data even if it already exists. Defaults to False.
         """
-        super().__init__(*args,**kwargs)
-        self.domain_number=domain_number
-        self.wind_info=wind_info
-        self.input_filename=input_filename
+        self.init = init
+        self.domain_number = domain_number
+        self.wind_info = wind_info
+        self.input_filename = filename
+        self.use_link = use_link
   
+    def winds_from_era5(self,difference_to_UTC,filename='winds_era5.nc',override=False):
+        """
+        Downloads or verifies the existence of ERA5 wind data for the specified domain.
+        This method checks if the ERA5 wind data NetCDF file exists in the input directory for the current domain.
+        If the file does not exist, it downloads the wind data using the parameters specified in `self.wind_info`
+        and saves it to the appropriate location. If the file already exists, the download is skipped.
+
+        Parameters
+        ----------
+        data_path : str, optional
+            The base name of the wind data file (without extension) to check or download. Default is 'winds_era5'.
+        Returns
+        -------
+        str
+            A message indicating whether the wind data was downloaded or if it already exists.
+        """
+        if (not utils.verify_file(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{filename}')) or (override):
+            ERA5download_obj = ERA5Downloader(variables = ['10m_u_component_of_wind', '10m_v_component_of_wind'],
+                                                lon_min = self.wind_info['lon_ll_wind'],
+                                                lon_max = self.wind_info['lon_ll_wind'] + (self.wind_info['meshes_x_wind'] * self.wind_info['dx_wind']),
+                                                lat_min = self.wind_info['lat_ll_wind'],
+                                                lat_max = self.wind_info['lat_ll_wind'] + (self.wind_info['meshes_y_wind'] * self.wind_info['dy_wind']),
+                                                start_datetime_local = self.init.ini_date,
+                                                end_datetime_local = self.init.end_date,
+                                                difference_to_UTC = difference_to_UTC,
+                                                output_path = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{filename}')
+            ERA5download_obj.download()
+            ERA5download_obj.format_to_localtime()
+            return "ERA5 wind data downloaded successfully"
+        else:
+            return "ERA5 wind data already exists, skipping download" 
+
     def write_ERA5_ascii(self,era5_filepath,ascii_filepath):
         """
         Writes ERA5 wind data to an ASCII file.
@@ -136,22 +165,8 @@ class WindForcing(InitialSetup):
             self.wind_info.update({"winds.wnd":wind_filename})
             return self.wind_info
 
-    def winds_from_era5(self,data_path='winds_era5'):
-        """
-        Downloads ERA5 wind data and writes it to an ASCII file.
-        Args:
-            data_path (str): Path to save the ERA5 wind data.
-        Returns:
-            dict: Dictionary containing wind parameters.
-        """
-        
-        if not utils.verify_file(f'{self.dict_folders["input"]}domain_0{self.domain_number}/{data_path}.nc'):
-            getting_data(self.wind_info['lat_ll_wind'], self.wind_info['lon_ll_wind'],
-                        self.wind_info['meshes_x_wind'], self.wind_info['meshes_y_wind'],
-                        self.wind_info['dx_wind'], self.wind_info['dy_wind'],
-                        f'{self.dict_folders["input"]}domain_0{self.domain_number}/{data_path}')
-        return None
+
 
     def fill_wind_section(self,dict_wind_data):
         print (f'\n*** Adding/Editing winds information for domain {self.domain_number} in configuration file ***\n')
-        utils.fill_files(f'{self.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_wind_data)
+        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_wind_data)
