@@ -1,10 +1,3 @@
-import cdsapi
-import xarray as xr
-import numpy as np
-from datetime import datetime,timedelta
-
-c = cdsapi.Client()
-
 class ERA5Downloader():
     """
     A class to handle downloading data from the Copernicus Marine Data Store (CMDS)
@@ -104,37 +97,14 @@ class ERA5Downloader():
             },
             self.output_path)
     
-    def format_to_localtime(self, engine: str | None = None) -> None:
-        """
-        Load the downloaded NetCDF, shift its time axis from UTC to local time,
-        crop to the requested local window, and overwrite the file.
-        """
-        # 1) Load with an explicit engine or try common fallbacks
-        ds = None
-        try:
-            ds = xr.load_dataset(self.output_path, engine=engine) if engine else xr.load_dataset(self.output_path)
-        except Exception:
-            pass
-        if ds is None:
-            for eng in ("h5netcdf", "netcdf4", "scipy"):
-                try:
-                    ds = xr.load_dataset(self.output_path, engine=eng)
-                    break
-                except Exception:
-                    continue
-        if ds is None:
-            raise ValueError("Could not open file with xarray. Please install 'netCDF4' or 'h5netcdf' and try again.")
+    def format_to_localtime(self):
+        ds = xr.load_dataset(self.output_path)
+        if self.difference_to_UTC>=0:
+            ds['valid_time'] = ds['valid_time'] + np.timedelta64(self.difference_to_UTC, 'h')
+        else:
+            ds['valid_time'] = ds['valid_time'] - np.timedelta64(abs(self.difference_to_UTC), 'h')
 
-        # 2) Detect the time coordinate name
-        time_coord = "time" if "time" in ds.coords else ("valid_time" if "valid_time" in ds.coords else None)
-        if time_coord is None:
-            raise KeyError("No time coordinate found. Expected 'time' or 'valid_time'.")
-
-        # 3) Shift UTC → local using the configured offset (e.g., -5 for UTC-5)
-        offset_hours = int(self.difference_to_UTC)  # negative values are allowed
-        ds = ds.assign_coords({time_coord: ds[time_coord] + np.timedelta64(offset_hours, "h")})
-
-        # 4) Crop to the local window and save back
-        start = np.datetime64(self.start_datetime_local)
-        end   = np.datetime64(self.end_datetime_local)
-        ds.sel({time_coord: slice(start, end)}).to_netcdf(self.output_path)
+        mask = (ds['valid_time'] >= np.datetime64(self.start_datetime_local)) & \
+            (ds['valid_time'] <= np.datetime64(self.end_datetime_local))
+        ds_cropped = ds.sel(time=mask) if 'time' in ds.dims else ds.sel(valid_time=mask)
+        ds_cropped.to_netcdf(self.output_path, mode='w', format='NETCDF4')
