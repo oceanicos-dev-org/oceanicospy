@@ -5,6 +5,38 @@ import os
 from .pressure_sensor_base import BaseLogger
 
 class RBR(BaseLogger):
+    """
+    A sensor-specific reader for RBR .txt files.
+
+    Inherits from ``BaseLogger`` and implements methods specific to RBR file formats.
+
+    Parameters
+    ----------
+    directory_path : str
+        Path to the directory containing the .txt files.
+    sampling_data : dict
+        Dictionary containing information on device installation, including:
+        
+        - ``start_time``: The start time of the sampling period.
+        - ``end_time``: The end time of the sampling period.
+        - ``sampling_rate``: The sampling rate of the device (Hz)
+        - ``burst_duration``: The duration of each burst (seconds)
+    """
+
+    @property
+    def first_record_time(self):
+        """
+        See :attr:`BaseLogger.first_record_time`
+        """
+        return super().first_record_time
+    
+    @property
+    def last_record_time(self):
+        """
+        See :attr:`BaseLogger.last_record_time` 
+        """
+        return super().last_record_time
+
     def _get_records_file(self):
         files = glob.glob(os.path.join(self.directory_path, '*_data.txt'))
 
