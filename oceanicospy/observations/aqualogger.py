@@ -8,11 +8,36 @@ class AQUAlogger(BaseLogger):
     """
     A sensor-specific reader for AQUAlogger CSV files.
 
-    Inherits from
-    -------------
-    BaseLogger
-        Includes core methods like `first_record_time`, `get_raw_records`, etc.
+    Inherits from ``BaseLogger`` and implements methods specific to AQUAlogger file formats.
+
+    Parameters
+    ----------
+    directory_path : str
+        Path to the directory containing the .csv files.
+    sampling_data : dict
+        Dictionary containing information on device installation, including:
+        
+        - ``start_time``: The start time of the sampling period.
+        - ``end_time``: The end time of the sampling period.
+        - ``sampling_rate``: The sampling rate of the device (Hz)
+        - ``burst_duration``: The duration of each burst (seconds)
+
     """
+
+    @property
+    def first_record_time(self):
+        """
+        See :attr:`BaseLogger.first_record_time`
+        """
+        return super().first_record_time
+    
+    @property
+    def last_record_time(self):
+        """
+        See :attr:`BaseLogger.last_record_time` 
+        """
+        return super().last_record_time
+
     def _get_records_file(self):
         files = glob.glob(os.path.join(self.directory_path, '*.csv'))
         if not files:
