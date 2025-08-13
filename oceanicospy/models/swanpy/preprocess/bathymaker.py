@@ -56,8 +56,9 @@ class BathyMaker():
         self.filename = filename
         self.dx_bat = dx_bat
         self.use_link = use_link
+        print(f'\n*** Initializing bathymaker for domain {self.domain_number} ***\n')
 
-    def ascii_from_user(self):
+    def get_from_user(self):
         """
         Handles the selection and linking or copying of a bathymetry file for the current domain.
         This method searches for a `.bot` bathymetry file in the input directory for the specified domain.
@@ -155,7 +156,7 @@ class BathyMaker():
         """
         Replaces and updates the .swn file with the bathymetry configuration for a specific domain.
         """
-        print (f'\n*** Adding/Editing bathymetry information for domain {self.domain_number} in configuration file ***\n')
+        print (f'\n \t*** Adding/Editing bathymetry information for domain {self.domain_number} in configuration file ***\n')
         utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_bathy_data)
 
 
