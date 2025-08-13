@@ -63,7 +63,7 @@ class WaterLevelForcing():
         file.close()
 
     def get_waterlevel_from_UHSLC(self,station_code):
-        filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/h{station_code}.csv"
+        filepath = f"{self.init.dict_folders["input"]}domain_0{self.domain_number}/h{station_code}.csv"
         file_exists = utils.verify_file(filepath)
 
         if not self.share_wl:
