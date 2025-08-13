@@ -61,33 +61,6 @@ class WindForcing():
         ERA5download_obj.format_to_localtime()
         print("\t ERA5 wind data downloaded successfully")
 
-    def _download_CMDS(self,difference_to_UTC, filepath=None):
-        """
-        Downloads CDMS wind data for the specified region and time period.
-        This method initializes an CDMSDownloader object with the required wind variables and region boundaries,
-        downloads the data, and formats it to local time.
-        Parameters
-        ----------
-        difference_to_UTC : int
-            The time difference to UTC in hours for local time conversion.
-        filepath : str or None, optional
-            The file path where the downloaded ERA5 data will be saved. If None, a default path is used.
-        """
-    
-        CMDSdownload_obj = CMDSDownloader.for_winds(
-                        lon_min=self.wind_info['lon_ll_wind'],
-                        lon_max=self.wind_info['lon_ll_wind'] + (self.wind_info['meshes_x_wind'] * self.wind_info['dx_wind']),
-                        lat_min=self.wind_info['lat_ll_wind'],
-                        lat_max=self.wind_info['lat_ll_wind'] + (self.wind_info['meshes_y_wind'] * self.wind_info['dy_wind']),
-                        start_datetime_local=self.init.ini_date,
-                        end_datetime_local=self.init.end_date,
-                        difference_to_UTC=difference_to_UTC,
-                        output_path=filepath
-                        )
-        CMDSdownload_obj.download()
-        CMDSdownload_obj.format_to_localtime()
-        print("\t CMDS wind data downloaded successfully")
-
     def _ERA5_nc_to_ascii(self,era5_filename,ascii_filename):
         """
         Converts ERA5 wind data from a NetCDF file to a custom ASCII format.
@@ -116,35 +89,6 @@ class WindForcing():
             file.write(pd.DataFrame(v10_to_write).to_csv(index=False, header=False, na_rep=0, float_format='%7.3f').replace(',', ' '))
         file.close()
 
-    def _CMDS_nc_to_ascii(self,cmds_filename,ascii_filename):
-        """
-        Converts CMDS wind data from a NetCDF file to a custom ASCII format.
-        Parameters
-        ----------
-        era5_filename : str
-            Name of the CMDS NetCDF file containing wind data (u10, v10, valid_time).
-        ascii_filename : str
-            Name of the output ASCII file to write the formatted wind data.
-        """
-
-        ds_cdms = xr.load_dataset(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{cmds_filename}',engine='netcdf4')
-
-        v10 = ds_cdms.variables['northward_wind'].values
-        u10 = ds_cdms.variables['eastward_wind'].values
-        time = pd.to_datetime(ds_cdms.variables['time'].values)
-        time_to_write = time.format(formatter=lambda x: x.strftime('%Y%m%d.%H%M'))
-
-        file = open(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{ascii_filename}','w')
-        for idx,t in enumerate(time_to_write):
-            file.write(t)
-            file.write('\n')
-            u10_to_write=u10[idx,::-1,:] # the order in the latitude is reversed because higher lats are first
-            v10_to_write=v10[idx,::-1,:]
-            file.write(pd.DataFrame(u10_to_write).to_csv(index=False, header=False, na_rep=0, float_format='%7.3f').replace(',', ' '))
-            file.write(pd.DataFrame(v10_to_write).to_csv(index=False, header=False, na_rep=0, float_format='%7.3f').replace(',', ' '))
-        file.close()
-
-
     def get_winds_from_ERA5(self,difference_to_UTC,filename='winds_era5.nc',override=False):
         """
         Downloads or verifies the existence of ERA5 wind data for the specified domain.
@@ -153,7 +97,7 @@ class WindForcing():
         and saves it to the appropriate location. If the file already exists, the download is skipped.
 
         """
-        filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
+        filepath = f"{self.init.dict_folders["input"]}domain_0{self.domain_number}/{filename}"
         file_exists = utils.verify_file(filepath)
 
         if not self.share_winds:
@@ -169,31 +113,6 @@ class WindForcing():
                     print("\t ERA5 wind data already exists, skipping download")
             else:
                     print("\t ERA5 wind data already exists in domain 1, skipping download")
-
-    def get_winds_from_CMDS(self,difference_to_UTC,filename='winds_cmds.nc',override=False):
-        """
-        Downloads or verifies the existence of CMDS wind data for the specified domain.
-        This method checks if the CMDS wind data NetCDF file exists in the input directory for the current domain.
-        If the file does not exist, it downloads the wind data using the parameters specified in `self.wind_info`
-        and saves it to the appropriate location. If the file already exists, the download is skipped.
-
-        """
-        filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
-        file_exists = utils.verify_file(filepath)
-
-        if not self.share_winds:
-            if not file_exists or override:
-                self._download_CMDS(difference_to_UTC, filepath=filepath)
-            else:
-                print("\t CMDS wind data already exists, skipping download")
-        else:
-            if self.domain_number == 1:
-                if not file_exists or override:
-                    self._download_CMDS(difference_to_UTC, filepath=filepath)
-                else:
-                    print("\t CMDS wind data already exists, skipping download")
-            else:
-                    print("\t CMDS wind data already exists in domain 1, skipping download")
 
     def write_ERA5_ascii(self,era5_filename,ascii_filename):
         """
@@ -250,7 +169,14 @@ class WindForcing():
             return self.wind_info
         return None
 
-    def write_CMDS_ascii(self,cdms_filename,ascii_filename):
+    def fill_wind_section(self,dict_wind_data):
+        """
+        Replaces and updates the .swn file with the wind configuration for a specific domain.
+        """
+        print (f'\n \t*** Adding/Editing winds information for domain {self.domain_number} in configuration file ***\n')
+        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_wind_data)
+
+    def write_constant_wind(self, ascii_filepath):
         """
         Converts CMDS wind data from NetCDF to ASCII format and manages file/link placement for SWAN model input.
         Depending on the configuration, this method processes the CMDS NetCDF wind file, converts it to ASCII format,
@@ -359,11 +285,4 @@ class WindForcing():
     #     if not utils.verify_link(wind_filename,f'{self.dict_folders["run"]}domain_0{self.domain_number}/'):
     #         utils.create_link(wind_filename,f'{self.dict_folders["input"]}domain_0{self.domain_number}/',
     #                             f'{self.dict_folders["run"]}domain_0{self.domain_number}/')
-
-    #     # os.system(f'rsync {self.dict_folders["input"]}domain_0{self.domain_number}/{wind_filename}\
-    #     #                         {self.dict_folders["run"]}domain_0{self.domain_number}/')
-
-    #     if self.wind_info!=None:
-    #         self.wind_info.update({"winds.wnd":wind_filename})
-    #         return self.wind_info
 
