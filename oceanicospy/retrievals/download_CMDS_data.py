@@ -26,6 +26,7 @@ class CMDSDownloader:
         difference_to_UTC: float,
         output_path: str,
         file_format: str = "netcdf",
+        output_filename: Optional[str] = None,
     ):
         """
         Parameters
@@ -58,6 +59,7 @@ class CMDSDownloader:
         self.difference_to_UTC = difference_to_UTC
         self.output_path = output_path
         self.file_format = file_format
+        self.output_filename = output_filename
 
         # Convert local datetimes to UTC (request window must be UTC for CMDS)
         if self.difference_to_UTC >= 0:
@@ -75,10 +77,8 @@ class CMDSDownloader:
         Execute CMDS subset request. Returns absolute path to the created resource.
         """
         # Ensure output directory exists; always write inside self.output_path
-        output_directory = os.path.dirname(self.output_path)
-        os.makedirs(os.path.abspath(output_directory), exist_ok=True)
-        filename = os.path.basename(self.output_path)
-        self.output_filename = filename
+        os.makedirs(os.path.abspath(self.output_path), exist_ok=True)
+        output_directory = os.path.abspath(self.output_path)
 
         # Build request arguments for CMDS Toolbox API
         subset_kwargs = dict(
@@ -191,6 +191,8 @@ class CMDSDownloader:
     @classmethod
     def for_waves(
         cls,
+        dataset_id: str,
+        variables: List[str],
         lon_min: float,
         lon_max: float,
         lat_min: float,
@@ -200,12 +202,11 @@ class CMDSDownloader:
         difference_to_UTC: float,
         output_path: str,
         file_format: str = "netcdf",
+        output_filename: Optional[str] = "waves_CMDS.nc",
     ) -> "CMDSDownloader":
-        default_dataset_id = "cmems_mod_glo_wav_anfc_0.083deg_PT3H-i"
-        default_variables = ["VHM0", "VMDR", "VTPK"]
         return cls(
-            default_dataset_id,
-            default_variables,
+            dataset_id,
+            variables,
             lon_min,
             lon_max,
             lat_min,
@@ -215,11 +216,14 @@ class CMDSDownloader:
             difference_to_UTC,
             output_path,
             file_format,
+            output_filename,
         )
 
     @classmethod
     def for_winds(
         cls,
+        dataset_id: str,
+        variables: List[str],
         lon_min: float,
         lon_max: float,
         lat_min: float,
@@ -229,12 +233,11 @@ class CMDSDownloader:
         difference_to_UTC: float,
         output_path: str,
         file_format: str = "netcdf",
+        output_filename: Optional[str] = "winds_CMDS.nc",
     ) -> "CMDSDownloader":
-        default_dataset_id = "cmems_obs-wind_glo_phy_nrt_l4_0.125deg_PT1H"
-        default_variables = ["eastward_wind", "northward_wind"]
         return cls(
-            default_dataset_id,
-            default_variables,
+            dataset_id,
+            variables,
             lon_min,
             lon_max,
             lat_min,
@@ -244,4 +247,5 @@ class CMDSDownloader:
             difference_to_UTC,
             output_path,
             file_format,
+            output_filename,
         )
