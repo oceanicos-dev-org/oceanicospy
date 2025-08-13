@@ -47,13 +47,15 @@ class Initializer():
         self.dict_folders = {}
         for folder_name in self.folder_names:
             self.dict_folders[folder_name]=f'{self.root_path}{folder_name}/'
+        
+        print('*** Initializing SWAN model ***\n')
 
     def create_folders_l1(self):
         """
         Creates the primary project folder structure and cleans specific directories.
         """
         
-        print ('\n*** Creating top-level project structure ***\n')
+        print ('\n \t *** Creating top-level project structure ***\n')
         for folder_name in self.folder_names:
             if not os.path.exists(self.dict_folders[folder_name]):
                 subprocess.call(['mkdir','-p',f'{self.dict_folders[folder_name]}'])
@@ -69,7 +71,7 @@ class Initializer():
         `output` and `run` directories.
         """
 
-        print ('\n*** Creating subfolders per each domain ***\n')
+        print ('\n \t *** Creating subfolders per each domain ***\n')
 
         for domain in range(1,self.dict_ini_data["number_domains"]+1):
             if not os.path.exists(f'{self.dict_folders["output"]}domain_0{domain}/'):
@@ -94,7 +96,7 @@ class Initializer():
             self.stat_label='STAT'
         self.dict_ini_data['stat_label']=self.stat_label
 
-        print ('\n*** Copying base swan configuration file into run folder ***\n')
+        print ('\n \t *** Copying base swan configuration file into run folder ***\n')
 
         self.script_dir = Path(__file__).resolve().parent
         self.data_dir = self.script_dir.parent.parent.parent / 'data'

@@ -29,7 +29,7 @@ class GridMaker():
         Fills or updates the grid section in the configuration file for the specified domain using provided grid data.
     """
 
-    def __init__(self,init,dx,dy,domain_number,grid_info=None):
+    def __init__(self,init,domain_number,grid_info=None,dx=None,dy=None):
         """
         Initializes the gridmaker object with the specified parameters.
 
@@ -37,21 +37,23 @@ class GridMaker():
         -----------
             init: object
                 Initialization parameter for the gridmaker.
-            dx: float
-                Grid spacing in the x-direction.
-            dy: float
-                Grid spacing in the y-direction.
             domain_number: int
                 Identifier for the computational domain.
             grid_info: dict or None, optional
                 Additional information about the grid. Defaults to None.
+            dx: float, optional
+                Grid spacing in the x-direction.
+            dy: float, optional
+                Grid spacing in the y-direction.
+
         """
 
         self.init = init
-        self.dx = dx
-        self.dy = dy     
         self.domain_number = domain_number
         self.grid_info = grid_info
+        self.dx = dx
+        self.dy = dy     
+        print(f'\n*** Initializing gridmaker for domain {self.domain_number} ***\n')
 
     def params_from_bathy(self):
         if self.init.dict_ini_data["nested_domains"]>0:
@@ -102,6 +104,5 @@ class GridMaker():
         """
         Replaces and updates the .swn file with the grid configuration for a specific domain.
         """
-
-        print (f'\n*** Adding/Editing grid information for domain {self.domain_number} in configuration file ***\n')
+        print (f'\n \t*** Adding/Editing grid information for domain {self.domain_number} in configuration file ***\n')
         utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_grid_data)
