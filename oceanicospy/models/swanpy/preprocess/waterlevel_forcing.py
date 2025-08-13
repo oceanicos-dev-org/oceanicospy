@@ -8,7 +8,7 @@ from .. import utils
 from ....retrievals import *
 
 class WaterLevelForcing():
-    def __init__ (self,init,domain_number,wl_info=None,input_filename=None,share_wl=True,use_link=None):
+    def __init__ (self,init,domain_number,wl_info=None,input_filename=None,share_wl=True,use_link=True):
         self.init = init
         self.domain_number = domain_number
         self.wl_info = wl_info
@@ -63,7 +63,7 @@ class WaterLevelForcing():
         file.close()
 
     def get_waterlevel_from_UHSLC(self,station_code):
-        filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/h{station_code}.csv"
+        filepath = f"{self.init.dict_folders["input"]}domain_0{self.domain_number}/h{station_code}.csv"
         file_exists = utils.verify_file(filepath)
 
         if not self.share_wl:
@@ -95,29 +95,25 @@ class WaterLevelForcing():
                 origin_domain_dir = f'{self.init.dict_folders["input"]}domain_01/'
                 print(f"\t UHSLC water level data converted to ASCII format and saved as {ascii_filename} in domain 01, linking to domain {self.domain_number}")
 
-        if self.use_link != None:
-            if self.use_link:
-                if utils.verify_file(f'{run_domain_dir}{ascii_filename}'):
-                    os.remove(f'{run_domain_dir}{ascii_filename}')
-                if not utils.verify_link(ascii_filename, run_domain_dir):
-                    utils.create_link(
-                        ascii_filename,
-                        origin_domain_dir,
-                        run_domain_dir
-                    )
-            else:
-                if utils.verify_link(ascii_filename, run_domain_dir):
-                    utils.remove_link(ascii_filename, run_domain_dir)
-                os.system(
-                    f'cp {origin_domain_dir}/{ascii_filename} '
-                    f'{run_domain_dir}'
+        if self.use_link:
+            if utils.verify_file(f'{run_domain_dir}{ascii_filename}'):
+                os.remove(f'{run_domain_dir}{ascii_filename}')
+            if not utils.verify_link(ascii_filename, run_domain_dir):
+                utils.create_link(
+                    ascii_filename,
+                    origin_domain_dir,
+                    run_domain_dir
                 )
+        else:
+            if utils.verify_link(ascii_filename, run_domain_dir):
+                utils.remove_link(ascii_filename, run_domain_dir)
+            os.system(
+                f'cp {origin_domain_dir}/{ascii_filename} '
+                f'{run_domain_dir}'
+            )
 
         if self.wl_info!=None:
-            if not self.share_wl:
-                self.wl_info.update({"wl_file":f"../../input/domain_0{self.domain_number}/{ascii_filename}"})
-            else:
-                self.wl_info.update({"wl_file":f"../../input/domain_01/{ascii_filename}"})
+            self.wl_info.update({"water_levels.wl":ascii_filename})
             return self.wl_info
         return None
 

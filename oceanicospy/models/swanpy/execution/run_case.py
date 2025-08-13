@@ -20,13 +20,11 @@ class CaseRunner():
         """
         Reads a CSV file containing point coordinates, adjusts negative longitude values,
         and writes the processed coordinates to a .loc file for SWAN model output.
-
         Parameters
         ----------
         filename : str, optional
-        Name of the CSV file to read, located in the input folder for the current domain.
-        The file must contain at least 'X' and 'Y' columns representing coordinates.
-        If not provided, defaults to 'points.csv'.
+            Name of the CSV file to read, located in the input folder for the current domain.
+            The file must contain at least 'X' and 'Y' columns representing coordinates.
         """
 
         ds = pd.read_csv(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{filename}',delimiter=',')
@@ -64,7 +62,7 @@ class CaseRunner():
         self.data_dir = self.script_dir.parent.parent.parent / 'data'
 
         shutil.copy(f'{self.data_dir}/model_config_templates/swan/launcher_base_nest_cecc.slurm',
-                    f'{self.init.dict_folders["run"]}/../launcher_swan.slurm')
+                    f'{self.init.dict_folders["run"]}launcher_swan.slurm')
         
         bash_code = "declare -a bash_dict\n"
         for key, value in self.init.dict_ini_data["parent_domains"].items():
@@ -77,17 +75,9 @@ class CaseRunner():
             'number_domains': self.init.dict_ini_data["number_domains"],
             'parent_domains': bash_code
         }
-        utils.fill_files(f'{self.init.dict_folders["run"]}../launcher_swan.slurm', launch_dict, strict=False)
-
-    def _delete_placeholder_leftover(self):
-        run_file = Path(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn')
-        text = run_file.read_text()
-        text = re.sub(r"\$\w+", " ", text)  # wipe leftovers
-        run_file.write_text(text)
+        utils.fill_files(f'{self.init.dict_folders["run"]}launcher_swan.slurm', launch_dict, strict=False)
 
     def fill_computation_section(self):
-        self._delete_placeholder_leftover()
-
         if self.dict_comp_data['stat_comp'] in (0,"0"): # If the computation is non-stationary
             self.stat_label = 'NONSTAT'
             self.string_comp = f'COMP {self.stat_label} {self.dict_comp_data["ini_comp_date"]} {self.dict_comp_data["dt_min"]} MIN {self.dict_comp_data["end_comp_date"]}'

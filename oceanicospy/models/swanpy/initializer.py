@@ -52,15 +52,6 @@ class Initializer():
         
         print('*** Initializing SWAN model ***\n')
 
-    def _generate_baseline_SWAN(self,template_in,template_out,replacement_dict):
-        template_text = Path(template_in).read_text()
-
-        # substitute available keys, leave others as-is
-        filled_text = Template(template_text).safe_substitute(replacement_dict)
-
-        Path(template_out).write_text(filled_text)
-
-
     def create_folders_l1(self):
         """
         Creates the primary project folder structure and cleans specific directories.
