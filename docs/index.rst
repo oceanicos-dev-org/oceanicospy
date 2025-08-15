@@ -24,3 +24,4 @@ documentation for details.
    models/index
    retrievals/index
    plots
+   retrievals/index
