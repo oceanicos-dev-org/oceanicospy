@@ -153,7 +153,7 @@ class WindForcing():
         and saves it to the appropriate location. If the file already exists, the download is skipped.
 
         """
-        filepath = f"{self.init.dict_folders["input"]}domain_0{self.domain_number}/{filename}"
+        filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
         file_exists = utils.verify_file(filepath)
 
         if not self.share_winds:
@@ -178,7 +178,7 @@ class WindForcing():
         and saves it to the appropriate location. If the file already exists, the download is skipped.
 
         """
-        filepath = f"{self.init.dict_folders["input"]}domain_0{self.domain_number}/{filename}"
+        filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
         file_exists = utils.verify_file(filepath)
 
         if not self.share_winds:

@@ -151,6 +151,7 @@
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../observations/walkthrough.html">Walkthrough Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../observations/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../observations/AQUAlogger.html">AQUAlogger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../observations/RBR.html">RBR</a></li>
@@ -164,7 +165,18 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../models/swanpy.html">swanpy</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../models/swanpy/initializer.html">Initializer</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../plots.html">Plots</a></li>
@@ -340,6 +352,25 @@ document.write(`
 <dt class="sig sig-object py" id="oceanicospy.analysis.temporal.WaveTemporalAnalyzer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.analysis.temporal.</span></span><span class="sig-name descname"><span class="pre">WaveTemporalAnalyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurement_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/temporal.html#WaveTemporalAnalyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer" title="Link to this definition">#</a></dt>
 <dd><p>Class for analyzing wave parameters from temporal data.</p>
+<p>”
+Initializes the analysis object with measurement signal and sampling data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>measurement_signal</strong> (<em>array-like</em>) – The input signal data to be analyzed.</p></li>
+<li><p><strong>sampling_data</strong> (<em>dict</em>) – <dl class="simple">
+<dt>Dictionary containing sampling parameters with the following keys:</dt><dd><ul>
+<li><p>’sampling_freq’ (float): Sampling frequency of the signal.</p></li>
+<li><p>’anchoring_depth’ (float): Depth at which the sensor is anchored.</p></li>
+<li><p>’sensor_height’ (float): Height of the sensor above the bottom.</p></li>
+<li><p>’burst_length_s’ (float): Duration of each burst in seconds.</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="oceanicospy.analysis.temporal.WaveTemporalAnalyzer.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurement_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/temporal.html#WaveTemporalAnalyzer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.__init__" title="Link to this definition">#</a></dt>
