@@ -9,8 +9,6 @@
 import os
 import sys
 from pathlib import Path
-import ssl
-import urllib3
 
 sys.path.insert(0, os.path.abspath('..'))
 
@@ -20,9 +18,6 @@ cdsapirc_path.write_text(
     f"key: {os.environ.get('CDSAPI_KEY')}\n"
 )
 
-os.environ['SKIP_DATA_DOWNLOAD'] = '1'
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-ssl._create_default_https_context = ssl._create_unverified_context
 
 project = 'oceanicospy'
 copyright = '2025, oceanicos'
