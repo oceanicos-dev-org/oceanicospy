@@ -27,7 +27,7 @@ class AWAC():
     - 10-Dec-2024 : Class implementation - Franklin Ayala
   
     """
-    def __init__(self,directory_path,sampling_data):
+    def _init_(self,directory_path,sampling_data):
 
         self.directory_pathz = directory_path
         self.sampling_data = sampling_data
@@ -156,7 +156,7 @@ class AWAC():
         y_component_clean = self._parse_dates_and_trim(y_component_clean)
 
         if compute_speed_dir:
-            current_speed = np.sqrt((x_component_clean**2)+(y_component_clean**2))
+            current_speed = np.sqrt((x_component_clean*2)+(y_component_clean*2))
             current_dir = np.array([list(map(wave_props.angulo_norte,row_x,row_y)) for row_x,row_y in zip(self.x_component_raw.values,self.y_component_raw.values)])
             current_dir = pd.DataFrame(data=current_dir,index=date_range,columns=current_speed.columns)
             return x_component_clean,y_component_clean,current_speed,current_dir
@@ -307,7 +307,7 @@ class AWAC():
             else:
                 column = column.lower().split(' ')[1:] 
                 column[-1] = column[-1].replace('(','[').replace(')',']')
-                final_column = ''.join(column).replace('(','_').replace(')','_')
+                final_column = ''.join(column).replace('(','').replace(')','')
             renamed_columns.append(final_column)
         df.columns = renamed_columns
             
