@@ -5,4 +5,4 @@ Models
    :maxdepth: 1
    :caption: Contents:
 
-   swanpy
+   swanpy/index

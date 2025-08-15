@@ -150,7 +150,7 @@ class BoundaryConditions():
 
         """
         if self.isnested == False:
-            filepath = f"{self.init.dict_folders["input"]}domain_0{self.domain_number}/{filename}"
+            filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
             file_exists = utils.verify_file(filepath)
             if not file_exists or override:
                 self._download_ERA5(difference_to_UTC,wind_info=wind_info_dict,filepath=filepath)
@@ -166,7 +166,7 @@ class BoundaryConditions():
 
         """
         if self.isnested == False:
-            filepath = f"{self.init.dict_folders["input"]}domain_0{self.domain_number}/{filename}"
+            filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
             file_exists = utils.verify_file(filepath)
             if not file_exists or override:
                 self._download_CMDS(difference_to_UTC,wind_info=wind_info_dict,filepath=filepath)
