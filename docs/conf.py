@@ -8,8 +8,16 @@
 
 import os
 import sys
+from pathlib import Path
 
 sys.path.insert(0, os.path.abspath('..'))
+
+cdsapirc_path = Path.home() / ".cdsapirc"
+cdsapirc_path.write_text(
+    f"url: {os.environ.get('CDSAPI_URL')}\n"
+    f"key: {os.environ.get('CDSAPI_KEY')}\n"
+)
+
 
 project = 'oceanicospy'
 copyright = '2025, oceanicos'
