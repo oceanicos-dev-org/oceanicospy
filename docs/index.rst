@@ -23,4 +23,4 @@ documentation for details.
    analysis/index
    models/index
    plots
-   retrievals
+   retrievals/index

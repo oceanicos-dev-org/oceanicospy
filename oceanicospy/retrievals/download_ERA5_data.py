@@ -7,7 +7,7 @@ c = cdsapi.Client()
 
 class ERA5Downloader():
     """
-    A class to handle downloading data from the Copernicus Marine Data Store (CMDS)
+    A class to handle downloading data from the ERA5
     with automatic UTC time conversion from user-defined local timezone.
     """
     def __init__(self,variables:list,
