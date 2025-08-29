@@ -3,6 +3,8 @@ from pathlib import Path
 from . import utils
 import shutil
 import os
+from string import Template
+import re
 
 class Initializer():
     """
@@ -49,6 +51,15 @@ class Initializer():
             self.dict_folders[folder_name]=f'{self.root_path}{folder_name}/'
         
         print('*** Initializing SWAN model ***\n')
+
+    def _generate_baseline_SWAN(self,template_in,template_out,replacement_dict):
+        template_text = Path(template_in).read_text()
+
+        # substitute available keys, leave others as-is
+        filled_text = Template(template_text).safe_substitute(replacement_dict)
+
+        Path(template_out).write_text(filled_text)
+
 
     def create_folders_l1(self):
         """
@@ -102,6 +113,7 @@ class Initializer():
         self.data_dir = self.script_dir.parent.parent.parent / 'data'
 
         for domain in range(1,self.dict_ini_data["number_domains"]+1):
-                shutil.copy(f'{self.data_dir}/model_config_templates/swan/run_base_{self.stat_label.lower()}.swn', f'{self.dict_folders["run"]}domain_0{domain}/run.swn')
-                utils.fill_files(f'{self.dict_folders["run"]}domain_0{domain}/run.swn',self.dict_ini_data)
+                merged = {**utils.defaults, **self.dict_ini_data}
+                self._generate_baseline_SWAN(f'{self.data_dir}/model_config_templates/swan/run_base_{self.stat_label.lower()}.swn', 
+                                             f'{self.dict_folders["run"]}domain_0{domain}/run.swn',merged)
 
