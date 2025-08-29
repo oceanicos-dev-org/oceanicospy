@@ -104,5 +104,8 @@ class GridMaker():
         """
         Replaces and updates the .swn file with the grid configuration for a specific domain.
         """
+
+        dict_grid_data["domain_number"]=self.domain_number
+
         print (f'\n \t*** Adding/Editing grid information for domain {self.domain_number} in configuration file ***\n')
         utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_grid_data)

@@ -32,7 +32,7 @@ class BathyMaker():
         Updates the configuration file with bathymetry information for the specified domain.
     """
 
-    def __init__(self, init, domain_number, bathy_info=None, filename=None, dx_bat=None, use_link = True):
+    def __init__(self, init, domain_number, bathy_info=None, filename=None, dx_bat=None, use_link = None):
         """
         Parameters
         ----------
@@ -75,25 +75,27 @@ class BathyMaker():
         bathy_filename = bathy_filepath.split('/')[-1]
 
         run_domain_dir = f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/'
-        if self.use_link:
-            if utils.verify_file(f'{run_domain_dir}{bathy_filename}'):
-                os.remove(f'{run_domain_dir}{bathy_filename}')
-            if not utils.verify_link(bathy_filename, run_domain_dir):
-                utils.create_link(
-                    bathy_filename,
-                    f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/',
-                    run_domain_dir
+
+        if self.use_link !=None:
+            if self.use_link:
+                if utils.verify_file(f'{run_domain_dir}{bathy_filename}'):
+                    os.remove(f'{run_domain_dir}{bathy_filename}')
+                if not utils.verify_link(bathy_filename, run_domain_dir):
+                    utils.create_link(
+                        bathy_filename,
+                        f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/',
+                        run_domain_dir
+                    )
+            else:
+                if utils.verify_link(bathy_filename, run_domain_dir):
+                    utils.remove_link(bathy_filename, run_domain_dir)
+                os.system(
+                    f'cp {self.init.dict_folders["input"]}domain_0{self.domain_number}/{bathy_filename} '
+                    f'{run_domain_dir}'
                 )
-        else:
-            if utils.verify_link(bathy_filename, run_domain_dir):
-                utils.remove_link(bathy_filename, run_domain_dir)
-            os.system(
-                f'cp {self.init.dict_folders["input"]}domain_0{self.domain_number}/{bathy_filename} '
-                f'{run_domain_dir}'
-            )
 
         if self.bathy_info!=None:
-            self.bathy_info.update({"bathymetry.bot":bathy_filename})
+            self.bathy_info.update({"bathy_file":f"../../input/domain_0{self.domain_number}/{bathy_filename}"})
             return self.bathy_info
 
     def xyz2asc(self,nodata_value):

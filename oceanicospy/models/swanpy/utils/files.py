@@ -1,5 +1,7 @@
 import os
 import fileinput
+from pathlib import Path
+import re
 
 def verify_file(file_path):
     """
@@ -127,6 +129,25 @@ def fill_files_only_once(file_name, dict_):
                         print(line,end='')
                     else:
                         print(line,end='')
+
+def fill_files_2(file_path: str, replacements: dict):
+    """
+    Replaces placeholders in an existing .swn file with given values.
+    If a value is empty string, replaces placeholder with whitespace.
+    """
+    text = Path(file_path).read_text()
+
+    def replace_placeholder(match):
+        key = match.group(0)[1:]  # remove leading $
+        if key in replacements:
+            val = replacements[key]
+            return str(val) if val else " "  # empty -> whitespace
+        return match.group(0)  # leave untouched if not in replacements
+
+    # replace only placeholders like $cds1, $delta, etc.
+    updated = re.sub(r"\$\w+", replace_placeholder, text)
+
+    Path(file_path).write_text(updated)
 
 def delete_line(file_name,string_to_find):
     with open(file_name, "r") as f:
