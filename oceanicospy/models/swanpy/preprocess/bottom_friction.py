@@ -4,7 +4,7 @@ import os
 from .. import utils
 
 class BottomFrictionProcessor():
-    def __init__(self,init,domain_number,friction_info=None,input_filename=None,use_link=True):
+    def __init__(self,init,domain_number,friction_info=None,input_filename=None,use_link=None):
         self.init = init
         self.domain_number = domain_number
         self.friction_info = friction_info
@@ -29,25 +29,26 @@ class BottomFrictionProcessor():
         friction_filename = friction_filepath.split('/')[-1]
 
         run_domain_dir = f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/'
-        if self.use_link:
-            if utils.verify_file(f'{run_domain_dir}{friction_filename}'):
-                os.remove(f'{run_domain_dir}{friction_filename}')
-            if not utils.verify_link(friction_filename, run_domain_dir):
-                utils.create_link(
-                    friction_filename,
-                    f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/',
-                    run_domain_dir
+        if self.use_link != None:
+            if self.use_link:
+                if utils.verify_file(f'{run_domain_dir}{friction_filename}'):
+                    os.remove(f'{run_domain_dir}{friction_filename}')
+                if not utils.verify_link(friction_filename, run_domain_dir):
+                    utils.create_link(
+                        friction_filename,
+                        f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/',
+                        run_domain_dir
+                    )
+            else:
+                if utils.verify_link(friction_filename, run_domain_dir):
+                    utils.remove_link(friction_filename, run_domain_dir)
+                os.system(
+                    f'cp {self.init.dict_folders["input"]}domain_0{self.domain_number}/{friction_filename} '
+                    f'{run_domain_dir}'
                 )
-        else:
-            if utils.verify_link(friction_filename, run_domain_dir):
-                utils.remove_link(friction_filename, run_domain_dir)
-            os.system(
-                f'cp {self.init.dict_folders["input"]}domain_0{self.domain_number}/{friction_filename} '
-                f'{run_domain_dir}'
-            )
 
         if self.friction_info!=None:
-            self.friction_info.update({"friction.fric":friction_filename})
+            self.friction_info.update({"friction_file":f"../../input/domain_0{self.domain_number}/{friction_filename}"})
             return self.friction_info
 
 
