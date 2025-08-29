@@ -24,7 +24,7 @@ class BoundaryConditions():
         tpar_from_ERA5_wave_data(output_filename): Generate TPAR data from ERA5 wave data.
         fill_boundaries_section(*args): Fill the boundaries section of the simulation.
     """
-    def __init__ (self,init,domain_number,input_filename=None,dict_bounds_params=None,list_sides=None,use_link=True):
+    def __init__ (self,init,domain_number,input_filename=None,dict_bounds_params=None,list_sides=None,use_link=None):
         self.init = init
         self.domain_number = domain_number
         self.input_filename = input_filename
@@ -110,9 +110,9 @@ class BoundaryConditions():
         for i in range(len(time)):
             data_per_time = ds.isel(valid_time=np.where(ds.valid_time.values==time[i])[0][0],
                             latitude=lat_idx,longitude=lon_idx)
-            swh[i] = data_per_time.swh.values[0][0]
-            pp[i] = data_per_time.pp1d.values[0][0]
-            mwd[i] = data_per_time.mwd.values[0][0]
+            swh[i] = data_per_time.swh.values
+            pp[i] = data_per_time.pp1d.values
+            mwd[i] = data_per_time.mwd.values
         df_tpar = pd.DataFrame({'Tiempo':strtime,'Altura':swh,'Periodo':pp,'Direccion':mwd,'dd':40})
         with open (tpar_filename+'.bnd', "w") as file:
                 file.write("TPAR \n")
@@ -206,22 +206,23 @@ class BoundaryConditions():
             bnd_files = [f for f in os.listdir(self.input_path) if f.endswith('.bnd')]
 
             for bnd_file in bnd_files:
-                if self.use_link:
-                    if utils.verify_file(f'{run_domain_dir}{bnd_file}'):
-                        os.remove(f'{run_domain_dir}{bnd_file}')
-                    if not utils.verify_link(bnd_file, run_domain_dir):
-                        utils.create_link(
-                            bnd_file,
-                            origin_domain_dir,
-                            run_domain_dir
+                if self.use_link != None:
+                    if self.use_link:
+                        if utils.verify_file(f'{run_domain_dir}{bnd_file}'):
+                            os.remove(f'{run_domain_dir}{bnd_file}')
+                        if not utils.verify_link(bnd_file, run_domain_dir):
+                            utils.create_link(
+                                bnd_file,
+                                origin_domain_dir,
+                                run_domain_dir
+                            )
+                    else:
+                        if utils.verify_link(bnd_file, run_domain_dir):
+                            utils.remove_link(bnd_file, run_domain_dir)
+                        os.system(
+                            f'cp {origin_domain_dir}/{bnd_file} '
+                            f'{run_domain_dir}'
                         )
-                else:
-                    if utils.verify_link(bnd_file, run_domain_dir):
-                        utils.remove_link(bnd_file, run_domain_dir)
-                    os.system(
-                        f'cp {origin_domain_dir}/{bnd_file} '
-                        f'{run_domain_dir}'
-                    )
             print(f'\t*** Finished processing boundary files for domain {self.domain_number} ***\n')
 
     def tpar_from_CMDS(self,points_lat,points_lon):
@@ -255,44 +256,45 @@ class BoundaryConditions():
             bnd_files = [f for f in os.listdir(self.input_path) if f.endswith('.bnd')]
 
             for bnd_file in bnd_files:
-                if self.use_link:
-                    if utils.verify_file(f'{run_domain_dir}{bnd_file}'):
-                        os.remove(f'{run_domain_dir}{bnd_file}')
-                    if not utils.verify_link(bnd_file, run_domain_dir):
-                        utils.create_link(
-                            bnd_file,
-                            origin_domain_dir,
-                            run_domain_dir
+                if self.use_link != None:
+                    if self.use_link:
+                        if utils.verify_file(f'{run_domain_dir}{bnd_file}'):
+                            os.remove(f'{run_domain_dir}{bnd_file}')
+                        if not utils.verify_link(bnd_file, run_domain_dir):
+                            utils.create_link(
+                                bnd_file,
+                                origin_domain_dir,
+                                run_domain_dir
+                            )
+                    else:
+                        if utils.verify_link(bnd_file, run_domain_dir):
+                            utils.remove_link(bnd_file, run_domain_dir)
+                        os.system(
+                            f'cp {origin_domain_dir}/{bnd_file} '
+                            f'{run_domain_dir}'
                         )
-                else:
-                    if utils.verify_link(bnd_file, run_domain_dir):
-                        utils.remove_link(bnd_file, run_domain_dir)
-                    os.system(
-                        f'cp {origin_domain_dir}/{bnd_file} '
-                        f'{run_domain_dir}'
-                    )
             print(f'\t*** Finished processing boundary files for domain {self.domain_number} ***\n')
 
     def fill_boundaries_section(self):
         if self.isnested == False:  # This is hardcoded
-            string_bounds = "$ Frontera Norte \n\
-BOUN SIDE N CLOCKW VAR FILE 0 'TparN2025_1.bnd' 1 & \n\
-                        0.1	'TparN2025_2.bnd' 1 & \n\
-                        0.2	'TparN2025_3.bnd' 1  \n\
+            string_bounds = f"$ Frontera Norte \n\
+BOUN SIDE N CLOCKW VAR FILE 0 '../../input/domain_0{self.domain_number}/TparN2025_1.bnd' 1 & \n\
+                        0.1	'../../input/domain_0{self.domain_number}/TparN2025_2.bnd' 1 & \n\
+                        0.2	'../../input/domain_0{self.domain_number}/TparN2025_3.bnd' 1  \n\
 $ Frontera oeste \n\
-BOUN SIDE W CLOCKW VAR FILE 0	'TparO2025_1.bnd' 1 & \n\
-                        0.1	'TparO2025_2.bnd' 1 &\n\
-                        0.2	'TparO2025_3.bnd' 1 &\n\
-                        0.3	'TparO2025_4.bnd' 1  \n\
+BOUN SIDE W CLOCKW VAR FILE 0	'../../input/domain_0{self.domain_number}/TparO2025_1.bnd' 1 & \n\
+                        0.1	'../../input/domain_0{self.domain_number}/TparO2025_2.bnd' 1 &\n\
+                        0.2	'../../input/domain_0{self.domain_number}/TparO2025_3.bnd' 1 &\n\
+                        0.3	'../../input/domain_0{self.domain_number}/TparO2025_4.bnd' 1  \n\
 $ Frontera sur\n\
-BOUN SIDE S CLOCKW VAR FILE 0	'TparS2025_3.bnd' 1 &\n\
-                        0.1	'TparS2025_2.bnd' 1 &\n\
-                        0.2	'TparS2025_1.bnd' 1 \n\
+BOUN SIDE S CLOCKW VAR FILE 0	'../../input/domain_0{self.domain_number}/TparS2025_3.bnd' 1 &\n\
+                        0.1	'../../input/domain_0{self.domain_number}/TparS2025_2.bnd' 1 &\n\
+                        0.2	'../../input/domain_0{self.domain_number}/TparS2025_1.bnd' 1 \n\
 $ Frontera este\n\
-BOUN SIDE E CLOCKW VAR FILE 0	'TparE2025_4.bnd' 1 &\n\
-                        0.1	'TparE2025_3.bnd' 1 &\n\
-                        0.2	'TparE2025_2.bnd' 1 &\n\
-                        0.3	'TparE2025_1.bnd' 1" 
+BOUN SIDE E CLOCKW VAR FILE 0	'../../input/domain_0{self.domain_number}/TparE2025_4.bnd' 1 &\n\
+                        0.1	'../../input/domain_0{self.domain_number}/TparE2025_3.bnd' 1 &\n\
+                        0.2	'../../input/domain_0{self.domain_number}/TparE2025_2.bnd' 1 &\n\
+                        0.3	'../../input/domain_0{self.domain_number}/TparE2025_1.bnd' 1" 
         else:
             string_bounds = f'BOUN NEST \'child0{self.init.dict_ini_data["parent_domains"][self.domain_number]}_0{self.domain_number}.NEST\' CLOSED'
         
