@@ -8,7 +8,7 @@ from .. import utils
 from ....retrievals import *
 
 class WindForcing():
-    def __init__(self,init,domain_number,wind_info=None,filename=None,share_winds=True,use_link=True):
+    def __init__(self,init,domain_number,wind_info=None,filename=None,share_winds=True,use_link=None):
         """
         Parameters
         ----------
@@ -228,25 +228,29 @@ class WindForcing():
                 origin_domain_dir = f'{self.init.dict_folders["input"]}domain_01/'
                 print(f"\t ERA5 wind data converted to ASCII format and saved as {ascii_filename} in domain 01, linking to domain {self.domain_number}")
 
-        if self.use_link:
-            if utils.verify_file(f'{run_domain_dir}{ascii_filename}'):
-                os.remove(f'{run_domain_dir}{ascii_filename}')
-            if not utils.verify_link(ascii_filename, run_domain_dir):
-                utils.create_link(
-                    ascii_filename,
-                    origin_domain_dir,
-                    run_domain_dir
+        if self.use_link != None:
+            if self.use_link:
+                if utils.verify_file(f'{run_domain_dir}{ascii_filename}'):
+                    os.remove(f'{run_domain_dir}{ascii_filename}')
+                if not utils.verify_link(ascii_filename, run_domain_dir):
+                    utils.create_link(
+                        ascii_filename,
+                        origin_domain_dir,
+                        run_domain_dir
+                    )
+            else:
+                if utils.verify_link(ascii_filename, run_domain_dir):
+                    utils.remove_link(ascii_filename, run_domain_dir)
+                os.system(
+                    f'cp {origin_domain_dir}/{ascii_filename} '
+                    f'{run_domain_dir}'
                 )
-        else:
-            if utils.verify_link(ascii_filename, run_domain_dir):
-                utils.remove_link(ascii_filename, run_domain_dir)
-            os.system(
-                f'cp {origin_domain_dir}/{ascii_filename} '
-                f'{run_domain_dir}'
-            )
 
         if self.wind_info!=None:
-            self.wind_info.update({"winds.wnd":"winds.wnd"})
+            if not self.share_winds:
+                self.wind_info.update({"winds_file":f"../../input/domain_0{self.domain_number}/winds.wnd"})
+            else:
+                self.wind_info.update({"winds_file":f"../../input/domain_01/winds.wnd"})
             return self.wind_info
         return None
 
@@ -283,25 +287,30 @@ class WindForcing():
                 origin_domain_dir = f'{self.init.dict_folders["input"]}domain_01/'
                 print(f"\t CMDS wind data converted to ASCII format and saved as {ascii_filename} in domain 01, linking to domain {self.domain_number}")
 
-        if self.use_link:
-            if utils.verify_file(f'{run_domain_dir}{ascii_filename}'):
-                os.remove(f'{run_domain_dir}{ascii_filename}')
-            if not utils.verify_link(ascii_filename, run_domain_dir):
-                utils.create_link(
-                    ascii_filename,
-                    origin_domain_dir,
-                    run_domain_dir
+        if self.use_link != None:
+            if self.use_link:
+                if utils.verify_file(f'{run_domain_dir}{ascii_filename}'):
+                    os.remove(f'{run_domain_dir}{ascii_filename}')
+                if not utils.verify_link(ascii_filename, run_domain_dir):
+                    utils.create_link(
+                        ascii_filename,
+                        origin_domain_dir,
+                        run_domain_dir
+                    )
+            else:
+                if utils.verify_link(ascii_filename, run_domain_dir):
+                    utils.remove_link(ascii_filename, run_domain_dir)
+                os.system(
+                    f'cp {origin_domain_dir}/{ascii_filename} '
+                    f'{run_domain_dir}'
                 )
-        else:
-            if utils.verify_link(ascii_filename, run_domain_dir):
-                utils.remove_link(ascii_filename, run_domain_dir)
-            os.system(
-                f'cp {origin_domain_dir}/{ascii_filename} '
-                f'{run_domain_dir}'
-            )
 
         if self.wind_info!=None:
-            self.wind_info.update({"winds.wnd":"winds.wnd"})
+            if not self.share_winds:
+                self.wind_info.update({"winds_file":f"../../input/domain_0{self.domain_number}/winds.wnd"})
+            else:
+                self.wind_info.update({"winds_file":f"../../input/domain_01/winds.wnd"})
+
             return self.wind_info
 
     def fill_wind_section(self,dict_wind_data):
