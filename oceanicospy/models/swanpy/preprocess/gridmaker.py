@@ -91,9 +91,10 @@ class GridMaker():
     def params_from_user(self):
         """
         Retrieves grid parameters provided by the user.
+
         Returns:
         --------
-            dict: The grid information if it has been set.
+        dict: The grid information if it has been set.
         """
         if self.grid_info is not None:
             return self.grid_info
