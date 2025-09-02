@@ -5,3 +5,4 @@ from .waterlevel_forcing import *
 from .bottom_friction import *
 from .boundary_conds import *
 from .physics import *
+from .numerics import *
