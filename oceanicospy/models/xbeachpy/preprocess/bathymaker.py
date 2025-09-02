@@ -5,9 +5,8 @@ import os
 import shapefile
 
 from .. import utils
-from ..init_setup import InitialSetup
 
-class MakeBathy(InitialSetup):
+class BathyMaker():
     """
     A class for preprocessing bathymetry data.
 
@@ -35,7 +34,6 @@ class MakeBathy(InitialSetup):
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
         """
-        super().__init__(*args,**kwargs)
         self.filename=filename
 
     def profile2asc(self):
