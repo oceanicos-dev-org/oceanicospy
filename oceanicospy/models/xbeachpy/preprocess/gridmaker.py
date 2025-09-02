@@ -4,9 +4,8 @@ import pandas as pd
 from .. import utils
 import shapefile
 import os
-from ..init_setup import InitialSetup
 
-class MakeGrid(InitialSetup):
+class GridMaker():
     """
     A class for creating a Xbeach computational grid from bathymetry data and filling grid information in a SWAN file.
     Args:
@@ -20,7 +19,6 @@ class MakeGrid(InitialSetup):
 
     """
     def __init__ (self,dx,dy,*args,**kwargs):
-        super().__init__(*args,**kwargs)
         self.dx=dx
         self.dy=dy   
 

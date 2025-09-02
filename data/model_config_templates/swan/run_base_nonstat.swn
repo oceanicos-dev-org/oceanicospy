@@ -40,7 +40,7 @@ BRE
 FRIC MAD
 DIFFR
 $$ Numerics -----------------------------------
-NUM ACCUR
+NUM $stop_criteria $stat_label $iters
 PROP BSBT
 $$
 $$ Resultados ---------------------------------------------

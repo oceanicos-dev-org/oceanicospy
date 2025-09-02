@@ -3,16 +3,16 @@
 %%%                                                                          %%%
 %%% date:     30-May-24 	                                                 %%%
 %%% function: manual   
-%%% case:     case_description                                               %%%
+%%% case:     $case_description                                               %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Physics %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-flow = 1
-morphology = 1
-sedtrans = 1
-swrunup = 0
-wavemodel = 1
-vegetation = 1
+flow = $act_flow
+morphology = $act_morf
+sedtrans = $act_sedtrans
+swrunup = $act_swrunup
+wavemodel = $act_wavemodel
+vegetation = $act_veg
 
 %%% Grid parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -42,14 +42,6 @@ windfile     = windfilepath
 tideloc      = 1
 zs0file      = sealevelfilepath
 
-%%% Bed composition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%D50          = D50_value
-
-%%% Veggetation parameteras %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%nveg         = number_species
-%veggiefile   = vegetation_file
-%veggiemapfile = vegetation_map_file
-
 %%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tstart       = 0
 CFL          = 0.7
@@ -61,22 +53,12 @@ tintg        = tintg_value
 outputformat = netcdf
 ncfilename = outputfilepath
 
-nglobalvar   = 6
-zs
-hh
-zb
-zb0
-H
-sigm
+nglobalvar   = len_global_vars
+global_vars
 
-npoints = lenpoints
+npoints = len_points
 0 0
 string_points
 
-npointvar =6
-zs
-hh
-zb
-zb0
-H
-sigm
+npointvar    = len_point_vars
+point_vars
