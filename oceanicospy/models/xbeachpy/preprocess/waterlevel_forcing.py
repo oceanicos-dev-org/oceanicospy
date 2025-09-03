@@ -3,8 +3,10 @@ import numpy as np
 import glob as glob
 from datetime import datetime
 from scipy.signal import detrend
+import os
 
 from .. import utils
+from ....retrievals import *
 
 class WaterLevelForcing():
     def __init__ (self,init,wl_info=None,input_filename=None,use_link=None):
@@ -83,16 +85,16 @@ class WaterLevelForcing():
                     )
             else:
                 if utils.verify_link(ascii_filename, run_domain_dir):
-                    utils.remove_link(ascii_filename, run_domain_dir)
+                    utils.delete_link(ascii_filename, run_domain_dir)
                 os.system(
                     f'cp {origin_domain_dir}/{ascii_filename} '
                     f'{run_domain_dir}'
                 )
 
         if self.wl_info!=None:
-            self.wl_info.update({"sealevelfilepath":f"../input/{ascii_filename}"})
+            self.wl_info.update({"sealevelfilepath":f"{ascii_filename}"})
         else:
-            self.wl_info = {"sealevelfilepath":f"../input/{ascii_filename}"}
+            self.wl_info = {"sealevelfilepath":f"{ascii_filename}"}
         return self.wl_info
 
 
