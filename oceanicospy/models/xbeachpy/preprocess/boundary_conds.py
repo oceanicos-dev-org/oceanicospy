@@ -175,7 +175,7 @@ class BoundaryConditions():
                                 for line in self.spec_to_save:
                                     np.savetxt(fdest, line, fmt='%5.0f')
                             fdest.close()
-                    filelist.write(f"3600 0.2 'bounds_conds/point_{idx_site}/spec_time{idx_time}_point_{idx_site}.sp2' \n")
+                    filelist.write(f"3600 0.2 'bounds_conds/point_{idx_site}/spec_time{idx_time}_point{idx_site}.sp2' \n")
             filelist.close()
 
         with open(f"{self.init.dict_folders['run']}bounds_conds/loclist.txt", "w") as floc:
