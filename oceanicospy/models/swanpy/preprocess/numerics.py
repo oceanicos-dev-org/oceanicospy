@@ -22,7 +22,7 @@ class NumericsMaker():
         num_line = next((line for line in lines if line.strip().startswith('NUM')), None)
 
         if dict_numerics_data['stop_criteria'] == 'ACCUR':
-            new_line = f'NUM {dict_numerics_data['stop_criteria']}'
+            new_line = f"NUM {dict_numerics_data['stop_criteria']}"
             if num_line:
                 idx = lines.index(num_line)
                 lines[idx] = new_line + '\n'
