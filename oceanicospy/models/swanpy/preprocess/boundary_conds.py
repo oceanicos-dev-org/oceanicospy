@@ -113,7 +113,7 @@ class BoundaryConditions():
             swh[i] = data_per_time.swh.values
             pp[i] = data_per_time.pp1d.values
             mwd[i] = data_per_time.mwd.values
-        df_tpar = pd.DataFrame({'Tiempo':strtime,'Altura':swh,'Periodo':pp,'Direccion':mwd,'dd':40})
+        df_tpar = pd.DataFrame({'Tiempo':strtime,'Altura':swh,'Periodo':pp,'Direccion':mwd,'dd':70})
         with open (tpar_filename+'.bnd', "w") as file:
                 file.write("TPAR \n")
                 np.savetxt(file,df_tpar,fmt =('%s  %7.9f  %8.9f  %9.9f  %5.1f'))
@@ -135,7 +135,7 @@ class BoundaryConditions():
             swh[i] = data_per_time.VHM0.values
             pp[i] = data_per_time.VTPK.values
             mwd[i] = data_per_time.VMDR.values
-        df_tpar = pd.DataFrame({'Tiempo':strtime,'Altura':swh,'Periodo':pp,'Direccion':mwd,'dd':40})
+        df_tpar = pd.DataFrame({'Tiempo':strtime,'Altura':swh,'Periodo':pp,'Direccion':mwd,'dd':70})
         with open (tpar_filename+'.bnd', "w") as file:
                 file.write("TPAR \n")
                 np.savetxt(file,df_tpar,fmt =('%s  %7.9f  %8.9f  %9.9f  %5.1f'))
