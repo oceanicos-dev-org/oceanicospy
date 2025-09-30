@@ -50,10 +50,11 @@ class AQUAlogger(BaseLogger):
             columns = ['UNITS', 'date', 'Raw1', 'temperature', 'Raw2', 'pressure[bar]', 'Raw3', 'depth[m]', 'nan']
             drop_cols = ['Raw1', 'Raw2', 'Raw3', 'nan']
         else:
-            columns = ['UNITS', 'date', 'Raw1', 'pressure[bar]', 'Raw2', 'depth[m]', 'nan']
-            drop_cols = ['Raw1', 'Raw2', 'nan']
+            columns = ['UNITS', 'date', 'Raw1', 'pressure[bar]', 'nan']
+            # columns = ['UNITS', 'date', 'Raw1', 'pressure[bar]', 'Raw2', 'depth[m]', 'nan']
+            drop_cols = ['Raw1', 'nan']
 
-        df = pd.read_csv(filepath, names=columns, header=21, encoding='latin-1')
+        df = pd.read_csv(filepath, names=columns, header=13, encoding='latin-1') # will be 21 depending on the file format
         df = df.drop(columns=drop_cols)
         return df
 
