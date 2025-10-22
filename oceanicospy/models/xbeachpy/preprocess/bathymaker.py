@@ -37,6 +37,8 @@ class BathyMaker():
         self.init = init
         self.filename = filename
 
+    # We can 
+
     def xyz2asc(self,dx_bat,nodata_value):
         """
         Converts bathymetry data from XYZ format to ESRI ASCII Grid format.
