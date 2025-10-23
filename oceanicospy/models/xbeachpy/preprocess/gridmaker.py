@@ -82,63 +82,128 @@ class GridMaker():
         }
 
         return grid_dict
+    
+    def _build_variable_dx_axis(self, start: float, end: float, dx_spec):
+        """
+        Build a 1D axis with flexible dx definition.
+        
+        Parameters
+        ----------
+        start : float
+            Starting coordinate (usually 0).
+        end : float
+            End coordinate (self.end_x_point).
+        dx_spec : float | list | dict | callable | int
+            Defines how dx varies along x:
+            - float/int: uniform grid spacing.
+            - list/tuple/ndarray: sequence of dx values (positive), summed until >= end-start.
+            - dict: {x_to: dx}, uses each dx up to coordinate x_to.
+            - callable: function f(x_current) -> dx.
+            - int: number of cells, uniform spacing between start and end.
+        
+        Returns
+        -------
+        np.ndarray
+            Array of x coordinates.
+        """
+        x = [start]
+        if isinstance(dx_spec, (int, float)):  # uniform or n cells
+            if isinstance(dx_spec, int) and dx_spec > 1 and (end - start) > 0:
+                dx = (end - start) / dx_spec
+                return np.linspace(start, end, dx_spec + 1)
+            else:
+                return np.arange(start, end, dx_spec)
+
+        elif isinstance(dx_spec, (list, tuple, np.ndarray)):  # explicit list of dx
+            for dx in dx_spec:
+                if x[-1] + dx >= end: 
+                    break
+                x.append(x[-1] + dx)
+            if x[-1] < end:
+                x.append(end)
+            return np.array(x)
+
+        elif isinstance(dx_spec, dict):  # piecewise constant {x_to: dx}
+            for x_to, dx in sorted(dx_spec.items()):
+                while x[-1] + dx < min(x_to, end):
+                    x.append(x[-1] + dx)
+                if x[-1] >= end:
+                    break
+            if x[-1] < end:
+                x.append(end)
+            return np.array(x)
+
+        elif callable(dx_spec):  # dx = f(x) ---> To check later applicability
+            while x[-1] < end:
+                dx = dx_spec(x[-1])
+                if dx <= 0:
+                    raise ValueError("dx function returned non-positive value.")
+                next_x = x[-1] + dx
+                x.append(min(next_x, end))
+                if x[-1] >= end:
+                    break
+            return np.array(x)
+
+        else:
+            raise TypeError("dx_spec must be float, list, dict, callable, or int.")
+
 
     def rectangular(self,source_file=None):
-    """
-    Generate rectangular grid files for XBeachpy preprocessing.
-    Parameters
-    ----------
-    source_file : str, optional
-        Name of an input file used to derive the grid extent. If None, a 1-D profile
-        (x only) is created using self.end_x_point and self.dx. If the filename ends
-        with '.shp', the first shape in the shapefile located at
-        self.init.dict_folders['input'] + source_file is read and its bounding box
-        (min_lon, min_lat, max_lon, max_lat) is used to build a 2-D regular grid.
-        Default is None.
-    Returns
-    -------
-    grid_dict : dict
-        Dictionary describing the generated grid and file names:
-        - 'xfilepath' (str): filename written for x coordinates (always 'x_profile.grd').
-        - 'yfilepath' (str): filename written for y coordinates (always 'y_profile.grd').
-        - 'meshes_x' (int): number of mesh intervals in the x direction (nx - 1).
-        - 'meshes_y' (int): number of mesh intervals in the y direction (ny - 1),
-          set to 0 for 1-D profiles.
-    Notes
-    -----
-    - Behavior depends on self.init.dict_ini_data['dims']:
-      - If dims == '1', the method creates x_points = arange(0, self.end_x_point, self.dx)
-        and y_points filled with zeros (same shape as x_points). meshes_y is set to 0.
-      - Otherwise, if self.dy is None it will be set to self.dx. For a shapefile input,
-        the method reads the first shape, extracts its bounding box and constructs
-        x and y 1-D arrays from min to max with steps self.dx and self.dy, then
-        constructs 2-D grids with numpy.meshgrid. The coordinates are shifted so the
-        grid origin corresponds to the minimum bounding-box coordinates (values
-        written to files are relative to that origin).
-    - The method writes the x and y grids to files named 'x_profile.grd' and
-      'y_profile.grd' inside the folder specified by self.init.dict_folders['run']
-      using numpy.savetxt with format '%.4f'.
-    Raises
-    ------
-    AttributeError
-        If required attributes on self are missing (for example: init, init.dict_ini_data,
-        init.dict_folders, dx, end_x_point).
-    FileNotFoundError
-        If a shapefile is requested (source_file ends with '.shp') but the file is not
-        found at the expected location (self.init.dict_folders['input'] + source_file).
-    ValueError
-        If provided dx or dy are non-positive or otherwise invalid for numpy.arange.
-    Examples
-    --------
-    # 1-D profile (uses self.end_x_point and self.dx):
-    >>> grid = obj.rectangular()
-    # 2-D grid from a shapefile (input folder path must be correct and shapefile present):
-    >>> grid = obj.rectangular('domain.shp')
-    """
-    
+        """
+        Generate rectangular grid files for XBeachpy preprocessing.
+        Parameters
+        ----------
+        source_file : str, optional
+            Name of an input file used to derive the grid extent. If None, a 1-D profile
+            (x only) is created using self.end_x_point and self.dx. If the filename ends
+            with '.shp', the first shape in the shapefile located at
+            self.init.dict_folders['input'] + source_file is read and its bounding box
+            (min_lon, min_lat, max_lon, max_lat) is used to build a 2-D regular grid.
+            Default is None.
+        Returns
+        -------
+        grid_dict : dict
+            Dictionary describing the generated grid and file names:
+            - 'xfilepath' (str): filename written for x coordinates (always 'x_profile.grd').
+            - 'yfilepath' (str): filename written for y coordinates (always 'y_profile.grd').
+            - 'meshes_x' (int): number of mesh intervals in the x direction (nx - 1).
+            - 'meshes_y' (int): number of mesh intervals in the y direction (ny - 1),
+            set to 0 for 1-D profiles.
+        Notes
+        -----
+        - Behavior depends on self.init.dict_ini_data['dims']:
+        - If dims == '1', the method creates x_points = arange(0, self.end_x_point, self.dx)
+            and y_points filled with zeros (same shape as x_points). meshes_y is set to 0.
+        - Otherwise, if self.dy is None it will be set to self.dx. For a shapefile input,
+            the method reads the first shape, extracts its bounding box and constructs
+            x and y 1-D arrays from min to max with steps self.dx and self.dy, then
+            constructs 2-D grids with numpy.meshgrid. The coordinates are shifted so the
+            grid origin corresponds to the minimum bounding-box coordinates (values
+            written to files are relative to that origin).
+        - The method writes the x and y grids to files named 'x_profile.grd' and
+        'y_profile.grd' inside the folder specified by self.init.dict_folders['run']
+        using numpy.savetxt with format '%.4f'.
+        Raises
+        ------
+        AttributeError
+            If required attributes on self are missing (for example: init, init.dict_ini_data,
+            init.dict_folders, dx, end_x_point).
+        FileNotFoundError
+            If a shapefile is requested (source_file ends with '.shp') but the file is not
+            found at the expected location (self.init.dict_folders['input'] + source_file).
+        ValueError
+            If provided dx or dy are non-positive or otherwise invalid for numpy.arange.
+        Examples
+        --------
+        # 1-D profile (uses self.end_x_point and self.dx):
+        >>> grid = obj.rectangular()
+        # 2-D grid from a shapefile (input folder path must be correct and shapefile present):
+        >>> grid = obj.rectangular('domain.shp')
+        """
+        
         if self.init.dict_ini_data['dims']=='1':
             start_x_point = 0
-            x_points = np.arange(start_x_point,self.end_x_point,self.dx)
+            x_points = self._build_variable_dx_axis(start_x_point, self.end_x_point, self.dx)
             y_points = np.zeros(x_points.shape)
             grid_dict={'xfilepath':'x_profile.grd','yfilepath':'y_profile.grd',
                         'meshes_x':len(x_points)-1,'meshes_y':0}
