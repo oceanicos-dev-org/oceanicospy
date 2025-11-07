@@ -5,6 +5,8 @@ from .. import utils
 import shapefile
 import os
 import shutil
+import geopandas as gpd
+from shapely.geometry import Point
 
 class GridMaker():
     """
@@ -83,58 +85,84 @@ class GridMaker():
 
         return grid_dict
 
-    def rectangular(self,source_file=None):
-    """
-    Generate rectangular grid files for XBeachpy preprocessing.
-    Parameters
-    ----------
-    source_file : str, optional
-        Name of an input file used to derive the grid extent. If None, a 1-D profile
-        (x only) is created using self.end_x_point and self.dx. If the filename ends
-        with '.shp', the first shape in the shapefile located at
-        self.init.dict_folders['input'] + source_file is read and its bounding box
-        (min_lon, min_lat, max_lon, max_lat) is used to build a 2-D regular grid.
-        Default is None.
-    Returns
-    -------
-    grid_dict : dict
-        Dictionary describing the generated grid and file names:
-        - 'xfilepath' (str): filename written for x coordinates (always 'x_profile.grd').
-        - 'yfilepath' (str): filename written for y coordinates (always 'y_profile.grd').
-        - 'meshes_x' (int): number of mesh intervals in the x direction (nx - 1).
-        - 'meshes_y' (int): number of mesh intervals in the y direction (ny - 1),
-          set to 0 for 1-D profiles.
-    Notes
-    -----
-    - Behavior depends on self.init.dict_ini_data['dims']:
-      - If dims == '1', the method creates x_points = arange(0, self.end_x_point, self.dx)
-        and y_points filled with zeros (same shape as x_points). meshes_y is set to 0.
-      - Otherwise, if self.dy is None it will be set to self.dx. For a shapefile input,
-        the method reads the first shape, extracts its bounding box and constructs
-        x and y 1-D arrays from min to max with steps self.dx and self.dy, then
-        constructs 2-D grids with numpy.meshgrid. The coordinates are shifted so the
-        grid origin corresponds to the minimum bounding-box coordinates (values
-        written to files are relative to that origin).
-    - The method writes the x and y grids to files named 'x_profile.grd' and
-      'y_profile.grd' inside the folder specified by self.init.dict_folders['run']
-      using numpy.savetxt with format '%.4f'.
-    Raises
-    ------
-    AttributeError
-        If required attributes on self are missing (for example: init, init.dict_ini_data,
-        init.dict_folders, dx, end_x_point).
-    FileNotFoundError
-        If a shapefile is requested (source_file ends with '.shp') but the file is not
-        found at the expected location (self.init.dict_folders['input'] + source_file).
-    ValueError
-        If provided dx or dy are non-positive or otherwise invalid for numpy.arange.
-    Examples
-    --------
-    # 1-D profile (uses self.end_x_point and self.dx):
-    >>> grid = obj.rectangular()
-    # 2-D grid from a shapefile (input folder path must be correct and shapefile present):
-    >>> grid = obj.rectangular('domain.shp')
-    """
+    def cumulative_distance(self,dist_segments, up_to_segment):
+        """
+        Compute the cumulative x and y distance up to a given segment (inclusive).
+
+        Args:
+            dist_segments (dict): Dictionary of segments like
+                {'1': {'x': 840, 'y': 760}, '2': {'x': 50, 'y': 70}, ...}
+            up_to_segment (str or int): Segment key to compute distance up to.
+
+        Returns:
+            dict: {'x': total_x, 'y': total_y}
+        """
+        total_x = 0
+        total_y = 0
+        
+        # Ensure numeric ordering of segment keys
+        for key in sorted(dist_segments.keys(), key=lambda k: int(k)):
+            total_x += dist_segments[key]['x']
+            total_y += dist_segments[key]['y']
+            
+            if str(key) == str(up_to_segment):
+                break
+
+        return {'x': total_x, 'y': total_y}
+
+
+    def rectangular(self,source_file=None,xvar=False,start_segments=None,dist_segments=None,delta_segments=None):
+        """
+        Generate rectangular grid files for XBeachpy preprocessing.
+        Parameters
+        ----------
+        source_file : str, optional
+            Name of an input file used to derive the grid extent. If None, a 1-D profile
+            (x only) is created using self.end_x_point and self.dx. If the filename ends
+            with '.shp', the first shape in the shapefile located at
+            self.init.dict_folders['input'] + source_file is read and its bounding box
+            (min_lon, min_lat, max_lon, max_lat) is used to build a 2-D regular grid.
+            Default is None.
+        Returns
+        -------
+        grid_dict : dict
+            Dictionary describing the generated grid and file names:
+            - 'xfilepath' (str): filename written for x coordinates (always 'x_profile.grd').
+            - 'yfilepath' (str): filename written for y coordinates (always 'y_profile.grd').
+            - 'meshes_x' (int): number of mesh intervals in the x direction (nx - 1).
+            - 'meshes_y' (int): number of mesh intervals in the y direction (ny - 1),
+            set to 0 for 1-D profiles.
+        Notes
+        -----
+        - Behavior depends on self.init.dict_ini_data['dims']:
+        - If dims == '1', the method creates x_points = arange(0, self.end_x_point, self.dx)
+            and y_points filled with zeros (same shape as x_points). meshes_y is set to 0.
+        - Otherwise, if self.dy is None it will be set to self.dx. For a shapefile input,
+            the method reads the first shape, extracts its bounding box and constructs
+            x and y 1-D arrays from min to max with steps self.dx and self.dy, then
+            constructs 2-D grids with numpy.meshgrid. The coordinates are shifted so the
+            grid origin corresponds to the minimum bounding-box coordinates (values
+            written to files are relative to that origin).
+        - The method writes the x and y grids to files named 'x_profile.grd' and
+        'y_profile.grd' inside the folder specified by self.init.dict_folders['run']
+        using numpy.savetxt with format '%.4f'.
+        Raises
+        ------
+        AttributeError
+            If required attributes on self are missing (for example: init, init.dict_ini_data,
+            init.dict_folders, dx, end_x_point).
+        FileNotFoundError
+            If a shapefile is requested (source_file ends with '.shp') but the file is not
+            found at the expected location (self.init.dict_folders['input'] + source_file).
+        ValueError
+            If provided dx or dy are non-positive or otherwise invalid for numpy.arange.
+        Examples
+        --------
+        # 1-D profile (uses self.end_x_point and self.dx):
+        >>> grid = obj.rectangular()
+        # 2-D grid from a shapefile (input folder path must be correct and shapefile present):
+        >>> grid = obj.rectangular('domain.shp')
+        """
     
         if self.init.dict_ini_data['dims']=='1':
             start_x_point = 0
@@ -153,10 +181,53 @@ class GridMaker():
                 # Extract the bounding box (min_lon, min_lat, max_lon, max_lat)
                 min_lon, min_lat, max_lon, max_lat = shape.bbox
 
-                x_points_flat = np.arange(min_lon,max_lon+self.dx,self.dx)-min_lon
-                y_points_flat = np.arange(min_lat,max_lat+self.dy,self.dy)-min_lat
+                # x = -160 #m
+                # x = -110
 
-                x_points,y_points = np.meshgrid(x_points_flat,y_points_flat)
+                if not xvar:
+                    x_points_flat = np.arange(min_lon,max_lon+self.dx,self.dx)-min_lon
+                    y_points_flat = np.arange(min_lat,max_lat+self.dy,self.dy)-min_lat
+                else:
+                    list_x_points_flat_all = []
+                    list_y_points_flat_all = []
+                    for segment in start_segments.keys():
+                        if segment == '1':
+                            x_points_flat_seg = np.arange(min_lon,(min_lon+dist_segments[segment]['x'])+delta_segments[segment]['x'],delta_segments[segment]['x'])-min_lon
+                            y_points_flat_seg = np.arange(min_lat,(min_lat+dist_segments[segment]['y'])+delta_segments[segment]['y'],delta_segments[segment]['y'])-min_lat
+
+                        else:
+                            cum_distance_x = self.cumulative_distance(dist_segments,segment)['x']
+                            cum_distance_y = self.cumulative_distance(dist_segments,segment)['y']
+
+                            cum_distance_x_minus1 = self.cumulative_distance(dist_segments,f'{int(segment)-1}')['x']
+                            cum_distance_y_minus1 = self.cumulative_distance(dist_segments,f'{int(segment)-1}')['y']
+
+                            x_points_flat_seg = np.arange(min_lon + cum_distance_x_minus1 + delta_segments[segment]['x'],
+                                                min_lon + cum_distance_x + delta_segments[segment]['x'],
+                                                delta_segments[segment]['x'])-min_lon
+                            y_points_flat_seg = np.arange(min_lat + cum_distance_y_minus1 + delta_segments[segment]['y'],
+                                                min_lat + cum_distance_y + delta_segments[segment]['y'],
+                                                delta_segments[segment]['y'])-min_lat
+
+                        list_x_points_flat_all.append(x_points_flat_seg)
+                        list_y_points_flat_all.append(y_points_flat_seg)
+
+                    x_points_flat = np.concatenate(list_x_points_flat_all)
+                    y_points_flat = np.concatenate(list_y_points_flat_all)
+
+                    x_points,y_points = np.meshgrid(x_points_flat,y_points_flat)
+
+                    geometry = [Point(x, y) for x, y in zip(x_points.flatten()+min_lon, y_points.flatten()+min_lat)]
+
+                    x_points_flat_to_shp = x_points_flat + min_lon
+                    y_points_flat_to_shp = y_points_flat + min_lat
+
+                    gdf = gpd.GeoDataFrame(pd.DataFrame({'x': x_points.flatten()+min_lon, 'y': y_points.flatten()+min_lat}),
+                                        geometry=geometry,
+                                        crs="EPSG:9377")
+
+                    gdf.to_file(f'{self.init.dict_folders["input"]}XBeach_domain_points_grid.shp')
+
 
             grid_dict={'xfilepath':'x_profile.grd','yfilepath':'y_profile.grd',
                         'meshes_x':len(x_points[0,:])-1,'meshes_y':len(y_points[:,0])-1}

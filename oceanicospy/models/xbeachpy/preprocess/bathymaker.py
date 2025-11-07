@@ -37,9 +37,7 @@ class BathyMaker():
         self.init = init
         self.filename = filename
 
-    # We can 
-
-    def xyz2asc(self,dx_bat,nodata_value):
+    def xyz2asc(self):
         """
         Converts bathymetry data from XYZ format to ESRI ASCII Grid format.
 
@@ -52,44 +50,22 @@ class BathyMaker():
         bathy_xyz_path = glob.glob(f'{self.init.dict_folders["input"]}bathy*.csv')[0]
         ascfile = f'{self.init.dict_folders["run"]}{self.filename}.dep'
         # ascfile_ne_ones = f'{self.dict_folders["run"]}ne_layer_ones.dep'
-        # np.set_printoptions(formatter={'float_kind':'{:f}'.format})
-        df_xyz = pd.read_csv(bathy_xyz_path)
+        df_xyz = pd.read_csv(bathy_xyz_path,header=0,names=['X','Y','Z'])
+        df_xyz = df_xyz.drop_duplicates()
 
-        # compute the grid extents
-        min_x,max_x = df_xyz['Y'].min(), df_xyz['Y'].max() # It depends and how the columns are originally named*
-        min_y,max_y = df_xyz['X'].min(), df_xyz['X'].max()
+        grid = df_xyz.pivot_table(index="Y", columns="X", values="Z")
+        grid = grid.sort_index(ascending=False)
+        grid = grid[grid.columns[::-1]]
 
-        # Compute the number of grid cells
-        nx_bathy = int((min_x - max_x)/dx_bat)
-        ny_bathy = int((max_y - min_y)/dx_bat)
+        np.savetxt(ascfile,grid.values,fmt='%8.3f', delimiter=' ')
 
-        # Generate grid with data
-        xi, yi = np.mgrid[min_x:max_x:(nx_bathy+1)*1j, min_y:max_y:(ny_bathy+1)*1j]  # Caution
-
-        # Interpolate bathymetry. Method can be 'linear', 'nearest' or 'cubic'
-        zi = griddata((df_xyz['Y'], df_xyz['X']), df_xyz['Z'], (xi, yi), method='linear')
-
-        # Change Nans for values
-        zi[np.isnan(zi)] = nodata_value
-
-        zi[zi < -10] = -1
-
-        # Flip array in the left/right direction
-        zi = np.fliplr(zi)
-        # # Transpose it
-        zi = zi.T
-
-        # Write ESRI ASCII Grid file
-        zi_str = np.where(zi == nodata_value, str(nodata_value), np.round(zi, 3))
-        np.savetxt(ascfile, zi_str, fmt='%8.6s', delimiter=' ')
 
         # zi_ones=np.ones(zi.shape)
         # np.savetxt(ascfile_ne_ones, zi_ones, fmt='%8s', delimiter=' ')
 
         print('File %s saved successfuly.' % ascfile)
 
-        dict_asc={'depfilepath':f'{self.filename}.dep','x_bot':nx_bathy,'y_bot':ny_bathy,'spacing_x':dx_bat,'spacing_y':dx_bat,
-                  'nelayerfilepath':'ne_layer.dep'}
+        dict_asc={'depfilepath':f'{self.filename}.dep','nelayerfilepath':'ne_layer.dep'}
         for key,value in dict_asc.items():
             dict_asc[key]=str(value)
         return dict_asc
