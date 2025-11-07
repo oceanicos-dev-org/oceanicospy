@@ -43,6 +43,7 @@ class SwanOutputReader:
             names=self._COLS, dtype=self._DTYPE, engine="python"
         )
         # Parse index to datetime, drop invalid, ensure tz-naive, sort
+        print(df)
         idx = pd.to_datetime(df.index, format='%Y%m%d.%H%M%S', errors='coerce')
         mask = ~idx.isna()
         df = df.loc[mask].copy()
@@ -53,7 +54,7 @@ class SwanOutputReader:
         """Split an interleaved series into n_points sub-series by striding."""
         return {i + 1: series.iloc[i::self.n_points] for i in range(self.n_points)}
 
-    def load_domain(self,
+    def load_time_series(self,
                     domain_dir: Path,
                     start: pd.Timestamp,
                     end: pd.Timestamp
@@ -96,3 +97,6 @@ class SwanOutputReader:
             raise ValueError("None of the requested columns were found in the cropped DataFrame.")
 
         return out, time_index
+
+
+

@@ -25,7 +25,7 @@ class WaterLevelForcing():
         UHSLCDownloader_obj.download()
         print('\t UHSLC water level data was successfully downloaded')
     
-    def _UHSLC_csv_to_ascii(self,UHSLC_filename,ascii_filename,detrend_wl=True):
+    def _UHSLC_csv_to_ascii(self,UHSLC_filename,ascii_filename,detrend_wl=False):
         self.dataset = pd.read_csv(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{UHSLC_filename}',header=None,
                                             names=["year","month","day","hour","depth[mm]"],sep=',')
                                     

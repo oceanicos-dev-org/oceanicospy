@@ -102,6 +102,12 @@ class WindForcing():
         v10 = ds_era5.variables['v10'].values
         u10 = ds_era5.variables['u10'].values
         time = pd.to_datetime(ds_era5.variables['valid_time'].values)
+        mask = (time >= self.init.ini_date) & (time <= self.init.end_date)
+        if not mask.any():
+            raise ValueError(f"No ERA5 data within start/end dates: {self.init.ini_date} - {self.init.end_date}")
+        time = time[mask]
+        u10 = u10[mask]
+        v10 = v10[mask]
         time_to_write = (time - time[0]).total_seconds().astype(int).tolist()
 
         wind_speed = np.sqrt((v10**2)+(u10**2))

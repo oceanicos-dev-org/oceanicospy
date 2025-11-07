@@ -25,6 +25,7 @@ class BoundaryConditions():
         self.init = init
         self.input_filename=input_filename
         self.dict_bounds_params=dict_bounds_params
+        print('*** Initializing Boundary Conditions ***')
 
     def create_filelist(self):
         """
@@ -134,6 +135,14 @@ class BoundaryConditions():
     
     def spectra_from_swan(self,input_filename):
         self.dataset = read_swan(f'{self.init.dict_folders["input"]}{input_filename}.out')
+
+        # restrict dataset to requested time window
+        start = np.datetime64(self.init.ini_date)
+        end = np.datetime64(self.init.end_date)
+        if "time" not in self.dataset.coords:
+            raise RuntimeError("Loaded dataset has no 'time' coordinate to filter on.")
+        self.dataset = self.dataset.sel(time=slice(start, end))
+
         self.data_spectra = self.dataset.efth
         self.number_spectrum_locs = len(self.dataset.site)
         if self.number_spectrum_locs == 1:
@@ -167,7 +176,12 @@ class BoundaryConditions():
                                                     next_line = forigin.readline()
                                                     if ((f"{lon}" in next_line) and (f"{lat:.5f}" in next_line)):
                                                         line = line + next_line
-                                            fdest.write(line)                 
+                                            if 'number of directions' in line:
+                                                for _ in range(36):
+                                                    next_line = forigin.readline()
+                                                    new_line = str(float(next_line) + 270) + '\n'
+                                                    line = line + new_line
+                                            fdest.write(line)
                                         else:
                                             break
 
@@ -184,7 +198,7 @@ class BoundaryConditions():
             floc.write('LOCLIST'+'\n')
             for idx_site in range(self.number_spectrum_locs):
                 if idx_site >= 3:
-                    floc.write(f"0 {1100-(idx_site-3)*100} 'bounds_conds/filelist_{idx_site}.txt' \n")
+                    floc.write(f"0 {-idx_site*100} 'bounds_conds/filelist_{idx_site}.txt' \n")
         floc.close()
 
         return self.dict_boundaries
@@ -199,5 +213,7 @@ class BoundaryConditions():
         """
         for param in dict_boundaries:
             dict_boundaries[param]=str(dict_boundaries[param])
+        
+        print (f'\n*** Adding/Editing boundary information for domain in configuration file ***\n')
         utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',dict_boundaries)
 
