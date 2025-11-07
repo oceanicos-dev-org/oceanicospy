@@ -20,41 +20,27 @@ class XYZFileData:
     points: pd.DataFrame
     spacing_estimate: float
     priority_rank: int
+    crs: str = "EPSG:32617"  # <-- NEW: default to UTM17N for your case
     coverage_polygon: Optional[gpd.GeoDataFrame] = None
 
     def compute_coverage_polygon(
         self,
         xy_round_decimals: int = 6,
-        grid_factor: float = 1.0,     # Cell size ≈ grid_factor * spacing
-        buffer_factor: float = 0.75,  # Buffer radius ≈ buffer_factor * spacing
-        closing_factor: float = 1.0,  # Morphological closing multiplier (0 = off)
+        grid_factor: float = 1.0,
+        buffer_factor: float = 0.75,
+        closing_factor: float = 1.0,
         simplify_tolerance: float = 0.0
     ) -> None:
         """
         Fast 'concave-like' envelope via grid snapping + buffered-union of unique cells.
-        Keeps coverage of all XYZ points, adds concavity, and stays fast.
-
-        Parameters
-        ----------
-        xy_round_decimals : int
-            Decimal rounding to dampen slivers; does not drive concavity here.
-        grid_factor : float
-            Grid cell ~ grid_factor * spacing_estimate. Smaller => more detail (slower).
-        buffer_factor : float
-            Buffer radius ~ buffer_factor * spacing_estimate. Larger => smoother / fatter edge.
-        closing_factor : float
-            If > 0, apply morphological closing with radius = closing_factor * buffer_radius.
-        simplify_tolerance : float
-            Optional simplification (preserve_topology=True). 0 means no simplify.
+        Operates in the CRS units of self.crs (meters if UTM).
         """
-        # --- 1) Defensive spacing estimate (fast, robust) ---
         df = self.points.copy()
         df["x"] = df["x"].round(xy_round_decimals)
         df["y"] = df["y"].round(xy_round_decimals)
 
         spacing = float(self.spacing_estimate) if np.isfinite(self.spacing_estimate) else 0.0
         if spacing <= 0.0:
-            # Fallback: quick NN estimate on a small sample
             if len(df) >= 2:
                 sample = df.sample(n=min(2000, len(df)), random_state=42)
                 coords = sample[["x", "y"]].to_numpy()
@@ -62,51 +48,38 @@ class XYZFileData:
                 dists, _ = tree.query(coords, k=2)
                 spacing = float(np.median(dists[:, 1]))
             else:
-                spacing = 1e-4  # tiny fallback
+                spacing = 1e-4
 
         cell = max(1e-12, grid_factor * spacing)
         buf_r = max(1e-12, buffer_factor * spacing)
         close_r = buf_r * closing_factor if closing_factor > 0 else 0.0
 
-        # Degenerate cases: too few points
         if len(df) == 0:
-            # Empty polygon
-            self.coverage_polygon = gpd.GeoDataFrame({"geometry": []}, crs="EPSG:4326")
+            self.coverage_polygon = gpd.GeoDataFrame({"geometry": []}, crs=self.crs)  # <-- CHANGED
             return
         if len(df) == 1:
-            # Single point -> small disk so it “existe”
             p = Point(float(df["x"].iloc[0]), float(df["y"].iloc[0])).buffer(max(1e-12, 0.5 * buffer_factor * max(spacing, 1e-4)))
-            self.coverage_polygon = gpd.GeoDataFrame({"geometry": [p]}, crs="EPSG:4326")
+            self.coverage_polygon = gpd.GeoDataFrame({"geometry": [p]}, crs=self.crs)  # <-- CHANGED
             return
 
-        # --- 2) Grid snapping: keep only one representative per occupied cell ---
-        # This collapses many points into few unique cells -> huge speed-up for union
         gx = np.floor((df["x"].to_numpy() / cell)).astype(np.int64)
         gy = np.floor((df["y"].to_numpy() / cell)).astype(np.int64)
-        # Unique cell indices
         uniq, idx = np.unique(np.stack([gx, gy], axis=1), axis=0, return_index=True)
-        # Representative coordinates = cell center (or pick original pts[idx])
-        # Using cell center produces slightly cleaner edges:
+
         cx = (uniq[:, 0].astype(float) + 0.5) * cell
         cy = (uniq[:, 1].astype(float) + 0.5) * cell
 
-        # --- 3) Buffered union on the reduced set of points ---
-        # Very few buffers -> very fast unary_union
         geoms = [Point(xy).buffer(buf_r) for xy in zip(cx, cy)]
         merged = unary_union(geoms)
 
-        # --- 4) Optional morphological closing to fill pinholes / connect tiny gaps ---
         if closing_factor > 0.0:
             merged = merged.buffer(close_r).buffer(-close_r)
 
         poly = merged
-
-        # --- 5) Optional simplify (keep topology) ---
         if simplify_tolerance and simplify_tolerance > 0.0:
             poly = poly.simplify(simplify_tolerance, preserve_topology=True)
 
-        # --- 6) Output as GeoDataFrame with CRS ---
-        self.coverage_polygon = gpd.GeoDataFrame({"geometry": [poly]}, crs="EPSG:4326")
+        self.coverage_polygon = gpd.GeoDataFrame({"geometry": [poly]}, crs=self.crs)
 
 
 
@@ -123,16 +96,15 @@ class XYZMerger:
         bathy_positive: bool = True,
         manual_priority: Optional[List[str]] = None,
         xy_round_decimals: int = 3,
-        sample_size_spacing: int = 5000
-    ):
-        # Base configuration
+        sample_size_spacing: int = 5000,
+        crs_epsg: str = "EPSG:32617" ):
+
         self.input_dir = input_dir
         self.bathy_positive_z = bathy_positive
         self.manual_priority = manual_priority
         self.xy_round_decimals = xy_round_decimals
         self.sample_size_spacing = sample_size_spacing
-
-        # Internal state
+        self.crs = crs_epsg  # <-- NEW
         self._file_list: List[str] = []
         self._tiles: List[XYZFileData] = []
         self._merged_df: Optional[pd.DataFrame] = None
@@ -168,9 +140,13 @@ class XYZMerger:
         self._tiles = []
         for path, df in tiles_raw:
             spacing_val = self._estimate_spacing(df)
-            # Temporary priority (will be assigned later)
-            dummy_priority = -1
-            tile = XYZFileData(path=path, points=df, spacing_estimate=spacing_val, priority_rank=dummy_priority)
+            tile = XYZFileData(
+                path=path,
+                points=df,
+                spacing_estimate=spacing_val,
+                priority_rank=-1,
+                crs=self.crs 
+            )
             tile.compute_coverage_polygon(self.xy_round_decimals)
             self._tiles.append(tile)
 
@@ -277,20 +253,18 @@ class XYZMerger:
             gdf_points = gpd.GeoDataFrame(
                 tile.points.copy(),
                 geometry=gpd.points_from_xy(tile.points["x"], tile.points["y"]),
-                crs="EPSG:4326"
+                crs=self.crs 
             )
             tile_points_gdf_list.append(gdf_points)
-            tile_polygons_list.append(tile.coverage_polygon)
+            tile_polygons_list.append(tile.coverage_polygon)  # already in self.crs
 
         trimmed_points_list: List[pd.DataFrame] = []
 
         for i, _ in enumerate(self._tiles):
             if i == 0:
-                # Highest priority: keep all points
                 trimmed_points_list.append(tile_points_gdf_list[i][["x", "y", "z"]].copy())
                 continue
 
-            # Concatenate all higher-priority polygons
             higher_priority_polys = pd.concat([tile_polygons_list[j] for j in range(i)], ignore_index=True)
 
             if higher_priority_polys.empty:
