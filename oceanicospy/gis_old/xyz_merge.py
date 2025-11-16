@@ -20,7 +20,7 @@ class XYZFileData:
     points: pd.DataFrame
     spacing_estimate: float
     priority_rank: int
-    crs: str = "EPSG:32617"  # <-- NEW: default to UTM17N for your case
+    crs: str = "EPSG:32617"  
     coverage_polygon: Optional[gpd.GeoDataFrame] = None
 
     def compute_coverage_polygon(
