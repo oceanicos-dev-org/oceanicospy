@@ -6,6 +6,9 @@ import shapefile
 import os
 import shutil
 from pathlib import Path
+import geopandas as gpd
+from shapely.geometry import Point
+
 
 class GridMaker():
     """
@@ -167,6 +170,33 @@ class GridMaker():
             "meshes_x": meshes_x,
             "meshes_y": meshes_y
         }
+    
+    def cumulative_distance(self, dist_segments, up_to_segment):
+        """
+        Compute cumulative distances in x and y up to a given segment (inclusive).
+
+        Parameters
+        ----------
+        dist_segments : dict
+            Dictionary like {'1': {'x': 840, 'y': 760}, '2': {'x': 50, 'y': 70}, ...}
+        up_to_segment : str or int
+            Segment key up to which distances are accumulated.
+
+        Returns
+        -------
+        dict
+            Dictionary with keys 'x' and 'y' for cumulative distances.
+        """
+        total_x = 0.0
+        total_y = 0.0
+
+        for key in sorted(dist_segments.keys(), key=lambda k: int(k)):
+            total_x += dist_segments[key]['x']
+            total_y += dist_segments[key]['y']
+            if str(key) == str(up_to_segment):
+                break
+
+        return {"x": total_x, "y": total_y}
     
     def _build_variable_dx_axis(
         self,
@@ -413,7 +443,15 @@ class GridMaker():
             )
 
 
-    def rectangular(self, source_file=None):
+    def rectangular(
+        self,
+        source_file=None,
+        xvar=False,
+        start_segments=None,
+        dist_segments=None,
+        delta_segments=None
+    ):
+
         """
         Generate rectangular grid files for XBeachpy preprocessing.
 
@@ -586,6 +624,7 @@ class GridMaker():
             # 2D CASE: rectangular grid from shapefile
             # --------------------------------------------------------------
             if self.dy is None:
+                # If dy is not provided, use the same spacing as dx
                 self.dy = self.dx
 
             if source_file is None or not source_file.endswith('.shp'):
@@ -593,23 +632,114 @@ class GridMaker():
                     "For dims != '1' you must provide a shapefile source_file ending with '.shp'."
                 )
 
+            # Read shapefile and get bounding box
             sf = shapefile.Reader(f'{self.init.dict_folders["input"]}{source_file}')
             shape = sf.shapes()[0]
 
             # Extract the bounding box (min_lon, min_lat, max_lon, max_lat)
             min_lon, min_lat, max_lon, max_lat = shape.bbox
 
-            x_points_flat = np.arange(min_lon, max_lon + self.dx, self.dx) - min_lon
-            y_points_flat = np.arange(min_lat, max_lat + self.dy, self.dy) - min_lat
+            # ------------------------------------------------------------------
+            # Branch 1: uniform grid (current behaviour)
+            # ------------------------------------------------------------------
+            if not xvar:
+                # Build uniform grid in x and y directions
+                x_points_flat = np.arange(min_lon, max_lon + self.dx, self.dx) - min_lon
+                y_points_flat = np.arange(min_lat, max_lat + self.dy, self.dy) - min_lat
 
-            x_points, y_points = np.meshgrid(x_points_flat, y_points_flat)
+                x_points, y_points = np.meshgrid(x_points_flat, y_points_flat)
 
+            # ------------------------------------------------------------------
+            # Branch 2: segmented, variable-resolution grid (Franklin's logic)
+            # ------------------------------------------------------------------
+            else:
+                # Basic validation of required dictionaries
+                if start_segments is None or dist_segments is None or delta_segments is None:
+                    raise ValueError(
+                        "When xvar=True you must provide 'start_segments', "
+                        "'dist_segments' and 'delta_segments' dictionaries."
+                    )
+
+                list_x_points_flat_all = []
+                list_y_points_flat_all = []
+
+                # Loop through all segments defined in start_segments dictionary
+                for segment in start_segments.keys():
+                    if str(segment) == "1":
+                        # First segment starts at the minimum bounding-box coordinates
+                        x_points_flat_seg = np.arange(
+                            min_lon,
+                            (min_lon + dist_segments[segment]["x"]) + delta_segments[segment]["x"],
+                            delta_segments[segment]["x"],
+                        ) - min_lon
+
+                        y_points_flat_seg = np.arange(
+                            min_lat,
+                            (min_lat + dist_segments[segment]["y"]) + delta_segments[segment]["y"],
+                            delta_segments[segment]["y"],
+                        ) - min_lat
+                    else:
+                        # For subsequent segments use cumulative distances
+                        cum_distance = self.cumulative_distance(dist_segments, segment)
+                        cum_distance_prev = self.cumulative_distance(
+                            dist_segments, f"{int(segment) - 1}"
+                        )
+
+                        x_points_flat_seg = np.arange(
+                            min_lon + cum_distance_prev["x"] + delta_segments[segment]["x"],
+                            min_lon + cum_distance["x"] + delta_segments[segment]["x"],
+                            delta_segments[segment]["x"],
+                        ) - min_lon
+
+                        y_points_flat_seg = np.arange(
+                            min_lat + cum_distance_prev["y"] + delta_segments[segment]["y"],
+                            min_lat + cum_distance["y"] + delta_segments[segment]["y"],
+                            delta_segments[segment]["y"],
+                        ) - min_lat
+
+                    list_x_points_flat_all.append(x_points_flat_seg)
+                    list_y_points_flat_all.append(y_points_flat_seg)
+
+                # Concatenate all segments to obtain the full grid axes
+                x_points_flat = np.concatenate(list_x_points_flat_all)
+                y_points_flat = np.concatenate(list_y_points_flat_all)
+
+                # Build 2D grid
+                x_points, y_points = np.meshgrid(x_points_flat, y_points_flat)
+
+                # --------------------------------------------------------------
+                # Optional: export grid nodes as a shapefile for inspection
+                # --------------------------------------------------------------
+                geometry = [
+                    Point(x_val + min_lon, y_val + min_lat)
+                    for x_val, y_val in zip(x_points.flatten(), y_points.flatten())
+                ]
+
+                gdf = gpd.GeoDataFrame(
+                    pd.DataFrame(
+                        {
+                            "x": x_points.flatten() + min_lon,
+                            "y": y_points.flatten() + min_lat,
+                        }
+                    ),
+                    geometry=geometry,
+                    crs="EPSG:9377",
+                )
+
+                gdf.to_file(
+                    f'{self.init.dict_folders["input"]}XBeach_domain_points_grid.shp'
+                )
+
+            # ------------------------------------------------------------------
+            # Common part: build grid_dict for both uniform and variable grids
+            # ------------------------------------------------------------------
             grid_dict = {
                 'xfilepath': 'x_profile.grd',
                 'yfilepath': 'y_profile.grd',
                 'meshes_x': len(x_points[0, :]) - 1,
                 'meshes_y': len(y_points[:, 0]) - 1
             }
+
 
         # ----------------------------------------------------------------------
         # Write grids to disk
