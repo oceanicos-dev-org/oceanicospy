@@ -1,4 +1,4 @@
-from wavespectra import read_swan
+#from wavespectra import read_swan
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -7,9 +7,8 @@ import re
 import os
 
 from .. import utils
-from ..init_setup import InitialSetup
 
-class BoundaryConditions(InitialSetup):
+class BoundaryConditions():
     """
     Class representing the boundary conditions for a simulation.
     Args:
@@ -22,10 +21,11 @@ class BoundaryConditions(InitialSetup):
     Methods:
         fill_boundaries_section(*args): Fill the boundaries section of the simulation.
     """
-    def __init__ (self,input_filename=None,dict_bounds_params=None,*args,**kwargs):
-        super().__init__(*args,**kwargs)
+    def __init__ (self,init,input_filename=None,dict_bounds_params=None):
+        self.init = init
         self.input_filename=input_filename
         self.dict_bounds_params=dict_bounds_params
+        print('*** Initializing Boundary Conditions ***')
 
     def create_filelist(self):
         """
@@ -44,19 +44,6 @@ class BoundaryConditions(InitialSetup):
         dict_boundaries={'bcfilepath':'filelist.txt'}
         return dict_boundaries
 
-    def create_water_level(self):
-        """
-        Create a water level.
-        Returns:
-            None
-        """
-        time_s = pd.date_range(self.ini_date,self.end_date, freq='1h')
-
-        with open(f'{self.dict_folders["run"]}wlevel.txt','w') as f:
-            for idx_time in range(len(time_s)):
-                f.write(f'3600 0.1\n')
-        f.close()
-    
     def jonswap_from_swan(self,input_filename):
         """
         Get the wave parameters from SWAN.
@@ -147,32 +134,39 @@ class BoundaryConditions(InitialSetup):
         return self.dict_boundaries
     
     def spectra_from_swan(self,input_filename):
-        self.dataset = read_swan(f'{self.dict_folders["input"]}{input_filename}.out')
-        print(self.dataset)
-        print(self.dataset.lon.ndim)
+        self.dataset = read_swan(f'{self.init.dict_folders["input"]}{input_filename}.out')
+
+        # restrict dataset to requested time window
+        start = np.datetime64(self.init.ini_date)
+        end = np.datetime64(self.init.end_date)
+        if "time" not in self.dataset.coords:
+            raise RuntimeError("Loaded dataset has no 'time' coordinate to filter on.")
+        self.dataset = self.dataset.sel(time=slice(start, end))
+
         self.data_spectra = self.dataset.efth
-        self.lon = self.dataset.lon.values
-        self.lat = self.dataset.lat.values
-        self.number_spectrum_locs = self.lon.size * self.lat.size
+        self.number_spectrum_locs = len(self.dataset.site)
         if self.number_spectrum_locs == 1:
             print('delete the loclist section and the nspectrumloc command')
         else:
-            self.dict_boundaries={'w_bc_version': 3,'n_spectrum_loc': self.number_spectrum_locs,'bcfilepath':'loclist.txt'}
+            self.dict_boundaries={'w_bc_version': 3,'n_spectrum_loc': self.number_spectrum_locs-3,'bcfilepath':'bounds_conds/loclist.txt'}
 
-        print()
+        for idx_site in range(self.number_spectrum_locs):
 
-        self.points = []
-        self.point = 0
-        for idx_lat,lati in enumerate(self.lat):
-            for idx_lon,long in enumerate(self.lon):
-                with open(f"{self.dict_folders['run']}filelist_{self.point}.txt", "w") as filelist:
+            if idx_site >= 3:
+                bounds_conds_path = os.path.join(self.init.dict_folders["run"], "bounds_conds",f'point_{idx_site}')
+                if not os.path.exists(bounds_conds_path):
+                    os.makedirs(bounds_conds_path)
+
+                lon = self.dataset.lon[idx_site]
+                lat = self.dataset.lat[idx_site]
+                with open(f"{self.init.dict_folders['run']}bounds_conds/filelist_{idx_site}.txt", "w") as filelist:
                     filelist.write('FILELIST'+'\n')
                     for idx_time,time in enumerate(self.dataset.time):
-                        self.spec_to_save = np.matrix(self.data_spectra[idx_time,idx_lat,idx_lon,:,:])/0.1e-5
+                        self.spec_to_save = np.matrix(self.data_spectra[idx_time,idx_site,:,:])/0.1e-5
                         time_specific = pd.to_datetime(self.dataset.time.values[idx_time])
                         time_to_write = time_specific.strftime('%Y%m%d.%H%M%S')
-                        with open(f"{self.dict_folders['input']}SpecSWAN.out") as forigin:
-                                with open(f"{self.dict_folders['run']}spec_{idx_time}_{idx_lat}_{idx_lon}.sp2", "w") as fdest:
+                        with open(f"{self.init.dict_folders['input']}SpecSWAN.out") as forigin:
+                                with open(f"{self.init.dict_folders['run']}bounds_conds/point_{idx_site}/spec_time{idx_time}_point{idx_site}.sp2", "w") as fdest:
                                     while True:
                                         line = forigin.readline()
                                         if 'date and time' not in line:
@@ -180,9 +174,14 @@ class BoundaryConditions(InitialSetup):
                                                 line = re.sub(r'\d+',"1", line)
                                                 for _ in range(self.number_spectrum_locs):
                                                     next_line = forigin.readline()
-                                                    if ((f"{long}" in next_line) and (f"{lati:.5f}" in next_line)):
+                                                    if ((f"{lon}" in next_line) and (f"{lat:.5f}" in next_line)):
                                                         line = line + next_line
-                                            fdest.write(line)                 
+                                            if 'number of directions' in line:
+                                                for _ in range(36):
+                                                    next_line = forigin.readline()
+                                                    new_line = str(float(next_line) + 270) + '\n'
+                                                    line = line + new_line
+                                            fdest.write(line)
                                         else:
                                             break
 
@@ -192,16 +191,15 @@ class BoundaryConditions(InitialSetup):
                                     for line in self.spec_to_save:
                                         np.savetxt(fdest, line, fmt='%5.0f')
                                 fdest.close()
-                        filelist.write(f'3600 0.2 spec_{idx_time}_{idx_lat}_{idx_lon}.sp2 \n')
+                        filelist.write(f"3600 0.2 'bounds_conds/point_{idx_site}/spec_time{idx_time}_point{idx_site}.sp2' \n")
                 filelist.close()
-                self.points.append(self.point)
-                self.point += 1
 
-        # with open(f"{self.dict_folders['run']}loclist.txt", "w") as floc:
-        #     floc.write('LOCLIST'+'\n')
-        #     for point in self.points:
-        #         floc.write(f'0 0 filelist_{point}.txt' + '\n')
-        # floc.close()
+        with open(f"{self.init.dict_folders['run']}bounds_conds/loclist.txt", "w") as floc:
+            floc.write('LOCLIST'+'\n')
+            for idx_site in range(self.number_spectrum_locs):
+                if idx_site >= 3:
+                    floc.write(f"0 {-idx_site*100} 'bounds_conds/filelist_{idx_site}.txt' \n")
+        floc.close()
 
         return self.dict_boundaries
 
@@ -215,5 +213,6 @@ class BoundaryConditions(InitialSetup):
         """
         for param in dict_boundaries:
             dict_boundaries[param]=str(dict_boundaries[param])
-        utils.fill_files(f'{self.dict_folders["run"]}params.txt',dict_boundaries)
-
+        
+        print (f'\n*** Adding/Editing boundary information for domain in configuration file ***\n')
+        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',dict_boundaries)

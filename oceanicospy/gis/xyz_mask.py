@@ -30,21 +30,31 @@ class XYZRectangleMask:
     """
     Apply axis-aligned rectangular masks to XYZ data.
 
-    This class supports in-memory DataFrame filtering and can be used
-    by higher-level modules such as xyz_tile or xyz_merger.
+    This class supports two modes:
+    - mode="keep"    → keep points INSIDE rectangles (default)
+    - mode="exclude" → remove points INSIDE rectangles
     """
 
-    def __init__(self, rectangles: List[AxisAlignedRectangle]):
+    def __init__(self, rectangles: List[AxisAlignedRectangle], mode: str = "keep"):
         """
         Parameters
         ----------
         rectangles : list of AxisAlignedRectangle
-            Rectangles representing exclusion zones.
+            Rectangles representing inclusion/exclusion zones.
+
+        mode : {"keep", "exclude"}, optional
+            Determines how rectangles are applied:
+            * "keep"    → retain only points inside rectangles.
+            * "exclude" → remove points inside rectangles.
         """
+        if mode not in ("keep", "exclude"):
+            raise ValueError("mode must be either 'keep' or 'exclude'")
+
         self.rectangles = rectangles
+        self.mode = mode
 
     @classmethod
-    def from_dict(cls, rectangles_dict: Dict) -> "XYZRectangleMask":
+    def from_dict(cls, rectangles_dict: Dict, mode: str = "keep") -> "XYZRectangleMask":
         """
         Build a mask from a dictionary specification.
 
@@ -76,11 +86,17 @@ class XYZRectangleMask:
             )
             rectangles.append(rect)
 
-        return cls(rectangles)
+        return cls(rectangles, mode=mode)
 
     def filter_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        Remove points inside any rectangle.
+        Filter points according to the selected mode.
+
+        mode="keep":
+            Keep only points INSIDE any rectangle.
+        
+        mode="exclude":
+            Remove points INSIDE any rectangle.
 
         Parameters
         ----------
@@ -90,12 +106,17 @@ class XYZRectangleMask:
         Returns
         -------
         pandas.DataFrame
-            Filtered DataFrame containing only points outside all rectangles.
+            Filtered DataFrame.
         """
         mask = []
+
         for _, row in df.iterrows():
             x, y = row["x"], row["y"]
             inside_any = any(rect.contains(x, y) for rect in self.rectangles)
-            mask.append(not inside_any)
+
+            if self.mode == "keep":
+                mask.append(inside_any)       # Keep inside, drop outside
+            else:  # mode == "exclude"
+                mask.append(not inside_any)   # Keep outside, drop inside
 
         return df.loc[mask].reset_index(drop=True)

@@ -3,8 +3,10 @@ import numpy as np
 import glob as glob
 from datetime import datetime
 from scipy.signal import detrend
+import os
 
 from .. import utils
+from ....retrievals import *
 
 class WaterLevelForcing():
     def __init__ (self,init,wl_info=None,input_filename=None,use_link=None):
@@ -22,7 +24,7 @@ class WaterLevelForcing():
         UHSLCDownloader_obj.download()
         print('\t UHSLC water level data was successfully downloaded')
     
-    def _UHSLC_csv_to_ascii(self,UHSLC_filename,ascii_filename,detrend_wl=True):
+    def _UHSLC_csv_to_ascii(self,UHSLC_filename,ascii_filename,detrend_wl=False):
         self.dataset = pd.read_csv(f'{self.init.dict_folders["input"]}{UHSLC_filename}',header=None,
                                             names=["year","month","day","hour","depth[mm]"],sep=',')
                                     
@@ -42,7 +44,7 @@ class WaterLevelForcing():
         
         time_to_write = (self.dataset_filtered.index - self.dataset_filtered.index[0]).total_seconds().astype(int).tolist()
 
-        df_to_save=pd.DataFrame({'Time':time_to_write,'water level[m]':self.dataset_filtered['depth[m]_detrended']},
+        df_to_save=pd.DataFrame({'Time':time_to_write,'water level[m]':self.dataset_filtered['depth[m]']},
                                 index=self.dataset_filtered.index)
 
         df_to_save.to_csv(f'{self.init.dict_folders["input"]}{ascii_filename}',sep=' ',header=False,index=False)
@@ -83,16 +85,16 @@ class WaterLevelForcing():
                     )
             else:
                 if utils.verify_link(ascii_filename, run_domain_dir):
-                    utils.remove_link(ascii_filename, run_domain_dir)
+                    utils.delete_link(ascii_filename, run_domain_dir)
                 os.system(
                     f'cp {origin_domain_dir}/{ascii_filename} '
                     f'{run_domain_dir}'
                 )
 
         if self.wl_info!=None:
-            self.wl_info.update({"sealevelfilepath":f"../input/{ascii_filename}"})
+            self.wl_info.update({"sealevelfilepath":f"{ascii_filename}"})
         else:
-            self.wl_info = {"sealevelfilepath":f"../input/{ascii_filename}"}
+            self.wl_info = {"sealevelfilepath":f"{ascii_filename}"}
         return self.wl_info
 
 
@@ -159,5 +161,5 @@ class WaterLevelForcing():
         Returns:
             None
         """
-        print (f'\n*** Adding/Editing winds information for domain in configuration file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',dict_sealevel_data)        
+        print (f'\n*** Adding/Editing water level information for domain in configuration file ***\n')
+        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',dict_sealevel_data)  

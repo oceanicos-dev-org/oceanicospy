@@ -102,21 +102,32 @@ class WindForcing():
         v10 = ds_era5.variables['v10'].values
         u10 = ds_era5.variables['u10'].values
         time = pd.to_datetime(ds_era5.variables['valid_time'].values)
+        mask = (time >= self.init.ini_date) & (time <= self.init.end_date)
+        if not mask.any():
+            raise ValueError(f"No ERA5 data within start/end dates: {self.init.ini_date} - {self.init.end_date}")
+        time = time[mask]
+        u10 = u10[mask]
+        v10 = v10[mask]
         time_to_write = (time - time[0]).total_seconds().astype(int).tolist()
 
         wind_speed = np.sqrt((v10**2)+(u10**2))
-        wind_dir_cart = np.degrees(np.arctan2(u10,v10))
-        wind_dir_naut = (90-wind_dir_cart)%360
+        wind_dir_cart = np.degrees(np.arctan2(v10,u10))
+        wind_dir_naut = (270-wind_dir_cart)%360 # this needs to be verified somehow
 
-        print(wind_speed.shape)
-        print(wind_dir_naut.shape)
         if lon_target == None and lat_target == None:
             df_to_save=pd.DataFrame({'Time':time_to_write,'Vel':wind_speed[:,-1,0],'Dir':wind_dir_naut[:,-1,0]},index=time)
         else:
-            pass
+            lats = ds_era5.variables['latitude'].values
+            lons = ds_era5.variables['longitude'].values
+            if lon_target <0:
+                lon_target += 360
+            lat_idx = np.argmin(np.abs(lats - lat_target))
+            lon_idx = np.argmin(np.abs(lons - lon_target))
+            df_to_save=pd.DataFrame({'Time':time_to_write,'Vel':wind_speed[:,lat_idx,lon_idx],'Dir':wind_dir_naut[:,lat_idx,lon_idx]},index=time)
+
         df_to_save.to_csv(f'{self.init.dict_folders["input"]}{ascii_filename}',sep=' ',header=False,index=False)
 
-        self.wind_params=dict(windfilepath=f'../input/{ascii_filename}')
+        self.wind_params=dict(windfilepath=f'{ascii_filename}')
         return self.wind_params
 
     def write_ERA5_ascii(self,era5_filename,ascii_filename,lon_target=None,lat_target=None):
@@ -155,13 +166,13 @@ class WindForcing():
                     )
             else:
                 if utils.verify_link(ascii_filename, run_domain_dir):
-                    utils.remove_link(ascii_filename, run_domain_dir)
+                    utils.delete_link(ascii_filename, run_domain_dir)
                 os.system(
                     f'cp {origin_domain_dir}/{ascii_filename} '
                     f'{run_domain_dir}'
                 )
         if self.wind_info!=None:
-            self.wind_info.update({"windfilepath":"../input/winds.wnd"})
+            self.wind_info.update({"windfilepath":"winds.wnd"})
             return self.wind_info
         return None
 
@@ -201,14 +212,14 @@ class WindForcing():
                     )
             else:
                 if utils.verify_link(ascii_filename, run_domain_dir):
-                    utils.remove_link(ascii_filename, run_domain_dir)
+                    utils.delete_link(ascii_filename, run_domain_dir)
                 os.system(
                     f'cp {origin_domain_dir}/{ascii_filename} '
                     f'{run_domain_dir}'
                 )
         
         if self.wind_info!=None:
-            self.wind_info.update({"windfilepath":"../input/winds.wnd"})
+            self.wind_info.update({"windfilepath":"winds.wnd"})
             return self.wind_info
         return None
 
