@@ -16,20 +16,18 @@ class CaseRunner():
         print(f'\n*** Initializing Case Runner ***\n')  
 
     def write_output_file(self,filename=None):
-        self.dict_comp_data['outputfilepath']=f'../output/{filename}'
+        self.dict_comp_data['outputfilepath']=f'{filename}'
     
-    def write_output_points(self,list_y_points):
-        dat_files=glob.glob(f'{self.dict_folders["input"]}*.dat')
-        bathy_file = [file for file in dat_files if 'Perfil_0' in file][0]
-        data=np.loadtxt(bathy_file)
-        x=data[:,0]
-        h=data[:,3][::-1]
-        f=scipy.interpolate.interp1d(h,x)
-        x_points=f(list_y_points)
-
-        self.dict_comp_data['lenpoints']=len(list_y_points)+1
-        string_points=[f'{round(x,2)} 0\n' for x in x_points]
-        self.dict_comp_data['string_points']=''.join(string_points)
+    def write_output_points(self,filename=None):
+        point_files = glob.glob(f'{self.init.dict_folders["input"]}{filename}') # the file has to be named with the word points
+        if point_files:
+            date_points = np.loadtxt(point_files)
+            self.dict_comp_data['len_points']=len(date_points)
+            string_points=[f'{round(x,2)} 0\n' for x in date_points]
+            self.dict_comp_data['string_points']=''.join(string_points)
+        else:
+            self.dict_comp_data['len_points'] = 0
+            self.dict_comp_data['string_points'] = '' 
 
     def select_global_vars(self,list_vars=[]):
         if list_vars:
@@ -45,7 +43,8 @@ class CaseRunner():
             self.dict_comp_data['len_point_vars'] = len(list_vars)
             self.dict_comp_data['point_vars'] = string_list_vars
         else:
-            string_list_vars = ''
+            self.dict_comp_data['len_point_vars'] = 0
+            self.dict_comp_data['point_vars'] = ''
 
     def fill_slurm_file(self):
         """
@@ -58,9 +57,9 @@ class CaseRunner():
         shutil.copy(f'{self.data_dir}/model_config_templates/xbeach/launcher_xbeach_base.slurm',
                     f'{self.init.dict_folders["run"]}launcher_xbeach.slurm')
         
-        launch_dict = dict(output_path_case=f'{self.init.dict_folders["run"]}',case_name='May2023')
+        launch_dict = dict(output_path_case=f'{self.init.dict_folders["output"]}',case_name='May2023')
 
-        utils.fill_files(f'{self.init.dict_folders["run"]}launcher_xbeach.slurm', launch_dict)
+        utils.fill_files(f'{self.init.dict_folders["run"]}launcher_xbeach.slurm', launch_dict,strict=False)
 
 
     def fill_computation_section(self): 
