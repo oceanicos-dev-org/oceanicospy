@@ -442,313 +442,348 @@ class GridMaker():
                 "callable, or an int > 0 when used with as_n_cells=True."
             )
 
-
     def rectangular(
-        self,
-        source_file=None,
-        xvar=False,
-        start_segments=None,
-        dist_segments=None,
-        delta_segments=None
-    ):
+            self,
+            source_file=None,
+            xvar=False,
+            start_segments=None,
+            dist_segments=None,
+            delta_segments=None
+        ):
 
-        """
-        Generate rectangular grid files for XBeachpy preprocessing.
+            """
+            Generate rectangular grid files for XBeachpy preprocessing.
 
-        Parameters
-        ----------
-        source_file : str, optional
-            Name of an input file used to derive the grid extent. If None and
-            dims == '1', a 1-D profile is created using self.end_x_point and
-            self.dx (or using planar coordinates start_xy / end_xy if provided).
-            If the filename ends with '.shp', the first shape in the shapefile
-            located at self.init.dict_folders['input'] + source_file is read and
-            its bounding box (min_lon, min_lat, max_lon, max_lat) is used to
-            build a 2-D regular grid. Default is None.
+            Parameters
+            ----------
+            source_file : str, optional
+                Name of an input file used to derive the grid extent. If None and
+                dims == '1', a 1-D profile is created using self.end_x_point and
+                self.dx (or using planar coordinates start_xy / end_xy if provided).
+                If the filename ends with '.shp', the first shape in the shapefile
+                located at self.init.dict_folders['input'] + source_file is read and
+                its bounding box (min_lon, min_lat, max_lon, max_lat) is used to
+                construct a 2-D rectangular grid.
 
-        Returns
-        -------
-        grid_dict : dict
-            Dictionary describing the generated grid and file names:
-            - 'xfilepath' (str): filename written for x coordinates
-            (always 'x_profile.grd').
-            - 'yfilepath' (str): filename written for y coordinates
-            (always 'y_profile.grd').
-            - 'meshes_x' (int): number of mesh intervals in the x direction (nx - 1).
-            - 'meshes_y' (int): number of mesh intervals in the y direction (ny - 1),
-            set to 0 for 1-D profiles.
+            xvar : bool, optional
+                If False (default), builds a uniform grid in both x and y directions.
+                If True, a segmented, variable-resolution grid is built based on
+                start_segments, dist_segments and delta_segments (2-D case only).
 
-        Notes
-        -----
-        - Behavior depends on self.init.dict_ini_data['dims']:
-        * If dims == '1':
-            - If start_xy and end_xy are provided, a 1-D profile is generated
-            along the straight line between these planar coordinates. The
-            profile length may be internally extended so that the last cell
-            size matches the last spacing (depending on the auto_extend flag
-            used in _build_variable_dx_axis). The updated final coordinate is
-            stored in self.final_end_xy.
-            - If start_xy and end_xy are not provided, the method creates a 1-D
-            profile in x only, starting from x = 0, using self.end_x_point
-            and self.dx via _build_variable_dx_axis. The actual final length
-            may differ from the nominal end_x_point if auto_extend=True.
-            - In both cases, meshes_y is set to 0 and y_points are zero or
-            follow the planar line definition.
+            start_segments : dict, optional
+                Dictionary containing starting positions for each segment when
+                xvar=True (2-D variable resolution case).
 
-        * If dims != '1':
-            - If self.dy is None it will be set to self.dx.
-            - For a shapefile input, the method reads the first shape, extracts
-            its bounding box and constructs x and y 1-D arrays from min to max
-            with steps self.dx and self.dy, then constructs 2-D grids with
-            numpy.meshgrid. The coordinates are shifted so the grid origin
-            corresponds to the minimum bounding-box coordinates (values
-            written to files are relative to that origin).
+            dist_segments : dict, optional
+                Dictionary containing segment lengths for each segment when
+                xvar=True (2-D variable resolution case).
 
-        Raises
-        ------
-        AttributeError
-            If required attributes on self are missing (for example: init,
-            init.dict_ini_data, init.dict_folders, dx, end_x_point).
-        FileNotFoundError
-            If a shapefile is requested (source_file ends with '.shp') but the
-            file is not found at the expected location
-            (self.init.dict_folders['input'] + source_file).
-        ValueError
-            - If provided dx or dy are non-positive or otherwise invalid for
-            grid generation.
-            - If dims == '1' and neither end_x_point nor planar coordinates
-            (start_xy, end_xy) are properly defined.
+            delta_segments : dict, optional
+                Dictionary containing grid spacing (dx) for each segment when
+                xvar=True (2-D variable resolution case).
 
-        Examples
-        --------
-        # 1-D profile in x only (uses self.end_x_point and self.dx):
-        >>> grid = obj.rectangular()
+            Returns
+            -------
+            dict or None
+                If dims == '1', returns a dictionary with:
+                    - 'xfilepath' : 'x_profile.grd'
+                    - 'yfilepath' : 'y_profile.grd'
+                    - 'meshes_x'  : number of cells in x-direction
+                    - 'meshes_y'  : 0
 
-        # 1-D profile along a planar line:
-        >>> obj.start_xy = (1000.0, 2000.0)
-        >>> obj.end_xy = (1105.0, 2000.0)
-        >>> grid = obj.rectangular()
+                If dims != '1', returns a dictionary with:
+                    - 'xfilepath' : 'x.grd'
+                    - 'yfilepath' : 'y.grd'
+                    - 'meshes_x'  : number of cells in x-direction
+                    - 'meshes_y'  : number of cells in y-direction
 
-        # 2-D grid from a shapefile:
-        >>> grid = obj.rectangular('domain.shp')
-        """
+                Returns None if fewer than two '.grd' files are found in
+                self.init.dict_folders['input'] when trying to import an
+                existing grid.
 
-        # ----------------------------------------------------------------------
-        # Determine behavior flags for spacing generation.
-        # If these attributes are not defined in __init__, default values
-        # are used to keep backward compatibility.
-        # ----------------------------------------------------------------------
-        auto_extend_flag = getattr(self, "auto_extend", True)   
-        as_n_cells_flag = getattr(self, "as_n_cells", False)    
+            Notes
+            -----
+            * If dims == '1':
+                - With planar coordinates (start_xy and end_xy not None), a 1-D
+                profile is created along the straight line between these points.
+                In this modified version, the files written are:
+                    x_profile.grd: local 1-D coordinate s = [0, dx, 2dx, ...]
+                    y_profile.grd: 0 for all points
+                The actual planar end-point reached after applying dx and
+                auto_extend/as_n_cells is stored in self.final_end_xy.
+                - Without planar coordinates, a 1-D profile in x-only is created
+                using end_x_point and dx. x_profile.grd contains the 1-D
+                coordinate (starting at 0), and y_profile.grd is all zeros.
 
-        if self.init.dict_ini_data['dims'] == '1':
-            # --------------------------------------------------------------
-            # 1D CASE: profile grid
-            # --------------------------------------------------------------
+            * If dims != '1':
+                - If self.dy is None it will be set to self.dx.
+                - For a shapefile input, the method reads the first shape, extracts
+                its bounding box and constructs x and y 1-D arrays which are
+                then meshed into a rectangular grid.
 
-            # If planar coordinates are available, create a profile along
-            # the straight line between start_xy and end_xy.
-            if self.start_xy is not None and self.end_xy is not None:
-                # Vector between planar points
-                vec = self.end_xy - self.start_xy
-                L_geom = float(np.linalg.norm(vec))
+            Raises
+            ------
+            AttributeError
+                If required attributes on self are missing (for example: init,
+                init.dict_ini_data, init.dict_folders, dx, end_x_point).
+            FileNotFoundError
+                If a shapefile is requested (source_file ends with '.shp') but the
+                file is not found at the expected location
+                (self.init.dict_folders['input'] + source_file).
+            ValueError
+                - If provided dx or dy are non-positive or otherwise invalid for
+                grid generation.
+                - If dims == '1' and neither end_x_point nor planar coordinates
+                (start_xy, end_xy) are provided.
+                - If dims != '1' and source_file is missing or does not end with
+                '.shp' when a 2-D grid is requested.
 
-                if L_geom == 0.0:
-                    raise ValueError(
-                        "start_xy and end_xy are identical; profile length is zero."
-                    )
+            Examples
+            --------
+            # 1-D profile in x only (uses self.end_x_point and self.dx):
+            >>> grid = obj.rectangular()
 
-                # If the user did not explicitly set end_x_point, use the
-                # geometric length between the two points as nominal length.
-                if self.end_x_point is None:
-                    self.end_x_point = L_geom
+            # 1-D profile along a planar line:
+            >>> obj.start_xy = (1000.0, 2000.0)
+            >>> obj.end_xy = (1105.0, 2000.0)
+            >>> grid = obj.rectangular()
 
-                # Build the "s-axis" (curvilinear coordinate along the profile)
-                # using the flexible dx specification. This call may internally
-                # extend the profile length so that the last cell matches the
-                # last spacing used.
-                s_axis = self._build_variable_dx_axis(
-                    start=0.0,
-                    end=self.end_x_point,
-                    dx_spec=self.dx,
-                    auto_extend=auto_extend_flag,  
-                    as_n_cells=as_n_cells_flag     
-                )
+            # 2-D grid from a shapefile:
+            >>> grid = obj.rectangular('domain.shp')
+            """
 
-                # Unit direction vector along the original line
-                direction = vec / L_geom
+            # ----------------------------------------------------------------------
+            # Step 0: check for pre-existing .grd files in the input folder.
+            # If found (at least 2 files), standardize their names and return
+            # them directly, assuming the user provides an existing grid.
+            # ----------------------------------------------------------------------
+            input_folder = self.init.dict_folders["input"]
 
-                # Project s_axis along the planar line
-                x_points = self.start_xy[0] + direction[0] * s_axis
-                y_points = self.start_xy[1] + direction[1] * s_axis
+            grd_files = glob.glob(os.path.join(input_folder, "*.grd"))
 
-                # Store the adjusted final coordinate (may differ from end_xy)
-                self.final_end_xy = (float(x_points[-1]), float(y_points[-1]))
+            if len(grd_files) >= 2:
+                # Rename or move files to standard names 'x.grd' and 'y.grd'
+                xfile = None
+                yfile = None
 
-                grid_dict = {
-                    'xfilepath': 'x_profile.grd',
-                    'yfilepath': 'y_profile.grd',
-                    'meshes_x': len(x_points) - 1,
-                    'meshes_y': 0
+                for f in grd_files:
+                    fname = os.path.basename(f).lower()
+                    if 'x' in fname and xfile is None:
+                        xfile = f
+                    elif 'y' in fname and yfile is None:
+                        yfile = f
+
+                # Fall back if xfile or yfile could not be clearly inferred
+                if xfile is None:
+                    xfile = grd_files[0]
+                if yfile is None:
+                    yfile = grd_files[1]
+
+                # Standardized filenames inside the run folder
+                x_out = os.path.join(input_folder, "x.grd")
+                y_out = os.path.join(input_folder, "y.grd")
+
+                shutil.copy(xfile, x_out)
+                shutil.copy(yfile, y_out)
+
+                return {
+                    'xfilepath': 'x.grd',
+                    'yfilepath': 'y.grd',
+                    'meshes_x': None,
+                    'meshes_y': None
                 }
 
-            else:
-                # 1-D profile in x only (no planar coordinates)
-                if self.end_x_point is None:
-                    raise ValueError(
-                        "For 1D grid without planar coordinates you must provide 'end_x_point'."
-                    )
+            # ----------------------------------------------------------------------
+            # Step 1: no pre-existing grid – build a new one.
+            # ----------------------------------------------------------------------
 
-                start_x_point = 0.0
+            # Get backward-compatible flags from self; if not present, defaults
+            # are used to keep backward compatibility.
+            auto_extend_flag = getattr(self, "auto_extend", True)
+            as_n_cells_flag = getattr(self, "as_n_cells", False)
 
-                # Use the flexible axis builder, which may adjust the final
-                # coordinate depending on auto_extend and as_n_cells.
-                x_points = self._build_variable_dx_axis(
-                    start=start_x_point,
-                    end=self.end_x_point,
-                    dx_spec=self.dx,
-                    auto_extend=auto_extend_flag,   
-                    as_n_cells=as_n_cells_flag      
-                )
-                y_points = np.zeros_like(x_points)
+            if self.init.dict_ini_data['dims'] == '1':
+                # --------------------------------------------------------------
+                # 1D CASE: profile grid
+                # --------------------------------------------------------------
 
-                grid_dict = {
-                    'xfilepath': 'x_profile.grd',
-                    'yfilepath': 'y_profile.grd',
-                    'meshes_x': len(x_points) - 1,
-                    'meshes_y': 0
-                }
+                # If planar coordinates are available, create a profile along
+                # the straight line between start_xy and end_xy.
+                if self.start_xy is not None and self.end_xy is not None:
+                    # Vector between planar points
+                    vec = self.end_xy - self.start_xy
+                    L_geom = float(np.linalg.norm(vec))
 
-        else:
-            # --------------------------------------------------------------
-            # 2D CASE: rectangular grid from shapefile
-            # --------------------------------------------------------------
-            if self.dy is None:
-                # If dy is not provided, use the same spacing as dx
-                self.dy = self.dx
-
-            if source_file is None or not source_file.endswith('.shp'):
-                raise ValueError(
-                    "For dims != '1' you must provide a shapefile source_file ending with '.shp'."
-                )
-
-            # Read shapefile and get bounding box
-            sf = shapefile.Reader(f'{self.init.dict_folders["input"]}{source_file}')
-            shape = sf.shapes()[0]
-
-            # Extract the bounding box (min_lon, min_lat, max_lon, max_lat)
-            min_lon, min_lat, max_lon, max_lat = shape.bbox
-
-            # ------------------------------------------------------------------
-            # Branch 1: uniform grid (current behaviour)
-            # ------------------------------------------------------------------
-            if not xvar:
-                # Build uniform grid in x and y directions
-                x_points_flat = np.arange(min_lon, max_lon + self.dx, self.dx) - min_lon
-                y_points_flat = np.arange(min_lat, max_lat + self.dy, self.dy) - min_lat
-
-                x_points, y_points = np.meshgrid(x_points_flat, y_points_flat)
-
-            # ------------------------------------------------------------------
-            # Branch 2: segmented, variable-resolution grid (Franklin's logic)
-            # ------------------------------------------------------------------
-            else:
-                # Basic validation of required dictionaries
-                if start_segments is None or dist_segments is None or delta_segments is None:
-                    raise ValueError(
-                        "When xvar=True you must provide 'start_segments', "
-                        "'dist_segments' and 'delta_segments' dictionaries."
-                    )
-
-                list_x_points_flat_all = []
-                list_y_points_flat_all = []
-
-                # Loop through all segments defined in start_segments dictionary
-                for segment in start_segments.keys():
-                    if str(segment) == "1":
-                        # First segment starts at the minimum bounding-box coordinates
-                        x_points_flat_seg = np.arange(
-                            min_lon,
-                            (min_lon + dist_segments[segment]["x"]) + delta_segments[segment]["x"],
-                            delta_segments[segment]["x"],
-                        ) - min_lon
-
-                        y_points_flat_seg = np.arange(
-                            min_lat,
-                            (min_lat + dist_segments[segment]["y"]) + delta_segments[segment]["y"],
-                            delta_segments[segment]["y"],
-                        ) - min_lat
-                    else:
-                        # For subsequent segments use cumulative distances
-                        cum_distance = self.cumulative_distance(dist_segments, segment)
-                        cum_distance_prev = self.cumulative_distance(
-                            dist_segments, f"{int(segment) - 1}"
+                    if L_geom == 0.0:
+                        raise ValueError(
+                            "start_xy and end_xy are identical; profile length is zero."
                         )
 
-                        x_points_flat_seg = np.arange(
-                            min_lon + cum_distance_prev["x"] + delta_segments[segment]["x"],
-                            min_lon + cum_distance["x"] + delta_segments[segment]["x"],
-                            delta_segments[segment]["x"],
-                        ) - min_lon
+                    # If the user did not explicitly set end_x_point, use the
+                    # geometric length between the two points as nominal length.
+                    if self.end_x_point is None:
+                        self.end_x_point = L_geom
 
-                        y_points_flat_seg = np.arange(
-                            min_lat + cum_distance_prev["y"] + delta_segments[segment]["y"],
-                            min_lat + cum_distance["y"] + delta_segments[segment]["y"],
-                            delta_segments[segment]["y"],
-                        ) - min_lat
+                    # Build the "s-axis" (curvilinear coordinate along the profile)
+                    # using the flexible dx specification. This call may internally
+                    # extend the profile length so that the last cell matches the
+                    # last spacing used.
+                    s_axis = self._build_variable_dx_axis(
+                        start=0.0,
+                        end=self.end_x_point,
+                        dx_spec=self.dx,
+                        auto_extend=auto_extend_flag,
+                        as_n_cells=as_n_cells_flag
+                    )
 
-                    list_x_points_flat_all.append(x_points_flat_seg)
-                    list_y_points_flat_all.append(y_points_flat_seg)
+                    # Unit direction vector along the original line
+                    direction = vec / L_geom
 
-                # Concatenate all segments to obtain the full grid axes
-                x_points_flat = np.concatenate(list_x_points_flat_all)
-                y_points_flat = np.concatenate(list_y_points_flat_all)
+                    # Use s_axis as local 1D coordinate: x = [0, dx, 2dx, ...], y = 0
+                    # So x_profile.grd contains a single column [0, dx, 2dx, ...]
+                    # and y_profile.grd contains zeros, regardless of the planar
+                    # orientation of the original line.
+                    x_points = s_axis.copy()
+                    y_points = np.zeros_like(s_axis)
 
-                # Build 2D grid
-                x_points, y_points = np.meshgrid(x_points_flat, y_points_flat)
+                    # Store the adjusted final coordinate in planar coordinates
+                    # (this may differ from the originally provided end_xy if
+                    # auto_extend/as_n_cells modified the effective length).
+                    self.final_end_xy = (
+                        float(self.start_xy[0] + direction[0] * s_axis[-1]),
+                        float(self.start_xy[1] + direction[1] * s_axis[-1]),
+                    )
 
+                    grid_dict = {
+                        'xfilepath': 'x_profile.grd',
+                        'yfilepath': 'y_profile.grd',
+                        'meshes_x': len(x_points) - 1,
+                        'meshes_y': 0
+                    }
+
+                else:
+                    # 1-D profile in x only (no planar coordinates)
+                    if self.end_x_point is None:
+                        raise ValueError(
+                            "For 1D grid without planar coordinates you must provide 'end_x_point'."
+                        )
+
+                    start_x_point = 0.0
+
+                    # Use the flexible axis builder, which may adjust the final
+                    # coordinate depending on auto_extend and as_n_cells.
+                    x_points = self._build_variable_dx_axis(
+                        start=start_x_point,
+                        end=self.end_x_point,
+                        dx_spec=self.dx,
+                        auto_extend=auto_extend_flag,
+                        as_n_cells=as_n_cells_flag
+                    )
+                    y_points = np.zeros_like(x_points)
+
+                    grid_dict = {
+                        'xfilepath': 'x_profile.grd',
+                        'yfilepath': 'y_profile.grd',
+                        'meshes_x': len(x_points) - 1,
+                        'meshes_y': 0
+                    }
+
+            else:
                 # --------------------------------------------------------------
-                # Optional: export grid nodes as a shapefile for inspection
+                # 2D CASE: rectangular grid from shapefile
                 # --------------------------------------------------------------
-                geometry = [
-                    Point(x_val + min_lon, y_val + min_lat)
-                    for x_val, y_val in zip(x_points.flatten(), y_points.flatten())
-                ]
+                if self.dy is None:
+                    # If dy is not provided, use the same spacing as dx
+                    self.dy = self.dx
 
-                gdf = gpd.GeoDataFrame(
-                    pd.DataFrame(
-                        {
-                            "x": x_points.flatten() + min_lon,
-                            "y": y_points.flatten() + min_lat,
-                        }
-                    ),
-                    geometry=geometry,
-                    crs="EPSG:9377",
-                )
+                if source_file is None or not source_file.endswith('.shp'):
+                    raise ValueError(
+                        "For dims != '1' you must provide a shapefile source_file ending with '.shp'."
+                    )
 
-                gdf.to_file(
-                    f'{self.init.dict_folders["input"]}XBeach_domain_points_grid.shp'
-                )
+                # Read shapefile and get bounding box
+                sf = shapefile.Reader(f'{self.init.dict_folders["input"]}{source_file}')
+                shape = sf.shapes()[0]
 
-            # ------------------------------------------------------------------
-            # Common part: build grid_dict for both uniform and variable grids
-            # ------------------------------------------------------------------
-            grid_dict = {
-                'xfilepath': 'x_profile.grd',
-                'yfilepath': 'y_profile.grd',
-                'meshes_x': len(x_points[0, :]) - 1,
-                'meshes_y': len(y_points[:, 0]) - 1
-            }
+                # Extract the bounding box (min_lon, min_lat, max_lon, max_lat)
+                min_lon, min_lat, max_lon, max_lat = shape.bbox
 
+                # ------------------------------------------------------------------
+                # Branch 1: uniform grid (current behaviour)
+                # ------------------------------------------------------------------
+                if not xvar:
+                    # Build uniform grid in x and y directions
+                    x_points_flat = np.arange(min_lon, max_lon + self.dx, self.dx)
+                    y_points_flat = np.arange(min_lat, max_lat + self.dy, self.dy)
 
-        # ----------------------------------------------------------------------
-        # Write grids to disk
-        # ----------------------------------------------------------------------
-        np.savetxt(f'{self.init.dict_folders["run"]}x_profile.grd', x_points, fmt='%.4f')
-        np.savetxt(f'{self.init.dict_folders["run"]}y_profile.grd', y_points, fmt='%.4f')
+                    # Generate meshgrid
+                    x_points, y_points = np.meshgrid(x_points_flat, y_points_flat)
 
-        return grid_dict
+                    grid_dict = {
+                        'xfilepath': 'x.grd',
+                        'yfilepath': 'y.grd',
+                        'meshes_x': x_points.shape[1] - 1,
+                        'meshes_y': y_points.shape[0] - 1
+                    }
 
+                # ------------------------------------------------------------------
+                # Branch 2: segmented, variable-resolution grid (Franklin's logic)
+                # ------------------------------------------------------------------
+                else:
+                    # Basic validation of required dictionaries
+                    if start_segments is None or dist_segments is None or delta_segments is None:
+                        raise ValueError(
+                            "When xvar=True you must provide 'start_segments', "
+                            "'dist_segments' and 'delta_segments' dictionaries."
+                        )
+
+                    list_x_points_flat_all = []
+                    list_y_points_flat_all = []
+
+                    # Loop through all segments defined in start_segments
+                    for seg_key in start_segments.keys():
+                        start_x = start_segments[seg_key]
+                        dist = dist_segments[seg_key]
+                        dx_seg = delta_segments[seg_key]
+
+                        seg_end_x = start_x + dist
+                        seg_x = np.arange(start_x, seg_end_x, dx_seg)
+                        list_x_points_flat_all.append(seg_x)
+
+                    # Concatenate all x segments
+                    x_points_flat = np.unique(np.concatenate(list_x_points_flat_all))
+
+                    # Build y direction uniformly, for simplicity
+                    y_points_flat = np.arange(min_lat, max_lat + self.dy, self.dy)
+
+                    # Generate meshgrid
+                    x_points, y_points = np.meshgrid(x_points_flat, y_points_flat)
+
+                    grid_dict = {
+                        'xfilepath': 'x.grd',
+                        'yfilepath': 'y.grd',
+                        'meshes_x': x_points.shape[1] - 1,
+                        'meshes_y': y_points.shape[0] - 1
+                    }
+
+            # ----------------------------------------------------------------------
+            # Step 2: Save the computed grid(s) to .grd files
+            # ----------------------------------------------------------------------
+            x_run_path = os.path.join(self.init.dict_folders["run"],   grid_dict['xfilepath'])
+            x_input_path = os.path.join(self.init.dict_folders["input"], grid_dict['xfilepath'])
+
+            y_run_path = os.path.join(self.init.dict_folders["run"],   grid_dict['yfilepath'])
+            y_input_path = os.path.join(self.init.dict_folders["input"], grid_dict['yfilepath'])
+
+            # Save X points in both locations
+            np.savetxt(x_run_path,   x_points, fmt='%.4f')
+            np.savetxt(x_input_path, x_points, fmt='%.4f')
+
+            # Save Y points in both locations
+            np.savetxt(y_run_path,   y_points, fmt='%.4f')
+            np.savetxt(y_input_path, y_points, fmt='%.4f')
+
+            return grid_dict
     
 
 
@@ -900,6 +935,6 @@ class GridMaker():
     #     dict_asc={'grdfilepath':f'{filename_grd}.grd','model_origin':'delft3d'}
     #     return dict_asc
 
-    def fill_grid_section(self,grid_dict):
-        print ('\n*** Adding/Editing grid information in params file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',grid_dict)
+    # def fill_grid_section(self,grid_dict):
+    #     print ('\n*** Adding/Editing grid information in params file ***\n')
+    #     utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',grid_dict)
