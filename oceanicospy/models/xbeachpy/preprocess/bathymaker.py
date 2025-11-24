@@ -307,7 +307,7 @@ class BathyMaker:
         # --------------------------------------------------------------
         # 8. Write .dep file (single row of depths)
         # --------------------------------------------------------------
-        np.savetxt(dep_path, depth_profile.reshape(1, -1), fmt="%.3f")
+        np.savetxt(dep_path, depth_profile.reshape(-1, 1), fmt="%.3f")
         print(f"1D bathymetry written to: {dep_path}")
 
         # --------------------------------------------------------------
