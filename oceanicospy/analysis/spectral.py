@@ -144,7 +144,7 @@ class WaveSpectralAnalyzer():
         # Density variance spectrum
         amplitude = np.abs(fourier)
         power = (amplitude**2)*2/len(signal)*(1/self.sampling_freq)
-
+ 
         # Correction by Kp
         Kp, Kpmin = self._compute_kp(freq, self.anchoring_depth, self.sensor_height)
         fmax_kp = 1/(2*np.pi)*np.sqrt(9.8*np.pi/(self.anchoring_depth - self.sensor_height)*np.tanh(np.pi/(self.anchoring_depth-self.sensor_height)*self.anchoring_depth))

@@ -7,6 +7,7 @@ import os
 import shutil
 import geopandas as gpd
 from shapely.geometry import Point
+from itertools import zip_longest
 
 class GridMaker():
     """
@@ -181,12 +182,24 @@ class GridMaker():
                 # Extract the bounding box (min_lon, min_lat, max_lon, max_lat)
                 min_lon, min_lat, max_lon, max_lat = shape.bbox
 
-                # x = -160 #m
-                # x = -110
-
                 if not xvar:
                     x_points_flat = np.arange(min_lon,max_lon+self.dx,self.dx)-min_lon
                     y_points_flat = np.arange(min_lat,max_lat+self.dy,self.dy)-min_lat
+
+                    x_points,y_points = np.meshgrid(x_points_flat,y_points_flat)
+
+                    # geometry = [Point(x, y) for x, y in zip(x_points.flatten()+min_lon, y_points.flatten()+min_lat)]
+                    # gdf = gpd.GeoDataFrame(pd.DataFrame({'x': x_points.flatten()+min_lon, 'y': y_points.flatten()+min_lat}),
+                    #                     geometry=geometry,
+                    #                     crs="EPSG:9377")
+                    # gdf.to_file(f'{self.init.dict_folders["input"]}XBeach_domain_points_grid.shp')
+
+                    grid_dict={'xfilepath':'x.grd','yfilepath':'y.grd',
+                                'meshes_x':len(x_points[0,:])-1,'meshes_y':len(y_points[:,0])-1}
+
+                    np.savetxt(f'{self.init.dict_folders["run"]}x.grd',x_points,fmt='%4.4f')
+                    np.savetxt(f'{self.init.dict_folders["run"]}y.grd',y_points,fmt='%4.4f')
+
                 else:
                     list_x_points_flat_all = []
                     list_y_points_flat_all = []
@@ -215,25 +228,64 @@ class GridMaker():
                     x_points_flat = np.concatenate(list_x_points_flat_all)
                     y_points_flat = np.concatenate(list_y_points_flat_all)
 
-                    x_points,y_points = np.meshgrid(x_points_flat,y_points_flat)
+                    x_points_flat_10m = np.arange(min_lon,max_lon+self.dx,self.dx)-min_lon
+                    y_points_flat_10m = np.arange(min_lat,max_lat+self.dy,self.dy)-min_lat
 
-                    geometry = [Point(x, y) for x, y in zip(x_points.flatten()+min_lon, y_points.flatten()+min_lat)]
+                    out_path_x = f'{self.init.dict_folders["run"]}x.grd'
+                    def _one_line(arr):
+                        return ' '.join(f'{float(v):.4f}' for v in np.asarray(arr).flatten())
+                    with open(out_path_x, 'w') as fh:
+                        for idx, element in enumerate(y_points_flat):
+                            if element <= 350:
+                                line = _one_line(x_points_flat_10m)
+                            elif element > 350 and element <= 420:
+                                line = _one_line(x_points_flat)
+                            else:
+                                line = _one_line(x_points_flat_10m)
+                            fh.write(line + '\n')
 
-                    x_points_flat_to_shp = x_points_flat + min_lon
-                    y_points_flat_to_shp = y_points_flat + min_lat
+                    list_y_points = []
+                    for idx, element in enumerate(x_points_flat):
+                        if element <=110:
+                            list_y_points.append(y_points_flat_10m)
+                        elif element >110 and element <= 160:
+                            list_y_points.append(y_points_flat)
+                        else:
+                            list_y_points.append(y_points_flat_10m)
 
-                    gdf = gpd.GeoDataFrame(pd.DataFrame({'x': x_points.flatten()+min_lon, 'y': y_points.flatten()+min_lat}),
-                                        geometry=geometry,
-                                        crs="EPSG:9377")
+                    out_path_y = f'{self.init.dict_folders["run"]}y.grd'
+                    with open(out_path_y, 'w') as f:
+                        for x in zip_longest(*list_y_points, fillvalue=''):
+                            formatted = (f'{float(v):12.4f}' if v != '' else ' ' * 12 for v in x)
+                            f.write(''.join(formatted) + '\n')
 
-                    gdf.to_file(f'{self.init.dict_folders["input"]}XBeach_domain_points_grid.shp')
+                    with open(f'{self.init.dict_folders["run"]}x.grd', 'r') as file_x:
+                        with open(f'{self.init.dict_folders["run"]}y.grd', 'r') as file_y:
+                            for line_x, line_y in zip(file_x, file_y):
+                                x_vals = [float(v) for v in line_x.split()] if line_x else []
+                                y_vals = [float(v) for v in line_y.split()] if line_y else []
 
+                                if len(x_vals) <= len(y_vals):
+                                    y_vals = y_vals[:len(x_vals)]
+                                elif len(y_vals) < len(x_vals):
+                                    y_vals = y_vals + [y_vals[-1]]*(len(x_vals)-len(y_vals))
+                                else:
+                                    pass
 
-            grid_dict={'xfilepath':'x_profile.grd','yfilepath':'y_profile.grd',
-                        'meshes_x':len(x_points[0,:])-1,'meshes_y':len(y_points[:,0])-1}
+                                try:
+                                    geometry
+                                except NameError:
+                                    geometry = []
 
-        np.savetxt(f'{self.init.dict_folders["run"]}x_profile.grd',x_points,fmt='%.4f')
-        np.savetxt(f'{self.init.dict_folders["run"]}y_profile.grd',y_points,fmt='%.4f')
+                                for xv, yv in zip(x_vals, y_vals):
+                                    geometry.append(Point(xv + min_lon, yv + min_lat))
+                        coords = [(pt.x, pt.y) for pt in geometry]
+                        df = pd.DataFrame({'x': [c[0] for c in coords], 'y': [c[1] for c in coords]})
+                        gdf = gpd.GeoDataFrame(df, geometry=geometry, crs="EPSG:9377")
+                        out_shp = os.path.join(self.init.dict_folders["input"], "XBeach_domain_grid_points_reef_MSON.shp")
+                        gdf.to_file(out_shp)
+
+                    grid_dict={'xfilepath':'x.grd','yfilepath':'y.grd'}
 
         return grid_dict
     

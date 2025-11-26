@@ -47,7 +47,7 @@ class BathyMaker():
         Returns:
             dict: A dictionary containing the metadata of the generated grid.
         """
-        bathy_xyz_path = glob.glob(f'{self.init.dict_folders["input"]}bathy*.csv')[0]
+        bathy_xyz_path = glob.glob(f'{self.init.dict_folders["input"]}TopoBathy*.csv')[0]
         ascfile = f'{self.init.dict_folders["run"]}{self.filename}.dep'
         # ascfile_ne_ones = f'{self.dict_folders["run"]}ne_layer_ones.dep'
         df_xyz = pd.read_csv(bathy_xyz_path,header=0,names=['X','Y','Z'])
@@ -57,7 +57,12 @@ class BathyMaker():
         grid = grid.sort_index(ascending=False)
         grid = grid[grid.columns[::-1]]
 
-        np.savetxt(ascfile,grid.values,fmt='%8.3f', delimiter=' ')
+        arr = grid.values.astype(float)
+        out = np.empty(arr.shape, dtype='U16')
+        mask = np.isnan(arr)
+        out[~mask] = np.char.mod('%3.5f', arr[~mask])
+        out[mask] = ''
+        np.savetxt(ascfile, out, fmt='%s', delimiter=' ')
 
 
         # zi_ones=np.ones(zi.shape)
