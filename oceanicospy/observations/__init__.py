@@ -2,4 +2,8 @@ from .aqualogger import AQUAlogger
 from .rbr import RBR
 from .awac import AWAC
 from .weather_station import WeatherStation
+from .weather_station import WeatherSensStation
 from .resistive_waterlevel_sensor import ResistiveSensor
+from .buoy import Buoy
+from .mantaray import Mantaray
+from .hobo import HOBO
