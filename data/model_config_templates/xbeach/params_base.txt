@@ -13,20 +13,21 @@ sedtrans = $act_sedtrans
 swrunup = $act_swrunup
 wavemodel = $act_wavemodel
 vegetation = $act_veg
+wind = $act_wnd
 
 %%% Grid parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 xfile     = xfilepath
 yfile     = yfilepath
 depfile   = depfilepath
-posdwn    = 1
 nx        = meshes_x
 ny        = meshes_y
 vardx     = 1
-thetamin  = 270
-thetamax  = 90
-dtheta    = 180
+thetamin  = 0
+thetamax  = 190
+dtheta    = 10
 thetanaut = 1
+alfa      = 180
 
 %%% Wave boundary condition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -57,7 +58,6 @@ nglobalvar   = len_global_vars
 global_vars
 
 npoints = len_points
-0 0
 string_points
 
 npointvar    = len_point_vars

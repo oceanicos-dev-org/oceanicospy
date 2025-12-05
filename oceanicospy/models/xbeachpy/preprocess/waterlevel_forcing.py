@@ -162,4 +162,4 @@ class WaterLevelForcing():
             None
         """
         print (f'\n*** Adding/Editing water level information for domain in configuration file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',dict_sealevel_data)  
+        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',dict_sealevel_data)        

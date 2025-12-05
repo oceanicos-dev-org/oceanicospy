@@ -140,6 +140,9 @@ class BaseLogger(ABC):
             df['depth[m]'] = depth_aux
             return df
 
+        if (df['depth_aux[m]'] - df['depth[m]']).abs().max() <= 0.1:
+            df = df.drop(columns=['depth_aux[m]'])
+        return df 
 
 
     # ----------------------------- subclass contract -----------------------------
