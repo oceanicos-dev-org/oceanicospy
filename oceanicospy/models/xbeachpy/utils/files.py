@@ -49,7 +49,25 @@ def create_link(file_name,source_path,target_path):
     else:
         os.symlink(f'{source_path}{file_name}',f'{target_path}{file_name}')
 
-def fill_files(file_name,dict):
+def delete_link(file_name, target_path):
+    """
+    Deletes a symbolic link in the target path.
+
+    Parameters:
+        file_name (str): The name of the link to be deleted.
+        target_path (str): The path where the symbolic link is located.
+
+    Returns:
+        None
+    """
+    link_path = os.path.join(target_path, file_name)
+    if os.path.islink(link_path):
+        os.unlink(link_path)
+        print(f"Deleted symbolic link: {link_path}")
+    else:
+        print(f"No symbolic link found at: {link_path}")
+
+def fill_files(file_name,dict_,strict=True):
     """
     Replaces occurrences of keys with their corresponding values in a file.
 
@@ -63,7 +81,25 @@ def fill_files(file_name,dict):
         Example:
             >>> fill_files('/path/to/file.txt', {'key1': 'value1', 'key2': 'value2'})
         """
-    for key,value in dict.items():               
-        with fileinput.FileInput(file_name,inplace=True, backup='') as file:
-            for line in file:
-                print(line.replace(key,value),end='')
+
+    dict_to_use=dict_.copy()
+    for key_,value_ in dict_.items():
+        if (type(value_)==float) or (type(value_)==int):
+            dict_to_use[key_]=str(value_)
+        dict_to_use[key_]=str(value_)
+    
+    if strict == True:
+        for key,value in dict_to_use.items():
+            with fileinput.FileInput(file_name,inplace=True,backup='') as file:
+                    for line in file:
+                        line_splitted=[string.replace("'","") for string in line.split()]
+                        if key in line_splitted:
+                                line=line.replace(key,value)
+                                print(line,end='')
+                        else:
+                            print(line,end='')
+    else:
+        for key,value in dict_to_use.items():  
+            with fileinput.FileInput(file_name,inplace=True,backup='') as file:
+                    for line in file:
+                        print(line.replace(key,value),end="")

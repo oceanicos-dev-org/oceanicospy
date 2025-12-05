@@ -22,5 +22,5 @@ documentation for details.
    observations/index
    analysis/index
    models/index
+   retrievals/index
    plots
-   retrievals

@@ -1,5 +1,7 @@
 import os
 import fileinput
+from pathlib import Path
+import re
 
 def verify_file(file_path):
     """
@@ -48,6 +50,24 @@ def create_link(file_name,source_path,target_path):
         return None
     else:
         os.symlink(f'{source_path}{file_name}',f'{target_path}{file_name}')
+
+def delete_link(file_name, target_path):
+    """
+    Deletes a symbolic link in the target path.
+
+    Parameters:
+        file_name (str): The name of the link to be deleted.
+        target_path (str): The path where the symbolic link is located.
+
+    Returns:
+        None
+    """
+    link_path = os.path.join(target_path, file_name)
+    if os.path.islink(link_path):
+        os.unlink(link_path)
+        print(f"Deleted symbolic link: {link_path}")
+    else:
+        print(f"No symbolic link found at: {link_path}")
 
 def fill_files(file_name,dict_,strict=True):
     """
@@ -109,6 +129,25 @@ def fill_files_only_once(file_name, dict_):
                         print(line,end='')
                     else:
                         print(line,end='')
+
+def fill_files_2(file_path: str, replacements: dict):
+    """
+    Replaces placeholders in an existing .swn file with given values.
+    If a value is empty string, replaces placeholder with whitespace.
+    """
+    text = Path(file_path).read_text()
+
+    def replace_placeholder(match):
+        key = match.group(0)[1:]  # remove leading $
+        if key in replacements:
+            val = replacements[key]
+            return str(val) if val else " "  # empty -> whitespace
+        return match.group(0)  # leave untouched if not in replacements
+
+    # replace only placeholders like $cds1, $delta, etc.
+    updated = re.sub(r"\$\w+", replace_placeholder, text)
+
+    Path(file_path).write_text(updated)
 
 def delete_line(file_name,string_to_find):
     with open(file_name, "r") as f:
