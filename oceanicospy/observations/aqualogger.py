@@ -50,8 +50,7 @@ class AQUAlogger(BaseLogger):
             columns = ['UNITS', 'date', 'Raw1', 'temperature', 'Raw2', 'pressure[bar]', 'Raw3', 'depth[m]', 'nan']
             drop_cols = ['Raw1', 'Raw2', 'Raw3', 'nan']
         else:
-            columns = ['UNITS', 'date', 'Raw1', 'pressure[bar]', 'nan']
-            # columns = ['UNITS', 'date', 'Raw1', 'pressure[bar]', 'Raw2', 'depth[m]', 'nan']
+            columns = ['UNITS', 'date', 'Raw1', 'pressure[bar]', 'Raw2', 'depth[m]', 'nan']
             drop_cols = ['Raw1', 'nan']
 
         with open(filepath, "r", encoding="utf-8") as f:

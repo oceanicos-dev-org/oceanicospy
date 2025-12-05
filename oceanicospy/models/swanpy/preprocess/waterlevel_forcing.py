@@ -78,7 +78,7 @@ class WaterLevelForcing():
                 else:
                     print("\t UHSLC water level data already exists, skipping download")
             else:
-                    print("\t UHSLC water level data already exists in domain 1, skipping download")
+                    print("\t UHSLC water level data already exists in domain 1, skipping download") 
 
     def write_UHSLC_ascii(self,UHSLC_filename,ascii_filename):
         run_domain_dir = f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/'
