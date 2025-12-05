@@ -5,7 +5,26 @@ import pandas as pd
 
 class SwanOutputReader:
     # Fixed schema for SalidasSWAN.out
-    _COLS = ['Time','Xp','Yp','Depth','X-Windv','Y-Windv','Hsig','TPsmoo','Tm01','Tm02','Dir']
+    _COLS  = ['Time','Xp','Yp','Depth','X-Windv','Y-Windv','Hsig','TPsmoo','Tm01','Tm02','Dir']
+    _DTYPE = {'Time': str, 'Xp': float, 'Yp': float, 'Depth': float,
+              'X-Windv': float, 'Y-Windv': float, 'Hsig': float,
+              'TPsmoo': float, 'Tm01': float, 'Tm02': float, 'Dir': float}
+
+from typing import Dict, Tuple
+from pathlib import Path
+import pandas as pd
+
+
+class SwanOutputReader:
+    """
+    Minimal reader for SWAN ASCII 'SalidasSWAN.out' with interleaved points.
+    - Assumes fixed column layout as below.
+    - Splits interleaved series by striding using `n_points`.
+    - Crops by [start, end] and returns per-variable dicts and a common time index.
+    """
+
+    # Fixed schema for SalidasSWAN.out
+    _COLS  = ['Time','Xp','Yp','Depth','X-Windv','Y-Windv','Hsig','TPsmoo','Tm01','Tm02','Dir']
     _DTYPE = {'Time': str, 'Xp': float, 'Yp': float, 'Depth': float,
               'X-Windv': float, 'Y-Windv': float, 'Hsig': float,
               'TPsmoo': float, 'Tm01': float, 'Tm02': float, 'Dir': float}
@@ -15,6 +34,7 @@ class SwanOutputReader:
                  tp_col: str = "TPsmoo",
                  dir_col: str = "Dir",
                  tm01_col: str = "Tm01",
+                 tm02_col: str = "Tm02",
                  n_points: int = 2):
         """
         Parameters
@@ -27,6 +47,8 @@ class SwanOutputReader:
             Column name for mean wave direction.
         tm01_col : str
             Column name for mean wave period Tm01.
+        tm02_col : str
+            Column name for mean wave period Tm02.
         n_points : int
             Number of interleaved points in the file.
         """
@@ -34,6 +56,7 @@ class SwanOutputReader:
         self.tp_col = tp_col
         self.dir_col = dir_col
         self.tm01_col = tm01_col
+        self.tm02_col = tm02_col
         self.n_points = int(n_points)
 
     def _read_domain_df(self, file_path: Path) -> pd.DataFrame:
@@ -43,7 +66,6 @@ class SwanOutputReader:
             names=self._COLS, dtype=self._DTYPE, engine="python"
         )
         # Parse index to datetime, drop invalid, ensure tz-naive, sort
-        print(df)
         idx = pd.to_datetime(df.index, format='%Y%m%d.%H%M%S', errors='coerce')
         mask = ~idx.isna()
         df = df.loc[mask].copy()
@@ -69,7 +91,8 @@ class SwanOutputReader:
               'hs':   {point: Series},
               'tp':   {point: Series},
               'dir':  {point: Series},
-              'tm01': {point: Series}
+              'tm01': {point: Series},
+              'tm02': {point: Series}
             }
         time_index : pd.DatetimeIndex
             Common time vector taken from the first available variable at point 1.
@@ -87,9 +110,11 @@ class SwanOutputReader:
             out["dir"] = self._build_stride_dict(df_crop[self.dir_col])
         if self.tm01_col in df_crop:
             out["tm01"] = self._build_stride_dict(df_crop[self.tm01_col])
+        if self.tm02_col in df_crop:
+            out["tm02"] = self._build_stride_dict(df_crop[self.tm02_col])
 
-        # Choose a robust time vector (prefer hs, then tp, then tm01, then dir)
-        for key in ("hs", "tp", "tm01", "dir"):
+        # Choose a robust time vector (prefer hs, then tp, then tm02, then tm01, then dir)
+        for key in ("hs", "tp", "tm02", "tm01", "dir"):
             if key in out and 1 in out[key]:
                 time_index = out[key][1].index
                 break
@@ -97,6 +122,3 @@ class SwanOutputReader:
             raise ValueError("None of the requested columns were found in the cropped DataFrame.")
 
         return out, time_index
-
-
-

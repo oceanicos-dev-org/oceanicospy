@@ -67,4 +67,3 @@ class Vegetation():
         for param in self.dict_veggie:
             self.dict_veggie[param]=str(self.dict_veggie[param])
         utils.fill_files(f'{self.dict_folders["run"]}params.txt',self.dict_veggie)
-
