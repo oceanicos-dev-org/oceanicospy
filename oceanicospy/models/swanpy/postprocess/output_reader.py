@@ -76,7 +76,7 @@ class SwanOutputReader:
         """Split an interleaved series into n_points sub-series by striding."""
         return {i + 1: series.iloc[i::self.n_points] for i in range(self.n_points)}
 
-    def load_domain(self,
+    def load_time_series(self,
                     domain_dir: Path,
                     start: pd.Timestamp,
                     end: pd.Timestamp

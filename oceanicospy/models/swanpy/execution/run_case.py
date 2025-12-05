@@ -20,13 +20,13 @@ class CaseRunner():
         """
         Reads a CSV file containing point coordinates, adjusts negative longitude values,
         and writes the processed coordinates to a .loc file for SWAN model output.
-
+        
         Parameters
         ----------
         filename : str, optional
-        Name of the CSV file to read, located in the input folder for the current domain.
-        The file must contain at least 'X' and 'Y' columns representing coordinates.
-        If not provided, defaults to 'points.csv'.
+            Name of the CSV file to read, located in the input folder for the current domain.
+            The file must contain at least 'X' and 'Y' columns representing coordinates.
+            If not provided, defaults to 'points.csv'.
         """
 
         ds = pd.read_csv(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{filename}',delimiter=',')

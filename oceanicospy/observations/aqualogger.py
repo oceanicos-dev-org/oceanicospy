@@ -41,73 +41,22 @@ class AQUAlogger(BaseLogger):
         mapping to canonical columns: 'UNITS', 'date', 'Raw1', 'pressure[bar]'.
         """
         filepath = self._get_records_file()
-        temperature_mode = bool(self.sampling_data.get('temperature', False))
+        if self.sampling_data.get('temperature', False):
+            columns = ['UNITS', 'date', 'Raw1', 'temperature', 'Raw2', 'pressure[bar]', 'Raw3', 'depth[m]', 'nan']
+            drop_cols = ['Raw1', 'Raw2', 'Raw3', 'nan']
+        else:
+            columns = ['UNITS', 'date', 'Raw1', 'pressure[bar]', 'Raw2', 'depth[m]', 'nan']
+            drop_cols = ['Raw1', 'nan']
 
-        # --- Attempt 1: legacy header-offset schema (AQ3_in_ALM-like) ---
-        try:
-            if temperature_mode:
-                columns = ['UNITS', 'date', 'Raw1', 'temperature', 'Raw2', 'pressure[bar]', 'Raw3', 'depth[m]', 'nan']
-                drop_cols = ['Raw1', 'Raw2', 'Raw3', 'nan']
-            else:
-                columns = ['UNITS', 'date', 'Raw1', 'pressure[bar]', 'Raw2', 'depth[m]', 'nan']
-                drop_cols = ['Raw1', 'Raw2', 'nan']
+        with open(filepath, "r", encoding="utf-8") as f:
+            for lineno, line in enumerate(f, start=1):
+                if line.startswith("HEADING"):
+                    line_header = lineno
+                    break
 
-            df = pd.read_csv(
-                filepath,
-                names=columns,
-                header=21,              # legacy offset (line 22 is header)
-                encoding='latin-1',
-                engine='python'
-            )
-            if 'date' not in df.columns or 'pressure[bar]' not in df.columns:
-                raise ValueError("Legacy schema read but key columns missing -> fallback.")
-            df = df.drop(columns=[c for c in drop_cols if c in df.columns])
-            return self._standardize_columns(df)
-        except Exception:
-            pass  # try fallback
-
-        # --- Attempt 2: AQMayAgo2018-like (uses HEADING/UNITS/BURSTSTART/DATA) ---
-        # Find the line index where 'HEADING' appears
-        with open(filepath, 'r', encoding='latin-1', errors='ignore') as f:
-            lines = f.read().splitlines()
-        heading_idx = None
-        for i, line in enumerate(lines):
-            if line.startswith('HEADING'):
-                heading_idx = i
-                break
-        if heading_idx is None:
-            # Flexible generic read (delimiter sniffing) as last resort
-            try:
-                df = pd.read_csv(filepath, sep=None, engine='python', encoding='latin-1')
-            except pd.errors.ParserError:
-                try:
-                    df = pd.read_csv(filepath, sep=';', engine='python', encoding='latin-1')
-                except Exception:
-                    df = pd.read_csv(filepath, sep=',', engine='python', encoding='latin-1', on_bad_lines='skip')
-            return self._standardize_columns(df)
-
-        # Read from HEADING row; keep first 4 columns (UNITS/date/raw/pressure)
-        df = pd.read_csv(
-            filepath,
-            header=heading_idx,
-            engine='python',
-            encoding='latin-1',
-            usecols=[0, 1, 2, 3]
-        )
-        # Normalize column names and map to canonical ones
-        df.columns = [c.strip() for c in df.columns]
-        # Example at header: ['HEADING','Timecode','Pressure','Unnamed: 3']
-        df = df.rename(columns={
-            df.columns[0]: 'UNITS',
-            df.columns[1]: 'date',
-            df.columns[2]: 'Raw1',             # integer raw counts
-            df.columns[3]: 'pressure[bar]'     # pressure in bar
-        })
-        # Keep only BURSTSTART/DATA rows
-        df = df[df['UNITS'].isin(['BURSTSTART', 'DATA'])].copy()
-
-        return self._standardize_columns(df)
-
+        df = pd.read_csv(filepath, names=columns, header=line_header, encoding='latin-1') # will be 21 depending on the file format
+        df = df.drop(columns=drop_cols)
+        return df
 
         
     def _standardize_columns(self, df: pd.DataFrame) -> pd.DataFrame:

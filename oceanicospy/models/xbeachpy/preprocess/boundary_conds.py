@@ -223,3 +223,4 @@ class BoundaryConditions():
         
         print (f'\n*** Adding/Editing boundary information for domain in configuration file ***\n')
         utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',dict_boundaries)
+
