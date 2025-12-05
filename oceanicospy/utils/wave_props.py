@@ -23,14 +23,13 @@ def wavelength(T,h):
     01-Sep-2023 : First Python function - Juan Diego Toro
 
     """
-
-    Lo = (constants.GRAVITY*T**2)/(2*np.pi);
-    L1  = (constants.GRAVITY*T**2)/(2*np.pi)*np.tanh((h*2*np.pi)/Lo);
-    i = 0;
+    Lo = (constants.GRAVITY*T**2)/(2*np.pi)
+    L1  = (constants.GRAVITY*T**2)/(2*np.pi)*np.tanh((h*2*np.pi)/Lo)
+    i = 0
     while (abs(Lo-L1)>0.0001):
-        Lo = L1;
-        L1  = (constants.GRAVITY*T**2)/(2*np.pi)*np.tanh(h*2*np.pi/Lo);
-        i = i+1;
+        Lo = L1
+        L1  = (constants.GRAVITY*T**2)/(2*np.pi)*np.tanh(h*2*np.pi/Lo)
+        i = i+1
         if (i>5000):
             break
     return (L1)

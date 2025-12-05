@@ -5,12 +5,10 @@ import os
 import shapefile
 
 from .. import utils
-from ..init_setup import InitialSetup
 
-class Vegetation(InitialSetup):
+class Vegetation():
 
     def __init__ (self,dict_species,dict_locations,*args,**kwargs):
-        super().__init__(*args,**kwargs)
         self.dict_species=dict_species
         self.dict_locations=dict_locations
         self.dict_veggie={}

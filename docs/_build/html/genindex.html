@@ -149,6 +149,34 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="analysis/conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/temporal.html">Temporal</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="models/swanpy/execution/run_case.html">Case Runner</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="observations/walkthrough.html">Walkthrough Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="observations/BaseLogger.html">BaseLogger</a></li>
@@ -157,18 +185,7 @@
 <li class="toctree-l2"><a class="reference internal" href="observations/AWAC.html">AWAC</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="analysis/conditioning.html">Signal conditioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis/spectral.html">Spectral</a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis/temporal.html">Temporal</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="models/swanpy.html">swanpy</a></li>
-</ul>
-</details></li>
 <li class="toctree-l1"><a class="reference internal" href="plots.html">Plots</a></li>
-<li class="toctree-l1"><a class="reference internal" href="retrievals.html">Retrievals</a></li>
 </ul>
 
     </div>
@@ -279,8 +296,11 @@ document.write(`
  | <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#O"><strong>O</strong></a>
@@ -299,6 +319,12 @@ document.write(`
       <ul>
         <li><a href="analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.__init__">(oceanicospy.analysis.temporal.WaveTemporalAnalyzer method)</a>
 </li>
+        <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer.__init__">(oceanicospy.models.swanpy.Initializer method)</a>
+</li>
+        <li><a href="retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.__init__">(oceanicospy.retrievals.CMDSDownloader method)</a>
+</li>
+        <li><a href="retrievals/ERA5Downloader.html#oceanicospy.retrievals.ERA5Downloader.__init__">(oceanicospy.retrievals.ERA5Downloader method)</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -306,7 +332,7 @@ document.write(`
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.anchoring_depth">anchoring_depth (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>
+      <li><a href="analysis/spectral.html#id3">anchoring_depth (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>, <a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.anchoring_depth">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -324,7 +350,7 @@ document.write(`
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.burst_length_s">burst_length_s (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>
+      <li><a href="analysis/spectral.html#id5">burst_length_s (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>, <a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.burst_length_s">[1]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -332,11 +358,45 @@ document.write(`
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader">CMDSDownloader (class in oceanicospy.retrievals)</a>
+</li>
       <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_direct_fft">compute_spectrum_from_direct_fft() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_welch">compute_spectrum_from_welch() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
+</li>
+      <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer.create_folders_l1">create_folders_l1() (oceanicospy.models.swanpy.Initializer method)</a>
+</li>
+      <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer.create_folders_l2">create_folders_l2() (oceanicospy.models.swanpy.Initializer method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer.dict_ini_data">dict_ini_data (oceanicospy.models.swanpy.Initializer attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.download">download() (oceanicospy.retrievals.CMDSDownloader method)</a>
+
+      <ul>
+        <li><a href="retrievals/ERA5Downloader.html#oceanicospy.retrievals.ERA5Downloader.download">(oceanicospy.retrievals.ERA5Downloader method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer.end_date">end_date (oceanicospy.models.swanpy.Initializer attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="retrievals/ERA5Downloader.html#oceanicospy.retrievals.ERA5Downloader">ERA5Downloader (class in oceanicospy.retrievals)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -350,6 +410,18 @@ document.write(`
         <li><a href="observations/BaseLogger.html#oceanicospy.observations.pressure_sensor_base.BaseLogger.first_record_time">(oceanicospy.observations.pressure_sensor_base.BaseLogger property)</a>
 </li>
         <li><a href="observations/RBR.html#oceanicospy.observations.rbr.RBR.first_record_time">(oceanicospy.observations.rbr.RBR property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.for_waves">for_waves() (oceanicospy.retrievals.CMDSDownloader class method)</a>
+</li>
+      <li><a href="retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.for_winds">for_winds() (oceanicospy.retrievals.CMDSDownloader class method)</a>
+</li>
+      <li><a href="retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.format_to_localtime">format_to_localtime() (oceanicospy.retrievals.CMDSDownloader method)</a>
+
+      <ul>
+        <li><a href="retrievals/ERA5Downloader.html#oceanicospy.retrievals.ERA5Downloader.format_to_localtime">(oceanicospy.retrievals.ERA5Downloader method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -391,6 +463,18 @@ document.write(`
   </ul></td>
 </tr></table>
 
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer.ini_date">ini_date (oceanicospy.models.swanpy.Initializer attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer">Initializer (class in oceanicospy.models.swanpy)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -408,7 +492,7 @@ document.write(`
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.measurement_signal">measurement_signal (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>
+      <li><a href="analysis/spectral.html#id0">measurement_signal (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>, <a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.measurement_signal">[1]</a>
 </li>
       <li>
     module
@@ -458,18 +542,24 @@ document.write(`
       <li><a href="observations/RBR.html#oceanicospy.observations.rbr.RBR">RBR (class in oceanicospy.observations.rbr)</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer.replace_ini_data">replace_ini_data() (oceanicospy.models.swanpy.Initializer method)</a>
+</li>
+      <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer.root_path">root_path (oceanicospy.models.swanpy.Initializer attribute)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_data">sampling_data (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>
+      <li><a href="analysis/spectral.html#id1">sampling_data (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>, <a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_data">[1]</a>
 </li>
-      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_freq">sampling_freq (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>
+      <li><a href="analysis/spectral.html#id2">sampling_freq (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>, <a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_freq">[1]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sensor_height">sensor_height (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>
+      <li><a href="analysis/spectral.html#id4">sensor_height (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>, <a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sensor_height">[1]</a>
 </li>
       <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.smooth_psd_spectrum">smooth_psd_spectrum() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
 </li>
