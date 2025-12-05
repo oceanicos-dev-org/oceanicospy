@@ -59,12 +59,16 @@ class Initializer():
 
         Path(template_out).write_text(filled_text)
 
-
     def create_folders_l1(self):
         print ('\n*** Creating project structure ***\n')
         for folder_name in self.folder_names:
             if not os.path.exists(self.dict_folders[folder_name]):
                 subprocess.call(['mkdir','-p',f'{self.dict_folders[folder_name]}'])
+            else:
+                if folder_name=='run':
+                    print (f'\n \t *** Cleaning existing run folder: {self.dict_folders[folder_name]} ***\n')
+                    shutil.rmtree(self.dict_folders[folder_name])
+                    subprocess.call(['mkdir','-p',f'{self.dict_folders[folder_name]}'])
 
     def replace_ini_data(self):
         print ('\n \t *** Copying base XBeach configuration file into run folder ***\n')
