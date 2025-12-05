@@ -1,4 +1,4 @@
-#from wavespectra import read_swan
+from wavespectra import read_swan
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -133,7 +133,7 @@ class BoundaryConditions():
                 self.dict_boundaries=dict(hsig_value=df_point['Hsig'].values[0],tp_value=df_point['TPsmoo'].values[0],dir_value=df_point['Dir'].values[0])
         return self.dict_boundaries
     
-    def spectra_from_swan(self,input_filename):
+    def spectra_from_swan(self,input_filename,offshore_points=None):
         self.dataset = read_swan(f'{self.init.dict_folders["input"]}{input_filename}.out')
 
         # restrict dataset to requested time window
@@ -198,7 +198,14 @@ class BoundaryConditions():
             floc.write('LOCLIST'+'\n')
             for idx_site in range(self.number_spectrum_locs):
                 if idx_site >= 3:
-                    floc.write(f"0 {-idx_site*100} 'bounds_conds/filelist_{idx_site}.txt' \n")
+                    if offshore_points != None:
+                        if idx_site in offshore_points:
+                            floc.write(f"0 {-(idx_site-3)*100} 'bounds_conds/filelist_{idx_site}.txt' \n")
+                        else:
+                            pass
+                    else:
+                        floc.write(f"0 {-(idx_site-3)*100} 'bounds_conds/filelist_{idx_site}.txt' \n")
+
         floc.close()
 
         return self.dict_boundaries

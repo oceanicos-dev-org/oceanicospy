@@ -15,10 +15,18 @@ class Buoy(BaseLogger):
     """
 
     def _get_records_file(self):
+        # If a file path is provided directly
+        if os.path.isfile(self.directory_path):
+            return self.directory_path
+
+        # Otherwise assume it's a directory
         files = glob.glob(os.path.join(self.directory_path, '*.csv'))
         if not files:
-            raise FileNotFoundError("No .csv file found in the specified directory.")
+            raise FileNotFoundError(
+                f"No .csv file found in directory or path: {self.directory_path}"
+            )
         return files[0]
+
 
     def _detect_format(self, df: pd.DataFrame) -> str:
         """

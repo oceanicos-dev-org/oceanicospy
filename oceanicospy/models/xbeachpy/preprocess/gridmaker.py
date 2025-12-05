@@ -935,6 +935,6 @@ class GridMaker():
     #     dict_asc={'grdfilepath':f'{filename_grd}.grd','model_origin':'delft3d'}
     #     return dict_asc
 
-    # def fill_grid_section(self,grid_dict):
-    #     print ('\n*** Adding/Editing grid information in params file ***\n')
-    #     utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',grid_dict)
+    def fill_grid_section(self,grid_dict):
+        print ('\n*** Adding/Editing grid information in params file ***\n')
+        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',grid_dict)

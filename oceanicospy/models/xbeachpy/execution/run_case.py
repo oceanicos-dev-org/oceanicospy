@@ -19,11 +19,16 @@ class CaseRunner():
         self.dict_comp_data['outputfilepath']=f'{filename}'
     
     def write_output_points(self,filename=None):
-        point_files = glob.glob(f'{self.init.dict_folders["input"]}{filename}') # the file has to be named with the word points
-        if point_files:
-            date_points = np.loadtxt(point_files)
+        try:
+            points_file = glob.glob(f'{self.init.dict_folders["input"]}{filename}')[0] # the file has to be named with the word points
+        except IndexError:
+            points_file = None
+            
+        if points_file:
+            date_points = np.loadtxt(points_file)
             self.dict_comp_data['len_points']=len(date_points)
-            string_points=[f'{round(x,2)} 0\n' for x in date_points]
+            string_points=[f'{point[0]} {point[1]}\n' for point in date_points]
+            string_points[-1]=string_points[-1].strip()  # remove last new line
             self.dict_comp_data['string_points']=''.join(string_points)
         else:
             self.dict_comp_data['len_points'] = 0
@@ -46,7 +51,7 @@ class CaseRunner():
             self.dict_comp_data['len_point_vars'] = 0
             self.dict_comp_data['point_vars'] = ''
 
-    def fill_slurm_file(self):
+    def fill_slurm_file(self,case_name):
         """
         Fills the SLURM script with the necessary parameters for running the XBeach model.
         This includes paths, simulation name, number of domains, and parent domains.
@@ -57,7 +62,7 @@ class CaseRunner():
         shutil.copy(f'{self.data_dir}/model_config_templates/xbeach/launcher_xbeach_base.slurm',
                     f'{self.init.dict_folders["run"]}launcher_xbeach.slurm')
         
-        launch_dict = dict(output_path_case=f'{self.init.dict_folders["output"]}',case_name='May2023')
+        launch_dict = dict(output_path_case=f'{self.init.dict_folders["output"]}',case_name=case_name)
 
         utils.fill_files(f'{self.init.dict_folders["run"]}launcher_xbeach.slurm', launch_dict,strict=False)
 
