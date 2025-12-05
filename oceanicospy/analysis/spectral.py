@@ -5,6 +5,8 @@ from ..utils import wave_props,constants,extras
 from scipy.signal import welch
 from PyEMD import EMD,EEMD,CEEMDAN
 import pywt
+import matplotlib.pyplot as plt
+from scipy.signal import find_peaks
 
 class WaveSpectralAnalyzer():
     def __init__(self,measurement_signal,sampling_data):
@@ -101,7 +103,7 @@ class WaveSpectralAnalyzer():
         return Hs,Hrms,Hmean,Tp,Tm01,Tm02
 
     @extras.timing_decorator
-    def compute_spectrum_from_direct_fft(self,signal):
+    def compute_spectrum_from_direct_fft(self,signal,kp_correction):
         """
         Computes the density variance spectrum based on the Fast Fourier transform. 
         
@@ -132,29 +134,25 @@ class WaveSpectralAnalyzer():
         01-Sep-2023 : Origination - Juan Diego Toro
 
         """
-        freq = np.fft.fftfreq(len(signal),1/self.sampling_freq)
-        T = 1/freq
-        fourier = np.fft.fft(signal)
+        length_signal = len(signal)
+        freqs = np.fft.rfftfreq(length_signal,1/self.sampling_freq)
+        fourier = np.fft.rfft(signal)
 
-        # Filtering frequencies 
-        target_freqs = np.where((np.abs(freq>=0.0009))&((np.abs(freq<=1))))[0]
-        freq = freq[target_freqs]
-        fourier= fourier[target_freqs]
-
-        # Density variance spectrum
+        # Compute power spectrum: contribution of each frequency to the total variance in the time series (Parseval's theorem)
         amplitude = np.abs(fourier)
-        power = (amplitude**2)*2/len(signal)*(1/self.sampling_freq)
- 
-        # Correction by Kp
-        Kp, Kpmin = self._compute_kp(freq, self.anchoring_depth, self.sensor_height)
-        fmax_kp = 1/(2*np.pi)*np.sqrt(9.8*np.pi/(self.anchoring_depth - self.sensor_height)*np.tanh(np.pi/(self.anchoring_depth-self.sensor_height)*self.anchoring_depth))
+        power_spectrum_raw = (amplitude**2)*2
+        power_spectrum_norm =  power_spectrum_raw/(length_signal**2) # power per bin
 
-        power_kp = power / (Kp**2)
+        # Compute the power spectral density (PSD)
+        PSD = power_spectrum_norm * length_signal * (1/self.sampling_freq) # power per Hz
 
-        return power,power_kp,freq,T,Kpmin,fmax_kp
+        if kp_correction == False:
+            return freqs,PSD
+        else:
+            return self._correction_by_Kp(freqs,PSD)
 
     @extras.timing_decorator
-    def compute_spectrum_from_welch(self,signal,window_type,window_length,overlap=None):
+    def compute_spectrum_from_welch(self,signal,kp_correction,window_type,window_length,overlap=None):
         """
         Compute PSD using Welch method and smooth across frequency bins.
 
@@ -175,24 +173,29 @@ class WaveSpectralAnalyzer():
         -------
         freqs : ndarray
             Frequency array.
-        psd_smoothed : ndarray
+        PSD_smoothed : ndarray
             PSD after smoothing.
         dof : float
             Estimated degrees of freedom.
         """
 
         # Welch PSD
-        freqs, psd = welch(x=signal,fs=self.sampling_freq,window=window_type,
+        freqs, PSD = welch(x=signal,fs=self.sampling_freq,window=window_type,
                             nperseg=window_length,
                             noverlap=overlap,
                             scaling='density')
+        
         # Estimate degrees of freedom:
         # DOF ≈ (2 × number of segments) × (effective freq bins averaged / total bins)
         # n_segments = 1 + (len(signal) - window_length) // (window_length - overlap)
         # dof = 2 * n_segments * (1 / smoothing_bins)
-        return freqs, psd
+        
+        if kp_correction == False:
+            return freqs,PSD
+        else:
+            return self._correction_by_Kp(freqs,PSD)
 
-    def get_spectra_and_params_for_bursts(self,method,window_type=None,window_length=None,overlap=None,smoothing_bins=None):
+    def get_spectra_and_params_for_bursts(self,method,kp_correction,window_type=None,window_length=None,overlap=None,smoothing_bins=None):
         """
         Get wave spectra for each burst in the cleaned records.
 
@@ -245,19 +248,31 @@ class WaveSpectralAnalyzer():
 
                 if method == 'fft':
                     # Compute the spectrum using FFT
-                    power, power_kp, freqs, T, kpmin, fmax_kp = self.compute_spectrum_from_direct_fft(burst_series['eta[m]'].values)
-                    wave_spectra_data["S"].append(power_kp)
+                    if kp_correction == False:
+                        freqs, PSD = self.compute_spectrum_from_direct_fft(burst_series['eta[m]'].values,kp_correction)
+                        wave_spectra_data["S"].append(PSD)
+                    else:
+                        freqs, PSD_kp, PSD = self.compute_spectrum_from_direct_fft(burst_series['eta[m]'].values, kp_correction)
+                        wave_spectra_data["S"].append(PSD_kp)
 
                 elif method == 'welch':
                     # Compute the spectrum using Welch method
-                    freqs,power = self.compute_spectrum_from_welch(burst_series['eta[m]'].values, window_type, window_length)
-                    power = self.smooth_psd_spectrum(power,smoothing_bins)
-                    wave_spectra_data["S"].append(power)
+                    if kp_correction == False:
+                        freqs, PSD = self.compute_spectrum_from_welch(burst_series['eta[m]'].values, kp_correction, window_type, window_length)
+                        PSD = self.smooth_psd_spectrum(PSD,smoothing_bins)
+                        wave_spectra_data["S"].append(PSD)
+                    else:
+                        freqs, PSD_kp, PSD = self.compute_spectrum_from_welch(burst_series['eta[m]'].values, kp_correction, window_type, window_length)
+                        PSD_kp = self.smooth_psd_spectrum(PSD_kp,smoothing_bins)
+                        wave_spectra_data["S"].append(PSD_kp)
                 else:
                     pass
 
                 # Compute wave parameters from the spectrum
-                Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = self.get_wave_params_from_spectrum_v1(power, freqs)
+                if kp_correction == False:
+                    Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = self.get_wave_params_from_spectrum_v1(PSD, freqs)
+                else:
+                    Hm0, Hrms, Hmean, Tp, Tm01, Tm02 = self.get_wave_params_from_spectrum_v1(PSD_kp, freqs)
 
                 # Store wave parameters
                 wave_params_data['Hm0'][idx] = Hm0
@@ -335,12 +350,62 @@ class WaveSpectralAnalyzer():
 #                 coefs_all[idx,:,:] = coefs
 #         return coefs_all,freqs
 
-#     @staticmethod
-#     def _compute_kp(freqs, anchoring_depth, sensor_height):
-#         L = [wave_props.wavelength(1/f, anchoring_depth) for f in freqs]
-#         k = [2*np.pi/l for l in L]
-#         Kp = np.array([np.cosh(ki*sensor_height)/np.cosh(ki*anchoring_depth) for ki in k])
-#         Kpmin = (np.cosh(np.pi/(anchoring_depth - sensor_height)*sensor_height)) / \
-#                 (np.cosh(np.pi/(anchoring_depth - sensor_height)*anchoring_depth))
-#         Kp = np.clip(Kp, Kpmin, 10)
-#         return Kp, Kpmin
+    def _compute_nonadaptive_Kp(self,freqs):
+        total_depth = self.anchoring_depth + self.sensor_height
+        L = np.array([wave_props.wavelength(1/f, total_depth) for f in freqs])
+        k = 2*np.pi/L
+        Kp = np.cosh(k * self.sensor_height) / np.cosh(k * total_depth)
+        if freqs[0]==0:
+            Kp[0] = 1
+
+        Kp_min = (np.cosh(np.pi/(total_depth - self.sensor_height)*self.sensor_height)) / \
+                (np.cosh(np.pi/(total_depth - self.sensor_height)*total_depth))
+        Kp = np.clip(Kp, Kp_min, 1)
+
+        # fmax_Kp = 1/(2*np.pi)*np.sqrt(9.8*(np.pi/(total_depth - self.sensor_height))*np.tanh(np.pi/(total_depth-self.sensor_height)*total_depth))
+        # freqs_to_modify = freqs <= fmax_Kp
+
+        return Kp
+    
+    def _compute_adaptive_Kp(self,freqs,PSD):
+        total_depth = self.anchoring_depth + self.sensor_height
+        L = np.array([wave_props.wavelength(1/f, total_depth) for f in freqs])
+        k = 2*np.pi/L
+        Kp = np.cosh(k * self.sensor_height) / np.cosh(k * total_depth)
+        Kp_min = (np.cosh(np.pi/(total_depth - self.sensor_height)*self.sensor_height)) / \
+                (np.cosh(np.pi/(total_depth - self.sensor_height)*total_depth))
+
+        if freqs[0] == 0:
+            Kp[0] = 1
+
+        PSD_Kp = PSD / (Kp**2)
+        PSD_Kp_smoothed = self.smooth_psd_spectrum(PSD_Kp,24)
+        minima_idx, _ = find_peaks(-np.log(PSD_Kp_smoothed),prominence=0.5)
+        last_min_idx = minima_idx[-1]
+        f_maxpcorr = freqs[last_min_idx]
+
+        # Assuming f_maxpcorr is always lower than fcmax and fmax_Kp
+        total_depth = self.anchoring_depth + self.sensor_height
+        L_max = wave_props.wavelength(1/f_maxpcorr, total_depth)
+        k_max = 2*np.pi/L_max
+        Kp_min = np.cosh(k_max * self.sensor_height) / np.cosh(k_max * total_depth)
+
+        Kp_final = Kp.copy()
+        Kp_final[0:last_min_idx] =  Kp[0:last_min_idx]
+        Kp_final[last_min_idx:] = Kp_min
+
+        # plt.figure()
+        # plt.loglog(freqs, PSD_Kp_smoothed, label='corrected')
+        # plt.axvline(freqs[last_min_idx])
+        # plt.savefig('/scratchsan/medellin/ffayalac/IG_analysis/src/field_analysis/plot_one_spectra.png')
+        return Kp_final
+    
+    def _correction_by_Kp(self,freqs,PSD,kp_method='adaptive'):
+        "Based on https://doi.org/10.1016/j.cageo.2017.06.010"
+        if kp_method == 'nonadaptive':
+            Kp = self._compute_nonadaptive_Kp(freqs)
+        else:
+            Kp = self._compute_adaptive_Kp(freqs,PSD)
+        PSD_Kp = PSD / (Kp**2)
+
+        return freqs, PSD_Kp, PSD

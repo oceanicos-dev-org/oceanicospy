@@ -122,7 +122,7 @@ class BaseLogger(ABC):
 
         if (df['depth_aux[m]'] - df['depth[m]']).abs().max() <= 0.1:
             df = df.drop(columns=['depth_aux[m]'])
-        return df
+        return df 
 
     @abstractmethod
     def _get_records_file(self) -> pd.DataFrame:
