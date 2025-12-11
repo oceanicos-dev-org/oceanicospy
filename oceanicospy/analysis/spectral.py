@@ -167,8 +167,10 @@ class WaveSpectralAnalyzer():
         Hs_sw : float
             Significant wave height in the short wave band [m].
         """
-        ig_band_mask = freqs < freq_split
-        sw_band_mask = ~ig_band_mask
+        freq_upper_sw = 0.2
+        freq_lower_ig = 0.
+        ig_band_mask = (freqs >= freq_lower_ig) & (freqs <= freq_split)
+        sw_band_mask = (freqs > freq_split) & (freqs <= freq_upper_sw)
         m0_ig = np.trapz(PSD[ig_band_mask], freqs[ig_band_mask])
         m0_sw = np.trapz(PSD[sw_band_mask], freqs[sw_band_mask])
         Hm0_ig = 4.004 * np.sqrt(m0_ig)
@@ -342,7 +344,6 @@ class WaveSpectralAnalyzer():
             for param_idx, param_name in enumerate(wave_param_names):
                 wave_params_data[param_name][idx] = wave_params[param_idx]
 
-            print(ig_split)
             if ig_split:
                 Hm0_ig, Hm0_sw = self._compute_hs_ig_band(spectrum, freqs, freq_split)
                 wave_params_data["Hm0_ig"] = wave_params_data.get("Hm0_ig", np.zeros(len(hourly_timeindex)))
@@ -384,42 +385,48 @@ class WaveSpectralAnalyzer():
 #         coefficients, frequencies = pywt.cwt(signal, scales, mother_wavelet, sampling_period=1/self.sampling_freq)
 #         return coefficients,frequencies
 
-#     def compute_wavelet_scalogram_windowed(self,signal,window_length,overlap,mother_wavelet,maximum_scale):
-#         step = int(window_length * (1 - overlap))
-#         if len(signal)==window_length:
-#             n_segments =1
-#         else:
-#             n_segments = (len(signal) - window_length) // step + 1
-#         window = np.hanning(window_length)
+    @extras.timing_decorator
+    def _compute_wavelet_scalogram_for_burst(self,signal,window_length,overlap,mother_wavelet,scales):
+        step = int(window_length * (1 - overlap))
+        if len(signal)==window_length:
+            n_segments =1
+        else:
+            n_segments = (len(signal) - window_length) // step + 1
+        window = np.hanning(window_length)
 
-#         scales = np.arange(1, maximum_scale, 20)
-#         stitched = np.zeros((len(scales), len(signal)))
-#         weight = np.zeros(len(signal))
+        stitched = np.zeros((len(scales), len(signal)))
+        weight = np.zeros(len(signal))
 
-#         for idx_seg in range(n_segments):
-#             start = idx_seg * step
-#             end = start + window_length
-#             segment = signal[start:end]
-#             coef, freqs = pywt.cwt(segment, scales, mother_wavelet, sampling_period=1/self.sampling_freq)
-#             coef_mag = np.abs(coef) * window  # Apply window to smooth overlap
-#             stitched[:, start:end] += coef_mag
-#             weight[start:end] += window
+        for idx_seg in range(n_segments):
+            start = idx_seg * step
+            end = start + window_length
+            segment = signal[start:end]
+            coef, freqs = pywt.cwt(segment, scales, mother_wavelet, sampling_period=1/self.sampling_freq)
+            coef_mag = np.abs(coef) * window  # Apply window to smooth overlap
+            stitched[:, start:end] += coef_mag
+            weight[start:end] += window
 
-#         stitched /= np.maximum(weight, 1e-8)
-#         return stitched,freqs
+        stitched /= np.maximum(weight, 1e-8)
+        return stitched,freqs
 
-#     def compute_all_wavelet_scalograms(self,window_length,overlap,mother_wavelet,maximum_scale):
-#         hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
-#         scale = np.arange(1,maximum_scale,20)
-#         coefs_all = np.zeros((len(hourly_timeindex),len(scale),self.burst_length_s))
+    def compute_wavelet_scalograms_for_bursts(self,window_length,overlap,mother_wavelet,points_scale):
+        hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
+        frequencies = np.logspace(np.log10(0.001), np.log10(self.sampling_freq/2), points_scale)
+        # scales = np.arange(self.sampling_freq*0.5, maximum_scale, 20*int(self.sampling_freq))
+        f_c = pywt.central_frequency(mother_wavelet)
+        dt = 1 / self.sampling_freq
+        scales = f_c / (frequencies * dt)
 
-#         if 'burstId' in self.measurement_signal.columns:
-#             for idx,burst in enumerate(self.measurement_signal["burstId"].unique()):
-#                 burst_series = self.measurement_signal[self.measurement_signal['burstId'] == burst]
-#                 coefs,freqs = self.compute_wavelet_scalogram_windowed(burst_series['eta[m]'].values,window_length,overlap,
-#                                                                             mother_wavelet,maximum_scale)
-#                 coefs_all[idx,:,:] = coefs
-#         return coefs_all,freqs
+        # scale = np.arange(self.sampling_freq*0.5,maximum_scale,20*int(self.sampling_freq))
+        coefs_all = np.zeros((len(hourly_timeindex),len(scales),self.burst_length_s))
+
+        if 'burstId' in self.measurement_signal.columns:
+            for idx,burst in enumerate(self.measurement_signal["burstId"].unique()):
+                burst_series = self.measurement_signal[self.measurement_signal['burstId'] == burst]
+                coefs,freqs = self._compute_wavelet_scalogram_for_burst(burst_series['eta[m]'].values,window_length,overlap,
+                                                                            mother_wavelet,scales)
+                coefs_all[idx,:,:] = coefs
+        return coefs_all,freqs
 
     def _compute_nonadaptive_Kp(self,freqs):
         total_depth = self.anchoring_depth + self.sensor_height
@@ -450,7 +457,7 @@ class WaveSpectralAnalyzer():
             Kp[0] = 1
 
         PSD_Kp = PSD / (Kp**2)
-        PSD_Kp_smoothed = self.smooth_psd_spectrum(PSD_Kp,24)
+        PSD_Kp_smoothed = self._smooth_psd_spectrum(PSD_Kp,24)
         minima_idx, _ = find_peaks(-np.log(PSD_Kp_smoothed),prominence=0.5)
         last_min_idx = minima_idx[-1]
         f_maxpcorr = freqs[last_min_idx]
