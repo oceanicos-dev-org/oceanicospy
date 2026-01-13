@@ -4,6 +4,7 @@ from .xyz_tile import XYZTile
 from .xyz_merger import XYZMerger
 from .xyz_mask import (AxisAlignedRectangle, XYZRectangleMask)
 from .plotting import XYZPointPlotter
+from .profile_builder import ProfileBuilder
 
 __all__ = [
     # IO utilities
