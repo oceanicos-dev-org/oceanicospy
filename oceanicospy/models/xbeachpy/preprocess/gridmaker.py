@@ -29,6 +29,7 @@ class GridMaker():
         end_xy=None,
         auto_extend=True,
         as_n_cells=False,
+        profile_csv=None,
         *args,
         **kwargs
         ):
@@ -69,7 +70,7 @@ class GridMaker():
 
         self.auto_extend = auto_extend
         self.as_n_cells = as_n_cells
-
+        self.profile_csv = profile_csv 
         # Store planar coordinates
         self.start_xy = np.array(start_xy, dtype=float) if start_xy is not None else None
         self.end_xy = np.array(end_xy, dtype=float) if end_xy is not None else None
@@ -615,6 +616,19 @@ class GridMaker():
         # 1D CASE
         # ======================================================================
         if str(dims) == "1":
+            if self.profile_csv is None:
+                raise ValueError("No planar coordinates provided and no 'profile_csv' specified.")
+
+            input_folder = Path(self.init.dict_folders["input"])
+            profile_path = input_folder / self.profile_csv
+
+            if not profile_path.exists():
+                raise FileNotFoundError(f"Specified profile file '{self.profile_csv}' not found in input folder.")
+
+            arr = np.loadtxt(profile_path, delimiter=",", skiprows=1)
+            if arr.shape[1] < 2:
+                raise ValueError(f"File '{self.profile_csv}' must contain at least two columns (x, z).")
+
             # --------------------------------------------------------------
             # 1D profile grid
             # --------------------------------------------------------------
@@ -665,11 +679,21 @@ class GridMaker():
                 }
 
             else:
-                # Classic 1-D profile in x only (no planar coordinates)
+                # Load the x,z profile to infer the end_x_point
+                arr = np.loadtxt(profile_path, delimiter=",", skiprows=1)
+                x_values = arr[:, 0]
+
+                x_values = arr[:, 0]
+                if x_values.size < 2:
+                    raise ValueError("Profile file must contain at least two x values.")
+
+                # Estimate length from x[0] to x[-1]
+                x0 = float(x_values[0])
+                x1 = float(x_values[-1])
+                length = abs(x1 - x0)
+
                 if getattr(self, "end_x_point", None) is None:
-                    raise ValueError(
-                        "For 1D grid without planar coordinates you must provide 'end_x_point'."
-                    )
+                    self.end_x_point = length
 
                 start_x_point = 0.0
 
@@ -681,6 +705,7 @@ class GridMaker():
                     as_n_cells=as_n_cells_flag,
                 )
                 y_points = np.zeros_like(x_points)
+
 
                 grid_dict = {
                     "xfilepath": "x_profile.grd",
