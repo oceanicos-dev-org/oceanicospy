@@ -21,7 +21,12 @@ class BathyMaker:
        - Writes a .dep file (single column of depths) and an optional CSV
          with the extracted profile.
 
-    2) 2D mode (xyz2asc):
+    2) 1D mode (file-based):
+       - Reads a 2-column (x, z) profile from file.
+       - Interpolates z to match a .grd file.
+       - Writes corresponding .dep file.
+
+    3) 2D mode (xyz2asc):
        - Converts bathymetry data from XYZ format to ESRI ASCII Grid format.
 
     Parameters
@@ -315,6 +320,69 @@ class BathyMaker:
         print(f"Profile CSV written to: {profile_csv_path}")
 
         return profile_df
+    
+    def build_1d_profile_from_file(
+        self,
+        profile_filename: str,
+        x_grd_name: str = "x_profile.grd",
+        dep_name: str | None = None,
+    ) -> pd.DataFrame:
+        """
+        Interpolates a (x, z) profile from a text file to match the XBeach .grd,
+        and saves a .dep file in the run folder.
+
+        Parameters
+        ----------
+        profile_filename : str
+            Name of the 2-column text file (x, z) located in input folder.
+        x_grd_name : str, optional
+            Name of the .grd file located in the run folder.
+        dep_name : str, optional
+            Output .dep file name. Default is self.filename.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with 'x_grd' and 'z_interp' columns.
+        """
+
+        input_folder = self.init.dict_folders["input"]
+        run_folder = self.init.dict_folders["run"]
+
+        profile_path = os.path.join(input_folder, profile_filename)
+        x_grd_path = os.path.join(run_folder, x_grd_name)
+
+        if not os.path.isfile(profile_path):
+            raise FileNotFoundError(f"Profile file not found: {profile_path}")
+        if not os.path.isfile(x_grd_path):
+            raise FileNotFoundError(f"GRD file not found: {x_grd_path}")
+
+        # Read file (x,z) 
+        profile = pd.read_csv(profile_path, sep=",", header=0)  
+        profile.columns = ["x", "z"]  
+
+        profile["x"] = pd.to_numeric(profile["x"], errors="coerce")
+        profile["z"] = pd.to_numeric(profile["z"], errors="coerce")
+        profile = profile.dropna()
+
+        profile = profile.sort_values("x")
+
+
+        # Read x_profile.grd
+        x_grd = np.loadtxt(x_grd_path).astype(float).ravel()
+
+        # Interpolation
+        z_interp = np.interp(x_grd, profile["x"], profile["z"])
+
+        # Save as .dep file
+        if dep_name is None:
+            dep_name = self.filename
+        dep_path = os.path.join(run_folder, dep_name)
+        np.savetxt(dep_path, z_interp.reshape(-1, 1), fmt="%.3f")
+        print(f"Interpolated 1D .dep written to: {dep_path}")
+
+        return pd.DataFrame({"x_grd": x_grd, "z_interp": z_interp})
+        
 
     # ------------------------------------------------------------------
     # 2D mode 
