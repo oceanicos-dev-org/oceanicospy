@@ -129,12 +129,12 @@ class WaveSpectralAnalyzer():
 
         """
 
-        m0 = np.trapz(PSD, freqs.flatten())
-        m1 = np.trapz(freqs.flatten()*PSD, freqs.flatten())
-        m2 = np.trapz((freqs.flatten()**2)*PSD, freqs.flatten())
+        m0 = np.trapezoid(PSD, freqs.flatten())
+        m1 = np.trapezoid(freqs.flatten()*PSD, freqs.flatten())
+        m2 = np.trapezoid((freqs.flatten()**2)*PSD, freqs.flatten())
 
-        i0 = np.trapz(np.abs(PSD)**4, freqs.flatten())
-        i1 = np.trapz(freqs.flatten() * np.abs(PSD)**4, freqs.flatten())
+        i0 = np.trapezoid(np.abs(PSD)**4, freqs.flatten())
+        i1 = np.trapezoid(freqs.flatten() * np.abs(PSD)**4, freqs.flatten())
 
         Hs = 4.004*np.sqrt(m0)
         Hrms = np.sqrt(8*m0)
@@ -171,8 +171,8 @@ class WaveSpectralAnalyzer():
         freq_lower_ig = 0.
         ig_band_mask = (freqs >= freq_lower_ig) & (freqs <= freq_split)
         sw_band_mask = (freqs > freq_split) & (freqs <= freq_upper_sw)
-        m0_ig = np.trapz(PSD[ig_band_mask], freqs[ig_band_mask])
-        m0_sw = np.trapz(PSD[sw_band_mask], freqs[sw_band_mask])
+        m0_ig = np.trapezoid(PSD[ig_band_mask], freqs[ig_band_mask])
+        m0_sw = np.trapezoid(PSD[sw_band_mask], freqs[sw_band_mask])
         Hm0_ig = 4.004 * np.sqrt(m0_ig)
         Hm0_sw = 4.004 * np.sqrt(m0_sw)
         return Hm0_ig,Hm0_sw
