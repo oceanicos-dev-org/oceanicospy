@@ -15,7 +15,7 @@ class AQUAlogger(BaseLogger):
     directory_path : str
         Path to the directory containing the .csv files.
     sampling_data : dict
-        Dictionary containing information on device installation, including:
+        Dictionary containing information on device deployment, including:
         
         - ``start_time``: The start time of the sampling period.
         - ``end_time``: The end time of the sampling period.
