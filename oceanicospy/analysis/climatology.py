@@ -34,3 +34,7 @@ def compute_annual_cycle(data, time):
         return annual_cycle.values
     else:
         raise ValueError('The input data must be a 1D np array or a pandas Series.')
+    
+
+def example_jcaez(data):
+    pass
