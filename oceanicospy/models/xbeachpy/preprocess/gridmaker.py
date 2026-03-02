@@ -3,10 +3,7 @@ import os
 import glob
 import shutil
 from pathlib import Path
-import shapefile
 import pandas as pd
-import geopandas as gpd
-from shapely.geometry import Point
 from itertools import zip_longest
 from .. import utils
 
@@ -748,7 +745,14 @@ class GridMaker():
             raise FileNotFoundError(
                 f"Shapefile not found at '{shp_path}'. Check input folder and name."
             )
-
+        
+        try:
+            import shapefile
+        except ImportError:
+            raise ImportError(
+                "PyShp (shapefile) is required for 2D grid generation. "
+                "Install it via: conda install -c conda-forge pyshp"
+            )
         sf = shapefile.Reader(shp_path)
         shape = sf.shapes()[0]
         min_lon, min_lat, max_lon, max_lat = shape.bbox
@@ -907,6 +911,14 @@ class GridMaker():
                     f.write("".join(formatted) + "\n")
 
             # Optional: build shapefile of grid points (original behaviour)
+            try:
+                from shapely.geometry import Point
+                import geopandas as gpd
+            except ImportError:
+                raise ImportError(
+                    "geopandas and shapely are required to export the grid shapefile. "
+                    "Install them via: conda install -c conda-forge geopandas"
+                )
             geometry = []
             with open(out_path_x, "r") as file_x, open(out_path_y, "r") as file_y:
                 for line_x, line_y in zip(file_x, file_y):
