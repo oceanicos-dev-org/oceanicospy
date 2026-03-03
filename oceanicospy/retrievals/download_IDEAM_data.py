@@ -571,8 +571,6 @@ class IDEAMDownloader:
             return
 
         self.data["Fecha"] = pd.to_datetime(self.data["Fecha"], errors="coerce")
-        # convert from UTC to local (tz_offset is negative for Colombia)
-        self.data["Fecha"] = self.data["Fecha"] + timedelta(hours=self.tz_offset)
 
         rename_map = {}
         if "Valor" in self.data.columns:
