@@ -159,7 +159,7 @@ class WeatherSensStation:
         # Standardize column names to Davis style
         column_map = {
             'Date/Time': 'DateTime',
-            'Precipitación (mm)': 'Rain',
+            'Precipitacion (mm)': 'Rain',
             'Temperatura Aire (°C)': 'Temp',
             'Humedad Aire (%)': 'Hum',
             'Presion Barometrica (hPa)': 'Bar',
