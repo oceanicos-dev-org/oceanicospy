@@ -1,12 +1,9 @@
 import numpy as np
 import pandas as pd
-
-from ..utils import wave_props,constants,extras
-from scipy.signal import welch
-from PyEMD import EMD,EEMD,CEEMDAN
 import pywt
-import matplotlib.pyplot as plt
-from scipy.signal import find_peaks
+from scipy.signal import find_peaks,welch
+
+from ..utils import wave_props,extras
 
 class WaveSpectralAnalyzer():
     def __init__(self,measurement_signal,sampling_data):
@@ -37,6 +34,10 @@ class WaveSpectralAnalyzer():
             Sensor height extracted from sampling_data.
         burst_length_s : float
             Burst length in seconds extracted from sampling_data.
+
+        Notes
+        -----
+        01-Oct-2025 : Origination - Franklin Ayala
         """
 
         self.measurement_signal = measurement_signal
@@ -46,12 +47,20 @@ class WaveSpectralAnalyzer():
         self.sensor_height = self.sampling_data['sensor_height']
         self.burst_length_s = self.sampling_data['burst_length_s']
 
-    def _smooth_psd_spectrum(self,PSD,smoothing_bins):
-        """Smooth the power spectral density (PSD) spectrum using a moving average filter."""
-        kernel = np.ones(smoothing_bins) / smoothing_bins
-        PSD_smoothed = np.convolve(PSD, kernel, mode='same')
-        return PSD_smoothed
-    
+    def _check_burst_length(self,burst_series):
+        # Create a time index for each expected burst based on the sampling frequency and burst length
+        burst_start_time = burst_series.index[0]
+        burst_end_time = burst_series.index[-1]
+        expected_times = pd.date_range(start=burst_start_time, end=burst_end_time, 
+                                       freq=pd.Timedelta(seconds=1/self.sampling_data['sampling_freq']))
+
+        # Find which expected times are missing in the burst
+        missing_times = expected_times.difference(burst_series.index)
+        if not missing_times.empty:
+            raise ValueError(f"Missing timestamps in burst {burst_series}: {missing_times}")
+        else:
+            return None
+
     def _compute_spectrum_for_burst(self, burst_signal, method, kp_correction, window_type, window_length, smoothing_bins):
         """
         Compute spectrum for a single burst signal using specified method.
@@ -78,25 +87,114 @@ class WaveSpectralAnalyzer():
         spectrum : ndarray
             Computed spectrum (Kp-corrected if kp_correction=True, else raw).
         """
-        if method == 'fft':
-            result = self.compute_spectrum_from_direct_fft(burst_signal, kp_correction)
-        elif method == 'welch':
-            result = self.compute_spectrum_from_welch(burst_signal, kp_correction, window_type, window_length)
+
+
+        if not self._check_burst_length(burst_signal):
+            burst_signal = burst_signal.values
+            if method == 'fft':
+                result = self.compute_spectrum_from_direct_fft(burst_signal, kp_correction)
+            elif method == 'welch':
+                result = self.compute_spectrum_from_welch(burst_signal, kp_correction, window_type, window_length)
+            else:
+                raise ValueError(f"Unknown method: {method}. Use 'fft' or 'welch'.")
+
+            if kp_correction:
+                freqs, spectrum, _ = result  # (freqs, PSD_kp, PSD)
+            else:
+                freqs, spectrum = result  # (freqs, PSD)
+
+            if method == 'welch' and smoothing_bins is not None:
+                spectrum = self._smooth_psd_spectrum(spectrum, smoothing_bins)
+            return freqs, spectrum
+
+    def _smooth_psd_spectrum(self,PSD,smoothing_bins):
+        """Smooth the power spectral density (PSD) spectrum using a moving average filter.
+        
+        Parameters
+        ----------
+        PSD : ndarray
+            Power spectral density to be smoothed.
+        smoothing_bins : int
+            Number of bins to use for the moving average smoothing.
+
+        Returns
+        -------
+        PSD_smoothed : ndarray
+            Smoothed power spectral density.
+        """
+
+        kernel = np.ones(smoothing_bins) / smoothing_bins
+        PSD_smoothed = np.convolve(PSD, kernel, mode='same')
+        return PSD_smoothed
+
+    def _compute_nonadaptive_Kp(self,freqs):
+        """Compute non-adaptive Kp correction factor based on linear wave theory."""
+        total_depth = self.anchoring_depth + self.sensor_height
+        L = np.array([wave_props.wavelength(1/f, total_depth) for f in freqs])
+        k = 2*np.pi/L
+        Kp = np.cosh(k * self.sensor_height) / np.cosh(k * total_depth)
+        if freqs[0]==0:
+            Kp[0] = 1
+
+        Kp_min = (np.cosh(np.pi/(total_depth - self.sensor_height)*self.sensor_height)) / \
+                (np.cosh(np.pi/(total_depth - self.sensor_height)*total_depth))
+        Kp = np.clip(Kp, Kp_min, 1)
+        return Kp
+    
+    def _compute_adaptive_Kp(self,freqs,PSD):
+        """Compute adaptive Kp correction factor based on the spectrum shape."""
+        total_depth = self.anchoring_depth + self.sensor_height
+        L = np.array([wave_props.wavelength(1/f, total_depth) for f in freqs])
+        k = 2*np.pi/L
+        Kp = np.cosh(k * self.sensor_height) / np.cosh(k * total_depth)
+        Kp_min = (np.cosh(np.pi/(total_depth - self.sensor_height)*self.sensor_height)) / \
+                (np.cosh(np.pi/(total_depth - self.sensor_height)*total_depth))
+
+        if freqs[0] == 0:
+            Kp[0] = 1
+
+        PSD_Kp = PSD / (Kp**2)
+        PSD_Kp_smoothed = self._smooth_psd_spectrum(PSD_Kp,24)
+        minima_idx, _ = find_peaks(-np.log(PSD_Kp_smoothed),prominence=0.5)
+        last_min_idx = minima_idx[-1]
+        f_maxpcorr = freqs[last_min_idx]
+
+        # Assuming f_maxpcorr is always lower than fcmax and fmax_Kp
+        total_depth = self.anchoring_depth + self.sensor_height
+        L_max = wave_props.wavelength(1/f_maxpcorr, total_depth)
+        k_max = 2*np.pi/L_max
+        Kp_min = np.cosh(k_max * self.sensor_height) / np.cosh(k_max * total_depth)
+
+        Kp_final = Kp.copy()
+        Kp_final[0:last_min_idx] =  Kp[0:last_min_idx]
+        Kp_final[last_min_idx:] = Kp_min
+        return Kp_final
+    
+    def _correction_by_Kp(self,freqs,PSD,kp_method='adaptive'):
+        """Apply Kp correction to the power spectral density (PSD) based on the specified method.
+        
+        Parameters
+        ----------
+        freqs : ndarray
+            Frequency array corresponding to the PSD.
+        PSD : ndarray
+            Power spectral density to be corrected.
+        kp_method : str, optional
+            Method for Kp correction: 'adaptive' or 'nonadaptive'. Default is 'adaptive'
+            
+        Notes
+        -----
+        Based on https://doi.org/10.1016/j.cageo.2017.06.010
+        """
+        
+        if kp_method == 'nonadaptive':
+            Kp = self._compute_nonadaptive_Kp(freqs)
         else:
-            raise ValueError(f"Unknown method: {method}. Use 'fft' or 'welch'.")
+            Kp = self._compute_adaptive_Kp(freqs,PSD)
+        PSD_Kp = PSD / (Kp**2)
 
-        # Unpack result based on kp_correction
-        if kp_correction:
-            freqs, spectrum, _ = result  # (freqs, PSD_kp, PSD)
-        else:
-            freqs, spectrum = result  # (freqs, PSD)
-
-        # Apply smoothing for Welch method
-        if method == 'welch' and smoothing_bins is not None:
-            spectrum = self._smooth_psd_spectrum(spectrum, smoothing_bins)
-
-        return freqs, spectrum
-
+        return freqs, PSD_Kp, PSD
+    
     def get_wave_params_from_spectrum(self,PSD,freqs):
         """
         This function computes different wave integral parameters from the spectrum
@@ -126,21 +224,16 @@ class WaveSpectralAnalyzer():
         Notes
         -----
         10-Dec-2024 : Origination - Franklin Ayala
-
         """
 
         m0 = np.trapezoid(PSD, freqs.flatten())
         m1 = np.trapezoid(freqs.flatten()*PSD, freqs.flatten())
         m2 = np.trapezoid((freqs.flatten()**2)*PSD, freqs.flatten())
 
-        i0 = np.trapezoid(np.abs(PSD)**4, freqs.flatten())
-        i1 = np.trapezoid(freqs.flatten() * np.abs(PSD)**4, freqs.flatten())
-
         Hs = 4.004*np.sqrt(m0)
         Hrms = np.sqrt(8*m0)
         Hmean = np.sqrt(2*np.pi*m0)
 
-        # Tp = i0/i1
         Tp = 1/freqs[np.argmax(PSD)]
         Tm01 = m0/m1
         Tm02 = np.sqrt(m0/m2)
@@ -158,7 +251,7 @@ class WaveSpectralAnalyzer():
         freqs : ndarray
             Frequency array.
         freq_split : float
-            Frequency that separates infragravity from wind waves.
+            Frequency that separates infragravity from wind waves in Hz.
 
         Returns
         -------
@@ -166,7 +259,12 @@ class WaveSpectralAnalyzer():
             Significant wave height in the infragravity band [m].
         Hs_sw : float
             Significant wave height in the short wave band [m].
+        
+        Notes
+        -----
+        10-Dec-2025 : Origination - Franklin Ayala
         """
+
         freq_upper_sw = 0.2
         freq_lower_ig = 0.
         ig_band_mask = (freqs >= freq_lower_ig) & (freqs <= freq_split)
@@ -175,6 +273,7 @@ class WaveSpectralAnalyzer():
         m0_sw = np.trapezoid(PSD[sw_band_mask], freqs[sw_band_mask])
         Hm0_ig = 4.004 * np.sqrt(m0_ig)
         Hm0_sw = 4.004 * np.sqrt(m0_sw)
+
         return Hm0_ig,Hm0_sw
 
     @extras.timing_decorator
@@ -209,8 +308,9 @@ class WaveSpectralAnalyzer():
         Based on https://currents.soest.hawaii.edu/ocn_data_analysis/_static/Spectrum.html
 
         01-Sep-2023 : Origination - Juan Diego Toro
-
+        10-Dec-2025 : Refactorization - Franklin Ayala
         """
+
         length_signal = len(signal)
         freqs = np.fft.rfftfreq(length_signal,1/self.sampling_freq)
         fourier = np.fft.rfft(signal)
@@ -256,19 +356,17 @@ class WaveSpectralAnalyzer():
             Power spectral density.
         PSD_kp : ndarray (optional)
             Density variance spectrum corrected by Kp
+
+        Notes
+        -----
+        10-Dec-2025 : Origination - Franklin Ayala
         """
 
-        # Welch PSD
         freqs, PSD = welch(x=signal,fs=self.sampling_freq,window=window_type,
                             nperseg=window_length,
                             noverlap=overlap,
                             scaling='density')
-        
-        # Estimate degrees of freedom:
-        # DOF ≈ (2 × number of segments) × (effective freq bins averaged / total bins)
-        # n_segments = 1 + (len(signal) - window_length) // (window_length - overlap)
-        # dof = 2 * n_segments * (1 / smoothing_bins)
-        
+                
         if kp_correction == False:
             return freqs,PSD
         else:
@@ -276,7 +374,7 @@ class WaveSpectralAnalyzer():
 
     def get_spectra_and_params_for_bursts(self, method, kp_correction=True, ig_split=False, freq_split=None, window_type=None, window_length=None, overlap=None, smoothing_bins=None):
         """
-        Compute wave spectra and parameters for each burst in the measurement signal.
+        Compute wave spectra and integral parameters for each burst in the measurement signal.
 
         Parameters
         ----------
@@ -322,20 +420,17 @@ class WaveSpectralAnalyzer():
         hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
         wave_param_names = ["Hm0", "Hrms", "Hmean", "Tp", "Tm01", "Tm02"]
         
-        # Initialize data structures
         wave_params_data = {param: np.zeros(len(hourly_timeindex)) for param in wave_param_names}
         wave_spectra_data = {"S": [], "dir": [], "freq": None, "time": hourly_timeindex}
         wave_params_data["time"] = hourly_timeindex
 
-        # Process each burst
         for idx, burst_id in enumerate(self.measurement_signal["burstId"].unique()):
             burst_series = self.measurement_signal[self.measurement_signal["burstId"] == burst_id]
-            burst_signal = burst_series["eta[m]"].values
+            burst_signal = burst_series["eta[m]"]
 
-            # Compute spectrum
-            freqs, spectrum = self._compute_spectrum_for_burst(
-                burst_signal, method, kp_correction, window_type, window_length, smoothing_bins
-            )
+            freqs, spectrum = self._compute_spectrum_for_burst(burst_signal, method, 
+                                                               kp_correction, window_type, 
+                                                               window_length, smoothing_bins)
 
             wave_spectra_data["S"].append(spectrum)
 
@@ -355,52 +450,53 @@ class WaveSpectralAnalyzer():
             if idx == 0:
                 wave_spectra_data["freq"] = freqs
 
-        # Finalize data structures
         wave_spectra_data["S"] = np.array(wave_spectra_data["S"])
 
         return wave_spectra_data, wave_params_data
 
-#     def decompose_into_IMFs_for_bursts(self,emd_type,maximum_IMFs,number_ensembles=None,amplitude_noise_std=None):
-#         hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
-#         time_seconds = np.arange(0,self.burst_length_s,1)
-
-#         IMFs_all = np.zeros((len(hourly_timeindex),maximum_IMFs,self.burst_length_s))
-
-#         if 'burstId' in self.measurement_signal.columns:
-#             for idx,burst in enumerate(self.measurement_signal["burstId"].unique()):
-#                 burst_series = self.measurement_signal[self.measurement_signal['burstId'] == burst]
-#                 if emd_type == 'EMD':
-#                     emd = EMD()
-#                     IMFs = emd(burst_series['eta[m]'].values, time_seconds, max_imf=maximum_IMFs)[:maximum_IMFs, :]
-#                 elif emd_type == 'EEMD':
-#                     eemd = EEMD(trials=number_ensembles, epsilon=amplitude_noise_std)
-#                     IMFs = eemd(burst_series['eta[m]'].values, time_seconds, max_imf=maximum_IMFs)[:maximum_IMFs, :]
-#                 else:
-#                     ceemd = CEEMDAN(DTYPE=np.float16,trials=number_ensembles,epsilon=amplitude_noise_std,parallel=True,processes=48)
-#                     IMFs = ceemd(burst_series['eta[m]'].values,time_seconds,max_imf=maximum_IMFs)[:maximum_IMFs,:]
-#                 IMFs_all[idx,:,:] = IMFs
-#         return IMFs_all
-
-#     def compute_wavelet_scalogram(self,signal,mother_wavelet,maximum_scale):
-#         coefficients, frequencies = pywt.cwt(signal, scales, mother_wavelet, sampling_period=1/self.sampling_freq)
-#         return coefficients,frequencies
-
     @extras.timing_decorator
-    def _compute_wavelet_scalogram_for_burst(self,signal,window_length,overlap,mother_wavelet,scales):
+    def _compute_wavelet_scalogram_for_burst(self,burst_signal,window_length,overlap,mother_wavelet,scales):
+        """Compute wavelet scalogram for a single burst signal using overlapping windows.
+        
+        Parameters
+        ----------
+        burst_signal : ndarray
+            The signal for which to compute the wavelet scalogram.
+        window_length : int
+            The length of each window.
+        overlap : float
+            The overlap between consecutive windows.
+        mother_wavelet : str
+            The mother wavelet to use.
+        scales : ndarray
+            The scales for the wavelet transform.
+
+        Returns
+        -------
+        stitched : ndarray
+            The stitched wavelet scalogram.
+        freqs : ndarray
+            The corresponding frequencies.
+
+        Notes
+        -----
+        10-Dec-2025 : Origination - Franklin Ayala
+        """
+
         step = int(window_length * (1 - overlap))
-        if len(signal)==window_length:
+        if len(burst_signal)==window_length:
             n_segments =1
         else:
-            n_segments = (len(signal) - window_length) // step + 1
+            n_segments = (len(burst_signal) - window_length) // step + 1
         window = np.hanning(window_length)
 
-        stitched = np.zeros((len(scales), len(signal)))
-        weight = np.zeros(len(signal))
+        stitched = np.zeros((len(scales), len(burst_signal)))
+        weight = np.zeros(len(burst_signal))
 
         for idx_seg in range(n_segments):
             start = idx_seg * step
             end = start + window_length
-            segment = signal[start:end]
+            segment = burst_signal[start:end]
             coef, freqs = pywt.cwt(segment, scales, mother_wavelet, sampling_period=1/self.sampling_freq)
             coef_mag = np.abs(coef) * window  # Apply window to smooth overlap
             stitched[:, start:end] += coef_mag
@@ -410,6 +506,26 @@ class WaveSpectralAnalyzer():
         return stitched,freqs
 
     def compute_wavelet_scalograms_for_bursts(self,window_length,overlap,mother_wavelet,points_scale):
+        """Compute wavelet scalograms for all bursts in the measurement signal.
+        
+        Parameters
+        ----------
+        window_length : int
+            The length of each window.
+        overlap : float
+            The overlap between consecutive windows.
+        mother_wavelet : str
+            The mother wavelet to use.
+        points_scale : int
+            The number of scales to compute.
+
+        Returns
+        -------
+        coefs_all : ndarray
+            The computed wavelet scalograms for all bursts.
+        freqs : ndarray
+            The corresponding frequencies.
+        """
         hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
         frequencies = np.logspace(np.log10(0.001), np.log10(self.sampling_freq/2), points_scale)
         # scales = np.arange(self.sampling_freq*0.5, maximum_scale, 20*int(self.sampling_freq))
@@ -428,75 +544,7 @@ class WaveSpectralAnalyzer():
                 coefs_all[idx,:,:] = coefs
         return coefs_all,freqs
 
-    def _compute_nonadaptive_Kp(self,freqs):
-        total_depth = self.anchoring_depth + self.sensor_height
-        L = np.array([wave_props.wavelength(1/f, total_depth) for f in freqs])
-        k = 2*np.pi/L
-        Kp = np.cosh(k * self.sensor_height) / np.cosh(k * total_depth)
-        if freqs[0]==0:
-            Kp[0] = 1
-
-        Kp_min = (np.cosh(np.pi/(total_depth - self.sensor_height)*self.sensor_height)) / \
-                (np.cosh(np.pi/(total_depth - self.sensor_height)*total_depth))
-        Kp = np.clip(Kp, Kp_min, 1)
-
-        # fmax_Kp = 1/(2*np.pi)*np.sqrt(9.8*(np.pi/(total_depth - self.sensor_height))*np.tanh(np.pi/(total_depth-self.sensor_height)*total_depth))
-        # freqs_to_modify = freqs <= fmax_Kp
-
-        return Kp
-    
-    def _compute_adaptive_Kp(self,freqs,PSD):
-        total_depth = self.anchoring_depth + self.sensor_height
-        L = np.array([wave_props.wavelength(1/f, total_depth) for f in freqs])
-        k = 2*np.pi/L
-        Kp = np.cosh(k * self.sensor_height) / np.cosh(k * total_depth)
-        Kp_min = (np.cosh(np.pi/(total_depth - self.sensor_height)*self.sensor_height)) / \
-                (np.cosh(np.pi/(total_depth - self.sensor_height)*total_depth))
-
-        if freqs[0] == 0:
-            Kp[0] = 1
-
-        PSD_Kp = PSD / (Kp**2)
-        PSD_Kp_smoothed = self._smooth_psd_spectrum(PSD_Kp,24)
-        minima_idx, _ = find_peaks(-np.log(PSD_Kp_smoothed),prominence=0.5)
-        last_min_idx = minima_idx[-1]
-        f_maxpcorr = freqs[last_min_idx]
-
-        # Assuming f_maxpcorr is always lower than fcmax and fmax_Kp
-        total_depth = self.anchoring_depth + self.sensor_height
-        L_max = wave_props.wavelength(1/f_maxpcorr, total_depth)
-        k_max = 2*np.pi/L_max
-        Kp_min = np.cosh(k_max * self.sensor_height) / np.cosh(k_max * total_depth)
-
-        Kp_final = Kp.copy()
-        Kp_final[0:last_min_idx] =  Kp[0:last_min_idx]
-        Kp_final[last_min_idx:] = Kp_min
-
-        # plt.figure()
-        # plt.loglog(freqs, PSD_Kp_smoothed, label='corrected')
-        # plt.axvline(freqs[last_min_idx])
-        # plt.savefig('/scratchsan/medellin/ffayalac/IG_analysis/src/field_analysis/plot_one_spectra.png')
-        return Kp_final
-    
-    def _correction_by_Kp(self,freqs,PSD,kp_method='adaptive'):
-        "Based on https://doi.org/10.1016/j.cageo.2017.06.010"
-        if kp_method == 'nonadaptive':
-            Kp = self._compute_nonadaptive_Kp(freqs)
-        else:
-            Kp = self._compute_adaptive_Kp(freqs,PSD)
-        PSD_Kp = PSD / (Kp**2)
-
-        return freqs, PSD_Kp, PSD
-    
-
-    # def _check_burst_length(self,burst_series):
-    #     # Create a time index for each expected burst based on the sampling frequency and burst length
-    #     burst_start_time = burst_series.index[0]
-    #     burst_end_time = burst_series.index[-1]
-    #     expected_times = pd.date_range(start=burst_start_time, end=burst_end_time, freq=pd.Timedelta(seconds=1/self.sampling_data['sampling_freq']))
-
-    #     # Find which expected times are missing in the burst
-    #     missing_times = expected_times.difference(burst_series.index)
-    #     if not missing_times.empty:
-    #         print(f"Missing timestamps in burst {hourly_timeindex[idx]}: {missing_times}")
+#     def compute_wavelet_scalogram(self,signal,mother_wavelet,maximum_scale):
+#         coefficients, frequencies = pywt.cwt(signal, scales, mother_wavelet, sampling_period=1/self.sampling_freq)
+#         return coefficients,frequencies
 
