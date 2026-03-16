@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 
 from scipy.signal import resample,detrend
+from PyEMD import CEEMDAN,EEMD,EMD
+
 
 from ..utils import wave_props
 
@@ -139,3 +141,25 @@ class WaveTemporalAnalyzer:
         Tm = np.nanmean(T)
         Lm = np.nanmean(L)
         return (H13,Tm,Lm,Hmx)
+
+#     def decompose_into_IMFs_for_bursts(self,emd_type,maximum_IMFs,number_ensembles=None,amplitude_noise_std=None):
+#         hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
+#         time_seconds = np.arange(0,self.burst_length_s,1)
+
+#         IMFs_all = np.zeros((len(hourly_timeindex),maximum_IMFs,self.burst_length_s))
+
+#         if 'burstId' in self.measurement_signal.columns:
+#             for idx,burst in enumerate(self.measurement_signal["burstId"].unique()):
+#                 burst_series = self.measurement_signal[self.measurement_signal['burstId'] == burst]
+#                 if emd_type == 'EMD':
+#                     emd = EMD()
+#                     IMFs = emd(burst_series['eta[m]'].values, time_seconds, max_imf=maximum_IMFs)[:maximum_IMFs, :]
+#                 elif emd_type == 'EEMD':
+#                     eemd = EEMD(trials=number_ensembles, epsilon=amplitude_noise_std)
+#                     IMFs = eemd(burst_series['eta[m]'].values, time_seconds, max_imf=maximum_IMFs)[:maximum_IMFs, :]
+#                 else:
+#                     ceemd = CEEMDAN(DTYPE=np.float16,trials=number_ensembles,epsilon=amplitude_noise_std,parallel=True,processes=48)
+#                     IMFs = ceemd(burst_series['eta[m]'].values,time_seconds,max_imf=maximum_IMFs)[:maximum_IMFs,:]
+#                 IMFs_all[idx,:,:] = IMFs
+#         return IMFs_all
+
