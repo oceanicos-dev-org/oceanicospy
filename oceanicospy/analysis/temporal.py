@@ -1,18 +1,12 @@
 import numpy as np
 import pandas as pd
-
-from scipy.signal import resample,detrend
 from PyEMD import CEEMDAN,EEMD,EMD
-
+from scipy.signal import resample,detrend
 
 from ..utils import wave_props
 
 class WaveTemporalAnalyzer:
-    """
-    Class for analyzing wave parameters from temporal data.
-    """
-
-    def __init__(self,measurement_signal,sampling_data): 
+    def __init__(self,measured_signal,sampling_data,surface_level_column='eta[m]'): 
         """"
         Initializes the analysis object with measurement signal and sampling data.
 
@@ -26,23 +20,25 @@ class WaveTemporalAnalyzer:
                 - 'anchoring_depth' (float): Depth at which the sensor is anchored.
                 - 'sensor_height' (float): Height of the sensor above the bottom.
                 - 'burst_length_s' (float): Duration of each burst in seconds.
-        """
-        self.measurement_signal = measurement_signal
-        self.sampling_data = sampling_data
+        surface_level_column : str, optional
+            The name of the column in measurement_signal that contains surface level data (default is 'eta[m]').
 
-    def params_from_zero_crossing(self, clean_records, sampling_data):
+        Notes
+        -----
+
+        23-Feb-2014 : First Matlab version - Daniel Peláez
+        01-Sep-2023 : First Python version - Alejandro Henao
+        10-Dec-2024 : Polishing            - Franklin Ayala 
+
+        """
+        self.measured_signal = measured_signal
+        self.sampling_data = sampling_data
+        self.surface_level_column = surface_level_column
+
+    def compute_params_from_zero_upcrossing(self):
         """
         Calculate wave parameters from zero-crossing analysis of pressure data.
 
-        Parameters
-        ----------
-        clean_records : pandas.DataFrame
-            DataFrame containing cleaned pressure records with a 'burstId' column to identify different bursts.
-        sampling_data : dict
-            Dictionary containing sampling information with keys:
-            - 'sampling_freq': Sampling frequency of the pressure data.
-            - 'anchoring_depth': Depth at which the sensor is anchored.
-            - 'sensor_height': Height of the sensor from the seabed.
 
         Returns
         -------
@@ -54,93 +50,96 @@ class WaveTemporalAnalyzer:
         wave_params=["time","H1/3","Tmean"]
         wave_params_data={param:[] for param in wave_params}
 
-        clean_data=clean_records.copy()
+        for i in self.measured_signal['burstId'].unique()[:2]:
+            burst_signal = self.measured_signal[self.measured_signal['burstId'] == i]
 
-        for i in clean_data['burstId'].unique():
-            burst_series=clean_data[clean_data['burstId']==i]
+            # TODO: validate this step, detrend option is already given in the observations. What if the data is coming from another source?
+            burst_signal_detrended = burst_signal.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
+            burst_signal_detrended[self.measured_signal.columns[-1]] = burst_signal.iloc[:, -1]
+            print(burst_signal_detrended)
 
-            burst_series_detrended = burst_series.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
-            burst_series_detrended[clean_records.columns[-1]] = burst_series.iloc[:, -1]
+            H_top_third, Hmax, Tmean, Lmean = self.apply_zero_upcrossing_burst(burst_signal_detrended['pressure[bar]'], self.sampling_data['sampling_freq'],
+                                    self.sampling_data['anchoring_depth'], self.sampling_data['sensor_height'])
 
-            H13, Tm, Lm, Hmax = self.zero_crossing(burst_series_detrended['pressure'], sampling_data['sampling_freq'],
-                                    sampling_data['anchoring_depth'], sampling_data['sensor_height'])
-
-            wave_params_data['time'].append(burst_series_detrended.index[0])
-            wave_params_data['H1/3'].append(H13)
-            wave_params_data['Tmean'].append(Tm)
+            wave_params_data['time'].append(burst_signal_detrended.index[0])
+            wave_params_data['H1/3'].append(H_top_third)
+            wave_params_data['Tmean'].append(Tmean)
+            print(wave_params_data['time'])
 
         wave_params_data=pd.DataFrame(wave_params_data).set_index('time')
 
         return wave_params_data
 
-    def zero_crossing(self, burst, fs, h, zp):
+    def apply_zero_upcrossing_burst(self, burst_signal, sampling_freq, anchoring_depth, sensor_height):
         """
         This function calculates the significant wave height, the period and the wavelength
         with the zero-crossing method.
         
         Parameters
         ----------
-        burst : array_like
+        burst_signal : array_like
             A series of data without trend.
-        fs : float
+        sampling_freq : float
             The sampling frequency.
-        h : float
+        anchoring_depth : float
             The measurement depth.
-        zp : float
+        sensor_height : float
             The distance from the bottom to the sensor.
 
         Returns
         -------
-        Hs : float
-            The significant wave height.
-        Tm : float
+        H_top_third : float
+            The significant wave height (top third).
+        Hmax : float
+            The maximum wave height.
+        Tmean : float
             The mean period.
-
-        Notes
-        -----
-
-        23-Feb-2014 : First Matlab version - Daniel Peláez
-        01-Sep-2023 : First Python version - Alejandro Henao
-        10-Dec-2024 : Polishing            - Franklin Ayala 
-
+        Lmean : float
+            The mean wavelength.
         """
 
-        tt = np.arange(1,len(burst)+1,1/fs)
-        ratio = 100
-        pp = resample(burst, len(burst) * ratio)  # Resample p by the ratio
-        tt = np.linspace(1, 1024, len(pp)+1)  # Create the time vector
-        sign = np.sign(burst)
-        index_cross = np.where(np.diff(sign) > 0)[0]
+        # tt = np.arange(1,len(burst_signal)+1,1/sampling_freq)
+        ratio = 10
+        # Resample the signal with certain ratio to increase the resolution of zero-crossing detection
+        burst_signal_upsampled = resample(burst_signal, len(burst_signal) * ratio)
+        time = np.linspace(1, len(burst_signal), len(burst_signal_upsampled)) 
+        sign = np.sign(burst_signal_upsampled)
+        idxs_cross = np.where(np.diff(sign) > 0)[0] # indices of zero-crossings (up-crossings)
 
-        Hp = []
+        H_cross = []
         T = []
-        for p in range(0,len(index_cross)-1):
-            a = index_cross[p]
-            b = index_cross[p+1]
-            Hp.append(np.max(burst[a:b+1])-np.min(burst[a:b+1]))
-            T.append(tt[b]-tt[a])
-        Hp = np.array(Hp)
+
+        # Loop through pairs of consecutive up-crossings to calculate wave heights and periods
+        for idx_cross in range(0,len(idxs_cross)-1):
+            first_up = idxs_cross[idx_cross] 
+            second_up = idxs_cross[idx_cross+1]
+            wave = burst_signal_upsampled[first_up:second_up+1]
+            H_cross.append(np.max(wave) - np.min(wave))
+            T.append(time[second_up] - time[first_up])
+        H_cross = np.array(H_cross)
         T = np.array(T)
 
         # Determine the wavenumber based on the dispersion relation
-        L=np.array([wave_props.wavelength(t,h) for t in T],dtype=np.float64)
+        L = np.array([wave_props.wavelength(t, anchoring_depth) for t in T], dtype=np.float64) # total or anchoring_depth?
         k = 2.*np.pi/L
 
-        # Transference factor Kp
-        Kp=np.cosh(k*zp)/np.cosh(k*h)
-        Kpmin=(np.cosh(np.pi/(h-zp)*zp))/(np.cosh(np.pi/(h-zp)*h))
-        for i in range(0,len(Kp)):
-            if (Kp[i]<Kpmin):
-                Kp[i]=Kpmin
+        # computing non-adaptive transference factor Kp
+        Kp = np.cosh(k * sensor_height) / np.cosh(k * anchoring_depth) # total or anchoring_depth?
+        Kp_min = (np.cosh(np.pi/(anchoring_depth - sensor_height)*sensor_height)) / \
+                (np.cosh(np.pi/(anchoring_depth - sensor_height)*anchoring_depth)) # total or anchoring_depth?
+        # Clip Kp to avoid unrealistic amplification of wave heights for very long waves
+        Kp = np.clip(Kp, Kp_min, 1)
 
-        H = Hp/(Kp)
-        H0 = np.sort(H)[::-1]
-        H13 = np.nanmean(H[:int(len(H0)/3)])
-        Hmx = H0[0]
+        H = H_cross/(Kp)
+        n = len(H) // 3 
 
-        Tm = np.nanmean(T)
-        Lm = np.nanmean(L)
-        return (H13,Tm,Lm,Hmx)
+        H_sorted = np.sort(H)
+        H_top_third = np.nanmean(H_sorted[-n:])  # top third
+        Hmax = H_sorted[-1]
+        Tmean = np.nanmean(T)
+        Lmean= np.nanmean(L)
+
+        return H_top_third,Hmax,Tmean,Lmean
 
 #     def decompose_into_IMFs_for_bursts(self,emd_type,maximum_IMFs,number_ensembles=None,amplitude_noise_std=None):
 #         hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
