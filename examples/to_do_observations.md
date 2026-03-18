@@ -1,0 +1,2 @@
+- Adding a different aqualogger record to catch all possible variants. Those data should be in data/folder
+- Adding the bluelog object to the notebook about the examples.

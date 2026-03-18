@@ -29,6 +29,13 @@ class RBR(BaseLogger):
         See :attr:`BaseLogger.first_record_time`
         """
         return super().first_record_time
+
+    @property
+    def first_submerged_record_time(self):
+        """
+        See :attr:BaseLogger.first_submerged_record_time
+        """
+        return super().first_submerged_record_time
     
     @property
     def last_record_time(self):
@@ -53,6 +60,9 @@ class RBR(BaseLogger):
         df = df.drop(columns=['Sea pressure'], errors='ignore')
         df = df.rename(columns={'Pressure': 'pressure[bar]', 'Depth': 'depth[m]'})
         df['pressure[bar]'] = df['pressure[bar]'] / 10  # dbar to bar
+        df['Time'] = pd.to_datetime(df['Time'])
+        df = df.rename(columns={'Time': 'date'})
+        df = df.set_index('date')
         return df
 
     def _assign_burst_id(self, df: pd.DataFrame) -> pd.DataFrame:

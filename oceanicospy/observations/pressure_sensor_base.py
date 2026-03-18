@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 from scipy.signal import detrend
+import numpy as np
+
 from oceanicospy.utils import constants
 
 
@@ -26,7 +28,7 @@ class BaseLogger(ABC):
         self.sampling_data = sampling_data
 
     @property
-    def first_record_time(self) -> pd.Timestamp:
+    def first_record_time(self):
         """
         Returns the timestamp of the first record in the dataset.
 
@@ -37,13 +39,40 @@ class BaseLogger(ABC):
         """
         try:
             time=self._load_raw_dataframe()['date']
+
         except:
             time=self._load_raw_dataframe()['Time']
 
-        return time.values[0]
+        return pd.to_datetime(time.values[0])
+
+    @property
+    def first_submerged_record_time(self):
+        """
+        Returns the timestamp of the first record in the dataset where the sensor is submerged.
+
+        Returns
+        -------
+        pandas.Timestamp
+            The timestamp of the first available record where the sensor is submerged.
+        """
+        df = self._load_raw_dataframe()
+        df = self._standardize_columns(df)
+        if 'depth[m]' in df.columns:
+            sign_depth = np.sign(df['depth[m]'])
+
+            # identifying changes in depth from negative to positive (submerged)
+            idx_changes = np.where(np.diff(sign_depth) > 0)[0] +1
+            if len(idx_changes) > 0:
+                timestamp = pd.to_datetime(df.index[idx_changes[0]])
+                if timestamp.minute != 0:
+                    return timestamp.ceil('h')
+                else:
+                    return timestamp
+            else:
+                return "Sensor was never submerged"
     
     @property
-    def last_record_time(self) -> pd.Timestamp:
+    def last_record_time(self):
         """
         Returns the timestamp of the last record in the dataset.
 
@@ -57,7 +86,31 @@ class BaseLogger(ABC):
         except:
             time=self._load_raw_dataframe()['Time']
 
-        return time.values[-1]
+        return pd.to_datetime(time.values[-1])
+    
+    @property
+    def last_submerged_record_time(self):
+        """
+        Returns the timestamp of the last record in the dataset where the sensor is submerged.
+
+        Returns
+        -------
+        pandas.Timestamp
+            The timestamp of the last available record where the sensor is submerged.
+        """
+        df = self._load_raw_dataframe()
+        df = self._standardize_columns(df)
+        if 'depth[m]' in df.columns:
+            sign_depth = np.sign(df['depth[m]'])
+
+            # identifying changes in depth from positive to negative (emerged)
+            idx_changes = np.where(np.diff(sign_depth) < 0)[0] + 1 # what if there are many?
+
+            if len(idx_changes) > 0:
+                timestamp = pd.to_datetime(df.index[idx_changes[0]])
+            else:
+                timestamp = pd.to_datetime(df.index[-1])
+            return timestamp.floor('h')
 
     def get_raw_records(self) -> pd.DataFrame:
         """
@@ -69,8 +122,8 @@ class BaseLogger(ABC):
             A DataFrame containing the raw data indexed by timestamp.
         """
         df = self._load_raw_dataframe()
-        df = self._parse_dates_and_trim(df)
         df = self._standardize_columns(df)
+        df = self._parse_dates_and_trim(df)
         return df
 
     def get_clean_records(self, detrended: bool = True) -> pd.DataFrame:
@@ -99,17 +152,10 @@ class BaseLogger(ABC):
         return df
 
     def _parse_dates_and_trim(self, df: pd.DataFrame) -> pd.DataFrame:
-        if 'date' in df.columns:
-            df['date'] = pd.to_datetime(df['date'], errors='coerce')
-        else:
-            df['Time'] = pd.to_datetime(df['Time'])
-            df = df.rename(columns={'Time': 'date'})
-        
-        df = df.set_index('date')
-
         try:
-            start = pd.to_datetime(self.sampling_data['start_time'])
-            end = pd.to_datetime(self.sampling_data['end_time'])
+            start = self.first_submerged_record_time
+            end = self.last_submerged_record_time
+            print(start,end)
         except KeyError:
             raise KeyError("Missing 'start_time' or 'end_time' in sampling_data.")
         except Exception as e:
