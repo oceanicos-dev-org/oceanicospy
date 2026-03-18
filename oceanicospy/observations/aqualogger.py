@@ -24,7 +24,6 @@ class AQUAlogger(BaseLogger):
 
     Notes
     -----
-
     The following models are supported:
 
     """
@@ -34,6 +33,13 @@ class AQUAlogger(BaseLogger):
         See :attr:BaseLogger.first_record_time
         """
         return super().first_record_time
+
+    @property
+    def first_submerged_record_time(self):
+        """
+        See :attr:BaseLogger.first_submerged_record_time
+        """
+        return super().first_submerged_record_time
     
     @property
     def last_record_time(self):
@@ -41,6 +47,13 @@ class AQUAlogger(BaseLogger):
         See :attr:BaseLogger.last_record_time 
         """
         return super().last_record_time
+    
+    @property
+    def last_submerged_record_time(self):
+        """
+        See :attr:BaseLogger.last_submerged_record_time
+        """
+        return super().last_submerged_record_time
 
     def _get_records_file(self):
         files = glob.glob(os.path.join(self.directory_path, '*.csv'))
@@ -48,7 +61,7 @@ class AQUAlogger(BaseLogger):
             raise FileNotFoundError("No .csv file found in the specified directory.")
         return files[0]  
     
-    def _load_raw_dataframe(self) -> pd.DataFrame:
+    def _load_raw_dataframe(self):
         filepath = self._get_records_file()
         if self.sampling_data.get('temperature', False):
             columns = ['UNITS', 'date', 'Raw1', 'temperature', 'Raw2', 'pressure[bar]', 'Raw3', 'depth[m]', 'nan']
@@ -68,6 +81,8 @@ class AQUAlogger(BaseLogger):
         return df
 
     def _standardize_columns(self, df: pd.DataFrame) -> pd.DataFrame:
+        df['date'] = pd.to_datetime(df['date'], errors='coerce')        
+        df = df.set_index('date')
         return df
 
     def _assign_burst_id(self, df: pd.DataFrame) -> pd.DataFrame:

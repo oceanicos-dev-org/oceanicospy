@@ -1,17 +1,62 @@
+import glob
 import pandas as pd
+import os
 from datetime import datetime
 from io import StringIO
 
-class BlueLog:
+from .pressure_sensor_base import BaseLogger
+
+class BlueLog(BaseLogger):
     """
-    Class to load BlueLog CSV data starting from the configured start time.
+    A reader for BlueLog files.
+
+    Inherits from ``BaseLogger`` and implements methods specific to BlueLog file formats.
+
+    Parameters
+    ----------
+    directory_path : str
+        Path to the directory containing the BlueLog .csv file.
     """
 
-    def __init__(self, file_path):
-        # Path to the input CSV file
-        self.file_path = file_path
-        self.start_time = None
-        self.df = None
+    @property
+    def first_record_time(self):
+        """
+        See :attr:BaseLogger.first_record_time
+        """
+        return super().first_record_time
+
+    @property
+    def first_submerged_record_time(self):
+        """
+        See :attr:BaseLogger.first_submerged_record_time
+        """
+        return super().first_submerged_record_time
+    
+    @property
+    def last_record_time(self):
+        """
+        See :attr:BaseLogger.last_record_time 
+        """
+        return super().last_record_time
+    
+    @property
+    def last_submerged_record_time(self):
+        """
+        See :attr:BaseLogger.last_submerged_record_time
+        """
+        return super().last_submerged_record_time
+
+    def _get_records_file(self):
+        files = glob.glob(os.path.join(self.directory_path, '*.csv'))
+        if not files:
+            raise FileNotFoundError("No .csv file found in the specified directory.")
+        return files[0]
+    
+    def _load_raw_dataframe(self):
+        filepath = self._get_records_file()
+        pass
+
+    # This method is specific to bluelog
 
     def load_filtered_data(self):
         """
@@ -67,3 +112,10 @@ class BlueLog:
         if self.df is None:
             self.load_filtered_data()
         return self.df
+
+    def _standardize_columns(self, df):
+        pass
+
+    def _assign_burst_id(self, df):
+        pass
+
