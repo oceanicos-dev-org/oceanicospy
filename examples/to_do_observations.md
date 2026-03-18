@@ -1,2 +1,3 @@
-- Adding a different aqualogger record to catch all possible variants. Those data should be in data/folder
-- Adding the bluelog object to the notebook about the examples.
+- Adding a different aqualogger record to catch all possible variants. Those data should be in data/folder properly organized
+- Adding the bluelog object to the notebook about the examples, uploading data is full required
+- Check AWAC measurements and modify the required things for the class and guide
