@@ -46,10 +46,22 @@ class RBR(BaseLogger):
 
     def _get_records_file(self):
         files = glob.glob(os.path.join(self.directory_path, '*_data.txt'))
-
         if not files:
             raise FileNotFoundError("No .txt file found in the specified directory.")
-        return files[0]
+        
+        if len(files) == 1:
+            return files[0]
+
+        if not self.filename:
+            raise ValueError("Multiple .txt files found. Please specify the filename to use.")
+        
+        if not self.filename.endswith('.txt'):
+            self.filename += '.txt'
+        
+        matching_files = [f for f in files if os.path.basename(f) == self.filename]
+        if not matching_files:
+            raise FileNotFoundError(f"No file named '{self.filename}' found in the directory.")
+        return matching_files[0]   
 
     def _load_raw_dataframe(self) -> pd.DataFrame:
         filepath = self._get_records_file()

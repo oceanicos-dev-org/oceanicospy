@@ -24,7 +24,7 @@ class AQUAlogger(BaseLogger):
 
     Notes
     -----
-    The following models are supported:
+    The following models are supported: AQUAlogger520PT5 and AQUAlogger520P4 
 
     """
     @property
@@ -59,32 +59,62 @@ class AQUAlogger(BaseLogger):
         files = glob.glob(os.path.join(self.directory_path, '*.csv'))
         if not files:
             raise FileNotFoundError("No .csv file found in the specified directory.")
-        return files[0]  
+        
+        if len(files) == 1:
+            return files[0]
+
+        if not self.filename:
+            raise ValueError("Multiple .csv files found. Please specify the filename to use.")
+        
+        if not self.filename.endswith('.csv'):
+            self.filename += '.csv'
+        
+        matching_files = [f for f in files if os.path.basename(f) == self.filename]
+        if not matching_files:
+            raise FileNotFoundError(f"No file named '{self.filename}' found in the directory.")
+        return matching_files[0]          
     
     def _load_raw_dataframe(self):
         filepath = self._get_records_file()
-        if self.sampling_data.get('temperature', False):
-            columns = ['UNITS', 'date', 'Raw1', 'temperature', 'Raw2', 'pressure[bar]', 'Raw3', 'depth[m]', 'nan']
-            drop_cols = ['Raw1', 'Raw2', 'Raw3', 'nan']
-        else:
-            columns = ['UNITS', 'date', 'Raw1', 'pressure[bar]', 'Raw2', 'depth[m]', 'nan']
-            drop_cols = ['Raw1', 'nan']
-
         with open(filepath, "r", encoding="utf-8") as f:
             for lineno, line in enumerate(f, start=1):
                 if line.startswith("HEADING"):
-                    line_header = lineno
+                    line_header_number = lineno
+                    line_units = next(f)
                     break
+    
+        header = line.strip().split(",")
+        units = line_units.strip().split(",")
 
-        df = pd.read_csv(filepath, names=columns, header=line_header, encoding='latin-1') # will be 21 depending on the file format
-        df = df.drop(columns=drop_cols)
+        header_names = [h.strip().lower() for h in header]
+        units_names = [u.strip().lower() for u in units]
+
+        # Playing with the header and units to create column names
+        col_names = []
+        for i in range(len(header_names)):
+            if units_names[i] == 'units':
+                col_name = 'units'
+            elif units_names[i] == 'timecode':
+                col_name = 'date'
+            elif units_names[i] == 'raw':
+                col_name = header_names[i]+f'[{units_names[i]}]'
+            elif header_names[i] == '':
+                col_name = header_names[i-1]+f'[{units_names[i]}]'
+            else:
+                pass
+            col_names.append(col_name)
+        
+        df = pd.read_csv(filepath, names=col_names, header=line_header_number, encoding='latin-1')
         return df
 
     def _standardize_columns(self, df: pd.DataFrame) -> pd.DataFrame:
+        # Extract columns containing 'raw' or '[]'
+        raw_columns = [col for col in df.columns if 'raw' in col.lower() or '[]' in col]
+        df = df.drop(columns=raw_columns)
         df['date'] = pd.to_datetime(df['date'], errors='coerce')        
         df = df.set_index('date')
         return df
 
     def _assign_burst_id(self, df: pd.DataFrame) -> pd.DataFrame:
-        df['burstId'] = (df['UNITS'] == 'BURSTSTART').cumsum()
-        return df.drop(columns=['UNITS'])
+        df['burstId'] = (df['units'] == 'BURSTSTART').cumsum()
+        return df.drop(columns=['units'])

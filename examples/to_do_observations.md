@@ -1,3 +1,3 @@
-- Adding a different aqualogger record to catch all possible variants. Those data should be in data/folder properly organized
-- Adding the bluelog object to the notebook about the examples, uploading data is full required
+- Support for other Aqs is mainly done, I just need to watch how those files coulde be passed explicitly (.csv and txt) _load_raw_file could be standard for all.
+- Watching the docstrings
 - Check AWAC measurements and modify the required things for the class and guide
