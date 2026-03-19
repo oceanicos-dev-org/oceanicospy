@@ -1,12 +1,11 @@
-import glob
-import pandas as pd
-import os
 from datetime import datetime
-from io import StringIO
+import glob
+import os
+import pandas as pd
 
 from .pressure_sensor_base import BaseLogger
 
-class BlueLog(BaseLogger):
+class Bluelog(BaseLogger):
     """
     A reader for BlueLog files.
 
@@ -47,75 +46,66 @@ class BlueLog(BaseLogger):
         return super().last_submerged_record_time
 
     def _get_records_file(self):
+        # TODO: this has to be modified to be more specific to the bluelog file, maybe looking for a specific name or pattern in the name.
         files = glob.glob(os.path.join(self.directory_path, '*.csv'))
         if not files:
             raise FileNotFoundError("No .csv file found in the specified directory.")
         return files[0]
     
     def _load_raw_dataframe(self):
-        filepath = self._get_records_file()
-        pass
-
-    # This method is specific to bluelog
-
-    def load_filtered_data(self):
         """
         Reads the CSV file, extracts the configured start time, finds the data start index,
         and loads the data into a filtered pandas DataFrame.
         """
+        filepath = self._get_records_file()
         # Read file content line by line
-        with open(self.file_path, 'r') as file:
-            lines = file.readlines()
+        with open(filepath, "r", encoding="utf-8") as f:
+            for lineno, line in enumerate(f, start=1):
+                # Look for the configured start time
+                if line.startswith("# Configured Start Time:"):
+                    time_str = line.strip().split(": ")[1]
+                    self.start_time = datetime.strptime(time_str, "%Y%m%d%H%M")
+                # Find the '---' line that separates header from data
+                if line.strip() == "---":
+                    line_header_number = lineno + 1
+                    break
 
-        # Initialize index and time
-        data_start_index = None
-
-        for i, line in enumerate(lines):
-            # Look for the configured start time
-            if line.startswith("# Configured Start Time:"):
-                time_str = line.strip().split(": ")[1]
-                self.start_time = datetime.strptime(time_str, "%Y%m%d%H%M")
-
-            # Find the '---' line that separates header from data
-            if line.strip() == "---":
-                data_start_index = i + 1
-                break
-
-        if self.start_time is None or data_start_index is None:
+        if self.start_time is None or line_header_number is None:
             raise ValueError("Configured start time or data section not properly found.")
 
-        # Extract the lines that represent actual data
-        data_lines = lines[data_start_index:]
-        data_str = ''.join(data_lines)
-
-        # Read the data into a DataFrame
-        df = pd.read_csv(
-            StringIO(data_str),
-            names=["Timestamp", "Pressure_bar", "Temperature_C"],
-            skip_blank_lines=True
-        )
-
-        # Force conversion of Timestamp to datetime, drop rows with invalid timestamps
-        df["Timestamp"] = pd.to_datetime(df["Timestamp"], errors='coerce')
-        df = df.dropna(subset=["Timestamp"])
-
-        # Filter rows based on the configured start time
-        df = df[df["Timestamp"] >= self.start_time]
-
-        # Reset index and store the result
-        self.df = df.reset_index(drop=True)
-
-    def get_dataframe(self):
-        """
-        Returns the filtered DataFrame. Loads the data if not already loaded.
-        """
-        if self.df is None:
-            self.load_filtered_data()
-        return self.df
+        # Load the data into a DataFrame, skipping lines before the header
+        df = pd.read_csv(filepath, skiprows=line_header_number-1)
+        return df
 
     def _standardize_columns(self, df):
-        pass
+        new_columns = {}
+        
+        for col in df.columns:
+            col_lower = col.lower()
+            col_lower = col_lower.replace("(", "[")  
+            col_lower = col_lower.replace(")", "]")  
+            col_lower = col_lower.strip() # Remove spaces for easier matching
 
+            if 'timestamp' in col_lower:
+                new_columns[col] = 'date'
+            # Rename pressure[dbar] → pressure [bar]
+            elif 'pressure' in col_lower and 'dbar' in col_lower:
+                new_columns[col] = 'pressure[bar]'
+            else:
+                new_columns[col] = col_lower  # keep as is
+        
+        # Apply renaming
+        df = df.rename(columns=new_columns)
+        
+        # Convert units if pressure column exists
+        if 'pressure[bar]' in df.columns:
+            df['pressure[bar]'] = df['pressure[bar]'] / 10.0
+        
+        df['date'] = pd.to_datetime(df['date'], errors='coerce')
+        df = df.set_index('date')
+        return df
+    
     def _assign_burst_id(self, df):
-        pass
+        df['burstId'] = pd.factorize(df.index.floor('h'))[0] + 1
+        return df
 

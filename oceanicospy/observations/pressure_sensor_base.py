@@ -21,11 +21,14 @@ class BaseLogger(ABC):
         - ``end_time``: The end time of the sampling period.
         - ``sampling_rate``: The sampling rate of the device (Hz)
         - ``burst_duration``: The duration of each burst (seconds)
+    filename: str, optional
+        The name of the file containing the records. If not provided, the first record file found in the directory will be used.
     """
-    def __init__(self, directory_path: str, sampling_data: dict):
+    def __init__(self, directory_path: str, sampling_data: dict, filename: str = None):
 
         self.directory_path = directory_path
         self.sampling_data = sampling_data
+        self.filename = filename
 
     @property
     def first_record_time(self):
@@ -37,13 +40,9 @@ class BaseLogger(ABC):
         pandas.Timestamp
             The timestamp of the first available record.
         """
-        try:
-            time=self._load_raw_dataframe()['date']
-
-        except:
-            time=self._load_raw_dataframe()['Time']
-
-        return pd.to_datetime(time.values[0])
+        df = self._load_raw_dataframe()
+        df = self._standardize_columns(df)
+        return pd.to_datetime(df.index.values[0])
 
     @property
     def first_submerged_record_time(self):
@@ -53,23 +52,24 @@ class BaseLogger(ABC):
         Returns
         -------
         pandas.Timestamp
-            The timestamp of the first available record where the sensor is submerged.
+            The timestamp of the first available record when the sensor is submerged.
         """
         df = self._load_raw_dataframe()
         df = self._standardize_columns(df)
-        if 'depth[m]' in df.columns:
-            sign_depth = np.sign(df['depth[m]'])
+        df = self._compute_depth_from_pressure(df)
+        print(df)
+        sign_depth = np.sign(df['depth[m]'])
 
-            # identifying changes in depth from negative to positive (submerged)
-            idx_changes = np.where(np.diff(sign_depth) > 0)[0] +1
-            if len(idx_changes) > 0:
-                timestamp = pd.to_datetime(df.index[idx_changes[0]])
-                if timestamp.minute != 0:
-                    return timestamp.ceil('h')
-                else:
-                    return timestamp
+        # identifying changes in depth from negative to positive (submerged)
+        idx_changes = np.where(np.diff(sign_depth) > 0)[0] +1
+        if len(idx_changes) > 0:
+            timestamp = pd.to_datetime(df.index[idx_changes[0]])
+            if timestamp.minute != 0:
+                return timestamp.ceil('h')
             else:
-                return "Sensor was never submerged"
+                return timestamp
+        else:
+            return "Sensor was never submerged"
     
     @property
     def last_record_time(self):
@@ -79,14 +79,11 @@ class BaseLogger(ABC):
         Returns
         -------
         pandas.Timestamp
-            The timestamp of the first available record.
+            The timestamp of the last available record.
         """
-        try:
-            time=self._load_raw_dataframe()['date']
-        except:
-            time=self._load_raw_dataframe()['Time']
-
-        return pd.to_datetime(time.values[-1])
+        df = self._load_raw_dataframe()
+        df = self._standardize_columns(df)
+        return pd.to_datetime(df.index.values[-1])
     
     @property
     def last_submerged_record_time(self):
@@ -100,17 +97,17 @@ class BaseLogger(ABC):
         """
         df = self._load_raw_dataframe()
         df = self._standardize_columns(df)
-        if 'depth[m]' in df.columns:
-            sign_depth = np.sign(df['depth[m]'])
+        df = self._compute_depth_from_pressure(df)
+        sign_depth = np.sign(df['depth[m]'])
 
-            # identifying changes in depth from positive to negative (emerged)
-            idx_changes = np.where(np.diff(sign_depth) < 0)[0] + 1 # what if there are many?
+        # identifying changes in depth from positive to negative (emerged)
+        idx_changes = np.where(np.diff(sign_depth) < 0)[0] + 1 # what if there are many?
 
-            if len(idx_changes) > 0:
-                timestamp = pd.to_datetime(df.index[idx_changes[0]])
-            else:
-                timestamp = pd.to_datetime(df.index[-1])
-            return timestamp.floor('h')
+        if len(idx_changes) > 0:
+            timestamp = pd.to_datetime(df.index[idx_changes[0]])
+        else:
+            timestamp = pd.to_datetime(df.index[-1])
+        return timestamp.floor('h')
 
     def get_raw_records(self) -> pd.DataFrame:
         """
@@ -120,6 +117,11 @@ class BaseLogger(ABC):
         -------
         pandas.DataFrame
             A DataFrame containing the raw data indexed by timestamp.
+        
+        Notes
+        -----
+        The records are standardized to have a datetime index and columns following the convention variable[units] (e.g., pressure[bar], depth[m]).
+        The data is trimmed to include only records between the first and last submerged record times.
         """
         df = self._load_raw_dataframe()
         df = self._standardize_columns(df)
@@ -152,27 +154,65 @@ class BaseLogger(ABC):
         return df
 
     def _parse_dates_and_trim(self, df: pd.DataFrame) -> pd.DataFrame:
-        try:
+        """Parses the date column to datetime and trims the DataFrame to include only records between the first and last submerged record times.
+        
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The DataFrame to be processed.
+        
+        Returns
+        -------
+        pandas.DataFrame
+            The processed DataFrame with datetime index and trimmed to submerged records.
+            
+        Raises
+        ------
+        ValueError
+            If the time format in 'sampling_data' is invalid.
+        """
+        if not self.sampling_data.get('start_time') or not self.sampling_data.get('end_time'):
             start = self.first_submerged_record_time
             end = self.last_submerged_record_time
-            print(start,end)
-        except KeyError:
-            raise KeyError("Missing 'start_time' or 'end_time' in sampling_data.")
-        except Exception as e:
-            raise ValueError(f"Invalid time format in 'sampling_data': {e}")
+        elif self.sampling_data.get('start_time') and self.sampling_data.get('end_time'):
+            try:
+                start = pd.to_datetime(self.sampling_data['start_time'])
+                end = pd.to_datetime(self.sampling_data['end_time'])
+            except Exception as e:
+                raise ValueError(f"Invalid time format in 'sampling_data': {e}")
 
         return df[start:end]
 
     def _compute_depth_from_pressure(self, df: pd.DataFrame) -> pd.DataFrame:
-        df['depth_aux[m]'] = ((df['pressure[bar]'] - constants.ATM_PRESSURE_BAR) * 1e5) / (constants.WATER_DENSITY * constants.GRAVITY)
+        """Computes depth from pressure using the hydrostatic formula
 
-        if (df['depth_aux[m]'] - df['depth[m]']).abs().max() <= 0.1:
-            df = df.drop(columns=['depth_aux[m]'])
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The DataFrame containing the pressure data.
+        
+        Returns
+        -------
+        pandas.DataFrame
+            The DataFrame with an added 'depth[m]' column computed from pressure if it doesn't exist, or with an 
+            auxiliary 'depth_aux[m]' column if 'depth[m]' already exists for comparison
+
+        Notes
+        -----
+        The depth is computed using the formula: $$depth = (pressure - atmospheric pressure) / (density * gravity)$$
+        """
+
+        depth_computed = ((df['pressure[bar]'] - constants.ATM_PRESSURE_BAR) * 1e5) / (constants.WATER_DENSITY * constants.GRAVITY)
+        if 'depth[m]' not in df.columns:
+            df['depth[m]'] = depth_computed
+        else:
+            df['depth_aux[m]'] = depth_computed     
+            if (df['depth_aux[m]'] - df['depth[m]']).abs().max() <= 0.1:
+                df = df.drop(columns=['depth_aux[m]'])
         return df
 
     @abstractmethod
     def _get_records_file(self) -> pd.DataFrame:
-        """Returns the first records file found in the directory. Raises if none are found."""
         pass
 
     @abstractmethod
