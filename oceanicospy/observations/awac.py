@@ -27,9 +27,9 @@ class AWAC():
     - 10-Dec-2024 : Class implementation - Franklin Ayala
   
     """
-    def _init_(self,directory_path,sampling_data):
+    def __init__(self,directory_path,sampling_data):
 
-        self.directory_pathz = directory_path
+        self.directory_path = directory_path
         self.sampling_data = sampling_data
 
     def get_raw_wave_records(self,from_single_wad=True):

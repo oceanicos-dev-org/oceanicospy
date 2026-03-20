@@ -1,3 +1,3 @@
-- Support for other Aqs is mainly done, I just need to watch how those files coulde be passed explicitly (.csv and txt) _load_raw_file could be standard for all.
-- Watching the docstrings
 - Check AWAC measurements and modify the required things for the class and guide
+- Polish doctrgins for all the instances from the abstract class for weather stations
+- checking the bouy class
