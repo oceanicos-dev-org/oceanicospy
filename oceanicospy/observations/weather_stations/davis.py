@@ -13,8 +13,14 @@ class DavisVantagePro(WeatherStationBase):
 
     Parameters
     ----------
-    directory_path : str
-        Path to the directory containing the ``*_data.txt`` files.
+    filepath : str
+        Path to the file containing the raw Davis Vantage Pro weather station data.
+
+    Notes
+    -----
+    The raw file format uses single-character tokens for AM/PM (``'a'``/``'p'``)
+    and ``'---'`` as a sentinel for missing values. Both are normalized during
+    loading and cleaning respectively.
     """
 
     def _load_raw_dataframe(self):
@@ -28,8 +34,8 @@ class DavisVantagePro(WeatherStationBase):
 
         Notes
         -----
-            - The function assumes that the first two lines of the file are headers or metadata and skips them.
-            - The 'AM/PM' column values are replaced with 'AM' and 'PM' for consistency.
+        - The function assumes that the first two lines of the file are headers or metadata and skips them.
+        - ``'a'`` and ``'p'`` tokens in the ``AM/PM`` column are replaced with ``'AM'`` and ``'PM'`` respectively.
         """
         
         with open(self.filepath, 'r') as file:
@@ -47,6 +53,28 @@ class DavisVantagePro(WeatherStationBase):
         return df
 
     def _standardize_columns(self, df):
+        """
+        Clean and standardize the raw DataFrame for analysis.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            Raw DataFrame as returned by ``_load_raw_dataframe``, with
+            string-typed columns and ``'---'`` as the missing-value token.
+
+        Returns
+        -------
+        pandas.DataFrame
+            Cleaned DataFrame indexed by ``date`` (``datetime64[ns]``),
+            with all-NaN columns removed and ``Speed`` cast to ``float``.
+
+        Notes
+        -----
+        Timestamp parsing uses the format ``'%m/%d/%y %I:%M %p'``, which
+        matches the Davis Vantage Pro 12-hour clock export (e.g.
+        ``'01/15/24 02:30 PM'``). Files with a different clock format will
+        raise a ``ValueError`` at the ``pd.to_datetime`` call.
+        """
         df.replace('---', np.nan, inplace=True)
         df.dropna(axis=1, how='all', inplace=True)
         
@@ -59,6 +87,28 @@ class DavisVantagePro(WeatherStationBase):
         return df
 
     def _compute_direction_degrees(self, df):
+        """
+        Convert cardinal wind direction labels to decimal degrees.
+
+        Maps the string values in the ``Dir1`` column to their corresponding
+        compass bearings using an 8-point rose (N, NE, E, SE, S, SW, W, NW).
+        The result is stored in a new ``Direction`` column. Any ``Dir1`` value
+        not present in the mapping (including ``NaN``) will produce ``NaN`` in
+        the output column.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            DataFrame containing a ``Dir1`` column with cardinal direction
+            strings (e.g. ``'N'``, ``'SW'``).
+
+        Returns
+        -------
+        pandas.DataFrame
+            The input DataFrame with an additional ``Direction`` column
+            (``float64``) holding wind direction in decimal degrees (0–360),
+            where 0° = North, increasing clockwise.
+        """
         direction_mapping = {
             'N': 0,
             'NE': 45,
