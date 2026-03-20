@@ -32,137 +32,6 @@ class AWAC():
         self.directory_path = directory_path
         self.sampling_data = sampling_data
 
-    def get_raw_wave_records(self,from_single_wad=True):
-        """
-        Reads and processes the .wad files to create a DataFrame containing the burst data.
-
-        For each .wad file, the function reads the data, adds a 'burstId' column, and combines all the data into a single DataFrame.
-
-        Parameters
-        ----------
-        from_single_wad : bool, optional
-            If True, reads data from a single .wad file. If False, reads data from all .wad files in the directory.
-            Default is True, which means it reads from the first .wad file found in the directory.
-
-        Returns
-        -------
-        pandas.DataFrame
-            A DataFrame containing the concatenated data from all the .wad files with an added 'burstId' column.
-        """
-
-        column_names = self._read_wave_header()
-        wad_files = sorted(glob.glob(self.directory_path+'*.wad')) #Each .wad file represents one burst
-
-        if from_single_wad:
-            wad_filepath = wad_files[0]
-            date_columns = ['month', 'day', 'year', 'hour', 'minute', 'second']
-            df = pd.read_csv(wad_filepath,sep=r"\s+",names=date_columns+list(column_names[2:]))
-            df = df.dropna()          
-        else:
-            burst_list = []
-
-            for wad_filepath in wad_files[1:]: #What's the differenc with reading the main .wad file?
-                burst_df = pd.read_csv(wad_filepath,sep=r"\s+",names=column_names)
-                burst_df.rename(columns={column_names[0]:'burstId'},inplace=True)
-                burst_list.append(burst_df)
-
-            df = pd.concat(burst_list, ignore_index=True)
-        return df
-    
-    def get_clean_wave_records(self,from_single_wad=True):
-        """
-        Processes the raw data by converting certain columns to numeric types, adding a timestamp, and filtering the data 
-        by the specified time range.
-
-        The function also renames columns and returns a cleaned DataFrame that includes only relevant data.
-
-        Returns
-        -------
-        pandas.DataFrame
-            A cleaned DataFrame containing 'pressure', 'u', 'v', and 'burstId' columns, filtered by the specified time range.
-        """
-        df_raw = self.get_raw_wave_records(from_single_wad)
-
-        if from_single_wad:
-            df_clean = self._parse_dates_and_trim(df_raw)
-            df_clean = self._rename_columns(df_clean)
-        else:
-            burst_start_times = pd.date_range(
-                start=self.sampling_data['start_time'],
-                end=self.sampling_data['end_time'],
-                freq='1h')
-
-            # For each burst, create a date range of 2Hz samples
-            date_range = []
-            for start_time in burst_start_times:
-                burst_range = pd.date_range(start=start_time,periods=2048,freq='500ms')
-                date_range.append(burst_range)
-
-            # Concatenate all individual burst date ranges into a single DatetimeIndex
-            full_index = pd.DatetimeIndex(np.concatenate([rng.values for rng in date_range]))
-            df_clean = df_raw.set_index(full_index)
-            df_clean = self._parse_dates_and_trim(df_clean)
-            df_clean = self._rename_columns(df_clean)
-
-        return df_clean
-
-    def get_raw_currents_records(self):
-        """
-        Reads and processes the .v1 and .v2 files to create a DataFrame.
-
-        Returns
-        -------
-        pandas.DataFrame
-            A DataFrame containing the current magnitude and direction.
-        """
-        self.currents_header = self._read_currents_header()
-        x_component_filepath = sorted(glob.glob(self.directory_path+'*.v1'))[0]
-        y_component_filepath = sorted(glob.glob(self.directory_path+'*.v2'))[0]
-        
-        column_names = [f'{i}' for i in range(1, int(self.currents_header['Number of cells']) + 1)]
-        x_component_df = pd.read_csv(x_component_filepath,sep=r'\s+',names=column_names)
-        y_component_df = pd.read_csv(y_component_filepath,sep=r'\s+',header=None,names=column_names)
-
-        return x_component_df, y_component_df
-
-    def get_clean_currents_records(self,compute_speed_dir=True):
-        """
-        Processes the raw current data by reading the x and y components, setting the index to a date range, and optionally computing speed and direction.
-
-        Parameters
-        ----------
-        compute_speed_dir : bool, optional
-            If True, computes the current speed and direction from the x and y components. Default is True.
-
-        Returns
-        -------
-        x_component_clean : pandas.DataFrame
-            Cleaned DataFrame of the x component of the current.
-        y_component_clean : pandas.DataFrame
-            Cleaned DataFrame of the y component of the current.
-        current_speed : pandas.DataFrame, optional
-            DataFrame of the current speed, only returned if compute_speed_dir is True.
-        current_dir : pandas.DataFrame, optional
-            DataFrame of the current direction, only returned if compute_speed_dir is True.
-        """
-        
-        x_component_raw, y_component_raw = self.get_raw_currents_records()
-        date_range = pd.date_range(self.currents_header['start_time'],periods=x_component_raw.shape[0],
-                                        freq=f"{self.currents_header['Profile interval']}s")
-
-        x_component_clean = x_component_raw.set_index(date_range)
-        y_component_clean = y_component_raw.set_index(date_range)
-        x_component_clean = self._parse_dates_and_trim(x_component_clean)
-        y_component_clean = self._parse_dates_and_trim(y_component_clean)
-
-        if compute_speed_dir:
-            current_speed = np.sqrt((x_component_clean*2)+(y_component_clean*2))
-            current_dir = np.array([list(map(wave_props.angulo_norte,row_x,row_y)) for row_x,row_y in zip(self.x_component_raw.values,self.y_component_raw.values)])
-            current_dir = pd.DataFrame(data=current_dir,index=date_range,columns=current_speed.columns)
-            return x_component_clean,y_component_clean,current_speed,current_dir
-        else:
-            return x_component_clean,y_component_clean
-
     def _read_wave_header(self):
         """
         Reads and parses the header file (.hdr) to extract the column names.
@@ -315,3 +184,135 @@ class AWAC():
         cols = ["pressure[bar]"] + [col for col in df.columns if "pressure" not in col]
         
         return df[cols]
+
+    def get_raw_wave_records(self,from_single_wad=True):
+        """
+        Reads and processes the .wad files to create a DataFrame containing the burst data.
+
+        For each .wad file, the function reads the data, adds a 'burstId' column, and combines all the data into a single DataFrame.
+
+        Parameters
+        ----------
+        from_single_wad : bool
+            If True, reads data from a single .wad file, so makes sure the .wad file that contains all the burst in the directory.
+            If False, reads data from all .wad files in the directory so makes sure the .wad files are separated by burst in the directory.
+            Default is True, which means it reads from the first .wad file found in the directory.
+
+        Returns
+        -------
+        pandas.DataFrame
+            A DataFrame containing the concatenated data from all the .wad files with an added 'burstId' column.
+        """
+
+        column_names = self._read_wave_header()
+        wad_files = sorted(glob.glob(self.directory_path+'*.wad')) #Each .wad file represents one burst
+
+        if from_single_wad:
+            wad_filepath = wad_files[0]
+            date_columns = ['month', 'day', 'year', 'hour', 'minute', 'second']
+            df = pd.read_csv(wad_filepath,sep=r"\s+",names=date_columns+list(column_names[2:]))
+            df = df.dropna()          
+        else:
+            burst_list = []
+
+            for wad_filepath in wad_files[1:]: #What's the differenc with reading the main .wad file?
+                burst_df = pd.read_csv(wad_filepath,sep=r"\s+",names=column_names)
+                burst_df.rename(columns={column_names[0]:'burstId'},inplace=True)
+                burst_list.append(burst_df)
+
+            df = pd.concat(burst_list, ignore_index=True)
+        return df
+    
+    def get_clean_wave_records(self,from_single_wad=True):
+        """
+        Processes the raw data by converting certain columns to numeric types, adding a timestamp, and filtering the data 
+        by the specified time range.
+
+        The function also renames columns and returns a cleaned DataFrame that includes only relevant data.
+
+        Returns
+        -------
+        pandas.DataFrame
+            A cleaned DataFrame containing 'pressure', 'u', 'v', and 'burstId' columns, filtered by the specified time range.
+        """
+        df_raw = self.get_raw_wave_records(from_single_wad)
+
+        if from_single_wad:
+            df_clean = self._parse_dates_and_trim(df_raw)
+            df_clean = self._rename_columns(df_clean)
+        else:
+            burst_start_times = pd.date_range(
+                start=self.sampling_data['start_time'],
+                end=self.sampling_data['end_time'],
+                freq='1h')
+
+            # For each burst, create a date range of 2Hz samples
+            date_range = []
+            for start_time in burst_start_times:
+                burst_range = pd.date_range(start=start_time,periods=2048,freq='500ms')
+                date_range.append(burst_range)
+
+            # Concatenate all individual burst date ranges into a single DatetimeIndex
+            full_index = pd.DatetimeIndex(np.concatenate([rng.values for rng in date_range]))
+            df_clean = df_raw.set_index(full_index)
+            df_clean = self._parse_dates_and_trim(df_clean)
+            df_clean = self._rename_columns(df_clean)
+
+        return df_clean
+
+    def get_raw_currents_records(self):
+        """
+        Reads and processes the .v1 and .v2 files to create a DataFrame.
+
+        Returns
+        -------
+        pandas.DataFrame
+            A DataFrame containing the current magnitude and direction.
+        """
+        self.currents_header = self._read_currents_header()
+        x_component_filepath = sorted(glob.glob(self.directory_path+'*.v1'))[0]
+        y_component_filepath = sorted(glob.glob(self.directory_path+'*.v2'))[0]
+        
+        column_names = [f'{i}' for i in range(1, int(self.currents_header['Number of cells']) + 1)]
+        x_component_df = pd.read_csv(x_component_filepath,sep=r'\s+',names=column_names)
+        y_component_df = pd.read_csv(y_component_filepath,sep=r'\s+',header=None,names=column_names)
+
+        return x_component_df, y_component_df
+
+    def get_clean_currents_records(self,compute_speed_dir=True):
+        """
+        Processes the raw current data by reading the x and y components, setting the index to a date range, and optionally computing speed and direction.
+
+        Parameters
+        ----------
+        compute_speed_dir : bool, optional
+            If True, computes the current speed and direction from the x and y components. Default is True.
+
+        Returns
+        -------
+        x_component_clean : pandas.DataFrame
+            Cleaned DataFrame of the x component of the current.
+        y_component_clean : pandas.DataFrame
+            Cleaned DataFrame of the y component of the current.
+        current_speed : pandas.DataFrame, optional
+            DataFrame of the current speed, only returned if compute_speed_dir is True.
+        current_dir : pandas.DataFrame, optional
+            DataFrame of the current direction, only returned if compute_speed_dir is True.
+        """
+        
+        x_component_raw, y_component_raw = self.get_raw_currents_records()
+        date_range = pd.date_range(self.currents_header['start_time'],periods=x_component_raw.shape[0],
+                                        freq=f"{self.currents_header['Profile interval']}s")
+
+        x_component_clean = x_component_raw.set_index(date_range)
+        y_component_clean = y_component_raw.set_index(date_range)
+        x_component_clean = self._parse_dates_and_trim(x_component_clean)
+        y_component_clean = self._parse_dates_and_trim(y_component_clean)
+
+        if compute_speed_dir:
+            current_speed = np.sqrt((x_component_clean*2)+(y_component_clean*2))
+            current_dir = np.array([list(map(wave_props.angulo_norte,row_x,row_y)) for row_x,row_y in zip(self.x_component_raw.values,self.y_component_raw.values)])
+            current_dir = pd.DataFrame(data=current_dir,index=date_range,columns=current_speed.columns)
+            return x_component_clean,y_component_clean,current_speed,current_dir
+        else:
+            return x_component_clean,y_component_clean

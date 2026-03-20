@@ -4,4 +4,4 @@ from .awac import AWAC
 
 # --------- #
 from .buoy import Buoy
-from .hobo import HOBO
+# from .hobo import HOBO
