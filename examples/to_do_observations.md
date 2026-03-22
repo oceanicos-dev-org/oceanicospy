@@ -1,11 +1,14 @@
+**Main questions are:** 
 
-**Main questions are: what do we interpret as raw dataframe from a sensor? (minimal readable? or with some tweaks?)**
+1. **what do we interpret as raw dataframe from a sensor? (minimal readable? or with some tweaks?)**
+2. **what we do interpret as a clean dataframe (minimal ready to use?)**
+3. **How do we deal with the directory/file paths as parameters for the classes?**
 
-**what we do interpret as a clean dataframe (minimal ready to use?)**
+- AWAC
 
-- checking the bouy class
-- Check AWAC measurements and modify the required things for the class and guide
-- standardize all the dataframes for weather stations:
+  - It is quite weird that the single wad file does not start at 00:00 (minutes/seconds)
+  - To check the way how the direction is computed
+- Weather stations: standardize the dataframes
 
   - correct dtypes per column
   - same names across the weather stations
