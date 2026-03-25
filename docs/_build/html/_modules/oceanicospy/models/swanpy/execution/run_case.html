@@ -149,14 +149,6 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/BaseLogger.html">BaseLogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/AQUAlogger.html">AQUAlogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/RBR.html">RBR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/AWAC.html">AWAC</a></li>
-</ul>
-</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/conditioning.html">Signal conditioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/spectral.html">Spectral</a></li>
@@ -185,19 +177,15 @@
 </details></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/walkthrough.html">Walkthrough Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/RBR.html">RBR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/AWAC.html">AWAC</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../plots.html">Plots</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../retrievals/index.html">Retrievals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../retrievals/ERA5Downloader.html">ERA5Downloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
-</ul>
-</details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../retrievals/CMDSDownloader.html">CMDSDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
-</ul>
-</details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../retrievals/UHSLCDownloader.html">UHSLCDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
-</ul>
-</details></li>
-</ul>
-</details></li>
 </ul>
 
     </div>
@@ -306,6 +294,7 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..preprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">GridMaker</span>
@@ -376,7 +365,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">script_dir</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;data&#39;</span>
 
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span><span class="si">}</span><span class="s1">/model_config_templates/swan/launcher_base_nest_cecc.slurm&#39;</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">launcher_swan.slurm&#39;</span><span class="p">)</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">/../launcher_swan.slurm&#39;</span><span class="p">)</span>
         
         <span class="n">bash_code</span> <span class="o">=</span> <span class="s2">&quot;declare -a bash_dict</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_ini_data</span><span class="p">[</span><span class="s2">&quot;parent_domains&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -389,12 +378,20 @@ document.write(`
             <span class="s1">&#39;number_domains&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_ini_data</span><span class="p">[</span><span class="s2">&quot;number_domains&quot;</span><span class="p">],</span>
             <span class="s1">&#39;parent_domains&#39;</span><span class="p">:</span> <span class="n">bash_code</span>
         <span class="p">}</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">fill_files</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">launcher_swan.slurm&#39;</span><span class="p">,</span> <span class="n">launch_dict</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="n">utils</span><span class="o">.</span><span class="n">fill_files</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">../launcher_swan.slurm&#39;</span><span class="p">,</span> <span class="n">launch_dict</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_delete_placeholder_leftover</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">run_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/run.swn&#39;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">run_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\$\w+&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>  <span class="c1"># wipe leftovers</span>
+        <span class="n">run_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
 <div class="viewcode-block" id="CaseRunner.fill_computation_section">
 <a class="viewcode-back" href="../../../../../models/swanpy/execution/run_case.html#oceanicospy.models.swanpy.execution.CaseRunner.fill_computation_section">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fill_computation_section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delete_placeholder_leftover</span><span class="p">()</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_comp_data</span><span class="p">[</span><span class="s1">&#39;stat_comp&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;0&quot;</span><span class="p">):</span> <span class="c1"># If the computation is non-stationary</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stat_label</span> <span class="o">=</span> <span class="s1">&#39;NONSTAT&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">string_comp</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;COMP </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stat_label</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_comp_data</span><span class="p">[</span><span class="s2">&quot;ini_comp_date&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_comp_data</span><span class="p">[</span><span class="s2">&quot;dt_min&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1"> MIN </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_comp_data</span><span class="p">[</span><span class="s2">&quot;end_comp_date&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>

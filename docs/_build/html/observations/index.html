@@ -30,6 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -40,11 +41,12 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'observations/index';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Walkthrough Example" href="walkthrough.html" />
-    <link rel="prev" title="oceanicospy documentation" href="../index.html" />
+    <link rel="next" title="Walkthrough Example" href="test_walkthrough.html" />
+    <link rel="prev" title="Temporal" href="../analysis/temporal.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -156,37 +158,42 @@
 <li class="toctree-l2"><a class="reference internal" href="../analysis/temporal.html">Temporal</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/execution/run_case.html">Case Runner</a></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Observations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BaseLogger.html">BaseLogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="AQUAlogger.html">AQUAlogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RBR.html">RBR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_walkthrough.html">Walkthrough Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reading_field_data.html">Walkthrough example</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="pressure_sensors/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pressure_sensors/RBR.html">RBR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pressure_sensors/Bluelog.html">Bluelog</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../plots.html">Plots</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="weather_stations/WeatherSens.html">WeatherSens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="weather_stations/Rainwise.html">Rainwise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="ctd/CTDBase.html">CTDBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ctd/CastawayCTD.html">CastawayCTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ctd/CTD48M.html">CTD48M</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Buoy.html">Buoy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HOBO.html">HOBO</a></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -340,19 +347,20 @@ document.write(`
   <section id="observations">
 <h1>Observations<a class="headerlink" href="#observations" title="Link to this heading">#</a></h1>
 <p>This subpackage contains classes for handling observations from various sensors. Each class is designed to interface
-with a specific type of logger or sensor, providing methods for practical data retrieval. The sensors described here represent the whole existing set
-of sensors in the OCEANICOS research group used in 2025.</p>
+with a specific type of logger/sensor, providing methods for practical data retrieval. The sensors described here represent the whole existing set
+of sensors in OCEANICOS research group used in 2025, however, the package is designed to be easily extendable to include new sensors in the future.
+The main goal of this subpackage is to provide a unified interface for accessing and processing data from different types of sensors, making it easier for researchers to work with their observational data.</p>
 <p>The sensors include:</p>
 <ul class="simple">
-<li><p><strong>Pressure sensors</strong>: devices used to measure the water pressure at a given depth. Some of these sensors include an own-developed logger (BlueLog) and
+<li><p><strong>Pressure sensors</strong>: devices used to measure the water pressure at a given depth. Some of these sensors include an own-developed logger (Bluelog) and
 comercial loggers such as RBR and AQUAlogger.</p></li>
-<li><p><strong>Acoustic doppler current profilers (ADCP)</strong>: instruments that use sound waves to measure water current velocities.
-The AWAC is an example of such a device.</p></li>
 <li><p><strong>Weather stations</strong>: Despite the OCEANICOS research group is not an atmospheric research group, it is unneglectable the need of weather data for
-oceanographic research. In this group the examples of those stations are: ..</p></li>
-<li><p><strong>Resistive sensors</strong>: The lab sensors are used to measure the resistivity of the water, which can be used to infer properties like water depth.</p></li>
+oceanographic research. In this group the examples of those stations are: Davis Vantage Pro, Rainwise and WeatherSens.</p></li>
 <li><p><strong>Conductivity-Temperature-Depth (CTD) sensors</strong>: These sensors measure the conductivity, temperature, and depth of water, providing essential data for
-oceanographic studies.</p></li>
+oceanographic studies. The current supported models are: CTD 48M from Sea Sun Marine Tech and Castaway-CTD from Xylem.</p></li>
+<li><p><strong>Acoustic doppler current profilers (ADCP)</strong>: this instrument use sound waves to measure water current velocities. The AWAC from Nortek is the only supported model for now.</p></li>
+<li><p><strong>Buoy</strong>: this class is designed to handle data from buoys. The Spotter model from SOFAR is currently supported.</p></li>
+<li><p><strong>HOBO</strong>: this class is designed to handle data from HOBO loggers, which are commonly used for environmental monitoring.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -368,19 +376,67 @@ For more information, refer to the source code or the specific sensor documentat
 </pre></div>
 </div>
 <p>For example, to use the AQUAlogger:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">oceanicospy.observations</span><span class="w"> </span><span class="kn">import</span> <span class="n">AQUAlogger</span>
-<span class="n">aqua_logger</span> <span class="o">=</span> <span class="n">AQUAlogger</span><span class="p">()</span>  <span class="c1"># Create an instance of the AQUAlogger class.</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">oceanicospy.observations</span><span class="w"> </span><span class="kn">import</span> <span class="n">pressure_sensors</span>
+<span class="n">aqua_logger</span> <span class="o">=</span> <span class="n">pressure_sensors</span><span class="o">.</span><span class="n">AQUAlogger</span><span class="p">()</span>  <span class="c1"># Create an instance of the AQUAlogger class.</span>
 </pre></div>
 </div>
 </div>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l1"><a class="reference internal" href="BaseLogger.html">BaseLogger</a></li>
-<li class="toctree-l1"><a class="reference internal" href="AQUAlogger.html">AQUAlogger</a></li>
-<li class="toctree-l1"><a class="reference internal" href="RBR.html">RBR</a></li>
-<li class="toctree-l1"><a class="reference internal" href="AWAC.html">AWAC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test_walkthrough.html">Walkthrough Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reading_field_data.html">Walkthrough example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reading_field_data.html#importing-libraries">Importing libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reading_field_data.html#pressure-sensors-aqualogger-rbr-bluelogger">Pressure sensors: AQUALogger, RBR, BlueLogger</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reading_field_data.html#data-directories-and-sampling-configuration">Data directories and sampling configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reading_field_data.html#reading-and-storing-data">Reading and storing data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reading_field_data.html#adcp-sensors-awac">ADCP sensors: AWAC</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reading_field_data.html#reading-wave-records">Reading wave records</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reading_field_data.html#reading-current-records">Reading current records</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reading_field_data.html#weather-stations-davis-vantage-pro-weathersens-and-rainwise">Weather stations: Davis Vantage Pro, WeatherSens and Rainwise</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reading_field_data.html#spotter-buoy">Spotter buoy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reading_field_data.html#ctd-sensors">CTD sensors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reading_field_data.html#hobo-sensor">Hobo sensor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reading_field_data.html#mantaray">Mantaray</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pressure_sensors/index.html">Pressure Sensors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pressure_sensors/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pressure_sensors/RBR.html">RBR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pressure_sensors/Bluelog.html">Bluelog</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="weather_stations/index.html">Weather Stations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l2"><a class="reference internal" href="weather_stations/WeatherSens.html">WeatherSens</a></li>
+<li class="toctree-l2"><a class="reference internal" href="weather_stations/Rainwise.html">Rainwise</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ctd/index.html">CTD Sensors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ctd/CTDBase.html">CTDBase</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ctd/CastawayCTD.html">CastawayCTD</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ctd/CTD48M.html">CTD48M</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="AWAC.html">AWAC</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="AWAC.html#oceanicospy.observations.awac.AWAC"><code class="docutils literal notranslate"><span class="pre">AWAC</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Buoy.html">Buoy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Buoy.html#oceanicospy.observations.buoy.Buoy"><code class="docutils literal notranslate"><span class="pre">Buoy</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="HOBO.html">HOBO</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="HOBO.html#oceanicospy.observations.hobo.CleaningRules"><code class="docutils literal notranslate"><span class="pre">CleaningRules</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="HOBO.html#oceanicospy.observations.hobo.HOBOBase"><code class="docutils literal notranslate"><span class="pre">HOBOBase</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="HOBO.html#oceanicospy.observations.hobo.HOBOTL"><code class="docutils literal notranslate"><span class="pre">HOBOTL</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="HOBO.html#oceanicospy.observations.hobo.HOBOCL"><code class="docutils literal notranslate"><span class="pre">HOBOCL</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -397,16 +453,16 @@ For more information, refer to the source code or the specific sensor documentat
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../index.html"
+       href="../analysis/temporal.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">oceanicospy documentation</p>
+        <p class="prev-next-title">Temporal</p>
       </div>
     </a>
     <a class="right-next"
-       href="walkthrough.html"
+       href="test_walkthrough.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
