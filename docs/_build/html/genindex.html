@@ -29,6 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -39,6 +40,7 @@
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
@@ -155,37 +157,42 @@
 <li class="toctree-l2"><a class="reference internal" href="analysis/temporal.html">Temporal</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="models/swanpy/execution/run_case.html">Case Runner</a></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="observations/walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="observations/BaseLogger.html">BaseLogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="observations/AQUAlogger.html">AQUAlogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="observations/RBR.html">RBR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observations/test_walkthrough.html">Walkthrough Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observations/reading_field_data.html">Walkthrough example</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="observations/pressure_sensors/RBR.html">RBR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="observations/pressure_sensors/Bluelog.html">Bluelog</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="plots.html">Plots</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="observations/weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="observations/weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="observations/weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="observations/weather_stations/WeatherSens.html">WeatherSens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="observations/weather_stations/Rainwise.html">Rainwise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="observations/ctd/CTDBase.html">CTDBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="observations/ctd/CastawayCTD.html">CastawayCTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="observations/ctd/CTD48M.html">CTD48M</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observations/Buoy.html">Buoy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observations/HOBO.html">HOBO</a></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -300,27 +307,22 @@ document.write(`
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#O"><strong>O</strong></a>
- | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
- | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
  | <a href="#W"><strong>W</strong></a>
- | <a href="#Z"><strong>Z</strong></a>
  
 </div>
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.__init__">__init__() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
+      <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer.__init__">__init__() (oceanicospy.models.swanpy.Initializer method)</a>
 
       <ul>
-        <li><a href="analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.__init__">(oceanicospy.analysis.temporal.WaveTemporalAnalyzer method)</a>
-</li>
-        <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer.__init__">(oceanicospy.models.swanpy.Initializer method)</a>
-</li>
         <li><a href="retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.__init__">(oceanicospy.retrievals.CMDSDownloader method)</a>
 </li>
         <li><a href="retrievals/ERA5Downloader.html#oceanicospy.retrievals.ERA5Downloader.__init__">(oceanicospy.retrievals.ERA5Downloader method)</a>
@@ -332,12 +334,6 @@ document.write(`
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/spectral.html#id3">anchoring_depth (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>, <a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.anchoring_depth">[1]</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="observations/AQUAlogger.html#oceanicospy.observations.aqualogger.AQUAlogger">AQUAlogger (class in oceanicospy.observations.aqualogger)</a>
-</li>
       <li><a href="observations/AWAC.html#oceanicospy.observations.awac.AWAC">AWAC (class in oceanicospy.observations.awac)</a>
 </li>
   </ul></td>
@@ -346,11 +342,11 @@ document.write(`
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="observations/BaseLogger.html#oceanicospy.observations.pressure_sensor_base.BaseLogger">BaseLogger (class in oceanicospy.observations.pressure_sensor_base)</a>
+      <li><a href="observations/pressure_sensors/Bluelog.html#oceanicospy.observations.pressure_sensors.bluelog.Bluelog">Bluelog (class in oceanicospy.observations.pressure_sensors.bluelog)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/spectral.html#id5">burst_length_s (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>, <a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.burst_length_s">[1]</a>
+      <li><a href="observations/Buoy.html#oceanicospy.observations.buoy.Buoy">Buoy (class in oceanicospy.observations.buoy)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -358,17 +354,31 @@ document.write(`
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader">CMDSDownloader (class in oceanicospy.retrievals)</a>
+      <li><a href="observations/HOBO.html#oceanicospy.observations.hobo.CleaningRules.c_max">c_max (oceanicospy.observations.hobo.CleaningRules attribute)</a>
 </li>
-      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_direct_fft">compute_spectrum_from_direct_fft() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
+      <li><a href="observations/HOBO.html#oceanicospy.observations.hobo.CleaningRules.c_min">c_min (oceanicospy.observations.hobo.CleaningRules attribute)</a>
+</li>
+      <li><a href="observations/ctd/CastawayCTD.html#oceanicospy.observations.ctd.castaway.CastawayCTD.cast_time">cast_time (oceanicospy.observations.ctd.castaway.CastawayCTD property)</a>
+
+      <ul>
+        <li><a href="observations/ctd/CTD48M.html#oceanicospy.observations.ctd.ctd48m.CTD48M.cast_time">(oceanicospy.observations.ctd.ctd48m.CTD48M property)</a>
+</li>
+      </ul></li>
+      <li><a href="observations/ctd/CastawayCTD.html#oceanicospy.observations.ctd.castaway.CastawayCTD">CastawayCTD (class in oceanicospy.observations.ctd.castaway)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_welch">compute_spectrum_from_welch() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
+      <li><a href="observations/HOBO.html#oceanicospy.observations.hobo.CleaningRules">CleaningRules (class in oceanicospy.observations.hobo)</a>
+</li>
+      <li><a href="retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader">CMDSDownloader (class in oceanicospy.retrievals)</a>
 </li>
       <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer.create_folders_l1">create_folders_l1() (oceanicospy.models.swanpy.Initializer method)</a>
 </li>
       <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer.create_folders_l2">create_folders_l2() (oceanicospy.models.swanpy.Initializer method)</a>
+</li>
+      <li><a href="observations/ctd/CTD48M.html#oceanicospy.observations.ctd.ctd48m.CTD48M">CTD48M (class in oceanicospy.observations.ctd.ctd48m)</a>
+</li>
+      <li><a href="observations/ctd/CTDBase.html#oceanicospy.observations.ctd.ctd_base.CTDBase">CTDBase (class in oceanicospy.observations.ctd.ctd_base)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -376,6 +386,8 @@ document.write(`
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="observations/weather_stations/DavisVantagePro.html#oceanicospy.observations.weather_stations.davis.DavisVantagePro">DavisVantagePro (class in oceanicospy.observations.weather_stations.davis)</a>
+</li>
       <li><a href="models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer.dict_ini_data">dict_ini_data (oceanicospy.models.swanpy.Initializer attribute)</a>
 </li>
   </ul></td>
@@ -404,18 +416,16 @@ document.write(`
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="observations/AQUAlogger.html#oceanicospy.observations.aqualogger.AQUAlogger.first_record_time">first_record_time (oceanicospy.observations.aqualogger.AQUAlogger property)</a>
+      <li><a href="observations/pressure_sensors/Bluelog.html#oceanicospy.observations.pressure_sensors.bluelog.Bluelog.first_record_time">first_record_time (oceanicospy.observations.pressure_sensors.bluelog.Bluelog property)</a>
 
       <ul>
-        <li><a href="observations/BaseLogger.html#oceanicospy.observations.pressure_sensor_base.BaseLogger.first_record_time">(oceanicospy.observations.pressure_sensor_base.BaseLogger property)</a>
-</li>
-        <li><a href="observations/RBR.html#oceanicospy.observations.rbr.RBR.first_record_time">(oceanicospy.observations.rbr.RBR property)</a>
+        <li><a href="observations/pressure_sensors/RBR.html#oceanicospy.observations.rbr.RBR.first_record_time">(oceanicospy.observations.rbr.RBR property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.for_waves">for_waves() (oceanicospy.retrievals.CMDSDownloader class method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.for_winds">for_winds() (oceanicospy.retrievals.CMDSDownloader class method)</a>
 </li>
       <li><a href="retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.format_to_localtime">format_to_localtime() (oceanicospy.retrievals.CMDSDownloader method)</a>
@@ -432,33 +442,75 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_clean_currents_records">get_clean_currents_records() (oceanicospy.observations.awac.AWAC method)</a>
 </li>
-      <li><a href="observations/AQUAlogger.html#oceanicospy.observations.aqualogger.AQUAlogger.get_clean_records">get_clean_records() (oceanicospy.observations.aqualogger.AQUAlogger method)</a>
+      <li><a href="observations/Buoy.html#oceanicospy.observations.buoy.Buoy.get_clean_records">get_clean_records() (oceanicospy.observations.buoy.Buoy method)</a>
 
       <ul>
-        <li><a href="observations/BaseLogger.html#oceanicospy.observations.pressure_sensor_base.BaseLogger.get_clean_records">(oceanicospy.observations.pressure_sensor_base.BaseLogger method)</a>
+        <li><a href="observations/ctd/CastawayCTD.html#oceanicospy.observations.ctd.castaway.CastawayCTD.get_clean_records">(oceanicospy.observations.ctd.castaway.CastawayCTD method)</a>
 </li>
-        <li><a href="observations/RBR.html#oceanicospy.observations.rbr.RBR.get_clean_records">(oceanicospy.observations.rbr.RBR method)</a>
+        <li><a href="observations/ctd/CTD48M.html#oceanicospy.observations.ctd.ctd48m.CTD48M.get_clean_records">(oceanicospy.observations.ctd.ctd48m.CTD48M method)</a>
+</li>
+        <li><a href="observations/ctd/CTDBase.html#oceanicospy.observations.ctd.ctd_base.CTDBase.get_clean_records">(oceanicospy.observations.ctd.ctd_base.CTDBase method)</a>
+</li>
+        <li><a href="observations/HOBO.html#oceanicospy.observations.hobo.HOBOBase.get_clean_records">(oceanicospy.observations.hobo.HOBOBase method)</a>
+</li>
+        <li><a href="observations/pressure_sensors/Bluelog.html#oceanicospy.observations.pressure_sensors.bluelog.Bluelog.get_clean_records">(oceanicospy.observations.pressure_sensors.bluelog.Bluelog method)</a>
+</li>
+        <li><a href="observations/pressure_sensors/RBR.html#oceanicospy.observations.rbr.RBR.get_clean_records">(oceanicospy.observations.rbr.RBR method)</a>
+</li>
+        <li><a href="observations/weather_stations/DavisVantagePro.html#oceanicospy.observations.weather_stations.davis.DavisVantagePro.get_clean_records">(oceanicospy.observations.weather_stations.davis.DavisVantagePro method)</a>
+</li>
+        <li><a href="observations/weather_stations/Rainwise.html#oceanicospy.observations.weather_stations.rainwise.Rainwise.get_clean_records">(oceanicospy.observations.weather_stations.rainwise.Rainwise method)</a>
+</li>
+        <li><a href="observations/weather_stations/WeatherStationBase.html#oceanicospy.observations.weather_stations.weather_station_base.WeatherStationBase.get_clean_records">(oceanicospy.observations.weather_stations.weather_station_base.WeatherStationBase method)</a>
+</li>
+        <li><a href="observations/weather_stations/WeatherSens.html#oceanicospy.observations.weather_stations.weathersens.WeatherSens.get_clean_records">(oceanicospy.observations.weather_stations.weathersens.WeatherSens method)</a>
 </li>
       </ul></li>
       <li><a href="observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_clean_wave_records">get_clean_wave_records() (oceanicospy.observations.awac.AWAC method)</a>
 </li>
-      <li><a href="observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_raw_currents_records">get_raw_currents_records() (oceanicospy.observations.awac.AWAC method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="observations/AQUAlogger.html#oceanicospy.observations.aqualogger.AQUAlogger.get_raw_records">get_raw_records() (oceanicospy.observations.aqualogger.AQUAlogger method)</a>
+      <li><a href="observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_raw_currents_records">get_raw_currents_records() (oceanicospy.observations.awac.AWAC method)</a>
+</li>
+      <li><a href="observations/Buoy.html#oceanicospy.observations.buoy.Buoy.get_raw_records">get_raw_records() (oceanicospy.observations.buoy.Buoy method)</a>
 
       <ul>
-        <li><a href="observations/BaseLogger.html#oceanicospy.observations.pressure_sensor_base.BaseLogger.get_raw_records">(oceanicospy.observations.pressure_sensor_base.BaseLogger method)</a>
+        <li><a href="observations/ctd/CastawayCTD.html#oceanicospy.observations.ctd.castaway.CastawayCTD.get_raw_records">(oceanicospy.observations.ctd.castaway.CastawayCTD method)</a>
 </li>
-        <li><a href="observations/RBR.html#oceanicospy.observations.rbr.RBR.get_raw_records">(oceanicospy.observations.rbr.RBR method)</a>
+        <li><a href="observations/ctd/CTD48M.html#oceanicospy.observations.ctd.ctd48m.CTD48M.get_raw_records">(oceanicospy.observations.ctd.ctd48m.CTD48M method)</a>
+</li>
+        <li><a href="observations/ctd/CTDBase.html#oceanicospy.observations.ctd.ctd_base.CTDBase.get_raw_records">(oceanicospy.observations.ctd.ctd_base.CTDBase method)</a>
+</li>
+        <li><a href="observations/HOBO.html#oceanicospy.observations.hobo.HOBOBase.get_raw_records">(oceanicospy.observations.hobo.HOBOBase method)</a>
+</li>
+        <li><a href="observations/pressure_sensors/Bluelog.html#oceanicospy.observations.pressure_sensors.bluelog.Bluelog.get_raw_records">(oceanicospy.observations.pressure_sensors.bluelog.Bluelog method)</a>
+</li>
+        <li><a href="observations/pressure_sensors/RBR.html#oceanicospy.observations.rbr.RBR.get_raw_records">(oceanicospy.observations.rbr.RBR method)</a>
+</li>
+        <li><a href="observations/weather_stations/DavisVantagePro.html#oceanicospy.observations.weather_stations.davis.DavisVantagePro.get_raw_records">(oceanicospy.observations.weather_stations.davis.DavisVantagePro method)</a>
+</li>
+        <li><a href="observations/weather_stations/Rainwise.html#oceanicospy.observations.weather_stations.rainwise.Rainwise.get_raw_records">(oceanicospy.observations.weather_stations.rainwise.Rainwise method)</a>
+</li>
+        <li><a href="observations/weather_stations/WeatherStationBase.html#oceanicospy.observations.weather_stations.weather_station_base.WeatherStationBase.get_raw_records">(oceanicospy.observations.weather_stations.weather_station_base.WeatherStationBase method)</a>
+</li>
+        <li><a href="observations/weather_stations/WeatherSens.html#oceanicospy.observations.weather_stations.weathersens.WeatherSens.get_raw_records">(oceanicospy.observations.weather_stations.weathersens.WeatherSens method)</a>
 </li>
       </ul></li>
       <li><a href="observations/AWAC.html#oceanicospy.observations.awac.AWAC.get_raw_wave_records">get_raw_wave_records() (oceanicospy.observations.awac.AWAC method)</a>
 </li>
-      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_spectra_and_params_for_bursts">get_spectra_and_params_for_bursts() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="observations/HOBO.html#oceanicospy.observations.hobo.HOBOBase">HOBOBase (class in oceanicospy.observations.hobo)</a>
 </li>
-      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_wave_params_from_spectrum_v1">get_wave_params_from_spectrum_v1() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="observations/HOBO.html#oceanicospy.observations.hobo.HOBOCL">HOBOCL (class in oceanicospy.observations.hobo)</a>
+</li>
+      <li><a href="observations/HOBO.html#oceanicospy.observations.hobo.HOBOTL">HOBOTL (class in oceanicospy.observations.hobo)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -478,12 +530,10 @@ document.write(`
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="observations/AQUAlogger.html#oceanicospy.observations.aqualogger.AQUAlogger.last_record_time">last_record_time (oceanicospy.observations.aqualogger.AQUAlogger property)</a>
+      <li><a href="observations/pressure_sensors/Bluelog.html#oceanicospy.observations.pressure_sensors.bluelog.Bluelog.last_record_time">last_record_time (oceanicospy.observations.pressure_sensors.bluelog.Bluelog property)</a>
 
       <ul>
-        <li><a href="observations/BaseLogger.html#oceanicospy.observations.pressure_sensor_base.BaseLogger.last_record_time">(oceanicospy.observations.pressure_sensor_base.BaseLogger property)</a>
-</li>
-        <li><a href="observations/RBR.html#oceanicospy.observations.rbr.RBR.last_record_time">(oceanicospy.observations.rbr.RBR property)</a>
+        <li><a href="observations/pressure_sensors/RBR.html#oceanicospy.observations.rbr.RBR.last_record_time">(oceanicospy.observations.rbr.RBR property)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -492,15 +542,27 @@ document.write(`
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/spectral.html#id0">measurement_signal (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>, <a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.measurement_signal">[1]</a>
+      <li><a href="observations/ctd/CastawayCTD.html#oceanicospy.observations.ctd.castaway.CastawayCTD.metadata">metadata (oceanicospy.observations.ctd.castaway.CastawayCTD property)</a>
+
+      <ul>
+        <li><a href="observations/ctd/CTD48M.html#oceanicospy.observations.ctd.ctd48m.CTD48M.metadata">(oceanicospy.observations.ctd.ctd48m.CTD48M property)</a>
 </li>
+        <li><a href="observations/ctd/CTDBase.html#oceanicospy.observations.ctd.ctd_base.CTDBase.metadata">(oceanicospy.observations.ctd.ctd_base.CTDBase property)</a>
+</li>
+      </ul></li>
       <li>
     module
 
       <ul>
-        <li><a href="observations/AQUAlogger.html#module-oceanicospy.observations.aqualogger">oceanicospy.observations.aqualogger</a>
+        <li><a href="observations/pressure_sensors/AQUAlogger.html#module-oceanicospy.observations.aqualogger.AQUAlogger">oceanicospy.observations.aqualogger.AQUAlogger</a>
 </li>
-        <li><a href="observations/BaseLogger.html#module-oceanicospy.observations.pressure_sensor_base">oceanicospy.observations.pressure_sensor_base</a>
+        <li><a href="observations/ctd/CTDBase.html#module-oceanicospy.observations.ctd.ctd_base">oceanicospy.observations.ctd.ctd_base</a>
+</li>
+        <li><a href="observations/HOBO.html#module-oceanicospy.observations.hobo">oceanicospy.observations.hobo</a>
+</li>
+        <li><a href="observations/pressure_sensors/BaseLogger.html#module-oceanicospy.observations.pressure_sensor_base">oceanicospy.observations.pressure_sensor_base</a>
+</li>
+        <li><a href="observations/weather_stations/WeatherStationBase.html#module-oceanicospy.observations.weather_stations.weather_station_base">oceanicospy.observations.weather_stations.weather_station_base</a>
 </li>
       </ul></li>
   </ul></td>
@@ -510,10 +572,24 @@ document.write(`
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    oceanicospy.observations.aqualogger
+    oceanicospy.observations.aqualogger.AQUAlogger
 
       <ul>
-        <li><a href="observations/AQUAlogger.html#module-oceanicospy.observations.aqualogger">module</a>
+        <li><a href="observations/pressure_sensors/AQUAlogger.html#module-oceanicospy.observations.aqualogger.AQUAlogger">module</a>
+</li>
+      </ul></li>
+      <li>
+    oceanicospy.observations.ctd.ctd_base
+
+      <ul>
+        <li><a href="observations/ctd/CTDBase.html#module-oceanicospy.observations.ctd.ctd_base">module</a>
+</li>
+      </ul></li>
+      <li>
+    oceanicospy.observations.hobo
+
+      <ul>
+        <li><a href="observations/HOBO.html#module-oceanicospy.observations.hobo">module</a>
 </li>
       </ul></li>
   </ul></td>
@@ -522,24 +598,25 @@ document.write(`
     oceanicospy.observations.pressure_sensor_base
 
       <ul>
-        <li><a href="observations/BaseLogger.html#module-oceanicospy.observations.pressure_sensor_base">module</a>
+        <li><a href="observations/pressure_sensors/BaseLogger.html#module-oceanicospy.observations.pressure_sensor_base">module</a>
 </li>
       </ul></li>
-  </ul></td>
-</tr></table>
+      <li>
+    oceanicospy.observations.weather_stations.weather_station_base
 
-<h2 id="P">P</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.params_from_zero_crossing">params_from_zero_crossing() (oceanicospy.analysis.temporal.WaveTemporalAnalyzer method)</a>
+      <ul>
+        <li><a href="observations/weather_stations/WeatherStationBase.html#module-oceanicospy.observations.weather_stations.weather_station_base">module</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="observations/RBR.html#oceanicospy.observations.rbr.RBR">RBR (class in oceanicospy.observations.rbr)</a>
+      <li><a href="observations/weather_stations/Rainwise.html#oceanicospy.observations.weather_stations.rainwise.Rainwise">Rainwise (class in oceanicospy.observations.weather_stations.rainwise)</a>
+</li>
+      <li><a href="observations/pressure_sensors/RBR.html#oceanicospy.observations.rbr.RBR">RBR (class in oceanicospy.observations.rbr)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -550,18 +627,14 @@ document.write(`
   </ul></td>
 </tr></table>
 
-<h2 id="S">S</h2>
+<h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/spectral.html#id1">sampling_data (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>, <a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_data">[1]</a>
-</li>
-      <li><a href="analysis/spectral.html#id2">sampling_freq (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>, <a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_freq">[1]</a>
+      <li><a href="observations/HOBO.html#oceanicospy.observations.hobo.CleaningRules.t_max">t_max (oceanicospy.observations.hobo.CleaningRules attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/spectral.html#id4">sensor_height (oceanicospy.analysis.spectral.WaveSpectralAnalyzer attribute)</a>, <a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sensor_height">[1]</a>
-</li>
-      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.smooth_psd_spectrum">smooth_psd_spectrum() (oceanicospy.analysis.spectral.WaveSpectralAnalyzer method)</a>
+      <li><a href="observations/HOBO.html#oceanicospy.observations.hobo.CleaningRules.t_min">t_min (oceanicospy.observations.hobo.CleaningRules attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -569,19 +642,11 @@ document.write(`
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer">WaveSpectralAnalyzer (class in oceanicospy.analysis.spectral)</a>
+      <li><a href="observations/weather_stations/WeatherSens.html#oceanicospy.observations.weather_stations.weathersens.WeatherSens">WeatherSens (class in oceanicospy.observations.weather_stations.weathersens)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer">WaveTemporalAnalyzer (class in oceanicospy.analysis.temporal)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="Z">Z</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.zero_crossing">zero_crossing() (oceanicospy.analysis.temporal.WaveTemporalAnalyzer method)</a>
+      <li><a href="observations/weather_stations/WeatherStationBase.html#oceanicospy.observations.weather_stations.weather_station_base.WeatherStationBase">WeatherStationBase (class in oceanicospy.observations.weather_stations.weather_station_base)</a>
 </li>
   </ul></td>
 </tr></table>

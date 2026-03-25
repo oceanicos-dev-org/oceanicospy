@@ -149,6 +149,34 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/temporal.html">Temporal</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/execution/run_case.html">Case Runner</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../observations/walkthrough.html">Walkthrough Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../observations/BaseLogger.html">BaseLogger</a></li>
@@ -157,26 +185,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../../observations/AWAC.html">AWAC</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/conditioning.html">Signal conditioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/spectral.html">Spectral</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/temporal.html">Temporal</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../models/swanpy/index.html">swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../../../models/swanpy/initializer.html">Initializer</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../plots.html">Plots</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../retrievals.html">Retrievals</a></li>
 </ul>
 
     </div>
@@ -400,6 +409,9 @@ document.write(`
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replaces and updates the .swn file with the grid configuration for a specific domain.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">dict_grid_data</span><span class="p">[</span><span class="s2">&quot;domain_number&quot;</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span>
+
         <span class="nb">print</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> </span><span class="se">\t</span><span class="s1">*** Adding/Editing grid information for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> in configuration file ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">fill_files</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/run.swn&#39;</span><span class="p">,</span><span class="n">dict_grid_data</span><span class="p">)</span></div>
 </div>
