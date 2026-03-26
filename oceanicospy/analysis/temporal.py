@@ -7,12 +7,12 @@ from ..utils import wave_props
 
 class WaveTemporalAnalyzer:
     def __init__(self,measured_signal,sampling_data,surface_level_column='eta[m]'): 
-        """"
+        """
         Initializes the analysis object with measurement signal and sampling data.
 
         Parameters
         ----------
-        measurement_signal : array-like
+        measured_signal : array-like
             The input signal data to be analyzed.
         sampling_data : dict
             Dictionary containing sampling parameters with the following keys:
@@ -21,7 +21,7 @@ class WaveTemporalAnalyzer:
                 - 'sensor_height' (float): Height of the sensor above the bottom.
                 - 'burst_length_s' (float): Duration of each burst in seconds.
         surface_level_column : str, optional
-            The name of the column in measurement_signal that contains surface level data (default is 'eta[m]').
+            The name of the column in measured_signal that contains surface level data (default is 'eta[m]').
 
         Notes
         -----
@@ -29,13 +29,13 @@ class WaveTemporalAnalyzer:
         23-Feb-2014 : First Matlab version - Daniel Peláez
         01-Sep-2023 : First Python version - Alejandro Henao
         10-Dec-2025 : Empirical Mode decomposition - Franklin Ayala 
-
         """
+
         self.measured_signal = measured_signal
         self.sampling_data = sampling_data
         self.surface_level_column = surface_level_column
 
-    def apply_zero_upcrossing_burst(self, burst_signal, sampling_freq, anchoring_depth, sensor_height):
+    def apply_zero_upcrossing_burst(self, burst_signal, anchoring_depth, sensor_height):
         """
         This function calculates the significant wave height, the period and the wavelength
         with the zero-upcrossing method.
@@ -44,8 +44,6 @@ class WaveTemporalAnalyzer:
         ----------
         burst_signal : array_like
             A series of data without trend.
-        sampling_freq : float
-            The sampling frequency.
         anchoring_depth : float
             The measurement depth.
         sensor_height : float
@@ -63,7 +61,6 @@ class WaveTemporalAnalyzer:
             The mean wavelength.
         """
 
-        # tt = np.arange(1,len(burst_signal)+1,1/sampling_freq)
         ratio = 10
         # Resample the signal with certain ratio to increase the resolution of zero-crossing detection
         burst_signal_upsampled = resample(burst_signal, len(burst_signal) * ratio)
@@ -75,7 +72,7 @@ class WaveTemporalAnalyzer:
         T = []
 
         # Loop through pairs of consecutive up-crossings to calculate wave heights and periods
-        for idx_cross in range(0,len(idxs_cross)-1):
+        for idx_cross in range(len(idxs_cross)-1):
             first_up = idxs_cross[idx_cross] 
             second_up = idxs_cross[idx_cross+1]
             wave = burst_signal_upsampled[first_up:second_up+1]
@@ -85,18 +82,19 @@ class WaveTemporalAnalyzer:
         T = np.array(T)
 
         # Determine the wavenumber based on the dispersion relation
-        L = np.array([wave_props.wavelength(t, anchoring_depth) for t in T], dtype=np.float64) # total or anchoring_depth?
+        # TODO: the total or anchoring depth has to be used.
+        L = np.array([wave_props.wavelength(t, anchoring_depth) for t in T], dtype=np.float64) 
         k = 2.*np.pi/L
 
         # computing non-adaptive transference factor Kp
-        Kp = np.cosh(k * sensor_height) / np.cosh(k * anchoring_depth) # total or anchoring_depth?
+        Kp = np.cosh(k * sensor_height) / np.cosh(k * anchoring_depth) 
         Kp_min = (np.cosh(np.pi/(anchoring_depth - sensor_height)*sensor_height)) / \
-                (np.cosh(np.pi/(anchoring_depth - sensor_height)*anchoring_depth)) # total or anchoring_depth?
+                (np.cosh(np.pi/(anchoring_depth - sensor_height)*anchoring_depth)) 
         # Clip Kp to avoid unrealistic amplification of wave heights for very long waves
         Kp = np.clip(Kp, Kp_min, 1)
 
         H = H_cross/(Kp)
-        n = len(H) // 3 
+        n = min(1,len(H) // 3) # to prevent errors when there are less than 3 waves in the burst
 
         H_sorted = np.sort(H)
         H_top_third = np.nanmean(H_sorted[-n:])  # top third
@@ -118,8 +116,8 @@ class WaveTemporalAnalyzer:
             - 'H1/3': Significant wave height (H1/3).
             - 'Tmean': Mean wave period (Tmean).
         """
-        wave_params=["time","H1/3","Tmean"]
-        wave_params_data={param:[] for param in wave_params}
+        wave_params = ["time","H1/3","Tmean"]
+        wave_params_data = {param:[] for param in wave_params}
 
         for i in self.measured_signal['burstId'].unique():
             burst_signal = self.measured_signal[self.measured_signal['burstId'] == i]
@@ -128,7 +126,7 @@ class WaveTemporalAnalyzer:
             burst_signal_detrended = burst_signal.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
             burst_signal_detrended[self.measured_signal.columns[-1]] = burst_signal.iloc[:, -1]
 
-            H_top_third, Hmax, Tmean, Lmean = self.apply_zero_upcrossing_burst(burst_signal_detrended['pressure[bar]'], self.sampling_data['sampling_freq'],
+            H_top_third, Hmax, Tmean, Lmean = self.apply_zero_upcrossing_burst(burst_signal_detrended['pressure[bar]'],
                                     self.sampling_data['anchoring_depth'], self.sampling_data['sensor_height'])
 
             wave_params_data['time'].append(burst_signal_detrended.index[0])
@@ -164,28 +162,76 @@ class WaveTemporalAnalyzer:
         -------
         numpy.ndarray
             A 3D array containing the IMFs for each burst, with shape (number of bursts, maximum_IMFs, burst_length_s).
+
+        Notes
+        -----
+        This function is based on the different method decompositions implemented in the PyEMD library [1].
+        .. [1] Huang, N. E., et al. (1998). The empirical mode decomposition and the Hilbert spectrum for nonlinear 
+            and non-stationary time series analysis. Proceedings of the Royal Society of London. Series A, 454(1971), 903-995.
+
+        Raises
+        ------
+        ValueError
+            If 'burstId' is not found in the signal columns.
+            If EMD_type is not one of 'EMD', 'EEMD', or 'CEEMDAN'.
+            If EMD_type is 'EEMD' or 'CEEMDAN' and number_ensembles or
+            amplitude_noise_std are not provided.
         """
-        hourly_timeindex = self.measured_signal.index.floor('h').unique().sort_values()
-        time_seconds = np.arange(0,self.burst_length_s,1)
 
-        IMFs_all = np.zeros((len(hourly_timeindex),maximum_IMFs,self.burst_length_s))
+        if 'burstId' not in self.measured_signal.columns:
+            raise ValueError("'burstId' column not found in measured_signal.")
 
-        if 'burstId' in self.measured_signal.columns:
-            for idx,burst in enumerate(self.measured_signal["burstId"].unique()):
-                burst_series = self.measured_signal[self.measured_signal['burstId'] == burst]
-                if EMD_type == 'EMD':
-                    emd = EMD()
-                    IMFs = emd(burst_series[self.surface_level_column].values, 
-                               time_seconds, max_imf=maximum_IMFs)[:maximum_IMFs, :]
-                elif EMD_type == 'EEMD':
-                    eemd = EEMD(trials=number_ensembles, epsilon=amplitude_noise_std)
-                    IMFs = eemd(burst_series[self.surface_level_column].values, 
-                                time_seconds, max_imf=maximum_IMFs)[:maximum_IMFs, :]
-                else:
-                    ceemd = CEEMDAN(DTYPE=np.float16,trials=number_ensembles,epsilon=amplitude_noise_std,
-                                    parallel=parallel,processes=nb_processes)
-                    IMFs = ceemd(burst_series[self.surface_level_column].values,
-                                 time_seconds,max_imf=maximum_IMFs)[:maximum_IMFs,:]
-                IMFs_all[idx,:,:] = IMFs
+        valid_emd_types = {'EMD', 'EEMD', 'CEEMDAN'}
+        if EMD_type not in valid_emd_types:
+            raise ValueError(f"EMD_type must be one of {valid_emd_types}, got '{EMD_type}'.")
+
+        if EMD_type in {'EEMD', 'CEEMDAN'}:
+            if number_ensembles is None or amplitude_noise_std is None:
+                raise ValueError(
+                    f"'number_ensembles' and 'amplitude_noise_std' are required for {EMD_type}."
+                )
+
+        burst_ids = self.measured_signal['burstId'].unique()
+        n_bursts = len(burst_ids)
+        time_seconds = np.arange(0,self.sampling_data['burst_length_s'],1)
+        IMFs_all = np.zeros((n_bursts,maximum_IMFs,self.sampling_data['burst_length_s']))
+
+        # --- Decompose each burst ---
+        for idx, burst_id in enumerate(burst_ids):
+            burst_series = self.measured_signal[self.measured_signal['burstId'] == burst_id]
+            signal = burst_series[self.surface_level_column].values
+
+            IMFs = self._compute_IMFs(
+                signal, time_seconds, EMD_type,
+                maximum_IMFs, number_ensembles,
+                amplitude_noise_std, parallel, nb_processes
+            )
+
+            # Pad with zeros if fewer IMFs than maximum_IMFs were produced
+            n_imfs_found = IMFs.shape[0]
+            IMFs_all[idx, :n_imfs_found, :] = IMFs[:, :self.sampling_data['burst_length_s']]
+
         return IMFs_all
 
+    def _compute_IMFs(self,signal,time_seconds,EMD_type,maximum_IMFs,number_ensembles,amplitude_noise_std,
+                      parallel,nb_processes):
+        """
+        Internal helper: runs the appropriate EMD variant on a single burst signal.
+
+        Returns
+        -------
+        numpy.ndarray
+            2D array of shape (n_imfs, n_samples).
+        """
+        if EMD_type == 'EMD':
+            decomposer = EMD()
+
+        elif EMD_type == 'EEMD':
+            decomposer = EEMD(trials=number_ensembles,epsilon=amplitude_noise_std)
+
+        else:  # CEEMDAN
+            # np.float16 is used to reduce memory usage during ensemble averaging
+            decomposer = CEEMDAN(DTYPE=np.float16,trials=number_ensembles,epsilon=amplitude_noise_std,
+                                 parallel=parallel,processes=nb_processes)
+
+        return decomposer(signal, time_seconds, max_imf=maximum_IMFs)[:maximum_IMFs, :]

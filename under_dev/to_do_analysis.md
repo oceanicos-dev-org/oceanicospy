@@ -16,6 +16,7 @@ Because there are different ways to perform a temporal or spectral analysis, tho
 # Temporal analysis
 
 * Do we really need a detrended time series for the up-crossing method? this can be verified quickly.
+* The use of anchoring_depth and sensor height has to be properly defined and distinguished for Kp correction
 
 # Final disclaimer
 
