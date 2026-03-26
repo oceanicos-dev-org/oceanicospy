@@ -30,6 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -40,11 +41,10 @@
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'models/swanpy/execution/run_case';</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="Plots" href="../../../plots.html" />
-    <link rel="prev" title="Execution" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -149,44 +149,58 @@
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current nav bd-sidenav">
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../installing.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../analysis/conditioning.html">Signal conditioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../../../analysis/temporal.html">Temporal</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../index.html">Models</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="../index.html">Swanpy</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l3 has-children"><a class="reference internal" href="../initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../preprocess/gridmaker.html">Gridmaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../preprocess/bathymaker.html">Bathymaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../preprocess/wind_forcing.html">Wind forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../preprocess/waterlevel_forcing.html">Water level forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../preprocess/boundary_conds.html">Boundary conditions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../preprocess/bottom_friction.html">Bottom Friction</a></li>
-</ul>
-</details></li>
-<li class="toctree-l3 current active has-children"><a class="reference internal" href="index.html">Execution</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l4 current active"><a class="current reference internal" href="#">Case Runner</a></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/BaseLogger.html">BaseLogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/AQUAlogger.html">AQUAlogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/RBR.html">RBR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/RBR.html">RBR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/Bluelog.html">Bluelog</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../plots.html">Plots</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/WeatherSens.html">WeatherSens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/Rainwise.html">Rainwise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CTDBase.html">CTDBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CastawayCTD.html">CastawayCTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CTD48M.html">CTD48M</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/Buoy.html">Buoy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/HOBO.html">HOBO</a></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -390,24 +404,6 @@ This includes paths, simulation name, number of domains, and parent domains.</p>
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="index.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Execution</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="../../../plots.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Plots</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               

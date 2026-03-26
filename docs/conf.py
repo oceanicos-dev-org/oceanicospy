@@ -41,7 +41,11 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',  # Optional: for Google or NumPy-style docstrings
     'sphinx.ext.viewcode',  # Optional, for source code links
+    'nbsphinx',  # Optional, for Jupyter Notebook integration
+    "myst_nb"
 ]
+
+nbsphinx_execute = 'never'
 
 autodoc_member_order = 'bysource'
 autodoc_typehints = 'description'
