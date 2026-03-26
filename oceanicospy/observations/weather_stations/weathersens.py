@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 from .weather_station_base import WeatherStationBase
+import warnings
+
+warnings.filterwarnings("ignore", message="Workbook contains no default style")
 
 class WeatherSens(WeatherStationBase):
     """
@@ -101,12 +104,16 @@ class WeatherSens(WeatherStationBase):
         # Standardize column names to Davis style
         column_map = {
             'Date/Time': 'DateTime',
-            'Precipitacion (mm)': 'Rain',
-            'Temperatura Aire (°C)': 'Temp',
-            'Humedad Aire (%)': 'Hum',
-            'Presion Barometrica (hPa)': 'Bar',
-            'Velocidad Viento (m/s)': 'Speed',
-            'Direccion Viento (°)': 'Direction',
+            'Precipitacion (mm)': 'rain[mm]',
+            'Temperatura Aire (°C)': 'temp[C]',
+            'Humedad Aire (%)': 'air_humidity[%]',
+            'Presion Barometrica (hPa)': 'pressure[hPa]',
+            'Velocidad Viento (m/s)': 'wind_speed[m/s]',
+            'Direccion Viento (°)': 'wind_direction[°]',
+            'Radiacion Solar (W/m2)': 'solar_radiation[W/m2]',
+            'Bateria (V)': 'battery[V]',
+            'Panel  Supply (V)': 'panel_supply[V]',
+            'DAB (dBm)': 'dab[dBm]',
         }
         df.rename(columns=column_map, inplace=True)
 
@@ -118,7 +125,7 @@ class WeatherSens(WeatherStationBase):
         df = df.set_index('date')
 
         # Convert numerical columns to float if possible
-        for col in ['Rain', 'Temp', 'Hum', 'Bar', 'Speed', 'Direction']:
+        for col in list(column_map.values())[1:]:
             if col in df.columns:
                 df[col] = pd.to_numeric(df[col], errors='coerce')
         return df

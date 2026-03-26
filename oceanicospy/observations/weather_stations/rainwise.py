@@ -60,6 +60,9 @@ class Rainwise(WeatherStationBase):
             Cleaned DataFrame indexed by ``date`` (``datetime64[ns]``) with
             standardized column names and numeric dtypes.
         """
+        df['date'] = pd.to_datetime(df['Time'])
+        df.drop(columns=['Time'], inplace=True)
+        df = df.set_index('date')
         return df
     
     def _compute_direction_degrees(self, df):

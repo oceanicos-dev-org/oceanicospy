@@ -137,8 +137,6 @@ class BaseLogger(ABC):
         The data is trimmed to include only records between the start and end record times provided.
         """
         df = self._load_raw_dataframe()
-        df = self._standardize_columns(df)
-        df = self._parse_dates_and_trim(df)
         return df
 
     def get_clean_records(self, detrended: bool = True) -> pd.DataFrame:
@@ -157,6 +155,8 @@ class BaseLogger(ABC):
         """
 
         df = self.get_raw_records()
+        df = self._standardize_columns(df)
+        df = self._parse_dates_and_trim(df)
         df = self._compute_depth_from_pressure(df)
         df = self._assign_burst_id(df)
         df['eta[m]'] = df.groupby('burstId')['depth[m]'].transform(lambda x: x - x.mean())
