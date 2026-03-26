@@ -47,7 +47,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Analysis" href="analysis/index.html" />
+    <link rel="next" title="Installation" href="installing.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -155,15 +155,24 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="installing.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="analysis/conditioning.html">Signal conditioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="analysis/temporal.html">Temporal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="observations/test_walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="observations/reading_field_data.html">Walkthrough example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observations/reading_field_data.html">Walkthrough Example</a></li>
 
 
 
@@ -359,6 +368,7 @@ documentation for details.</p>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="installing.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analysis/index.html">Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="analysis/conditioning.html">Signal conditioning</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="analysis/conditioning.html#nyquist-frequency">Nyquist frequency</a></li>
@@ -370,12 +380,27 @@ documentation for details.</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/spectral_analysis.html#importing-required-modules-and-subpackages">Importing required modules and subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/spectral_analysis.html#pressure-data">Pressure data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/spectral_analysis.html#using-the-wavespectralanalyzer-class">Using the <code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer</span></code> class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="analysis/spectral_analysis.html#welch-s-and-fft-method">Welch’s and FFT method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="analysis/spectral_analysis.html#wavelets-transform">Wavelets transform</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="analysis/temporal.html">Temporal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/temporal_analysis.html#importing-required-modules-and-subpackages">Importing required modules and subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/temporal_analysis.html#pressure-data">Pressure data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/temporal_analysis.html#using-the-wavetemporalanalyzer-class">Using the <code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer</span></code> class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="analysis/temporal_analysis.html#zero-upcrossing-method">Zero upcrossing method</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="analysis/temporal_analysis.html#empirical-mode-decomposition-emd-method">Empirical mode decomposition (EMD) method</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="observations/index.html">Observations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="observations/test_walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="observations/reading_field_data.html">Walkthrough example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="observations/reading_field_data.html">Walkthrough Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="observations/reading_field_data.html#importing-libraries">Importing libraries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="observations/reading_field_data.html#pressure-sensors-aqualogger-rbr-bluelogger">Pressure sensors: AQUALogger, RBR, BlueLogger</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="observations/reading_field_data.html#data-directories-and-sampling-configuration">Data directories and sampling configuration</a></li>
@@ -445,11 +470,11 @@ documentation for details.</p>
                   
 <div class="prev-next-area">
     <a class="right-next"
-       href="analysis/index.html"
+       href="installing.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Analysis</p>
+        <p class="prev-next-title">Installation</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

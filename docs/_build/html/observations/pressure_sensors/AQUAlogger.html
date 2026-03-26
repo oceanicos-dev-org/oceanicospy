@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -152,9 +152,25 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../installing.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/temporal.html">Temporal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Observations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Importing libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Walkthrough Example</a></li>
+
 
 
 
@@ -185,12 +201,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../AWAC.html">AWAC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../Buoy.html">Buoy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../HOBO.html">HOBO</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../analysis/conditioning.html">Signal conditioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../analysis/spectral.html">Spectral</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../analysis/temporal.html">Temporal</a></li>
 </ul>
 </details></li>
 </ul>
@@ -318,7 +328,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -334,6 +346,20 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger"><code class="docutils literal notranslate"><span class="pre">AQUAlogger</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.first_record_time"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.first_record_time</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.get_clean_records"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.get_clean_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.get_raw_records"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.get_raw_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.last_record_time"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.last_record_time</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -343,32 +369,98 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-oceanicospy.observations.aqualogger.AQUAlogger">
-<span id="aqualogger"></span><h1>AQUAlogger<a class="headerlink" href="#module-oceanicospy.observations.aqualogger.AQUAlogger" title="Link to this heading">#</a></h1>
+  <section id="aqualogger">
+<h1>AQUAlogger<a class="headerlink" href="#aqualogger" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.pressure_sensors.aqualogger.</span></span><span class="sig-name descname"><span class="pre">AQUAlogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/oceanicospy/observations/pressure_sensors/aqualogger.html#AQUAlogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLogger</span></code></p>
 <p>A sensor-specific reader for AQUAlogger files.</p>
 <p>Inherits from <code class="docutils literal notranslate"><span class="pre">BaseLogger</span></code> and implements methods specific to AQUAlogger file formats.</p>
 <dl class="field-list simple">
-<dt class="field-odd">param directory_path<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Path to the directory containing the .csv files.</p>
-</dd>
-<dt class="field-even">type directory_path<span class="colon">:</span></dt>
-<dd class="field-even"><p>str</p>
-</dd>
-<dt class="field-odd">param sampling_data<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dictionary containing information on device deployment, including:
-- anchoring_depth: The depth at which the sensor is anchored (in meters).
-- sensor_height: The height of the sensor above the anchoring point (in meters).
-- sampling_freq: The frequency at which the sensor records data (in Hz).
-- burst_length_s: The length of each burst of data recording (in seconds).
-- start_time: The start time for data analysis (as a datetime object or string).
-- end_time: The end time for data analysis (as a datetime object or string).</p>
-</dd>
-<dt class="field-even">type sampling_data<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory_path</strong> (<em>str</em>) – Path to the directory containing the .csv files.</p></li>
+<li><p><strong>sampling_data</strong> (<em>dict</em>) – <p>Dictionary containing information on device deployment, including:</p>
+<ul>
+<li><p>anchoring_depth: The depth at which the sensor is anchored (in meters).</p></li>
+<li><p>sensor_height: The height of the sensor above the anchoring point (in meters).</p></li>
+<li><p>sampling_freq: The frequency at which the sensor records data (in Hz).</p></li>
+<li><p>burst_length_s: The length of each burst of data recording (in seconds).</p></li>
+<li><p>start_time: The start time for data analysis (as a datetime object or string).</p></li>
+<li><p>end_time: The end time for data analysis (as a datetime object or string).</p></li>
+</ul>
+</p></li>
+<li><p><strong>filename</strong> (<em>str</em>)</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>The following models are supported: AQUAlogger520PT5 and AQUAlogger520P4</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.first_record_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">first_record_time</span></span><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.first_record_time" title="Link to this definition">#</a></dt>
+<dd><p>Returns the timestamp of the first record in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The timestamp of the first available record.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.Timestamp</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.get_clean_records">
+<span class="sig-name descname"><span class="pre">get_clean_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detrended</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.get_clean_records" title="Link to this definition">#</a></dt>
+<dd><p>Processes the raw data into clean, burst-segmented data with surface elevation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>detrended</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, applies a linear detrending to the depth data within each burst. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A cleaned DataFrame with bursts identified by a ‘burstId’ column.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.get_raw_records">
+<span class="sig-name descname"><span class="pre">get_raw_records</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.get_raw_records" title="Link to this definition">#</a></dt>
+<dd><p>Reads the records file from the device to create a DataFrame containing data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A DataFrame containing the raw data indexed by timestamp.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The records are standardized to have a datetime index and columns following the convention variable[units] (e.g., pressure[bar], depth[m]).
+The data is trimmed to include only records between the start and end record times provided.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.last_record_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_record_time</span></span><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.last_record_time" title="Link to this definition">#</a></dt>
+<dd><p>Returns the timestamp of the last record in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The timestamp of the last available record.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.Timestamp</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -406,6 +498,27 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger"><code class="docutils literal notranslate"><span class="pre">AQUAlogger</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.first_record_time"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.first_record_time</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.get_clean_records"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.get_clean_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.get_raw_records"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.get_raw_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger.last_record_time"><code class="docutils literal notranslate"><span class="pre">AQUAlogger.last_record_time</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

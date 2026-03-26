@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -152,9 +152,25 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../installing.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/temporal.html">Temporal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
+</ul>
+</details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Observations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Importing libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Walkthrough Example</a></li>
+
 
 
 
@@ -185,12 +201,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../AWAC.html">AWAC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../Buoy.html">Buoy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../HOBO.html">HOBO</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../analysis/conditioning.html">Signal conditioning</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../analysis/spectral.html">Spectral</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../analysis/temporal.html">Temporal</a></li>
 </ul>
 </details></li>
 </ul>
@@ -341,11 +351,11 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.rbr.RBR"><code class="docutils literal notranslate"><span class="pre">RBR</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.rbr.RBR.first_record_time"><code class="docutils literal notranslate"><span class="pre">RBR.first_record_time</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.rbr.RBR.get_clean_records"><code class="docutils literal notranslate"><span class="pre">RBR.get_clean_records()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.rbr.RBR.get_raw_records"><code class="docutils literal notranslate"><span class="pre">RBR.get_raw_records()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.rbr.RBR.last_record_time"><code class="docutils literal notranslate"><span class="pre">RBR.last_record_time</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.rbr.RBR"><code class="docutils literal notranslate"><span class="pre">RBR</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.rbr.RBR.first_record_time"><code class="docutils literal notranslate"><span class="pre">RBR.first_record_time</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.rbr.RBR.get_clean_records"><code class="docutils literal notranslate"><span class="pre">RBR.get_clean_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.rbr.RBR.get_raw_records"><code class="docutils literal notranslate"><span class="pre">RBR.get_raw_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.rbr.RBR.last_record_time"><code class="docutils literal notranslate"><span class="pre">RBR.last_record_time</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -362,8 +372,8 @@ document.write(`
   <section id="rbr">
 <h1>RBR<a class="headerlink" href="#rbr" title="Link to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="oceanicospy.observations.rbr.RBR">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.rbr.</span></span><span class="sig-name descname"><span class="pre">RBR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oceanicospy.observations.rbr.RBR" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.rbr.RBR">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.pressure_sensors.rbr.</span></span><span class="sig-name descname"><span class="pre">RBR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/oceanicospy/observations/pressure_sensors/rbr.html#RBR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.rbr.RBR" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLogger</span></code></p>
 <p>A sensor-specific reader for RBR pressure logger files.</p>
 <p>Inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLogger</span></code> and implements file parsing methods
@@ -389,8 +399,8 @@ renaming, unit conversion, and hour-based burst identification.</p>
 values are converted from dbar (as exported by RBR instruments) to bar
 during column standardization.</p>
 <dl class="py property">
-<dt class="sig sig-object py" id="oceanicospy.observations.rbr.RBR.first_record_time">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">first_record_time</span></span><a class="headerlink" href="#oceanicospy.observations.rbr.RBR.first_record_time" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.rbr.RBR.first_record_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">first_record_time</span></span><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.rbr.RBR.first_record_time" title="Link to this definition">#</a></dt>
 <dd><p>Returns the timestamp of the first record in the dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -403,8 +413,8 @@ during column standardization.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="oceanicospy.observations.rbr.RBR.get_clean_records">
-<span class="sig-name descname"><span class="pre">get_clean_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detrended</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oceanicospy.observations.rbr.RBR.get_clean_records" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.rbr.RBR.get_clean_records">
+<span class="sig-name descname"><span class="pre">get_clean_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detrended</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.rbr.RBR.get_clean_records" title="Link to this definition">#</a></dt>
 <dd><p>Processes the raw data into clean, burst-segmented data with surface elevation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -420,8 +430,8 @@ during column standardization.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="oceanicospy.observations.rbr.RBR.get_raw_records">
-<span class="sig-name descname"><span class="pre">get_raw_records</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#oceanicospy.observations.rbr.RBR.get_raw_records" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.rbr.RBR.get_raw_records">
+<span class="sig-name descname"><span class="pre">get_raw_records</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.rbr.RBR.get_raw_records" title="Link to this definition">#</a></dt>
 <dd><p>Reads the records file from the device to create a DataFrame containing data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -437,8 +447,8 @@ The data is trimmed to include only records between the start and end record tim
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="oceanicospy.observations.rbr.RBR.last_record_time">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_record_time</span></span><a class="headerlink" href="#oceanicospy.observations.rbr.RBR.last_record_time" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.rbr.RBR.last_record_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_record_time</span></span><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.rbr.RBR.last_record_time" title="Link to this definition">#</a></dt>
 <dd><p>Returns the timestamp of the last record in the dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -499,11 +509,11 @@ The data is trimmed to include only records between the start and end record tim
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.rbr.RBR"><code class="docutils literal notranslate"><span class="pre">RBR</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.rbr.RBR.first_record_time"><code class="docutils literal notranslate"><span class="pre">RBR.first_record_time</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.rbr.RBR.get_clean_records"><code class="docutils literal notranslate"><span class="pre">RBR.get_clean_records()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.rbr.RBR.get_raw_records"><code class="docutils literal notranslate"><span class="pre">RBR.get_raw_records()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.rbr.RBR.last_record_time"><code class="docutils literal notranslate"><span class="pre">RBR.last_record_time</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.rbr.RBR"><code class="docutils literal notranslate"><span class="pre">RBR</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.rbr.RBR.first_record_time"><code class="docutils literal notranslate"><span class="pre">RBR.first_record_time</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.rbr.RBR.get_clean_records"><code class="docutils literal notranslate"><span class="pre">RBR.get_clean_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.rbr.RBR.get_raw_records"><code class="docutils literal notranslate"><span class="pre">RBR.get_raw_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.rbr.RBR.last_record_time"><code class="docutils literal notranslate"><span class="pre">RBR.last_record_time</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -4,6 +4,9 @@
 2. **what we do interpret as a clean dataframe (minimal ready to use?)**
 3. **How do we deal with the directory/file paths as parameters for the classes?**
 
+
+* Spotter: common variables should have the same names (variable_name[units])
+
 - AWAC
 
   - It is quite weird that the single wad file does not start at 00:00 (minutes/seconds)

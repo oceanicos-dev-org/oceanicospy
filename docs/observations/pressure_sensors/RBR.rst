@@ -1,6 +1,6 @@
 RBR
 ===
 
-.. autoclass:: oceanicospy.observations.rbr.RBR
+.. autoclass:: oceanicospy.observations.pressure_sensors.rbr.RBR
    :inherited-members:
    :show-inheritance:
