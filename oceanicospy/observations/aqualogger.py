@@ -1,12 +1,12 @@
-import pandas as pd
 import glob
+import pandas as pd
 import os
 
 from .pressure_sensor_base import BaseLogger
 
 class AQUAlogger(BaseLogger):
     """
-    A sensor-specific reader for AQUAlogger CSV files.
+    A sensor-specific reader for AQUAlogger files.
 
     Inherits from ``BaseLogger`` and implements methods specific to AQUAlogger file formats.
 
@@ -22,8 +22,12 @@ class AQUAlogger(BaseLogger):
         - ``sampling_rate``: The sampling rate of the device (Hz)
         - ``burst_duration``: The duration of each burst (seconds)
 
-    """
+    Notes
+    -----
 
+    The following models are supported:
+
+    """
     @property
     def first_record_time(self):
         """
@@ -42,7 +46,7 @@ class AQUAlogger(BaseLogger):
         files = glob.glob(os.path.join(self.directory_path, '*.csv'))
         if not files:
             raise FileNotFoundError("No .csv file found in the specified directory.")
-        return files[0]
+        return files[0]  
     
     def _load_raw_dataframe(self) -> pd.DataFrame:
         filepath = self._get_records_file()

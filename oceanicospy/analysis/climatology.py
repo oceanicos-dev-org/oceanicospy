@@ -22,6 +22,7 @@ def compute_annual_cycle(data, time):
     ValueError
         If the input data is not a 1D numpy array or a pandas Series.
     """
+    
     if data.ndim == 1:
         if isinstance(data, pd.Series):
             dataset = pd.DataFrame(data, columns=['data'], index=time)
