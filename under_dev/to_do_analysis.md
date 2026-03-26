@@ -1,5 +1,3 @@
-# Things to do in temporal analysis
-
 Guidelines to proofread the analysis subpackage in ***oceanicospy***
 
 # Standard logic per class

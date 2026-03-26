@@ -1,0 +1,1049 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Walkthrough Example - Spectral Analysis &#8212; oceanicospy 0.0.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e645c8fa"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'jupyter_execute/analysis/spectral_analysis';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">oceanicospy 0.0.1 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../installing.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/temporal.html">Temporal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/pressure_sensors/RBR.html">RBR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/pressure_sensors/Bluelog.html">Bluelog</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../observations/weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/weather_stations/WeatherSens.html">WeatherSens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/weather_stations/Rainwise.html">Rainwise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/ctd/CTDBase.html">CTDBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/ctd/CastawayCTD.html">CastawayCTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/ctd/CTD48M.html">CTD48M</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../observations/Buoy.html">Buoy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../observations/HOBO.html">HOBO</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/jupyter_execute/analysis/spectral_analysis.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Walkthrough Example - Spectral Analysis</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Walkthrough Example - Spectral Analysis</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-required-modules-and-subpackages">Importing required modules and subpackages</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#pressure-data">Pressure data</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-wavespectralanalyzer-class">Using the <code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer</span></code> class</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#welch-s-and-fft-method">Welch’s and FFT method</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-random-bursts-and-their-corresponding-spectra">Plotting random bursts and their corresponding spectra</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wavelets-transform">Wavelets transform</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-the-wavelet-scalogram">Plotting the wavelet scalogram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+</pre></div>
+</div>
+</div>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<section id="walkthrough-example-spectral-analysis">
+<h1>Walkthrough Example - Spectral Analysis<a class="headerlink" href="#walkthrough-example-spectral-analysis" title="Link to this heading">#</a></h1>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Before using the <code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer</span></code> class, make sure you have the necessary data and dependencies installed. This example assumes you have time series data from an AQUAlogger and a RBR device.</p>
+<p>Users are referred to the THIS LINK for a installation guide of the <code class="docutils literal notranslate"><span class="pre">oceanicospy</span></code> package and its dependencies.</p>
+</div>
+<p>This example demonstrates how to use the <code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer</span></code> class from the <code class="docutils literal notranslate"><span class="pre">oceanicospy.analysis.spectral</span></code> module to perform spectral analysis on wave data. We will compute the power spectral density of a two different surface level time series recorded with an AQUAlogger and a RBR device.</p>
+</section>
+<section id="importing-required-modules-and-subpackages">
+<h1>Importing required modules and subpackages<a class="headerlink" href="#importing-required-modules-and-subpackages" title="Link to this heading">#</a></h1>
+<p>For this example, the modules and packages from <code class="docutils literal notranslate"><span class="pre">oceanicospy</span></code> are imported, as well as some standard libraries for plotting and data manipulation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;font.size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">12</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">oceanicospy.observations</span><span class="w"> </span><span class="kn">import</span> <span class="n">pressure_sensors</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">oceanicospy.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">spectral</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span><span class="w"> </span><span class="nn">oceanicospy.observations</span><span class="w"> </span><span class="kn">import</span> <span class="n">pressure_sensors</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="kn">from</span><span class="w"> </span><span class="nn">oceanicospy.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">spectral</span>
+
+<span class="n">File</span> <span class="o">~/</span><span class="n">Documents</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">oceanicospy</span><span class="o">/</span><span class="n">oceanicospy</span><span class="o">/</span><span class="n">analysis</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span><span class="w"> </span><span class="nn">.spectral</span><span class="w"> </span><span class="kn">import</span> <span class="n">WaveSpectralAnalyzer</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="kn">from</span><span class="w"> </span><span class="nn">.temporal</span><span class="w"> </span><span class="kn">import</span> <span class="n">WaveTemporalAnalyzer</span>
+
+<span class="n">File</span> <span class="o">~/</span><span class="n">Documents</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">oceanicospy</span><span class="o">/</span><span class="n">oceanicospy</span><span class="o">/</span><span class="n">analysis</span><span class="o">/</span><span class="n">temporal</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">3</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="kn">from</span><span class="w"> </span><span class="nn">PyEMD</span><span class="w"> </span><span class="kn">import</span> <span class="n">CEEMDAN</span><span class="p">,</span><span class="n">EEMD</span><span class="p">,</span><span class="n">EMD</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">resample</span><span class="p">,</span><span class="n">detrend</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">wave_props</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;PyEMD&#39;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pressure-data">
+<h1>Pressure data<a class="headerlink" href="#pressure-data" title="Link to this heading">#</a></h1>
+<p>Deployment data from pressure sensors is loaded as a dictionary, while the sensor data is read from the corresponding sensor files. It has to be clarified that sensors are not deployed either at the same time or location.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">measurement_pressure_sensors_paths</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;../data/observations/AQ/&#39;</span><span class="p">,</span><span class="s1">&#39;../data/observations/RBR/&#39;</span><span class="p">]</span>
+
+<span class="n">sampling_AQ</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">anchoring_depth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sensor_height</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">sampling_freq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">burst_length_s</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span>
+                            <span class="n">start_time</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">end_time</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">-</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">sampling_RBR</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">anchoring_depth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sensor_height</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">sampling_freq</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">burst_length_s</span><span class="o">=</span><span class="mi">7200</span><span class="p">,</span>
+                            <span class="n">start_time</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="n">end_time</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">-</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">0.5</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For further information about how to upload the sensor data using <strong>oceanicospy</strong>, please refer to the <a class="reference external" href="https://oceanicospy.readthedocs.io/en/latest/examples/data_loading.html">data loading example</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sampling_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">sampling_AQ</span><span class="p">,</span><span class="n">sampling_RBR</span><span class="p">]</span>
+<span class="n">metadata_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;AQ&#39;</span><span class="p">,</span><span class="s1">&#39;RBR&#39;</span><span class="p">]</span>
+<span class="n">dict_raw_measurements</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">dict_clean_measurements</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">measurement_path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">measurement_pressure_sensors_paths</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s1">&#39;AQ&#39;</span> <span class="ow">in</span> <span class="n">measurement_path</span><span class="p">:</span>
+        <span class="n">object_device</span> <span class="o">=</span> <span class="n">pressure_sensors</span><span class="o">.</span><span class="n">AQUAlogger</span><span class="p">(</span><span class="n">measurement_path</span><span class="p">,</span> <span class="n">sampling_data</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">object_device</span> <span class="o">=</span> <span class="n">pressure_sensors</span><span class="o">.</span><span class="n">RBR</span><span class="p">(</span><span class="n">measurement_path</span><span class="p">,</span><span class="n">sampling_data</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+
+    <span class="n">raw_data</span> <span class="o">=</span> <span class="n">object_device</span><span class="o">.</span><span class="n">get_raw_records</span><span class="p">()</span>
+    <span class="n">clean_data</span> <span class="o">=</span> <span class="n">object_device</span><span class="o">.</span><span class="n">get_clean_records</span><span class="p">()</span>
+    <span class="n">dict_raw_measurements</span><span class="p">[</span><span class="n">metadata_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span> <span class="o">=</span> <span class="n">raw_data</span>
+    <span class="n">dict_clean_measurements</span><span class="p">[</span><span class="n">metadata_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span> <span class="o">=</span> <span class="n">clean_data</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>A quick look at the data shows that the pressure signal is sampled at 1Hz for the AQ sensor and 2Hz for the RBR sensor.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dict_clean_measurements</span><span class="p">[</span><span class="s1">&#39;RBR&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>pressure[bar]</th>
+      <th>depth[m]</th>
+      <th>burstId</th>
+      <th>eta[m]</th>
+    </tr>
+    <tr>
+      <th>date</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2025-05-09 10:00:00.000</th>
+      <td>1.241829</td>
+      <td>2.267149</td>
+      <td>1</td>
+      <td>0.117985</td>
+    </tr>
+    <tr>
+      <th>2025-05-09 10:00:00.500</th>
+      <td>1.239702</td>
+      <td>2.246051</td>
+      <td>1</td>
+      <td>0.096886</td>
+    </tr>
+    <tr>
+      <th>2025-05-09 10:00:01.000</th>
+      <td>1.235314</td>
+      <td>2.202530</td>
+      <td>1</td>
+      <td>0.053365</td>
+    </tr>
+    <tr>
+      <th>2025-05-09 10:00:01.500</th>
+      <td>1.233978</td>
+      <td>2.189276</td>
+      <td>1</td>
+      <td>0.040110</td>
+    </tr>
+    <tr>
+      <th>2025-05-09 10:00:02.000</th>
+      <td>1.234466</td>
+      <td>2.194119</td>
+      <td>1</td>
+      <td>0.044954</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2025-05-19 17:59:57.500</th>
+      <td>1.228489</td>
+      <td>2.134836</td>
+      <td>248</td>
+      <td>-0.044336</td>
+    </tr>
+    <tr>
+      <th>2025-05-19 17:59:58.000</th>
+      <td>1.228343</td>
+      <td>2.133389</td>
+      <td>248</td>
+      <td>-0.045786</td>
+    </tr>
+    <tr>
+      <th>2025-05-19 17:59:58.500</th>
+      <td>1.226372</td>
+      <td>2.113838</td>
+      <td>248</td>
+      <td>-0.065340</td>
+    </tr>
+    <tr>
+      <th>2025-05-19 17:59:59.000</th>
+      <td>1.226182</td>
+      <td>2.111960</td>
+      <td>248</td>
+      <td>-0.067221</td>
+    </tr>
+    <tr>
+      <th>2025-05-19 17:59:59.500</th>
+      <td>1.231584</td>
+      <td>2.165540</td>
+      <td>248</td>
+      <td>-0.013645</td>
+    </tr>
+  </tbody>
+</table>
+<p>1785600 rows × 4 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dict_clean_measurements</span><span class="p">[</span><span class="s1">&#39;AQ&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>pressure[bar]</th>
+      <th>Raw2</th>
+      <th>depth[m]</th>
+      <th>depth_aux[m]</th>
+      <th>burstId</th>
+      <th>eta[m]</th>
+    </tr>
+    <tr>
+      <th>date</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2025-05-09 10:00:00</th>
+      <td>1.245722</td>
+      <td>0</td>
+      <td>3.136509</td>
+      <td>2.307327</td>
+      <td>1</td>
+      <td>0.052596</td>
+    </tr>
+    <tr>
+      <th>2025-05-09 10:00:01</th>
+      <td>1.244709</td>
+      <td>0</td>
+      <td>3.124966</td>
+      <td>2.297273</td>
+      <td>1</td>
+      <td>0.041052</td>
+    </tr>
+    <tr>
+      <th>2025-05-09 10:00:02</th>
+      <td>1.237181</td>
+      <td>0</td>
+      <td>3.039040</td>
+      <td>2.222556</td>
+      <td>1</td>
+      <td>-0.044874</td>
+    </tr>
+    <tr>
+      <th>2025-05-09 10:00:03</th>
+      <td>1.243695</td>
+      <td>0</td>
+      <td>3.113418</td>
+      <td>2.287209</td>
+      <td>1</td>
+      <td>0.029503</td>
+    </tr>
+    <tr>
+      <th>2025-05-09 10:00:04</th>
+      <td>1.253249</td>
+      <td>0</td>
+      <td>3.222086</td>
+      <td>2.382034</td>
+      <td>1</td>
+      <td>0.138170</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2025-05-19 16:34:03</th>
+      <td>1.239498</td>
+      <td>0</td>
+      <td>3.065513</td>
+      <td>2.245553</td>
+      <td>124</td>
+      <td>-0.003209</td>
+    </tr>
+    <tr>
+      <th>2025-05-19 16:34:04</th>
+      <td>1.242248</td>
+      <td>0</td>
+      <td>3.096910</td>
+      <td>2.272847</td>
+      <td>124</td>
+      <td>0.028177</td>
+    </tr>
+    <tr>
+      <th>2025-05-19 16:34:05</th>
+      <td>1.237905</td>
+      <td>0</td>
+      <td>3.047316</td>
+      <td>2.229742</td>
+      <td>124</td>
+      <td>-0.021427</td>
+    </tr>
+    <tr>
+      <th>2025-05-19 16:34:06</th>
+      <td>1.243406</td>
+      <td>0</td>
+      <td>3.110117</td>
+      <td>2.284341</td>
+      <td>124</td>
+      <td>0.041363</td>
+    </tr>
+    <tr>
+      <th>2025-05-19 16:34:07</th>
+      <td>1.239063</td>
+      <td>0</td>
+      <td>3.060552</td>
+      <td>2.241236</td>
+      <td>124</td>
+      <td>-0.008213</td>
+    </tr>
+  </tbody>
+</table>
+<p>253952 rows × 6 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="using-the-wavespectralanalyzer-class">
+<h1>Using the <code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer</span></code> class<a class="headerlink" href="#using-the-wavespectralanalyzer-class" title="Link to this heading">#</a></h1>
+<p>First, we need to instanciate the <code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer</span></code> class, which will allow us to make the spectral analysis for the pressure data. We need to provide the measurement signal and the sampling data as arguments.</p>
+<p><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer</span></code> will look for measurement signal with a column named “eta[m]”, which is the standard name for the sea surface elevation in <strong>oceanicospy</strong>. If the column name is different, it can be specified as an argument when instanciating the class.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">help</span><span class="p">(</span><span class="n">spectral</span><span class="o">.</span><span class="n">WaveSpectralAnalyzer</span><span class="o">.</span><span class="n">get_spectra_and_params_for_bursts</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Help on function get_spectra_and_params_for_bursts in module oceanicospy.analysis.spectral:
+
+get_spectra_and_params_for_bursts(self, method, kp_correction=True, ig_split=False, freq_split=None, window_type=None, window_length=None, overlap=None, smoothing_bins=None)
+    Compute wave spectra and integral parameters for each burst in the measurement signal.
+    
+    Parameters
+    ----------
+    method : str
+        Spectrum computation method: &#39;fft&#39; or &#39;welch&#39;.
+    kp_correction : bool, optional
+        Whether to apply Kp pressure correction. Default is True.
+    ig_split : bool, optional
+        Whether to compute infragravity and wind wave Hm0 separately. Default is False.
+    freq_split : float, optional
+        Frequency that separates infragravity from short waves (required if ig_split is True). Default is None.
+    window_type : str, optional
+        Window type for Welch method (e.g., &#39;hamming&#39;, &#39;hann&#39;). Default is None.
+    window_length : int, optional
+        Window length for Welch method in samples. Default is None.
+    overlap : int, optional
+        Number of overlapping samples for Welch method. Default is None.
+    smoothing_bins : int, optional
+        Number of bins for moving-average smoothing (Welch only). Default is None.
+    
+    Returns
+    -------
+    wave_spectra_data : dict
+        Dictionary with keys:
+        - &#39;S&#39;: ndarray of shape (n_bursts, n_freqs) containing power spectral densities.
+        - &#39;freq&#39;: ndarray of frequency values.
+        - &#39;dir&#39;: empty list (placeholder for directional info).
+        - &#39;time&#39;: DatetimeIndex of hourly timestamps.
+    wave_params_data : pd.DataFrame
+        Wave parameters indexed by time, with columns:
+        - &#39;Hm0&#39;: Zero-moment wave height [m].
+        - &#39;Hrms&#39;: Root-mean-square wave height [m].
+        - &#39;Hmean&#39;: Mean wave height [m].
+        - &#39;Tp&#39;: Peak period [s].
+        - &#39;Tm01&#39;: Mean period (first moment) [s].
+        - &#39;Tm02&#39;: Mean period (second moment) [s].
+        - &#39;Hm0_ig&#39;: Infragravity wave height [m] (if ig_split is True).
+        - &#39;Hm0_sw&#39;: Short wave height [m] (if ig_split is True).
+</pre></div>
+</div>
+</div>
+</div>
+<section id="welch-s-and-fft-method">
+<h2>Welch’s and FFT method<a class="headerlink" href="#welch-s-and-fft-method" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dict_spectra_welch</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">dict_integral_params_welch</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">dict_spectra_fft</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">dict_integral_params_fft</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">metadata</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">metadata_list</span><span class="p">):</span>
+    <span class="n">SpectralAnalyzer</span> <span class="o">=</span> <span class="n">spectral</span><span class="o">.</span><span class="n">WaveSpectralAnalyzer</span><span class="p">(</span><span class="n">dict_clean_measurements</span><span class="p">[</span><span class="n">metadata</span><span class="p">],</span><span class="n">sampling_data</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">SpectralAnalyzer</span><span class="p">))</span>
+
+    <span class="n">spectra_welch</span><span class="p">,</span><span class="n">params_welch</span> <span class="o">=</span> <span class="n">SpectralAnalyzer</span><span class="o">.</span><span class="n">get_spectra_and_params_for_bursts</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;welch&#39;</span><span class="p">,</span><span class="n">kp_correction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">ig_split</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                                        <span class="n">freq_split</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">window_type</span><span class="o">=</span><span class="s1">&#39;hamming&#39;</span><span class="p">,</span>
+                                                                                        <span class="n">window_length</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span><span class="n">overlap</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span><span class="n">smoothing_bins</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+    <span class="n">spectra_fft</span><span class="p">,</span><span class="n">params_fft</span> <span class="o">=</span> <span class="n">SpectralAnalyzer</span><span class="o">.</span><span class="n">get_spectra_and_params_for_bursts</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;fft&#39;</span><span class="p">,</span><span class="n">kp_correction</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">ig_split</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                                    <span class="n">freq_split</span><span class="o">=</span><span class="mf">0.04</span><span class="p">)</span>
+
+    <span class="n">dict_spectra_welch</span><span class="p">[</span><span class="n">metadata_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span> <span class="o">=</span> <span class="n">spectra_welch</span>
+    <span class="n">dict_integral_params_welch</span><span class="p">[</span><span class="n">metadata_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span> <span class="o">=</span> <span class="n">params_welch</span>
+    <span class="n">dict_spectra_fft</span><span class="p">[</span><span class="n">metadata_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span> <span class="o">=</span> <span class="n">spectra_fft</span>
+    <span class="n">dict_integral_params_fft</span><span class="p">[</span><span class="n">metadata_list</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span> <span class="o">=</span> <span class="n">params_fft</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;oceanicospy.analysis.spectral.WaveSpectralAnalyzer&#39;&gt;
+&lt;class &#39;oceanicospy.analysis.spectral.WaveSpectralAnalyzer&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<section id="plotting-random-bursts-and-their-corresponding-spectra">
+<h3>Plotting random bursts and their corresponding spectra<a class="headerlink" href="#plotting-random-bursts-and-their-corresponding-spectra" title="Link to this heading">#</a></h3>
+<p>The time series and spectra for a random burst are plotted for each sensor and method. The spectra are plotted in log scale to better visualize the different frequency components.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">burst_to_plot</span> <span class="o">=</span> <span class="mi">60</span>
+
+<span class="n">AQ_df</span> <span class="o">=</span> <span class="n">dict_clean_measurements</span><span class="p">[</span><span class="s2">&quot;AQ&quot;</span><span class="p">]</span>
+<span class="n">RBR_df</span> <span class="o">=</span> <span class="n">dict_clean_measurements</span><span class="p">[</span><span class="s2">&quot;RBR&quot;</span><span class="p">]</span>
+
+<span class="n">AQ_burst</span> <span class="o">=</span> <span class="n">AQ_df</span><span class="p">[</span><span class="n">AQ_df</span><span class="p">[</span><span class="s2">&quot;burstId&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">burst_to_plot</span><span class="p">]</span>
+<span class="n">RBR_burst</span> <span class="o">=</span> <span class="n">RBR_df</span><span class="p">[</span><span class="n">RBR_df</span><span class="p">[</span><span class="s2">&quot;burstId&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">burst_to_plot</span><span class="p">]</span>
+
+<span class="n">AQ_freq</span> <span class="o">=</span> <span class="n">dict_spectra_welch</span><span class="p">[</span><span class="s2">&quot;AQ&quot;</span><span class="p">][</span><span class="s2">&quot;freq&quot;</span><span class="p">]</span>
+<span class="n">RBR_freq</span> <span class="o">=</span> <span class="n">dict_spectra_welch</span><span class="p">[</span><span class="s2">&quot;RBR&quot;</span><span class="p">][</span><span class="s2">&quot;freq&quot;</span><span class="p">]</span>
+<span class="n">AQ_S</span> <span class="o">=</span> <span class="n">dict_spectra_welch</span><span class="p">[</span><span class="s2">&quot;AQ&quot;</span><span class="p">][</span><span class="s2">&quot;S&quot;</span><span class="p">][</span><span class="n">burst_to_plot</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">RBR_S</span> <span class="o">=</span> <span class="n">dict_spectra_welch</span><span class="p">[</span><span class="s2">&quot;RBR&quot;</span><span class="p">][</span><span class="s2">&quot;S&quot;</span><span class="p">][</span><span class="n">burst_to_plot</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">gs</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_gridspec</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+<span class="n">ax_AQ_timeseries</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">ax_AQ_spectra</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">ax_RBR_timeseries</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">ax_RBR_spectra</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+
+<span class="c1"># AQ time series</span>
+<span class="n">ax_AQ_timeseries</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">AQ_burst</span><span class="p">[</span><span class="s2">&quot;eta[m]&quot;</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">ax_AQ_timeseries</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Eta [m]&quot;</span><span class="p">)</span>
+<span class="n">ax_AQ_timeseries</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="c1"># AQ spectrum</span>
+<span class="n">ax_AQ_spectra</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">AQ_freq</span><span class="p">,</span> <span class="n">AQ_S</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+<span class="n">ax_AQ_spectra</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;S(f)&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Welch spectrum&quot;</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax_AQ_spectra</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="c1"># RBR time series</span>
+<span class="n">ax_RBR_timeseries</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">RBR_burst</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">RBR_burst</span><span class="p">[</span><span class="s2">&quot;eta[m]&quot;</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:orange&quot;</span><span class="p">)</span>
+<span class="n">ax_RBR_timeseries</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;Eta [m]&quot;</span><span class="p">)</span>
+<span class="n">ax_RBR_timeseries</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="c1"># RBR spectrum</span>
+<span class="n">ax_RBR_spectra</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">RBR_freq</span><span class="p">,</span> <span class="n">RBR_S</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;tab:orange&quot;</span><span class="p">)</span>
+<span class="n">ax_RBR_spectra</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;Frequency [Hz]&quot;</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;S(f)&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Welch spectrum&quot;</span><span class="p">,</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+<span class="n">ax_RBR_spectra</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="c1"># plt.show()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/92c8765465db5bc548d1538dff5fb36d01eccb866c18962773c65a7209dd08b8.png" src="../../_images/92c8765465db5bc548d1538dff5fb36d01eccb866c18962773c65a7209dd08b8.png" />
+</div>
+</div>
+</section>
+</section>
+<section id="wavelets-transform">
+<h2>Wavelets transform<a class="headerlink" href="#wavelets-transform" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">metadata</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">metadata_list</span><span class="p">):</span>
+    <span class="n">SpectralAnalyzer</span> <span class="o">=</span> <span class="n">spectral</span><span class="o">.</span><span class="n">WaveSpectralAnalyzer</span><span class="p">(</span><span class="n">dict_clean_measurements</span><span class="p">[</span><span class="n">metadata</span><span class="p">],</span><span class="n">sampling_data</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">SpectralAnalyzer</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="s1">&#39;AQ&#39;</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>   
+        <span class="k">pass</span>                     
+        <span class="c1"># coef_wavelets,freqs_wavelets = SpectralAnalyzer.compute_wavelet_scalograms_for_bursts(window_length=sampling_data[idx][&#39;burst_length_s&#39;],overlap=1,</span>
+        <span class="c1">#                                                                     mother_wavelet=&#39;cmor1.5-1.0&#39;,points_scale=50)</span>
+        <span class="c1"># coef_wavelets = np.stack(coef_wavelets, axis=0)</span>
+        <span class="c1"># coef_wavelets_full  = coef_wavelets.transpose(1, 0, 2).reshape(len(freqs_wavelets), -1)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">coef_wavelets_full</span><span class="p">,</span><span class="n">freqs_wavelets</span> <span class="o">=</span> <span class="n">SpectralAnalyzer</span><span class="o">.</span><span class="n">compute_wavelet_scalogram</span><span class="p">(</span><span class="n">mother_wavelet</span><span class="o">=</span><span class="s1">&#39;cmor1.5-1.0&#39;</span><span class="p">,</span><span class="n">points_scale</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;oceanicospy.analysis.spectral.WaveSpectralAnalyzer&#39;&gt;
+&lt;class &#39;oceanicospy.analysis.spectral.WaveSpectralAnalyzer&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<section id="plotting-the-wavelet-scalogram">
+<h3>Plotting the wavelet scalogram<a class="headerlink" href="#plotting-the-wavelet-scalogram" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">coef_wavelets_full</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(50, 1785600)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This cell can take ages</span>
+<span class="c1"># fig,ax = plt.subplots(figsize=(14, 6))</span>
+<span class="c1"># im = ax.imshow(10*np.log10(coef_wavelets_full), aspect=&#39;auto&#39;,</span>
+<span class="c1">#                extent=[0, coef_wavelets_full.shape[1], freqs_wavelets[-1], freqs_wavelets[0]])</span>
+<span class="c1"># # ax.set_yscale(&#39;log&#39;)</span>
+<span class="c1"># # ax.set_xlabel(&#39;Time [s]&#39;)</span>
+<span class="c1"># # ax.set_ylabel(&#39;Frequency [Hz]&#39;)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Walkthrough Example - Spectral Analysis</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-required-modules-and-subpackages">Importing required modules and subpackages</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#pressure-data">Pressure data</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-wavespectralanalyzer-class">Using the <code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer</span></code> class</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#welch-s-and-fft-method">Welch’s and FFT method</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-random-bursts-and-their-corresponding-spectra">Plotting random bursts and their corresponding spectra</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wavelets-transform">Wavelets transform</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#plotting-the-wavelet-scalogram">Plotting the wavelet scalogram</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By oceanicos
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, oceanicos.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
