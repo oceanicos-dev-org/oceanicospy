@@ -3,3 +3,4 @@ from .weather_stations import *
 from .ctd import *
 from .awac import AWAC
 from .buoy import Buoy
+from .hobo import HOBO_Temp, HOBO_TempCond
