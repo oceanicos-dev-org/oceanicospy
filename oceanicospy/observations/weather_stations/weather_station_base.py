@@ -22,8 +22,8 @@ class WeatherStationBase(ABC):
 
     Notes
     -----
-    19-Mar-2025 : initial version - Franklin Ayala
-    16-Jul-2025 : adding weathersens model - Daniela Rosero
+    - 19-Mar-2025 : initial version - Franklin Ayala
+    - 16-Jul-2025 : adding weathersens model - Daniela Rosero
     """
     def __init__(self,filepath: str):
         self.filepath = filepath

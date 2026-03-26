@@ -159,7 +159,7 @@ class BaseLogger(ABC):
         df = self.get_raw_records()
         df = self._compute_depth_from_pressure(df)
         df = self._assign_burst_id(df)
-        #df['eta[m]'] = df.groupby('burstId')['depth[m]'].transform(lambda x: x - x.mean())
+        df['eta[m]'] = df.groupby('burstId')['depth[m]'].transform(lambda x: x - x.mean())
 
         if detrended:
             df['eta[m]'] = df.groupby('burstId')['eta[m]'].transform(lambda x: detrend(x.values, type='linear'))

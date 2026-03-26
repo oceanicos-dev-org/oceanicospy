@@ -44,11 +44,12 @@ All the classes in this subpackage are presented below and it can be imported as
       from oceanicospy.observations import pressure_sensors
       aqua_logger = pressure_sensors.AQUAlogger()  # Create an instance of the AQUAlogger class.
 
+   You can easily check the available classes and their methods in the documentation or by exploring the source code.
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
-   test_walkthrough
    reading_field_data
    pressure_sensors/index
    weather_stations/index

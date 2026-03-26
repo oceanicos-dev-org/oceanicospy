@@ -1,5 +1,5 @@
-Walkthrough Example
-======================
+Installation
+============
 
 
 First, ensure you have the package installed. You can install it using pip test with the following command:

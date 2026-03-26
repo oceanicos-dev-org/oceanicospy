@@ -19,5 +19,6 @@ documentation for details.
    :maxdepth: 3
    :caption: Contents:
 
+   installing
    analysis/index
    observations/index

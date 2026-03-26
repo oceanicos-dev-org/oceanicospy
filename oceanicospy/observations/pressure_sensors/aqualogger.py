@@ -16,6 +16,7 @@ class AQUAlogger(BaseLogger):
         Path to the directory containing the .csv files.
     sampling_data : dict
         Dictionary containing information on device deployment, including:
+        
         - anchoring_depth: The depth at which the sensor is anchored (in meters).
         - sensor_height: The height of the sensor above the anchoring point (in meters).
         - sampling_freq: The frequency at which the sensor records data (in Hz).
