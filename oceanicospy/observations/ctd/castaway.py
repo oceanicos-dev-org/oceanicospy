@@ -8,30 +8,47 @@ class CastawayCTD(CTDBase):
     """
     Reader for CastAway CTD per-cast files (YSI/Xylem format).
 
-    Handles per-cast CSV files that contain only a column header row and data
-    rows (no embedded metadata block). Cast metadata — device ID, cast time,
-    GPS coordinates, calibration dates, etc. — is read automatically from a
-    multi-cast summary CSV located in the same directory, by matching the
-    current file's stem against the ``File name`` column of the summary.
+    Supports two file variants:
+
+    - **With embedded header** (``has_header=True``): the file begins with a
+      ``%``-prefixed metadata block (device ID, cast time, GPS coordinates,
+      calibration dates, etc.) followed by a column header row and data rows.
+      Metadata is parsed directly from the file.
+
+    - **Without embedded header** (``has_header=False``, default): the file
+      contains only a column header row and data rows. Cast metadata is read
+      from a multi-cast summary CSV located in the same directory, matched by
+      file stem against the ``File name`` column.
 
     Parameters
     ----------
     filepath : str
         Path to the per-cast CastAway CTD ``.csv`` file.
+    has_header : bool, optional
+        ``True`` if the file contains a ``%``-prefixed metadata block.
+        ``False`` (default) to read metadata from the auxiliary summary CSV.
 
     Notes
     -----
-    Expected per-cast file structure:
+    Expected per-cast file structure (``has_header=False``):
 
     - First row is the column header (no ``%`` metadata block).
-    - Data columns: Pressure (Decibar), Depth (Meter), Temperature (Celsius),
-      Conductivity (MicroSiemens per Centimeter), Specific conductance
-      (MicroSiemens per Centimeter), Salinity (Practical Salinity Scale),
-      Sound velocity (Meters per Second), Density (Kilograms per Cubic Meter).
 
-    The summary file (auto-detected in the same directory) must have a
-    ``File name`` column whose values match per-cast file stems, and cast time
-    columns in Excel serial date format (days since 1899-12-30).
+    Expected per-cast file structure (``has_header=True``):
+
+    - Lines beginning with ``%`` contain metadata as ``% Key,Value`` pairs.
+    - An empty ``% `` line acts as a separator before the data block.
+    - The first non-``%`` line is the column header row.
+
+    Data columns (both variants): Pressure (Decibar), Depth (Meter),
+    Temperature (Celsius), Conductivity (MicroSiemens per Centimeter),
+    Specific conductance (MicroSiemens per Centimeter), Salinity (Practical
+    Salinity Scale), Sound velocity (Meters per Second), Density (Kilograms
+    per Cubic Meter).
+
+    The auxiliary summary file (``has_header=False``) must have a ``File name``
+    column whose values match per-cast file stems, and cast time columns in
+    Excel serial date format (days since 1899-12-30).
 
     The cleaned DataFrame is indexed by ``depth[m]``, reflecting the vertical
     profile nature of a CTD cast.
@@ -52,38 +69,71 @@ class CastawayCTD(CTDBase):
 
     _EXCEL_ORIGIN = pd.Timestamp('1899-12-30')
 
+    def __init__(self, filepath: str, has_header: bool = False):
+        super().__init__(filepath)
+        self.has_header = has_header
+
     @property
     def cast_time(self) -> pd.Timestamp:
         """
-        UTC timestamp of the cast start, read from the summary file.
+        UTC timestamp of the cast start.
+
+        When ``has_header=True`` the value is an ISO datetime string read
+        directly from the embedded metadata block.  When ``has_header=False``
+        the value is an Excel serial date (days since 1899-12-30) read from
+        the auxiliary summary file.
 
         Returns
         -------
         pandas.Timestamp
-            Cast start time in UTC, or ``NaT`` if no matching row is found
-            in the summary file.
+            Cast start time in UTC, or ``NaT`` if no matching value is found.
         """
         serial = self.metadata.get('Cast time (UTC)')
         if serial is None:
             return pd.NaT
+        if self.has_header:
+            return pd.to_datetime(serial, errors='coerce')
         return self._EXCEL_ORIGIN + pd.to_timedelta(float(serial), unit='D')
 
     def _parse_metadata(self) -> dict:
         """
-        Read cast metadata from a multi-cast summary CSV in the same directory.
+        Parse cast metadata from the file or from a summary CSV.
 
-        Scans every CSV file in the same directory (excluding ``self.filepath``)
-        for one that contains a ``File name`` column, then returns the row
-        whose ``File name`` matches the stem of ``self.filepath``.
+        When ``has_header=True``, reads all ``%``-prefixed lines in
+        ``self.filepath`` and returns key-value pairs extracted from
+        ``% Key,Value`` entries.
+
+        When ``has_header=False``, scans every CSV in the same directory
+        (excluding ``self.filepath``) for one that contains a ``File name``
+        column, then returns the row whose ``File name`` matches the stem of
+        ``self.filepath``.
 
         Returns
         -------
         dict
-            Metadata fields from the matching summary row (e.g., ``'Device'``,
-            ``'Cast time (UTC)'``, ``'Start latitude'``,
-            ``'Cast duration (Seconds)'``).  Returns an empty dict if no
-            matching summary file or row is found.
+            Metadata fields (e.g. ``'Device'``, ``'Cast time (UTC)'``,
+            ``'Start latitude'``, ``'Cast duration (Seconds)'``).
+            Returns an empty dict if no metadata can be found.
         """
+        if self.has_header:
+            return self._parse_metadata_from_file()
+        return self._parse_metadata_from_summary()
+
+    def _parse_metadata_from_file(self) -> dict:
+        """Read ``%``-prefixed header lines from the cast file itself."""
+        metadata = {}
+        with open(self.filepath, 'r') as f:
+            for line in f:
+                if not line.startswith('%'):
+                    break
+                content = line[1:].strip()
+                if ',' in content:
+                    key, value = content.split(',', 1)
+                    metadata[key.strip()] = value.strip()
+        return metadata
+
+    def _parse_metadata_from_summary(self) -> dict:
+        """Read cast metadata from a multi-cast summary CSV in the same directory."""
         directory = os.path.dirname(self.filepath)
         stem = os.path.splitext(os.path.basename(self.filepath))[0]
 
@@ -105,14 +155,21 @@ class CastawayCTD(CTDBase):
 
     def _load_raw_dataframe(self) -> pd.DataFrame:
         """
-        Load the raw data block into a DataFrame, skipping metadata lines if any
+        Load the raw data block into a DataFrame.
+
+        When ``has_header=True``, counts the ``%``-prefixed lines and skips
+        them before reading the CSV data block.  When ``has_header=False``,
+        reads the file directly (first row is the column header).
 
         Returns
         -------
         pandas.DataFrame
-            Raw DataFrame as read directly from the CSV file, including original
-            column names and all data rows.
+            Raw DataFrame with original column names and all data rows.
         """
+        if self.has_header:
+            with open(self.filepath, 'r') as f:
+                header_lines = sum(1 for line in f if line.startswith('%'))
+            return pd.read_csv(self.filepath, skiprows=header_lines)
         return pd.read_csv(self.filepath)
 
     def _standardize_columns(self, df: pd.DataFrame) -> pd.DataFrame:
