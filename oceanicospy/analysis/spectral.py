@@ -7,13 +7,13 @@ from scipy.signal import find_peaks,welch
 from ..utils import wave_props,extras
 
 class WaveSpectralAnalyzer():
-    def __init__(self,measurement_signal,sampling_data,surface_level_column='eta[m]',logger=True):
+    def __init__(self,measured_signal,sampling_data,surface_level_column='eta[m]',logger=True):
         """
         Initializes the analysis object with measurement signal and sampling data.
 
         Parameters
         ----------
-        measurement_signal : array-like
+        measured_signal : array-like
             The input signal data to be analyzed.
         sampling_data : dict
             Dictionary containing sampling parameters with the following keys:
@@ -22,13 +22,13 @@ class WaveSpectralAnalyzer():
                 - 'sensor_height' (float): Height of the sensor above the bottom.
                 - 'burst_length_s' (float): Duration of each burst in seconds.
         surface_level_column : str
-            Column name in measurement_signal that contains the surface level data (default is 'eta[m]').
+            Column name in measured_signal that contains the surface level data (default is 'eta[m]').
         logger : bool
             If True, initializes a logger for the class (default is True).
 
         Attributes
         ----------
-        measurement_signal : array-like
+        measured_signal : array-like
             Stores the input measurement signal.
         sampling_data : dict
             Stores the sampling parameters.
@@ -43,11 +43,14 @@ class WaveSpectralAnalyzer():
 
         Notes
         -----
-        01-Oct-2025 : Origination - Franklin Ayala
-        #TODO: adding history line for modules
+        01-Ago-2025 : Origination - Franklin Ayala
+        01-Sep-2025 : FFT method - Juan Diego Toro
+        10-Oct-2025 : Kp correction - Franklin Ayala/Juan Diego Toro/Camilo Cabrera
+        12-Nov-2025 : Welch's method - Franklin Ayala
+        10-Dec-2025 : Wavelets analysis - Franklin Ayala
         """
 
-        self.measurement_signal = measurement_signal
+        self.measured_signal = measured_signal
         self.sampling_data = sampling_data
         self.sampling_freq = self.sampling_data['sampling_freq']
         self.anchoring_depth = self.sampling_data['anchoring_depth']
@@ -69,7 +72,23 @@ class WaveSpectralAnalyzer():
                 self.logger.addHandler(handler)
 
     def _check_burst_length(self,burst_series):
-        # Create a time index for each expected burst based on the sampling frequency and burst length
+        """Verify that the burst has the expected number of samples based on the sampling frequency and burst length.
+        
+        Parameters
+        ----------
+        burst_series : pandas.Series
+            The burst data as a pandas Series.
+
+        Returns
+        -------
+        None
+            If the burst has the expected number of samples.
+
+        Raises
+        ------
+        ValueError
+            If the burst is missing timestamps.
+        """
         burst_start_time = burst_series.index[0]
         burst_end_time = burst_series.index[-1]
         expected_times = pd.date_range(start=burst_start_time, end=burst_end_time, 
@@ -83,7 +102,35 @@ class WaveSpectralAnalyzer():
             return None
 
     def _compute_spectrum_for_burst(self, burst_signal, method, kp_correction, window_type, window_length, smoothing_bins):
-        # calculating the spectrum for the burst using the specified method and applying Kp correction if needed
+        """Calculate the spectrum for the burst using the specified method and applying Kp correction if needed.
+        
+        Parameters
+        ----------
+        burst_signal : pandas.Series
+            The burst signal as a pandas Series.
+        method : str
+            The method to compute the spectrum: 'fft' or 'welch'.
+        kp_correction : bool
+            Whether to apply Kp correction to the spectrum.
+        window_type : str
+            The type of window to use for Welch's method (e.g., 'hamming', 'hann').
+        window_length : int
+            The length of the window in samples for Welch's method.
+        smoothing_bins : int
+            The number of bins for moving-average smoothing (Welch only).
+        
+        Returns
+         -------
+         freqs : ndarray
+             The frequency array corresponding to the spectrum.
+         spectrum : ndarray
+             The computed power spectral density (PSD) for the burst.
+            
+        Raises        
+        ------
+        ValueError
+            If the specified method is not recognized.
+         """
         if not self._check_burst_length(burst_signal):
             burst_signal = burst_signal.values
             if method == 'fft':
@@ -105,13 +152,38 @@ class WaveSpectralAnalyzer():
             return freqs, spectrum
 
     def _smooth_psd_spectrum(self,PSD,smoothing_bins):
-        #Smooth the power spectral density (PSD) spectrum using a moving average filter.
+        """Smooth the power spectral density (PSD) spectrum using a moving average filter.
+        Parameters
+        ----------
+        PSD : ndarray
+            The power spectral density to be smoothed.
+        smoothing_bins : int
+            The number of bins to use for the moving average smoothing.
+        
+        Returns
+        -------
+        PSD_smoothed : ndarray
+            The smoothed power spectral density.
+        """
+
         kernel = np.ones(smoothing_bins) / smoothing_bins
         PSD_smoothed = np.convolve(PSD, kernel, mode='same')
         return PSD_smoothed
 
     def _compute_nonadaptive_Kp(self,freqs):
-        # Compute non-adaptive Kp correction factor based on linear wave theory
+        """Compute non-adaptive Kp correction factor based on linear wave theory
+
+        Parameters
+        ----------
+        freqs : ndarray
+            Frequency array corresponding to the PSD.
+        
+        Returns
+        -------
+        Kp : ndarray
+            The non-adaptive Kp correction factor for each frequency.
+        """
+
         total_depth = self.anchoring_depth + self.sensor_height
         L = np.array([wave_props.wavelength(1/f, total_depth) for f in freqs])
         k = 2*np.pi/L
@@ -125,7 +197,20 @@ class WaveSpectralAnalyzer():
         return Kp
     
     def _compute_adaptive_Kp(self,freqs,PSD):
-        # Compute adaptive Kp correction factor based on the spectrum shape
+        """Compute adaptive Kp correction factor based on the spectrum shape
+        Parameters
+        ----------
+        freqs : ndarray
+            Frequency array corresponding to the PSD.
+        PSD : ndarray
+            Power spectral density to be corrected.
+
+        Returns
+        -------
+        Kp_final : ndarray
+            The adaptive Kp correction factor for each frequency.
+        """
+
         total_depth = self.anchoring_depth + self.sensor_height
         L = np.array([wave_props.wavelength(1/f, total_depth) for f in freqs])
         k = 2*np.pi/L
@@ -164,10 +249,22 @@ class WaveSpectralAnalyzer():
             Power spectral density to be corrected.
         kp_method : str, optional
             Method for Kp correction: 'adaptive' or 'nonadaptive'. Default is 'adaptive'
+        
+        Returns
+        -------
+        freqs : ndarray
+            Frequency array corresponding to the PSD.
+        PSD_Kp : ndarray
+            The Kp-corrected power spectral density.
+        PSD : ndarray
+            The original power spectral density (returned for reference).
             
         Notes
         -----
-        Based on https://doi.org/10.1016/j.cageo.2017.06.010
+        Most of the equations used on the methods are based on [1]_
+
+        .. [1] Karimpour, A., & Chen, Q. (2017). Wind wave analysis in depth limited water using OCEANLYZ,
+            A MATLAB toolbox. Computers & Geosciences, 106, 181-189. https://doi.org/10.1016/j.cageo.2017.06.010
         """
         
         if kp_method == 'nonadaptive':
@@ -179,7 +276,28 @@ class WaveSpectralAnalyzer():
         return freqs, PSD_Kp, PSD
 
     def _compute_hs_ig_band(self,PSD,freqs,freq_split):
-        # Computes significant wave height in the infragravity and short-wave band.
+        """Computes significant wave height in the infragravity and short-wave band
+        Parameters
+        ----------
+        PSD : ndarray
+            Power spectral density to be analyzed.
+        freqs : ndarray
+            Frequency array corresponding to the PSD.
+        freq_split : float
+            The frequency that separates the infragravity band from the short-wave band.
+        
+        Returns
+        -------
+        Hm0_ig : float
+            Significant wave height in the infragravity band [m].
+        Hm0_sw : float
+            Significant wave height in the short-wave band [m].
+
+        Notes
+        -----
+        The upper limit for the short-wave band is set to 0.2 Hz while the lower limit for the infragravity band is set to 0 Hz.
+        """
+
         freq_upper_sw = 0.2
         freq_lower_ig = 0.
         ig_band_mask = (freqs >= freq_lower_ig) & (freqs <= freq_split)
@@ -215,9 +333,6 @@ class WaveSpectralAnalyzer():
         freqs : ndarray
             The corresponding frequencies.
 
-        Notes
-        -----
-        10-Dec-2025 : Origination - Franklin Ayala
         """
 
         step = int(window_length * (1 - overlap))
@@ -256,21 +371,17 @@ class WaveSpectralAnalyzer():
         Returns
         -------
         Hs : float
-            Significant wave heigth [m]
+            Significant wave height [m]
         Hrms : float
-            Root-mean squared wave heigth [m]
+            Root-mean squared wave height [m]
         Hmean : float
-            Mean wave heigth [m]
+            Mean wave height [m]
         Tp : float
             Peak period [s]
         Tm01 : float
-            Mean period - fisrt order [s]
+            Mean period - first order [s]
         Tm02 : float
             Mean period - second order [s]
-        
-        Notes
-        -----
-        10-Dec-2024 : Origination - Franklin Ayala
         """
 
         m0 = np.trapezoid(PSD, freqs.flatten())
@@ -297,13 +408,7 @@ class WaveSpectralAnalyzer():
         signal : list or ndarray
             An array of the signal
         kp_correction : bool
-            If True, applies Kp correction to the spectrum.
-        sampling_freq : float
-            Sampling frequency for the records    
-        anchoring_depth : float
-            Depth at where the device was settled on the bottom.
-        sensor_height: float
-            Distance from the sensor to the bottom.        
+            If True, applies Kp correction to the spectrum.     
         
         Returns
         -------
@@ -318,8 +423,6 @@ class WaveSpectralAnalyzer():
         -----
         Based on https://currents.soest.hawaii.edu/ocn_data_analysis/_static/Spectrum.html
 
-        01-Sep-2023 : Origination - Juan Diego Toro
-        10-Dec-2025 : Refactorization - Franklin Ayala
         """
 
         length_signal = len(signal)
@@ -337,7 +440,7 @@ class WaveSpectralAnalyzer():
         if kp_correction == False:
             return freqs,PSD
         else:
-            return self._correction_by_Kp(freqs,PSD)
+            return self.correction_by_Kp(freqs,PSD)
 
     @extras.timing_decorator
     def compute_spectrum_from_welch(self,signal,kp_correction,window_type,window_length,overlap=None):
@@ -367,10 +470,6 @@ class WaveSpectralAnalyzer():
             Power spectral density.
         PSD_kp : ndarray (optional)
             Density variance spectrum corrected by Kp
-
-        Notes
-        -----
-        10-Dec-2025 : Origination - Franklin Ayala
         """
 
         freqs, PSD = welch(x=signal,fs=self.sampling_freq,window=window_type,
@@ -425,19 +524,25 @@ class WaveSpectralAnalyzer():
             - 'Tm02': Mean period (second moment) [s].
             - 'Hm0_ig': Infragravity wave height [m] (if ig_split is True).
             - 'Hm0_sw': Short wave height [m] (if ig_split is True).
+        
+        Raises
+        ------
+        ValueError
+            If 'burstId' column is missing in the measurement signal.
         """
-        if 'burstId' not in self.measurement_signal.columns:
+
+        if 'burstId' not in self.measured_signal.columns:
             raise ValueError("Measurement signal must contain 'burstId' column.")
 
-        hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
+        hourly_timeindex = self.measured_signal.index.floor('h').unique().sort_values()
         wave_param_names = ["Hm0", "Hrms", "Hmean", "Tp", "Tm01", "Tm02"]
         
         wave_params_data = {param: np.zeros(len(hourly_timeindex)) for param in wave_param_names}
         wave_spectra_data = {"S": [], "dir": [], "freq": None, "time": hourly_timeindex}
         wave_params_data["time"] = hourly_timeindex
 
-        for idx, burst_id in enumerate(self.measurement_signal["burstId"].unique()):
-            burst_series = self.measurement_signal[self.measurement_signal["burstId"] == burst_id]
+        for idx, burst_id in enumerate(self.measured_signal["burstId"].unique()):
+            burst_series = self.measured_signal[self.measured_signal["burstId"] == burst_id]
             burst_signal = burst_series[self.surface_level_column]
 
             freqs, spectrum = self._compute_spectrum_for_burst(burst_signal, method, 
@@ -462,73 +567,69 @@ class WaveSpectralAnalyzer():
                 wave_spectra_data["freq"] = freqs
 
         wave_spectra_data["S"] = np.array(wave_spectra_data["S"])
+        wave_params_data = pd.DataFrame(wave_params_data, index=hourly_timeindex)
 
         return wave_spectra_data, wave_params_data
 
-    def compute_wavelet_scalograms_for_bursts(self,window_length,overlap,mother_wavelet,points_scale):
+    def compute_wavelet_scalograms(self,mother_wavelet,points_scale,burst_mode=False,window_length=None,overlap=None):
         """Compute wavelet scalograms for all bursts in the measurement signal.
         
         Parameters
         ----------
-        window_length : int
-            The length of each window.
-        overlap : float
-            The overlap between consecutive windows.
         mother_wavelet : str
-            The mother wavelet to use.
+            The mother wavelet to use (e.g., 'morl', 'cmor', etc.).
         points_scale : int
-            The number of scales to compute.
+            The number of frequency points
+        burst_mode : bool, optional
+            If True, computes scalograms for each burst separately using overlapping windows. Default is False.
+            If False, computes a single scalogram for the entire measurement signal without windowing.
+        window_length : int, optional
+            The length of each window in samples (required if burst_mode is True). Default is None.
+        overlap : float, optional
+            The overlap between consecutive windows (required if burst_mode is True). Default is None.
 
         Returns
         -------
         coefs_all : ndarray
             The computed wavelet scalograms for all bursts.
         freqs : ndarray
-            The corresponding frequencies.
+            The corresponding frequencies in Hz.
+        
+        Raises
+        ------
+        ValueError
+            If burst_mode is True and window_length or overlap is not provided.
+            If burst_mode is True and 'burstId' column is missing in the measurement signal.
+        
         """
-        hourly_timeindex = self.measurement_signal.index.floor('h').unique().sort_values()
+
+        if burst_mode and (window_length is None or overlap is None):
+            raise ValueError("window_length and overlap must be provided when burst_mode is True.")
+        if burst_mode and 'burstId' not in self.measured_signal.columns:
+            raise ValueError("Measurement signal must contain 'burstId' column when burst_mode is True.")
+    
+        # scale construction
         frequencies = np.logspace(np.log10(0.001), np.log10(self.sampling_freq/2), points_scale)
         # scales = np.arange(self.sampling_freq*0.5, maximum_scale, 20*int(self.sampling_freq))
         f_c = pywt.central_frequency(mother_wavelet)
         dt = 1 / self.sampling_freq
         scales = f_c / (frequencies * dt)
 
+        if not burst_mode:
+            coeffs, freqs = pywt.cwt(self.measured_signal[self.surface_level_column].values,scales,
+                                 wavelet=mother_wavelet, sampling_period=1/self.sampling_freq)
+            coeffs_mag = np.abs(coeffs)
+            return coeffs_mag,freqs
+        
+        # burst mode
+        hourly_timeindex = self.measured_signal.index.floor('h').unique().sort_values()
+
         # scale = np.arange(self.sampling_freq*0.5,maximum_scale,20*int(self.sampling_freq))
         coefs_all = np.zeros((len(hourly_timeindex),len(scales),self.burst_length_s))
 
-        if 'burstId' in self.measurement_signal.columns:
-            for idx,burst in enumerate(self.measurement_signal["burstId"].unique()):
-                burst_series = self.measurement_signal[self.measurement_signal['burstId'] == burst]
-                coefs,freqs = self._compute_wavelet_scalogram_for_burst(burst_series[self.surface_level_column].values,window_length,overlap,
-                                                                            mother_wavelet,scales)
-                coefs_all[idx,:,:] = coefs
+        for idx,burst in enumerate(self.measured_signal["burstId"].unique()):
+            burst_series = self.measured_signal[self.measured_signal['burstId'] == burst]
+            coefs,freqs = self._compute_wavelet_scalogram_for_burst(burst_series[self.surface_level_column].values,window_length,overlap,
+                                                                        mother_wavelet,scales)
+            coefs_all[idx,:,:] = coefs
         return coefs_all,freqs
-
-    @extras.timing_decorator
-    def compute_wavelet_scalogram(self,mother_wavelet,points_scale):
-        """Compute wavelet scalogram for the entire measurement signal without windowing.
-        
-        Parameters
-        ----------
-        mother_wavelet : str
-            The mother wavelet to use.
-        points_scale : int
-            The number of scales to compute.
-        
-        Returns
-        -------
-        coefs_mag : ndarray
-            The magnitude of the computed wavelet coefficients.
-        freqs : ndarray
-            The corresponding frequencies.
-        """
-
-        frequencies = np.logspace(np.log10(0.001), np.log10(self.sampling_freq/2), points_scale)
-        f_c = pywt.central_frequency(mother_wavelet)
-        dt = 1 / self.sampling_freq
-        scales = f_c / (frequencies * dt)       
-        coeffs, freqs = pywt.cwt(self.measurement_signal[self.surface_level_column].values,scales,
-                                 wavelet=mother_wavelet, sampling_period=1/self.sampling_freq)
-        coeffs_mag = np.abs(coeffs)
-        return coeffs_mag,freqs
-
