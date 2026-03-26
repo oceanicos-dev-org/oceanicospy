@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from .weather_station_base import WeatherStationBase
 
+pd.set_option('future.no_silent_downcasting', True)
 
 class DavisVantagePro(WeatherStationBase):
     """
@@ -77,6 +78,9 @@ class DavisVantagePro(WeatherStationBase):
         """
         df.replace('---', np.nan, inplace=True)
         df.dropna(axis=1, how='all', inplace=True)
+
+        for col in df.columns[3:]:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
         
         df['date'] = pd.to_datetime(df['Date'] + ' ' + df['time'] + ' ' + df['AM/PM'], 
                                format='%m/%d/%y %I:%M %p')
