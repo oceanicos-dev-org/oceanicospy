@@ -60,36 +60,25 @@ class HOBOBase(ABC):
 
     Notes
     -----
-    Standardized output columns:
-
-    - ``date``                  — ``datetime64[ns]``
-    - ``temperature[C]``        — ``float``  (always present)
-    - ``conductivity[uS/cm]``   — ``float``  (CL only)
-    - ``seq``                   — ``Int64``  (if the logger records a sequence number)
-
-    XX-YY-ZZZZ : Origination — Daniela Rosero
-    24-Mar-2026 : Refactored into abstract + concrete classes — Franklin Ayala
+    - 01-Jun-2025 : Origination — Daniela Rosero
+    - 24-Mar-2026 : Refactored into abstract + concrete classes — Franklin Ayala
     """
 
     def __init__(
         self,
-        directory_path: str,
+        filepath: str,
         start_dt=None,
         end_dt=None,
         rules: Optional[CleaningRules] = None,
         encoding_main: str = "utf-8-sig",
         encoding_fallback: str = "latin-1",
     ) -> None:
-        self.directory_path = directory_path
+        self.filepath = filepath
         self.rules = rules or CleaningRules()
         self.encoding_main = encoding_main
         self.encoding_fallback = encoding_fallback
         self.start_dt = pd.to_datetime(start_dt) if start_dt is not None else None
         self.end_dt = pd.to_datetime(end_dt) if end_dt is not None else None
-
-    # ------------------------------------------------------------------ #
-    #  Abstract interface                                                  #
-    # ------------------------------------------------------------------ #
 
     @property
     @abstractmethod
@@ -125,10 +114,6 @@ class HOBOBase(ABC):
         """
         pass
 
-    # ------------------------------------------------------------------ #
-    #  Public API                                                          #
-    # ------------------------------------------------------------------ #
-
     def get_raw_records(self) -> pd.DataFrame:
         """
         Load, standardize, and concatenate all matching HOBO CSV files.
@@ -148,20 +133,9 @@ class HOBOBase(ABC):
         FileNotFoundError
             If no CSV files matching the prefix are found in ``directory_path``.
         """
-        files = self._get_csv_files()
-        if not files:
-            raise FileNotFoundError(
-                f"No '{self._file_prefix}*.csv' files found in '{self.directory_path}'."
-            )
 
-        df = pd.concat([self._read_single_file(f) for f in files], ignore_index=True)
-        df = self._trim(df)
-        df = (
-            df.sort_values("date")
-              .drop_duplicates(subset=["date"], keep="first")
-              .reset_index(drop=True)
-        )
-        return self._order_columns(df)
+        df = self._load_raw_dataframe()
+        return df
 
     def get_clean_records(self) -> pd.DataFrame:
         """
@@ -176,50 +150,29 @@ class HOBOBase(ABC):
         pandas.DataFrame
             Cleaned DataFrame ready for downstream analysis.
         """
-        return self._apply_qc(self.get_raw_records())
+        df = self._load_raw_dataframe()
+        df = self._standardize_columns(df)
+        df = self._parse_dates_and_trim(df)
+        # df = self._apply_qc(df)
+        return df
 
-    # ------------------------------------------------------------------ #
-    #  Internal helpers                                                    #
-    # ------------------------------------------------------------------ #
-
-    def _get_csv_files(self) -> List[str]:
-        """Return CSV files in the directory whose names start with ``_file_prefix``."""
-        prefix = self._file_prefix.upper()
-        return sorted(
-            f for f in glob.glob(os.path.join(self.directory_path, "*.csv"))
-            if os.path.basename(f).upper().startswith(prefix)
-        )
-
-    def _read_single_file(self, path: str) -> pd.DataFrame:
+    def _load_raw_dataframe(self) -> pd.DataFrame:
         """
         Read a single HOBO CSV (skip the HOBOware title row), then delegate
         column renaming to :meth:`_standardize_columns` and parse types.
         """
         try:
-            df = pd.read_csv(path, skiprows=1, encoding=self.encoding_main)
+            df = pd.read_csv(self.filepath, skiprows=1, encoding=self.encoding_main)
         except Exception:
-            df = pd.read_csv(path, skiprows=1, encoding=self.encoding_fallback)
-
-        df = self._standardize_columns(df)
-
-        df["date"] = pd.to_datetime(df["date"], format="%m/%d/%y %I:%M:%S %p", errors="coerce")
-
-        for col in ("temperature[C]", "conductivity[uS/cm]"):
-            if col in df.columns:
-                df[col] = pd.to_numeric(df[col], errors="coerce")
-
-        if "seq" in df.columns:
-            df["seq"] = pd.to_numeric(df["seq"], errors="coerce").astype("Int64")
+            df = pd.read_csv(self.filepath, skiprows=1, encoding=self.encoding_fallback)
 
         return df
 
-    def _trim(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _parse_dates_and_trim(self, df: pd.DataFrame) -> pd.DataFrame:
         """Trim records to [``start_dt``, ``end_dt``] when either bound is set."""
         if self.start_dt is None and self.end_dt is None:
             return df
-        start = self.start_dt if self.start_dt is not None else df["date"].min()
-        end = self.end_dt if self.end_dt is not None else df["date"].max()
-        return df[(df["date"] >= start) & (df["date"] <= end)]
+        return df[self.start_dt:self.end_dt]
 
     def _apply_qc(self, df: pd.DataFrame) -> pd.DataFrame:
         """Apply QC thresholds and drop rows where all measurement columns are NaN."""
@@ -279,7 +232,7 @@ class HOBOBase(ABC):
         return re.sub(r"\s+", " ", t).strip()
 
 
-class HOBOTL(HOBOBase):
+class HOBO_Temp(HOBOBase):
     """
     Reader for HOBO Temperature Logger (TL) CSV files.
 
@@ -317,6 +270,10 @@ class HOBOTL(HOBOBase):
         -------
         pandas.DataFrame
             DataFrame with only the relevant columns under standard names.
+        
+        Notes
+        -----
+        Date is uploaded in local time so no further timezone conversion is needed. The date column is parsed as datetime and set as index, sorted in chronological order.
         """
         norm = [self._normalize(c) for c in df.columns]
         cols = df.columns.tolist()
@@ -341,10 +298,16 @@ class HOBOTL(HOBOBase):
             keep.append(cols[temp_idx])
             rename[cols[temp_idx]] = "temperature[C]"
 
-        return df[keep].rename(columns=rename)
+        df = df[keep].rename(columns=rename)
+        df['date'] = pd.to_datetime(df['date'],
+                                    format = '%m/%d/%y %I:%M:%S %p',
+                                    errors='coerce')
+        df = df.set_index('date').sort_index()
+
+        return df
 
 
-class HOBOCL(HOBOBase):
+class HOBO_TempCond(HOBOBase):
     """
     Reader for HOBO Conductivity Logger (CL) CSV files.
 
@@ -414,4 +377,10 @@ class HOBOCL(HOBOBase):
             keep.append(cols[cond_idx])
             rename[cols[cond_idx]] = "conductivity[uS/cm]"
 
-        return df[keep].rename(columns=rename)
+        df = df[keep].rename(columns=rename)
+        df['date'] = pd.to_datetime(df['date'], 
+                                    format = '%m/%d/%y %I:%M:%S %p',
+                                    errors='coerce')
+        df = df.set_index('date').sort_index()
+
+        return df
