@@ -20,13 +20,6 @@ class Buoy():
         are west of UTC, positive values are east. Default is ``-5``
         (Colombia Standard Time, UTC-5).
 
-    Attributes
-    ----------
-    filepath : str
-        Stored path passed at construction time.
-    hours_from_utc : int
-        UTC offset used for all timezone conversions.
-
     Notes
     -----
     The two supported source formats are identified by a sentinel column:

@@ -18,6 +18,7 @@ class RBR(BaseLogger):
         Path to the directory containing the ``*_data.txt`` files.
     sampling_data : dict
         Dictionary containing information on device installation, including:
+        
         - ``anchoring_depth``: Depth at which the device is anchored (in meters).
         - ``sensor_height``: Height of the sensor above the seabed (in meters).
         - ``sampling_freq``: Sampling frequency of the device (in Hz).
