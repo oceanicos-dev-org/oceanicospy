@@ -20,11 +20,12 @@ class Bluelog(BaseLogger):
         Path to the directory containing the Bluelog ``.csv`` file.
     sampling_data : dict
         Dictionary containing deployment metadata. Must include:
-        - 'anchoring_depth' (float): Depth at which the sensor is anchored.
-        - 'sensor_height' (float): Height of the sensor above the bottom.
-        - 'sampling_freq' (float): Sampling frequency of the measurements.
-        - 'burst_length_s' (float): Duration of each burst in seconds.
-        - temperature : bool, optional
+        
+        - ``anchoring_depth`` (float): Depth at which the sensor is anchored.
+        - ``sensor_height`` (float): Height of the sensor above the bottom.
+        - ``sampling_freq`` (float): Sampling frequency of the measurements.
+        - ``burst_length_s`` (float): Duration of each burst in seconds.
+        - ``temperature`` : bool, optional
     filename : str, optional
         Name of the target ``.csv`` file. If not provided, the first
         ``.csv`` file found in ``directory_path`` is used.

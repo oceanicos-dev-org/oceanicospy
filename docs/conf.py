@@ -46,12 +46,13 @@ extensions = [
 ]
 
 nbsphinx_execute = 'never'
-
+nb_execution_mode = "off"  # never re-execute
+nbsphinx_input_prompt = ""
 autodoc_member_order = 'bysource'
 autodoc_typehints = 'description'
 napoleon_google_docstring = False
 napoleon_numpy_docstring = True
-napoleon_include_init_with_doc = True
+napoleon_include_init_with_doc = False
 autoclass_content = "both"
 
 # -- Options for HTML output -------------------------------------------------

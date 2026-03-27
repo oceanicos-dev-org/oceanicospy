@@ -169,15 +169,6 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Observations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="reading_field_data.html">Walkthrough Example</a></li>
-
-
-
-
-
-
-
-
 <li class="toctree-l2 has-children"><a class="reference internal" href="pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="pressure_sensors/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
@@ -186,21 +177,29 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="weather_stations/WeatherStationBase.html">Weather Station Base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="weather_stations/DavisVantagePro.html">Davis Vantage Pro</a></li>
 <li class="toctree-l3"><a class="reference internal" href="weather_stations/WeatherSens.html">WeatherSens</a></li>
 <li class="toctree-l3"><a class="reference internal" href="weather_stations/Rainwise.html">Rainwise</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="ctd/CTDBase.html">CTDBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ctd/CastawayCTD.html">CastawayCTD</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ctd/CTD48M.html">CTD48M</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ctd/CastawayCTD.html">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ctd/SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="AWAC.html">AWAC</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Buoy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="HOBO.html">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
 </ul>
 </details></li>
 </ul>
@@ -371,20 +370,41 @@ document.write(`
 <h1>Buoy<a class="headerlink" href="#buoy" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="oceanicospy.observations.buoy.Buoy">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.buoy.</span></span><span class="sig-name descname"><span class="pre">Buoy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/buoy.html#Buoy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.buoy.Buoy" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class to handle reading and processing Spotter buoy data in CSV format.
-Automatically detects the file format and processes accordingly.</p>
-<section id="inherits">
-<h2>Inherits<a class="headerlink" href="#inherits" title="Link to this heading">#</a></h2>
-<p>BaseLogger : abstract class</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.buoy.</span></span><span class="sig-name descname"><span class="pre">Buoy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hours_from_utc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/buoy.html#Buoy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.buoy.Buoy" title="Link to this definition">#</a></dt>
+<dd><p>Read and process Spotter buoy data exported as CSV files.</p>
+<p>Supports two CSV export formats produced by Sofar Ocean and AQUAlink
+platforms. The source format is detected automatically from column names.
+Both formats are normalized to a common datetime-indexed DataFrame with
+standardized physical-unit column names (e.g. <code class="docutils literal notranslate"><span class="pre">hs[m]</span></code>, <code class="docutils literal notranslate"><span class="pre">tp[s]</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – Path to the Spotter CSV file. Both Sofar (epoch-based) and AQUAlink
+(ISO 8601 timestamp) exports are accepted.</p></li>
+<li><p><strong>hours_from_utc</strong> (<em>int</em><em>, </em><em>optional</em>) – UTC offset in hours for the target local time zone. Negative values
+are west of UTC, positive values are east. Default is <code class="docutils literal notranslate"><span class="pre">-5</span></code>
+(Colombia Standard Time, UTC-5).</p></li>
+<li><p><strong>sampling_data</strong> (<em>dict</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The two supported source formats are identified by a sentinel column:</p>
+<ul class="simple">
+<li><p><strong>Sofar</strong> – contains an <code class="docutils literal notranslate"><span class="pre">'Epoch</span> <span class="pre">Time'</span></code> column (Unix timestamp, seconds).</p></li>
+<li><p><strong>AQUAlink</strong> – contains a <code class="docutils literal notranslate"><span class="pre">'timestamp'</span></code> column (ISO 8601 string, UTC).</p></li>
+</ul>
 <dl class="py method">
 <dt class="sig sig-object py" id="oceanicospy.observations.buoy.Buoy.get_raw_records">
 <span class="sig-name descname"><span class="pre">get_raw_records</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/buoy.html#Buoy.get_raw_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.buoy.Buoy.get_raw_records" title="Link to this definition">#</a></dt>
-<dd><p>Public method to get the raw records from the Spotter CSV file, processed and standardized.</p>
+<dd><p>Return the unprocessed contents of the CSV file as a DataFrame.</p>
+<p>No column renaming, timezone conversion, or row filtering is applied.
+Use this method to inspect the original data before any transformations.
+For analysis-ready output, prefer <a class="reference internal" href="#oceanicospy.observations.buoy.Buoy.get_clean_records" title="oceanicospy.observations.buoy.Buoy.get_clean_records"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_clean_records()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The processed DataFrame with datetime index and standardized columns.</p>
+<dd class="field-odd"><p>Raw DataFrame with default integer index and original column names
+exactly as they appear in the file.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>pd.DataFrame</p>
@@ -406,12 +426,6 @@ Automatically detects the file format and processes accordingly.</p>
 </dl>
 </dd></dl>
 
-</section>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>)</p>
-</dd>
-</dl>
 </dd></dl>
 
 </section>

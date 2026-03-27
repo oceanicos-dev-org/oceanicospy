@@ -7,4 +7,3 @@ This class provides various functionalities to compute and analyze wave spectra,
 .. autoclass:: oceanicospy.analysis.spectral.WaveSpectralAnalyzer
    :members:
    :undoc-members:
-   :show-inheritance:

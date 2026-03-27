@@ -45,6 +45,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'observations/HOBO';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Walkthrough Example" href="reading_field_data.html" />
     <link rel="prev" title="Buoy" href="Buoy.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -168,15 +169,6 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Observations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="reading_field_data.html">Walkthrough Example</a></li>
-
-
-
-
-
-
-
-
 <li class="toctree-l2 has-children"><a class="reference internal" href="pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="pressure_sensors/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
@@ -185,21 +177,29 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="weather_stations/WeatherStationBase.html">Weather Station Base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="weather_stations/DavisVantagePro.html">Davis Vantage Pro</a></li>
 <li class="toctree-l3"><a class="reference internal" href="weather_stations/WeatherSens.html">WeatherSens</a></li>
 <li class="toctree-l3"><a class="reference internal" href="weather_stations/Rainwise.html">Rainwise</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="ctd/CTDBase.html">CTDBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ctd/CastawayCTD.html">CastawayCTD</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ctd/CTD48M.html">CTD48M</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ctd/CastawayCTD.html">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ctd/SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="AWAC.html">AWAC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Buoy.html">Buoy</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
 </ul>
 </details></li>
 </ul>
@@ -350,20 +350,13 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.CleaningRules"><code class="docutils literal notranslate"><span class="pre">CleaningRules</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.CleaningRules.t_min"><code class="docutils literal notranslate"><span class="pre">CleaningRules.t_min</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.CleaningRules.t_max"><code class="docutils literal notranslate"><span class="pre">CleaningRules.t_max</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.CleaningRules.c_min"><code class="docutils literal notranslate"><span class="pre">CleaningRules.c_min</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.CleaningRules.c_max"><code class="docutils literal notranslate"><span class="pre">CleaningRules.c_max</span></code></a></li>
-</ul>
-</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBOBase"><code class="docutils literal notranslate"><span class="pre">HOBOBase</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBOBase.get_raw_records"><code class="docutils literal notranslate"><span class="pre">HOBOBase.get_raw_records()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBOBase.get_clean_records"><code class="docutils literal notranslate"><span class="pre">HOBOBase.get_clean_records()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBOTL"><code class="docutils literal notranslate"><span class="pre">HOBOTL</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBOCL"><code class="docutils literal notranslate"><span class="pre">HOBOCL</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBO_Temp"><code class="docutils literal notranslate"><span class="pre">HOBO_Temp</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBO_TempCond"><code class="docutils literal notranslate"><span class="pre">HOBO_TempCond</span></code></a></li>
 </ul>
             </nav>
         </div>
@@ -379,74 +372,14 @@ document.write(`
 <h1>HOBO<a class="headerlink" href="#hobo" title="Link to this heading">#</a></h1>
 <p>HOBO data loggers are compact, battery-powered instruments used to measure environmental parameters such as
 temperature and conductivity. The <code class="docutils literal notranslate"><span class="pre">HOBOBase</span></code> class provides a common interface for all HOBO logger implementations,
-while <code class="docutils literal notranslate"><span class="pre">HOBOTL</span></code> and <code class="docutils literal notranslate"><span class="pre">HOBOCL</span></code> handle temperature and conductivity loggers respectively.</p>
+while <code class="docutils literal notranslate"><span class="pre">HOBO_Temp</span></code> and <code class="docutils literal notranslate"><span class="pre">HOBO_TempCond</span></code> handle temperature and conductivity loggers respectively.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code class="docutils literal notranslate"><span class="pre">HOBOBase</span></code> is not designed to be called directly in the code but is intended to be subclassed by specific HOBO logger implementations.</p>
 </div>
-<dl class="py class" id="module-oceanicospy.observations.hobo">
-<dt class="sig sig-object py" id="oceanicospy.observations.hobo.CleaningRules">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.hobo.</span></span><span class="sig-name descname"><span class="pre">CleaningRules</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">45.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/hobo.html#CleaningRules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.hobo.CleaningRules" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Container for simple quality-control thresholds.</p>
-<p>Values are inclusive ranges; set to <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable the bound.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>t_min</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>t_max</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>c_min</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>c_max</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">t_min,</span> <span class="pre">t_max</span></span></dt>
-<dd><p>Acceptable temperature range in °C. Default −2 to 45.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">c_min,</span> <span class="pre">c_max</span></span></dt>
-<dd><p>Acceptable conductivity range in µS/cm. Default 0 to 1 000 000.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float or None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="oceanicospy.observations.hobo.CleaningRules.t_min">
-<span class="sig-name descname"><span class="pre">t_min</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-2.0</span></em><a class="headerlink" href="#oceanicospy.observations.hobo.CleaningRules.t_min" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="oceanicospy.observations.hobo.CleaningRules.t_max">
-<span class="sig-name descname"><span class="pre">t_max</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">45.0</span></em><a class="headerlink" href="#oceanicospy.observations.hobo.CleaningRules.t_max" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="oceanicospy.observations.hobo.CleaningRules.c_min">
-<span class="sig-name descname"><span class="pre">c_min</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#oceanicospy.observations.hobo.CleaningRules.c_min" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="oceanicospy.observations.hobo.CleaningRules.c_max">
-<span class="sig-name descname"><span class="pre">c_max</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1000000.0</span></em><a class="headerlink" href="#oceanicospy.observations.hobo.CleaningRules.c_max" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="oceanicospy.observations.hobo.HOBOBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.hobo.</span></span><span class="sig-name descname"><span class="pre">HOBOBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_main</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8-sig'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_fallback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'latin-1'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/hobo.html#HOBOBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.hobo.HOBOBase" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.hobo.</span></span><span class="sig-name descname"><span class="pre">HOBOBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_main</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8-sig'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_fallback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'latin-1'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/hobo.html#HOBOBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.hobo.HOBOBase" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Abstract base class for HOBO data logger readers.</p>
 <p>Provides a common interface for loading, standardizing, and cleaning
@@ -460,24 +393,20 @@ column detection for Temperature Logger (TL) and Conductivity Logger
 <li><p><strong>directory_path</strong> (<em>str</em>) – Path to the directory containing HOBO CSV files.</p></li>
 <li><p><strong>start_dt</strong> (<em>datetime-like</em><em>, </em><em>optional</em>) – Lower bound for trimming records (inclusive).</p></li>
 <li><p><strong>end_dt</strong> (<em>datetime-like</em><em>, </em><em>optional</em>) – Upper bound for trimming records (inclusive).</p></li>
-<li><p><strong>rules</strong> (<a class="reference internal" href="#oceanicospy.observations.hobo.CleaningRules" title="oceanicospy.observations.hobo.CleaningRules"><em>CleaningRules</em></a><em>, </em><em>optional</em>) – QC thresholds applied in <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase.get_clean_records" title="oceanicospy.observations.hobo.HOBOBase.get_clean_records"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_clean_records()</span></code></a>.
-Defaults to the standard thresholds defined in <a class="reference internal" href="#oceanicospy.observations.hobo.CleaningRules" title="oceanicospy.observations.hobo.CleaningRules"><code class="xref py py-class docutils literal notranslate"><span class="pre">CleaningRules</span></code></a>.</p></li>
+<li><p><strong>rules</strong> (<em>CleaningRules</em><em>, </em><em>optional</em>) – QC thresholds applied in <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase.get_clean_records" title="oceanicospy.observations.hobo.HOBOBase.get_clean_records"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_clean_records()</span></code></a>.
+Defaults to the standard thresholds defined in <code class="xref py py-class docutils literal notranslate"><span class="pre">CleaningRules</span></code>.</p></li>
 <li><p><strong>encoding_main</strong> (<em>str</em><em>, </em><em>optional</em>) – Primary encoding for reading CSV files. Default <code class="docutils literal notranslate"><span class="pre">'utf-8-sig'</span></code>
 handles BOM headers produced by HOBOware.</p></li>
 <li><p><strong>encoding_fallback</strong> (<em>str</em><em>, </em><em>optional</em>) – Fallback encoding used if the primary one fails. Default <code class="docutils literal notranslate"><span class="pre">'latin-1'</span></code>.</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>)</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Standardized output columns:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">date</span></code>                  — <code class="docutils literal notranslate"><span class="pre">datetime64[ns]</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">temperature[C]</span></code>        — <code class="docutils literal notranslate"><span class="pre">float</span></code>  (always present)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">conductivity[uS/cm]</span></code>   — <code class="docutils literal notranslate"><span class="pre">float</span></code>  (CL only)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">seq</span></code>                   — <code class="docutils literal notranslate"><span class="pre">Int64</span></code>  (if the logger records a sequence number)</p></li>
+<li><p>01-Jun-2025 : Origination — Daniela Rosero</p></li>
+<li><p>24-Mar-2026 : Refactored into abstract + concrete classes — Franklin Ayala</p></li>
 </ul>
-<p>XX-YY-ZZZZ : Origination — Daniela Rosero
-24-Mar-2026 : Refactored into abstract + concrete classes — Franklin Ayala</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="oceanicospy.observations.hobo.HOBOBase.get_raw_records">
 <span class="sig-name descname"><span class="pre">get_raw_records</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/hobo.html#HOBOBase.get_raw_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.hobo.HOBOBase.get_raw_records" title="Link to this definition">#</a></dt>
@@ -519,10 +448,9 @@ rows where all measured variables are <code class="docutils literal notranslate"
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="oceanicospy.observations.hobo.HOBOTL">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.hobo.</span></span><span class="sig-name descname"><span class="pre">HOBOTL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_main</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8-sig'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_fallback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'latin-1'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/hobo.html#HOBOTL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.hobo.HOBOTL" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a></p>
-<p>Reader for HOBO Temperature Logger (TL) CSV files.</p>
+<dt class="sig sig-object py" id="oceanicospy.observations.hobo.HOBO_Temp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.hobo.</span></span><span class="sig-name descname"><span class="pre">HOBO_Temp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_main</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8-sig'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_fallback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'latin-1'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/hobo.html#HOBO_Temp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.hobo.HOBO_Temp" title="Link to this definition">#</a></dt>
+<dd><p>Reader for HOBO Temperature Logger (TL) CSV files.</p>
 <p>Loads all <code class="docutils literal notranslate"><span class="pre">TL*.csv</span></code> files from <code class="docutils literal notranslate"><span class="pre">directory_path</span></code>, parses temperature
 and (optionally) sequence columns, and exposes them through the standard
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_raw_records()</span></code> / <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_clean_records()</span></code> interface.</p>
@@ -532,9 +460,10 @@ and (optionally) sequence columns, and exposes them through the standard
 <li><p><strong>directory_path</strong> (<em>str</em>) – Path to the directory containing TL CSV files.</p></li>
 <li><p><strong>start_dt</strong> – See <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a>.</p></li>
 <li><p><strong>end_dt</strong> – See <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a>.</p></li>
-<li><p><strong>rules</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="#oceanicospy.observations.hobo.CleaningRules" title="oceanicospy.observations.hobo.CleaningRules"><em>CleaningRules</em></a><em>]</em>) – See <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a>.</p></li>
+<li><p><strong>rules</strong> (<em>Optional</em><em>[</em><em>CleaningRules</em><em>]</em>) – See <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a>.</p></li>
 <li><p><strong>encoding_main</strong> (<em>str</em>) – See <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a>.</p></li>
 <li><p><strong>encoding_fallback</strong> (<em>str</em>) – See <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a>.</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -543,10 +472,9 @@ and (optionally) sequence columns, and exposes them through the standard
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="oceanicospy.observations.hobo.HOBOCL">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.hobo.</span></span><span class="sig-name descname"><span class="pre">HOBOCL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_main</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8-sig'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_fallback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'latin-1'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/hobo.html#HOBOCL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.hobo.HOBOCL" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a></p>
-<p>Reader for HOBO Conductivity Logger (CL) CSV files.</p>
+<dt class="sig sig-object py" id="oceanicospy.observations.hobo.HOBO_TempCond">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.hobo.</span></span><span class="sig-name descname"><span class="pre">HOBO_TempCond</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_main</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'utf-8-sig'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding_fallback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'latin-1'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/observations/hobo.html#HOBO_TempCond"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.hobo.HOBO_TempCond" title="Link to this definition">#</a></dt>
+<dd><p>Reader for HOBO Conductivity Logger (CL) CSV files.</p>
 <p>Loads all <code class="docutils literal notranslate"><span class="pre">CL*.csv</span></code> files from <code class="docutils literal notranslate"><span class="pre">directory_path</span></code>, parses temperature,
 conductivity, and (optionally) sequence columns, and exposes them through
 the standard <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_raw_records()</span></code> / <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_clean_records()</span></code> interface.</p>
@@ -556,9 +484,10 @@ the standard <code class="xref py py-meth docutils literal notranslate"><span cl
 <li><p><strong>directory_path</strong> (<em>str</em>) – Path to the directory containing CL CSV files.</p></li>
 <li><p><strong>start_dt</strong> – See <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a>.</p></li>
 <li><p><strong>end_dt</strong> – See <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a>.</p></li>
-<li><p><strong>rules</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="#oceanicospy.observations.hobo.CleaningRules" title="oceanicospy.observations.hobo.CleaningRules"><em>CleaningRules</em></a><em>]</em>) – See <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a>.</p></li>
+<li><p><strong>rules</strong> (<em>Optional</em><em>[</em><em>CleaningRules</em><em>]</em>) – See <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a>.</p></li>
 <li><p><strong>encoding_main</strong> (<em>str</em>) – See <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a>.</p></li>
 <li><p><strong>encoding_fallback</strong> (<em>str</em>) – See <a class="reference internal" href="#oceanicospy.observations.hobo.HOBOBase" title="oceanicospy.observations.hobo.HOBOBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">HOBOBase</span></code></a>.</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -588,6 +517,15 @@ the standard <code class="xref py py-meth docutils literal notranslate"><span cl
         <p class="prev-next-title">Buoy</p>
       </div>
     </a>
+    <a class="right-next"
+       href="reading_field_data.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Walkthrough Example</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -604,20 +542,13 @@ the standard <code class="xref py py-meth docutils literal notranslate"><span cl
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.CleaningRules"><code class="docutils literal notranslate"><span class="pre">CleaningRules</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.CleaningRules.t_min"><code class="docutils literal notranslate"><span class="pre">CleaningRules.t_min</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.CleaningRules.t_max"><code class="docutils literal notranslate"><span class="pre">CleaningRules.t_max</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.CleaningRules.c_min"><code class="docutils literal notranslate"><span class="pre">CleaningRules.c_min</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.CleaningRules.c_max"><code class="docutils literal notranslate"><span class="pre">CleaningRules.c_max</span></code></a></li>
-</ul>
-</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBOBase"><code class="docutils literal notranslate"><span class="pre">HOBOBase</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBOBase.get_raw_records"><code class="docutils literal notranslate"><span class="pre">HOBOBase.get_raw_records()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBOBase.get_clean_records"><code class="docutils literal notranslate"><span class="pre">HOBOBase.get_clean_records()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBOTL"><code class="docutils literal notranslate"><span class="pre">HOBOTL</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBOCL"><code class="docutils literal notranslate"><span class="pre">HOBOCL</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBO_Temp"><code class="docutils literal notranslate"><span class="pre">HOBO_Temp</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.hobo.HOBO_TempCond"><code class="docutils literal notranslate"><span class="pre">HOBO_TempCond</span></code></a></li>
 </ul>
   </nav></div>
 

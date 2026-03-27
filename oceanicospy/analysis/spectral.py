@@ -17,37 +17,22 @@ class WaveSpectralAnalyzer():
             The input signal data to be analyzed.
         sampling_data : dict
             Dictionary containing sampling parameters with the following keys:
-                - 'sampling_freq' (float): Sampling frequency of the signal.
-                - 'anchoring_depth' (float): Depth at which the sensor is anchored.
-                - 'sensor_height' (float): Height of the sensor above the bottom.
-                - 'burst_length_s' (float): Duration of each burst in seconds.
+                - ``sampling_freq`` (float): Sampling frequency of the signal.
+                - ``anchoring_depth`` (float): Depth at which the sensor is anchored.
+                - ``sensor_height`` (float): Height of the sensor above the bottom.
+                - ``burst_length_s`` (float): Duration of each burst in seconds.
         surface_level_column : str
-            Column name in measured_signal that contains the surface level data (default is 'eta[m]').
+            Column name in measured_signal that contains the surface level data (default is ``eta[m]``).
         logger : bool
             If True, initializes a logger for the class (default is True).
 
-        Attributes
-        ----------
-        measured_signal : array-like
-            Stores the input measurement signal.
-        sampling_data : dict
-            Stores the sampling parameters.
-        sampling_freq : float
-            Sampling frequency extracted from sampling_data.
-        anchoring_depth : float
-            Anchoring depth extracted from sampling_data.
-        sensor_height : float
-            Sensor height extracted from sampling_data.
-        burst_length_s : float
-            Burst length in seconds extracted from sampling_data.
-
         Notes
         -----
-        01-Ago-2025 : Origination - Franklin Ayala
-        01-Sep-2025 : FFT method - Juan Diego Toro
-        10-Oct-2025 : Kp correction - Franklin Ayala/Juan Diego Toro/Camilo Cabrera
-        12-Nov-2025 : Welch's method - Franklin Ayala
-        10-Dec-2025 : Wavelets analysis - Franklin Ayala
+        - 01-Ago-2025 : Origination - Franklin Ayala
+        - 01-Sep-2025 : FFT method - Juan Diego Toro
+        - 10-Oct-2025 : Kp correction - Franklin Ayala/Juan Diego Toro/Camilo Cabrera
+        - 12-Nov-2025 : Welch's method - Franklin Ayala
+        - 10-Dec-2025 : Wavelets analysis - Franklin Ayala
         """
 
         self.measured_signal = measured_signal
@@ -109,11 +94,11 @@ class WaveSpectralAnalyzer():
         burst_signal : pandas.Series
             The burst signal as a pandas Series.
         method : str
-            The method to compute the spectrum: 'fft' or 'welch'.
+            The method to compute the spectrum: ``'fft'`` or ``'welch'``.
         kp_correction : bool
             Whether to apply Kp correction to the spectrum.
         window_type : str
-            The type of window to use for Welch's method (e.g., 'hamming', 'hann').
+            The type of window to use for Welch's method (e.g., ``'hamming'``, ``'hann'``).
         window_length : int
             The length of the window in samples for Welch's method.
         smoothing_bins : int
@@ -248,7 +233,7 @@ class WaveSpectralAnalyzer():
         PSD : ndarray
             Power spectral density to be corrected.
         kp_method : str, optional
-            Method for Kp correction: 'adaptive' or 'nonadaptive'. Default is 'adaptive'
+            Method for Kp correction: ``'adaptive'`` or ``'nonadaptive'``. Default is ``'adaptive'``
         
         Returns
         -------
@@ -454,9 +439,9 @@ class WaveSpectralAnalyzer():
         kp_correction : bool
             If True, applies Kp correction to the spectrum.
         window_type : str, optional
-            Type of window to use (default is 'hamming').
-            Can be any window name supported by scipy.signal.windows, e.g., 
-            'hann', 'blackman', 'boxcar', etc.
+            Type of window to use (default is ``'hamming'``).
+            Can be any window name supported by scipy.signal.windows, e.g.,
+            ``'hann'``, ``'blackman'``, ``'boxcar'``, etc.
         window_length : int
             Length of the Hamming window in samples.
         overlap: int, optional
@@ -490,15 +475,15 @@ class WaveSpectralAnalyzer():
         Parameters
         ----------
         method : str
-            Spectrum computation method: 'fft' or 'welch'.
+            Spectrum computation method: ``'fft'`` or ``'welch'``.
         kp_correction : bool, optional
             Whether to apply Kp pressure correction. Default is True.
         ig_split : bool, optional
             Whether to compute infragravity and wind wave Hm0 separately. Default is False.
         freq_split : float, optional
-            Frequency that separates infragravity from short waves (required if ig_split is True). Default is None.
+            Frequency that separates infragravity from short waves (required if ``ig_split`` is True). Default is None.
         window_type : str, optional
-            Window type for Welch method (e.g., 'hamming', 'hann'). Default is None.
+            Window type for Welch method (e.g., ``'hamming'``, ``'hann'``). Default is None.
         window_length : int, optional
             Window length for Welch method in samples. Default is None.
         overlap : int, optional
@@ -510,25 +495,27 @@ class WaveSpectralAnalyzer():
         -------
         wave_spectra_data : dict
             Dictionary with keys:
-            - 'S': ndarray of shape (n_bursts, n_freqs) containing power spectral densities.
-            - 'freq': ndarray of frequency values.
-            - 'dir': empty list (placeholder for directional info).
-            - 'time': DatetimeIndex of hourly timestamps.
+
+            - ``S``: ndarray of shape (n_bursts, n_freqs) containing power spectral densities.
+            - ``freq``: ndarray of frequency values.
+            - ``dir``: empty list (placeholder for directional info).
+            - ``time``: DatetimeIndex of hourly timestamps.
         wave_params_data : pd.DataFrame
             Wave parameters indexed by time, with columns:
-            - 'Hm0': Zero-moment wave height [m].
-            - 'Hrms': Root-mean-square wave height [m].
-            - 'Hmean': Mean wave height [m].
-            - 'Tp': Peak period [s].
-            - 'Tm01': Mean period (first moment) [s].
-            - 'Tm02': Mean period (second moment) [s].
-            - 'Hm0_ig': Infragravity wave height [m] (if ig_split is True).
-            - 'Hm0_sw': Short wave height [m] (if ig_split is True).
+
+            - ``Hm0``: Zero-moment wave height [m].
+            - ``Hrms``: Root-mean-square wave height [m].
+            - ``Hmean``: Mean wave height [m].
+            - ``Tp``: Peak period [s].
+            - ``Tm01``: Mean period (first moment) [s].
+            - ``Tm02``: Mean period (second moment) [s].
+            - ``Hm0_ig``: Infragravity wave height [m] (if ig_split is True).
+            - ``Hm0_sw``: Short wave height [m] (if ig_split is True).
         
         Raises
         ------
         ValueError
-            If 'burstId' column is missing in the measurement signal.
+            If ``burstId`` column is missing in the measurement signal.
         """
 
         if 'burstId' not in self.measured_signal.columns:
@@ -577,16 +564,16 @@ class WaveSpectralAnalyzer():
         Parameters
         ----------
         mother_wavelet : str
-            The mother wavelet to use (e.g., 'morl', 'cmor', etc.).
+            The mother wavelet to use (e.g., ``'morl'``, ``'cmor'``, etc.).
         points_scale : int
             The number of frequency points
         burst_mode : bool, optional
             If True, computes scalograms for each burst separately using overlapping windows. Default is False.
             If False, computes a single scalogram for the entire measurement signal without windowing.
         window_length : int, optional
-            The length of each window in samples (required if burst_mode is True). Default is None.
+            The length of each window in samples (required if ``burst_mode`` is True). Default is None.
         overlap : float, optional
-            The overlap between consecutive windows (required if burst_mode is True). Default is None.
+            The overlap between consecutive windows (required if ``burst_mode`` is True). Default is None.
 
         Returns
         -------
@@ -598,8 +585,8 @@ class WaveSpectralAnalyzer():
         Raises
         ------
         ValueError
-            If burst_mode is True and window_length or overlap is not provided.
-            If burst_mode is True and 'burstId' column is missing in the measurement signal.
+            If ``burst_mode`` is True and ``window_length`` or ``overlap`` is not provided.
+            If ``burst_mode`` is True and ``'burstId'`` column is missing in the measurement signal.
         
         """
 
