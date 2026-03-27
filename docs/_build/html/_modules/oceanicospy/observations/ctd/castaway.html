@@ -29,6 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -39,6 +40,7 @@
     <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/oceanicospy/observations/ctd/castaway';</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -149,36 +151,31 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../installing.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../analysis/conditioning.html">Signal conditioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../../../../analysis/temporal.html">Temporal</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/execution/run_case.html">Case Runner</a></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../observations/walkthrough.html">Walkthrough Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
@@ -204,7 +201,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../../observations/HOBO.html">HOBO</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../plots.html">Plots</a></li>
 </ul>
 
     </div>
@@ -310,7 +306,6 @@ document.write(`
   <h1>Source code for oceanicospy.observations.ctd.castaway</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.ctd_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CTDBase</span>
@@ -321,30 +316,47 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reader for CastAway CTD per-cast files (YSI/Xylem format).</span>
 
-<span class="sd">    Handles per-cast CSV files that contain only a column header row and data</span>
-<span class="sd">    rows (no embedded metadata block). Cast metadata — device ID, cast time,</span>
-<span class="sd">    GPS coordinates, calibration dates, etc. — is read automatically from a</span>
-<span class="sd">    multi-cast summary CSV located in the same directory, by matching the</span>
-<span class="sd">    current file&#39;s stem against the ``File name`` column of the summary.</span>
+<span class="sd">    Supports two file variants:</span>
+
+<span class="sd">    - **With embedded header** (``has_header=True``): the file begins with a</span>
+<span class="sd">      ``%``-prefixed metadata block (device ID, cast time, GPS coordinates,</span>
+<span class="sd">      calibration dates, etc.) followed by a column header row and data rows.</span>
+<span class="sd">      Metadata is parsed directly from the file.</span>
+
+<span class="sd">    - **Without embedded header** (``has_header=False``, default): the file</span>
+<span class="sd">      contains only a column header row and data rows. Cast metadata is read</span>
+<span class="sd">      from a multi-cast summary CSV located in the same directory, matched by</span>
+<span class="sd">      file stem against the ``File name`` column.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    filepath : str</span>
 <span class="sd">        Path to the per-cast CastAway CTD ``.csv`` file.</span>
+<span class="sd">    has_header : bool, optional</span>
+<span class="sd">        ``True`` if the file contains a ``%``-prefixed metadata block.</span>
+<span class="sd">        ``False`` (default) to read metadata from the auxiliary summary CSV.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Expected per-cast file structure:</span>
+<span class="sd">    Expected per-cast file structure (``has_header=False``):</span>
 
 <span class="sd">    - First row is the column header (no ``%`` metadata block).</span>
-<span class="sd">    - Data columns: Pressure (Decibar), Depth (Meter), Temperature (Celsius),</span>
-<span class="sd">      Conductivity (MicroSiemens per Centimeter), Specific conductance</span>
-<span class="sd">      (MicroSiemens per Centimeter), Salinity (Practical Salinity Scale),</span>
-<span class="sd">      Sound velocity (Meters per Second), Density (Kilograms per Cubic Meter).</span>
 
-<span class="sd">    The summary file (auto-detected in the same directory) must have a</span>
-<span class="sd">    ``File name`` column whose values match per-cast file stems, and cast time</span>
-<span class="sd">    columns in Excel serial date format (days since 1899-12-30).</span>
+<span class="sd">    Expected per-cast file structure (``has_header=True``):</span>
+
+<span class="sd">    - Lines beginning with ``%`` contain metadata as ``% Key,Value`` pairs.</span>
+<span class="sd">    - An empty ``% `` line acts as a separator before the data block.</span>
+<span class="sd">    - The first non-``%`` line is the column header row.</span>
+
+<span class="sd">    Data columns (both variants): Pressure (Decibar), Depth (Meter),</span>
+<span class="sd">    Temperature (Celsius), Conductivity (MicroSiemens per Centimeter),</span>
+<span class="sd">    Specific conductance (MicroSiemens per Centimeter), Salinity (Practical</span>
+<span class="sd">    Salinity Scale), Sound velocity (Meters per Second), Density (Kilograms</span>
+<span class="sd">    per Cubic Meter).</span>
+
+<span class="sd">    The auxiliary summary file (``has_header=False``) must have a ``File name``</span>
+<span class="sd">    column whose values match per-cast file stems, and cast time columns in</span>
+<span class="sd">    Excel serial date format (days since 1899-12-30).</span>
 
 <span class="sd">    The cleaned DataFrame is indexed by ``depth[m]``, reflecting the vertical</span>
 <span class="sd">    profile nature of a CTD cast.</span>
@@ -365,38 +377,71 @@ document.write(`
 
     <span class="n">_EXCEL_ORIGIN</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s1">&#39;1899-12-30&#39;</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">has_header</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_header</span> <span class="o">=</span> <span class="n">has_header</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">cast_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        UTC timestamp of the cast start, read from the summary file.</span>
+<span class="sd">        UTC timestamp of the cast start.</span>
+
+<span class="sd">        When ``has_header=True`` the value is an ISO datetime string read</span>
+<span class="sd">        directly from the embedded metadata block.  When ``has_header=False``</span>
+<span class="sd">        the value is an Excel serial date (days since 1899-12-30) read from</span>
+<span class="sd">        the auxiliary summary file.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        pandas.Timestamp</span>
-<span class="sd">            Cast start time in UTC, or ``NaT`` if no matching row is found</span>
-<span class="sd">            in the summary file.</span>
+<span class="sd">            Cast start time in UTC, or ``NaT`` if no matching value is found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">serial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Cast time (UTC)&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">serial</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">NaT</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_header</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">serial</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EXCEL_ORIGIN</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">serial</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;D&#39;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Read cast metadata from a multi-cast summary CSV in the same directory.</span>
+<span class="sd">        Parse cast metadata from the file or from a summary CSV.</span>
 
-<span class="sd">        Scans every CSV file in the same directory (excluding ``self.filepath``)</span>
-<span class="sd">        for one that contains a ``File name`` column, then returns the row</span>
-<span class="sd">        whose ``File name`` matches the stem of ``self.filepath``.</span>
+<span class="sd">        When ``has_header=True``, reads all ``%``-prefixed lines in</span>
+<span class="sd">        ``self.filepath`` and returns key-value pairs extracted from</span>
+<span class="sd">        ``% Key,Value`` entries.</span>
+
+<span class="sd">        When ``has_header=False``, scans every CSV in the same directory</span>
+<span class="sd">        (excluding ``self.filepath``) for one that contains a ``File name``</span>
+<span class="sd">        column, then returns the row whose ``File name`` matches the stem of</span>
+<span class="sd">        ``self.filepath``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
-<span class="sd">            Metadata fields from the matching summary row (e.g., ``&#39;Device&#39;``,</span>
-<span class="sd">            ``&#39;Cast time (UTC)&#39;``, ``&#39;Start latitude&#39;``,</span>
-<span class="sd">            ``&#39;Cast duration (Seconds)&#39;``).  Returns an empty dict if no</span>
-<span class="sd">            matching summary file or row is found.</span>
+<span class="sd">            Metadata fields (e.g. ``&#39;Device&#39;``, ``&#39;Cast time (UTC)&#39;``,</span>
+<span class="sd">            ``&#39;Start latitude&#39;``, ``&#39;Cast duration (Seconds)&#39;``).</span>
+<span class="sd">            Returns an empty dict if no metadata can be found.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_header</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_metadata_from_file</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_metadata_from_summary</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_metadata_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read ``%``-prefixed header lines from the cast file itself.&quot;&quot;&quot;</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;%&#39;</span><span class="p">):</span>
+                    <span class="k">break</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="s1">&#39;,&#39;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                    <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">metadata</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_metadata_from_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read cast metadata from a multi-cast summary CSV in the same directory.&quot;&quot;&quot;</span>
         <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span>
         <span class="n">stem</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -418,14 +463,21 @@ document.write(`
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_raw_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Load the raw data block into a DataFrame, skipping metadata lines if any</span>
+<span class="sd">        Load the raw data block into a DataFrame.</span>
+
+<span class="sd">        When ``has_header=True``, counts the ``%``-prefixed lines and skips</span>
+<span class="sd">        them before reading the CSV data block.  When ``has_header=False``,</span>
+<span class="sd">        reads the file directly (first row is the column header).</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        pandas.DataFrame</span>
-<span class="sd">            Raw DataFrame as read directly from the CSV file, including original</span>
-<span class="sd">            column names and all data rows.</span>
+<span class="sd">            Raw DataFrame with original column names and all data rows.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_header</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">header_lines</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;%&#39;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">header_lines</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_standardize_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>

@@ -8,7 +8,7 @@ This class serves as a parent (base) class for specific CTD implementations, suc
 .. note::
    This class is not designed to be called directly in the code but is intended to be subclassed by specific CTD implementations.
 
-.. automodule:: oceanicospy.observations.ctd.ctd_base
+.. autoclass:: oceanicospy.observations.ctd.ctd_base
    :members:
    :undoc-members:
    :show-inheritance:

@@ -169,15 +169,6 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Observations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Walkthrough Example</a></li>
-
-
-
-
-
-
-
-
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Pressure Sensors</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="AQUAlogger.html">AQUAlogger</a></li>
@@ -194,13 +185,21 @@
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../ctd/CTDBase.html">CTDBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../ctd/CastawayCTD.html">CastawayCTD</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../ctd/CTD48M.html">CTD48M</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ctd/CastawayCTD.html">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ctd/SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../AWAC.html">AWAC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../Buoy.html">Buoy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../HOBO.html">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
 </ul>
 </details></li>
 </ul>
@@ -328,7 +327,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -344,6 +345,20 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger"><code class="docutils literal notranslate"><span class="pre">BaseLogger</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.first_record_time"><code class="docutils literal notranslate"><span class="pre">BaseLogger.first_record_time</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.last_record_time"><code class="docutils literal notranslate"><span class="pre">BaseLogger.last_record_time</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.get_raw_records"><code class="docutils literal notranslate"><span class="pre">BaseLogger.get_raw_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.get_clean_records"><code class="docutils literal notranslate"><span class="pre">BaseLogger.get_clean_records()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -362,7 +377,100 @@ This class serves as a parent (base) class for specific logger implementations, 
 <p class="admonition-title">Note</p>
 <p>This class is not designed to be called directly in the code but is intended to be subclassed by specific logger implementations.</p>
 </div>
-<span class="target" id="module-oceanicospy.observations.pressure_sensor_base"></span></section>
+<dl class="py class" id="module-oceanicospy.observations.pressure_sensors.pressure_sensor_base">
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.pressure_sensors.pressure_sensor_base.</span></span><span class="sig-name descname"><span class="pre">BaseLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/oceanicospy/observations/pressure_sensors/pressure_sensor_base.html#BaseLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Initializes the BaseLogger class with the given directory path, sampling data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory_path</strong> (<em>str</em>) – Path to the directory containing the sensor pressure files.</p></li>
+<li><p><strong>sampling_data</strong> (<em>dict</em>) – <p>Dictionary containing information on device installation, including:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">anchoring_depth</span></code>: The depth at which the sensor is anchored (in meters).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sensor_height</span></code>: The height of the sensor above the anchoring point (in meters).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sampling_freq</span></code>: The frequency at which the sensor records data (in Hz).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">burst_length_s</span></code>: The length of each burst of data recording (in seconds).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_time</span></code>: The start time for data analysis (as a datetime object or string).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">end_time</span></code>: The end time for data analysis (as a datetime object or string).</p></li>
+</ul>
+</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the file containing the records. If not provided, the first record file found in the directory will be used.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>23-Sep-2025 : Origination - Franklin Ayala</p></li>
+<li><p>12-Oct-2025 : Adding AQUAlogger logic - Juan Diego Toro</p></li>
+<li><p>10-Dec-2025 : Bluelog support - Daniela Rosero</p></li>
+</ul>
+<dl class="py property">
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.first_record_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">first_record_time</span></span><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.first_record_time" title="Link to this definition">#</a></dt>
+<dd><p>Returns the timestamp of the first record in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The timestamp of the first available record.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.Timestamp</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.last_record_time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">last_record_time</span></span><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.last_record_time" title="Link to this definition">#</a></dt>
+<dd><p>Returns the timestamp of the last record in the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The timestamp of the last available record.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.Timestamp</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.get_raw_records">
+<span class="sig-name descname"><span class="pre">get_raw_records</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/oceanicospy/observations/pressure_sensors/pressure_sensor_base.html#BaseLogger.get_raw_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.get_raw_records" title="Link to this definition">#</a></dt>
+<dd><p>Reads the records file from the device to create a DataFrame containing data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A DataFrame containing the raw data indexed by timestamp.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The records are standardized to have a datetime index and columns following the convention variable[units] (e.g., pressure[bar], depth[m]).
+The data is trimmed to include only records between the start and end record times provided.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.get_clean_records">
+<span class="sig-name descname"><span class="pre">get_clean_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detrended</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/oceanicospy/observations/pressure_sensors/pressure_sensor_base.html#BaseLogger.get_clean_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.get_clean_records" title="Link to this definition">#</a></dt>
+<dd><p>Processes the raw data into clean, burst-segmented data with surface elevation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>detrended</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, applies a linear detrending to the depth data within each burst. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A cleaned DataFrame with bursts identified by a <code class="docutils literal notranslate"><span class="pre">'burstId'</span></code> column.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 
 
                 </article>
@@ -399,6 +507,27 @@ This class serves as a parent (base) class for specific logger implementations, 
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger"><code class="docutils literal notranslate"><span class="pre">BaseLogger</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.first_record_time"><code class="docutils literal notranslate"><span class="pre">BaseLogger.first_record_time</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.last_record_time"><code class="docutils literal notranslate"><span class="pre">BaseLogger.last_record_time</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.get_raw_records"><code class="docutils literal notranslate"><span class="pre">BaseLogger.get_raw_records()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.get_clean_records"><code class="docutils literal notranslate"><span class="pre">BaseLogger.get_clean_records()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

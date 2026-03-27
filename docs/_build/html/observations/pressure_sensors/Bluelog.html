@@ -169,15 +169,6 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Observations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Walkthrough Example</a></li>
-
-
-
-
-
-
-
-
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Pressure Sensors</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="AQUAlogger.html">AQUAlogger</a></li>
@@ -194,13 +185,21 @@
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../ctd/CTDBase.html">CTDBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../ctd/CastawayCTD.html">CastawayCTD</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../ctd/CTD48M.html">CTD48M</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ctd/CastawayCTD.html">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ctd/SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../AWAC.html">AWAC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../Buoy.html">Buoy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../HOBO.html">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
 </ul>
 </details></li>
 </ul>
@@ -374,7 +373,7 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.bluelog.Bluelog">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.pressure_sensors.bluelog.</span></span><span class="sig-name descname"><span class="pre">Bluelog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/oceanicospy/observations/pressure_sensors/bluelog.html#Bluelog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.bluelog.Bluelog" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLogger</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="BaseLogger.html#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger" title="oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLogger</span></code></a></p>
 <p>A sensor-specific reader for Bluelog pressure logger files.</p>
 <p>Inherits from <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLogger</span></code> and implements file parsing methods
 specific to the Bluelog CSV format, which includes a comment-style
@@ -384,12 +383,15 @@ comma-separated data records.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>directory_path</strong> (<em>str</em>) – Path to the directory containing the Bluelog <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file.</p></li>
-<li><p><strong>sampling_data</strong> (<em>dict</em>) – Dictionary containing deployment metadata. Must include:
-- ‘anchoring_depth’ (float): Depth at which the sensor is anchored.
-- ‘sensor_height’ (float): Height of the sensor above the bottom.
-- ‘sampling_freq’ (float): Sampling frequency of the measurements.
-- ‘burst_length_s’ (float): Duration of each burst in seconds.
-- temperature : bool, optional</p></li>
+<li><p><strong>sampling_data</strong> (<em>dict</em>) – <p>Dictionary containing deployment metadata. Must include:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">anchoring_depth</span></code> (float): Depth at which the sensor is anchored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sensor_height</span></code> (float): Height of the sensor above the bottom.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sampling_freq</span></code> (float): Sampling frequency of the measurements.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">burst_length_s</span></code> (float): Duration of each burst in seconds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temperature</span></code> : bool, optional</p></li>
+</ul>
+</p></li>
 <li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the target <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file. If not provided, the first
 <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file found in <code class="docutils literal notranslate"><span class="pre">directory_path</span></code> is used.</p></li>
 </ul>
@@ -424,7 +426,7 @@ during column standardization.</p>
 <dd class="field-odd"><p><strong>detrended</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, applies a linear detrending to the depth data within each burst. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A cleaned DataFrame with bursts identified by a ‘burstId’ column.</p>
+<dd class="field-even"><p>A cleaned DataFrame with bursts identified by a <code class="docutils literal notranslate"><span class="pre">'burstId'</span></code> column.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>
