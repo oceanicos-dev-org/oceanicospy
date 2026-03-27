@@ -13,13 +13,6 @@ class WeatherStationBase(ABC):
     filepath : str
         Path to the raw data file for the weather station.
 
-    Properties
-    ----------
-    first_record_time : datetime-like
-        Timestamp of the earliest record in the cleaned dataset.
-    last_record_time : datetime-like
-        Timestamp of the most recent record in the cleaned dataset.
-
     Notes
     -----
     - 19-Mar-2025 : initial version - Franklin Ayala

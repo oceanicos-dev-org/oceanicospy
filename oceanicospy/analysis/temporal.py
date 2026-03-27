@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
-from PyEMD import CEEMDAN,EEMD,EMD
+# from PyEMD.EMD import EMD
+# from PyEMD.EEMD import EEMD
+# from PyEMD.CEEMDAN import CEEMDAN
+from PyEMD import EMD, EEMD, CEEMDAN
 from scipy.signal import resample,detrend
 
 from ..utils import wave_props
@@ -16,19 +19,18 @@ class WaveTemporalAnalyzer:
             The input signal data to be analyzed.
         sampling_data : dict
             Dictionary containing sampling parameters with the following keys:
-                - 'sampling_freq' (float): Sampling frequency of the signal.
-                - 'anchoring_depth' (float): Depth at which the sensor is anchored.
-                - 'sensor_height' (float): Height of the sensor above the bottom.
-                - 'burst_length_s' (float): Duration of each burst in seconds.
+                - ``sampling_freq`` (float): Sampling frequency of the signal.
+                - ``anchoring_depth`` (float): Depth at which the sensor is anchored.
+                - ``sensor_height`` (float): Height of the sensor above the bottom.
+                - ``burst_length_s`` (float): Duration of each burst in seconds.
         surface_level_column : str, optional
-            The name of the column in measured_signal that contains surface level data (default is 'eta[m]').
+            The name of the column in measured_signal that contains surface level data (default is ``eta[m]``).
 
         Notes
         -----
-
-        23-Feb-2014 : First Matlab version - Daniel Peláez
-        01-Sep-2023 : First Python version - Alejandro Henao
-        10-Dec-2025 : Empirical Mode decomposition - Franklin Ayala 
+        - 23-Feb-2014 : First Matlab version - Daniel Peláez
+        - 01-Sep-2023 : First Python version - Alejandro Henao
+        - 10-Dec-2025 : Empirical Mode Decomposition - Franklin Ayala
         """
 
         self.measured_signal = measured_signal
@@ -37,13 +39,13 @@ class WaveTemporalAnalyzer:
 
     def apply_zero_upcrossing_burst(self, burst_signal, anchoring_depth, sensor_height):
         """
-        This function calculates the significant wave height, the period and the wavelength
+        This function calculates the significant wave height, the period, and the wavelength
         with the zero-upcrossing method.
         
         Parameters
         ----------
         burst_signal : array_like
-            A series of data without trend.
+            A series of data without a trend.
         anchoring_depth : float
             The measurement depth.
         sensor_height : float
@@ -62,7 +64,7 @@ class WaveTemporalAnalyzer:
         """
 
         ratio = 10
-        # Resample the signal with certain ratio to increase the resolution of zero-crossing detection
+        # Resample the signal with a certain ratio to increase the resolution of zero-crossing detection
         burst_signal_upsampled = resample(burst_signal, len(burst_signal) * ratio)
         time = np.linspace(1, len(burst_signal), len(burst_signal_upsampled)) 
         sign = np.sign(burst_signal_upsampled)
@@ -86,7 +88,7 @@ class WaveTemporalAnalyzer:
         L = np.array([wave_props.wavelength(t, anchoring_depth) for t in T], dtype=np.float64) 
         k = 2.*np.pi/L
 
-        # computing non-adaptive transference factor Kp
+        # Computing non-adaptive transference factor Kp
         Kp = np.cosh(k * sensor_height) / np.cosh(k * anchoring_depth) 
         Kp_min = (np.cosh(np.pi/(anchoring_depth - sensor_height)*sensor_height)) / \
                 (np.cosh(np.pi/(anchoring_depth - sensor_height)*anchoring_depth)) 
@@ -94,7 +96,7 @@ class WaveTemporalAnalyzer:
         Kp = np.clip(Kp, Kp_min, 1)
 
         H = H_cross/(Kp)
-        n = min(1,len(H) // 3) # to prevent errors when there are less than 3 waves in the burst
+        n = min(1,len(H) // 3) # to prevent errors when there are fewer than 3 waves in the burst
 
         H_sorted = np.sort(H)
         H_top_third = np.nanmean(H_sorted[-n:])  # top third
@@ -108,13 +110,13 @@ class WaveTemporalAnalyzer:
         """
         Calculate wave parameters from zero-crossing analysis of pressure data.
 
-
         Returns
         -------
         pandas.DataFrame
             DataFrame with wave parameters indexed by time, containing columns:
-            - 'H1/3': Significant wave height (H1/3).
-            - 'Tmean': Mean wave period (Tmean).
+
+            - ``H1/3``: Significant wave height [m].
+            - ``Tmean``: Mean wave period [s].
         """
         wave_params = ["time","H1/3","Tmean"]
         wave_params_data = {param:[] for param in wave_params}
@@ -146,13 +148,13 @@ class WaveTemporalAnalyzer:
         Parameters
         ----------
         EMD_type : str
-            The type of EMD to use. Options are 'EMD', 'EEMD', or 'CEEMDAN'.
+            The type of EMD to use. Options are ``'EMD'``, ``'EEMD'``, or ``'CEEMDAN'``.
         maximum_IMFs : int
             The maximum number of IMFs to compute for each burst.
         number_ensembles : int, optional
-            The number of ensembles to use for EEMD or CEEMDAN (required if EMD_type is 'EEMD' or 'CEEMDAN').
+            The number of ensembles to use for EEMD or CEEMDAN (required if ``EMD_type`` is ``'EEMD'`` or ``'CEEMDAN'``).
         amplitude_noise_std : float, optional
-            The standard deviation of the added noise for EEMD or CEEMDAN
+            The standard deviation of the added noise for EEMD or CEEMDAN.
         parallel : bool, optional
             Whether to use parallel processing for CEEMDAN (default is True).
         nb_processes : int, optional
@@ -165,17 +167,18 @@ class WaveTemporalAnalyzer:
 
         Notes
         -----
-        This function is based on the different method decompositions implemented in the PyEMD library [1].
-        .. [1] Huang, N. E., et al. (1998). The empirical mode decomposition and the Hilbert spectrum for nonlinear 
+        This function is based on the decomposition methods implemented in the PyEMD library [1].
+
+        .. [1] Huang, N. E., et al. (1998). The empirical mode decomposition and the Hilbert spectrum for nonlinear
             and non-stationary time series analysis. Proceedings of the Royal Society of London. Series A, 454(1971), 903-995.
 
         Raises
         ------
         ValueError
-            If 'burstId' is not found in the signal columns.
-            If EMD_type is not one of 'EMD', 'EEMD', or 'CEEMDAN'.
-            If EMD_type is 'EEMD' or 'CEEMDAN' and number_ensembles or
-            amplitude_noise_std are not provided.
+            If ``'burstId'`` is not found in the signal columns.
+            If ``EMD_type`` is not one of ``'EMD'``, ``'EEMD'``, or ``'CEEMDAN'``.
+            If ``EMD_type`` is ``'EEMD'`` or ``'CEEMDAN'`` and ``number_ensembles`` or
+            ``amplitude_noise_std`` are not provided.
         """
 
         if 'burstId' not in self.measured_signal.columns:
@@ -227,9 +230,9 @@ class WaveTemporalAnalyzer:
             decomposer = EMD()
 
         elif EMD_type == 'EEMD':
-            decomposer = EEMD(trials=number_ensembles,epsilon=amplitude_noise_std)
+            decomposer = EEMD(trials=number_ensembles, epsilon=amplitude_noise_std)
 
-        else:  # CEEMDAN
+        else:
             # np.float16 is used to reduce memory usage during ensemble averaging
             decomposer = CEEMDAN(DTYPE=np.float16,trials=number_ensembles,epsilon=amplitude_noise_std,
                                  parallel=parallel,processes=nb_processes)

@@ -17,20 +17,21 @@ class BaseLogger(ABC):
         Path to the directory containing the sensor pressure files.
     sampling_data : dict
         Dictionary containing information on device installation, including:
-        - anchoring_depth: The depth at which the sensor is anchored (in meters).
-        - sensor_height: The height of the sensor above the anchoring point (in meters).
-        - sampling_freq: The frequency at which the sensor records data (in Hz).
-        - burst_length_s: The length of each burst of data recording (in seconds).
-        - start_time: The start time for data analysis (as a datetime object or string).
-        - end_time: The end time for data analysis (as a datetime object or string).
+        
+        - ``anchoring_depth``: The depth at which the sensor is anchored (in meters).
+        - ``sensor_height``: The height of the sensor above the anchoring point (in meters).
+        - ``sampling_freq``: The frequency at which the sensor records data (in Hz).
+        - ``burst_length_s``: The length of each burst of data recording (in seconds).
+        - ``start_time``: The start time for data analysis (as a datetime object or string).
+        - ``end_time``: The end time for data analysis (as a datetime object or string).
     filename: str, optional
         The name of the file containing the records. If not provided, the first record file found in the directory will be used.
 
     Notes
     -----
-    23-Sep-2025 : Origination - Franklin Ayala
-    12-Oct-2025 : Adding AQUAlogger logic - Juan Diego Toro
-    10-Dec-2025 : Bluelog support - Daniela Rosero 
+    - 23-Sep-2025 : Origination - Franklin Ayala
+    - 12-Oct-2025 : Adding AQUAlogger logic - Juan Diego Toro
+    - 10-Dec-2025 : Bluelog support - Daniela Rosero 
     
     """
     def __init__(self, directory_path: str, sampling_data: dict, filename: str = None):
@@ -151,7 +152,7 @@ class BaseLogger(ABC):
         Returns
         -------
         pandas.DataFrame
-            A cleaned DataFrame with bursts identified by a 'burstId' column.
+            A cleaned DataFrame with bursts identified by a ``'burstId'`` column.
         """
 
         df = self.get_raw_records()
