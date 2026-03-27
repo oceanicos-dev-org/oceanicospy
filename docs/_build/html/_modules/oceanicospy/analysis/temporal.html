@@ -29,6 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -39,6 +40,7 @@
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/oceanicospy/analysis/temporal';</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -149,26 +151,56 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/BaseLogger.html">BaseLogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/AQUAlogger.html">AQUAlogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/RBR.html">RBR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/AWAC.html">AWAC</a></li>
-</ul>
-</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installing.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../analysis/conditioning.html">Signal conditioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../../../analysis/temporal.html">Temporal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../models/swanpy.html">swanpy</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/RBR.html">RBR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/Bluelog.html">Bluelog</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../plots.html">Plots</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../retrievals.html">Retrievals</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/WeatherSens.html">WeatherSens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/Rainwise.html">Rainwise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CTDBase.html">CTDBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CastawayCTD.html">CastawayCTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CTD48M.html">CTD48M</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/Buoy.html">Buoy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/HOBO.html">HOBO</a></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -274,7 +306,10 @@ document.write(`
   <h1>Source code for oceanicospy.analysis.temporal</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-
+<span class="c1"># from PyEMD.EMD import EMD</span>
+<span class="c1"># from PyEMD.EEMD import EEMD</span>
+<span class="c1"># from PyEMD.CEEMDAN import CEEMDAN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PyEMD</span><span class="w"> </span><span class="kn">import</span> <span class="n">EMD</span><span class="p">,</span> <span class="n">EEMD</span><span class="p">,</span> <span class="n">CEEMDAN</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">resample</span><span class="p">,</span><span class="n">detrend</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">wave_props</span>
@@ -282,148 +317,244 @@ document.write(`
 <div class="viewcode-block" id="WaveTemporalAnalyzer">
 <a class="viewcode-back" href="../../../analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WaveTemporalAnalyzer</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class for analyzing wave parameters from temporal data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="WaveTemporalAnalyzer.__init__">
-<a class="viewcode-back" href="../../../analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">measurement_signal</span><span class="p">,</span><span class="n">sampling_data</span><span class="p">):</span> 
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">measured_signal</span><span class="p">,</span><span class="n">sampling_data</span><span class="p">,</span><span class="n">surface_level_column</span><span class="o">=</span><span class="s1">&#39;eta[m]&#39;</span><span class="p">):</span> 
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the analysis object with measurement signal and sampling data.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        measurement_signal : array-like</span>
+<span class="sd">        measured_signal : array-like</span>
 <span class="sd">            The input signal data to be analyzed.</span>
 <span class="sd">        sampling_data : dict</span>
 <span class="sd">            Dictionary containing sampling parameters with the following keys:</span>
-<span class="sd">                - &#39;sampling_freq&#39; (float): Sampling frequency of the signal.</span>
-<span class="sd">                - &#39;anchoring_depth&#39; (float): Depth at which the sensor is anchored.</span>
-<span class="sd">                - &#39;sensor_height&#39; (float): Height of the sensor above the bottom.</span>
-<span class="sd">                - &#39;burst_length_s&#39; (float): Duration of each burst in seconds.</span>
+<span class="sd">                - ``sampling_freq`` (float): Sampling frequency of the signal.</span>
+<span class="sd">                - ``anchoring_depth`` (float): Depth at which the sensor is anchored.</span>
+<span class="sd">                - ``sensor_height`` (float): Height of the sensor above the bottom.</span>
+<span class="sd">                - ``burst_length_s`` (float): Duration of each burst in seconds.</span>
+<span class="sd">        surface_level_column : str, optional</span>
+<span class="sd">            The name of the column in measured_signal that contains surface level data (default is ``eta[m]``).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - 23-Feb-2014 : First Matlab version - Daniel Peláez</span>
+<span class="sd">        - 01-Sep-2023 : First Python version - Alejandro Henao</span>
+<span class="sd">        - 10-Dec-2025 : Empirical Mode Decomposition - Franklin Ayala</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">measurement_signal</span> <span class="o">=</span> <span class="n">measurement_signal</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span> <span class="o">=</span> <span class="n">sampling_data</span></div>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">measured_signal</span> <span class="o">=</span> <span class="n">measured_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span> <span class="o">=</span> <span class="n">sampling_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surface_level_column</span> <span class="o">=</span> <span class="n">surface_level_column</span>
 
-<div class="viewcode-block" id="WaveTemporalAnalyzer.params_from_zero_crossing">
-<a class="viewcode-back" href="../../../analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.params_from_zero_crossing">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">params_from_zero_crossing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clean_records</span><span class="p">,</span> <span class="n">sampling_data</span><span class="p">):</span>
+<div class="viewcode-block" id="WaveTemporalAnalyzer.apply_zero_upcrossing_burst">
+<a class="viewcode-back" href="../../../analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.apply_zero_upcrossing_burst">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_zero_upcrossing_burst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst_signal</span><span class="p">,</span> <span class="n">anchoring_depth</span><span class="p">,</span> <span class="n">sensor_height</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate wave parameters from zero-crossing analysis of pressure data.</span>
-
+<span class="sd">        This function calculates the significant wave height, the period, and the wavelength</span>
+<span class="sd">        with the zero-upcrossing method.</span>
+<span class="sd">        </span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        clean_records : pandas.DataFrame</span>
-<span class="sd">            DataFrame containing cleaned pressure records with a &#39;burstId&#39; column to identify different bursts.</span>
-<span class="sd">        sampling_data : dict</span>
-<span class="sd">            Dictionary containing sampling information with keys:</span>
-<span class="sd">            - &#39;sampling_freq&#39;: Sampling frequency of the pressure data.</span>
-<span class="sd">            - &#39;anchoring_depth&#39;: Depth at which the sensor is anchored.</span>
-<span class="sd">            - &#39;sensor_height&#39;: Height of the sensor from the seabed.</span>
+<span class="sd">        burst_signal : array_like</span>
+<span class="sd">            A series of data without a trend.</span>
+<span class="sd">        anchoring_depth : float</span>
+<span class="sd">            The measurement depth.</span>
+<span class="sd">        sensor_height : float</span>
+<span class="sd">            The distance from the bottom to the sensor.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        H_top_third : float</span>
+<span class="sd">            The significant wave height (top third).</span>
+<span class="sd">        Hmax : float</span>
+<span class="sd">            The maximum wave height.</span>
+<span class="sd">        Tmean : float</span>
+<span class="sd">            The mean period.</span>
+<span class="sd">        Lmean : float</span>
+<span class="sd">            The mean wavelength.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ratio</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="c1"># Resample the signal with a certain ratio to increase the resolution of zero-crossing detection</span>
+        <span class="n">burst_signal_upsampled</span> <span class="o">=</span> <span class="n">resample</span><span class="p">(</span><span class="n">burst_signal</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">burst_signal</span><span class="p">)</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">)</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">burst_signal</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">burst_signal_upsampled</span><span class="p">))</span> 
+        <span class="n">sign</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">burst_signal_upsampled</span><span class="p">)</span>
+        <span class="n">idxs_cross</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">sign</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># indices of zero-crossings (up-crossings)</span>
+
+        <span class="n">H_cross</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Loop through pairs of consecutive up-crossings to calculate wave heights and periods</span>
+        <span class="k">for</span> <span class="n">idx_cross</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">idxs_cross</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">first_up</span> <span class="o">=</span> <span class="n">idxs_cross</span><span class="p">[</span><span class="n">idx_cross</span><span class="p">]</span> 
+            <span class="n">second_up</span> <span class="o">=</span> <span class="n">idxs_cross</span><span class="p">[</span><span class="n">idx_cross</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">wave</span> <span class="o">=</span> <span class="n">burst_signal_upsampled</span><span class="p">[</span><span class="n">first_up</span><span class="p">:</span><span class="n">second_up</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">H_cross</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">wave</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">wave</span><span class="p">))</span>
+            <span class="n">T</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="p">[</span><span class="n">second_up</span><span class="p">]</span> <span class="o">-</span> <span class="n">time</span><span class="p">[</span><span class="n">first_up</span><span class="p">])</span>
+        <span class="n">H_cross</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">H_cross</span><span class="p">)</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+
+        <span class="c1"># Determine the wavenumber based on the dispersion relation</span>
+        <span class="c1"># TODO: the total or anchoring depth has to be used.</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wave_props</span><span class="o">.</span><span class="n">wavelength</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">anchoring_depth</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">T</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> 
+        <span class="n">k</span> <span class="o">=</span> <span class="mf">2.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">L</span>
+
+        <span class="c1"># Computing non-adaptive transference factor Kp</span>
+        <span class="n">Kp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">sensor_height</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">anchoring_depth</span><span class="p">)</span> 
+        <span class="n">Kp_min</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="n">anchoring_depth</span> <span class="o">-</span> <span class="n">sensor_height</span><span class="p">)</span><span class="o">*</span><span class="n">sensor_height</span><span class="p">))</span> <span class="o">/</span> \
+                <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="n">anchoring_depth</span> <span class="o">-</span> <span class="n">sensor_height</span><span class="p">)</span><span class="o">*</span><span class="n">anchoring_depth</span><span class="p">))</span> 
+        <span class="c1"># Clip Kp to avoid unrealistic amplification of wave heights for very long waves</span>
+        <span class="n">Kp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">Kp</span><span class="p">,</span> <span class="n">Kp_min</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">H</span> <span class="o">=</span> <span class="n">H_cross</span><span class="o">/</span><span class="p">(</span><span class="n">Kp</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">H</span><span class="p">)</span> <span class="o">//</span> <span class="mi">3</span><span class="p">)</span> <span class="c1"># to prevent errors when there are fewer than 3 waves in the burst</span>
+
+        <span class="n">H_sorted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+        <span class="n">H_top_third</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">H_sorted</span><span class="p">[</span><span class="o">-</span><span class="n">n</span><span class="p">:])</span>  <span class="c1"># top third</span>
+        <span class="n">Hmax</span> <span class="o">=</span> <span class="n">H_sorted</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">Tmean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">Lmean</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">H_top_third</span><span class="p">,</span><span class="n">Hmax</span><span class="p">,</span><span class="n">Tmean</span><span class="p">,</span><span class="n">Lmean</span></div>
+
+
+<div class="viewcode-block" id="WaveTemporalAnalyzer.compute_params_from_zero_upcrossing">
+<a class="viewcode-back" href="../../../analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.compute_params_from_zero_upcrossing">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_params_from_zero_upcrossing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate wave parameters from zero-crossing analysis of pressure data.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        pandas.DataFrame</span>
 <span class="sd">            DataFrame with wave parameters indexed by time, containing columns:</span>
-<span class="sd">            - &#39;H1/3&#39;: Significant wave height (H1/3).</span>
-<span class="sd">            - &#39;Tmean&#39;: Mean wave period (Tmean).</span>
+
+<span class="sd">            - ``H1/3``: Significant wave height [m].</span>
+<span class="sd">            - ``Tmean``: Mean wave period [s].</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">wave_params</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span><span class="s2">&quot;H1/3&quot;</span><span class="p">,</span><span class="s2">&quot;Tmean&quot;</span><span class="p">]</span>
-        <span class="n">wave_params_data</span><span class="o">=</span><span class="p">{</span><span class="n">param</span><span class="p">:[]</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">wave_params</span><span class="p">}</span>
+        <span class="n">wave_params</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span><span class="s2">&quot;H1/3&quot;</span><span class="p">,</span><span class="s2">&quot;Tmean&quot;</span><span class="p">]</span>
+        <span class="n">wave_params_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">param</span><span class="p">:[]</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">wave_params</span><span class="p">}</span>
 
-        <span class="n">clean_data</span><span class="o">=</span><span class="n">clean_records</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_signal</span><span class="p">[</span><span class="s1">&#39;burstId&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+            <span class="n">burst_signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_signal</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">measured_signal</span><span class="p">[</span><span class="s1">&#39;burstId&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">]</span>
 
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">clean_data</span><span class="p">[</span><span class="s1">&#39;burstId&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
-            <span class="n">burst_series</span><span class="o">=</span><span class="n">clean_data</span><span class="p">[</span><span class="n">clean_data</span><span class="p">[</span><span class="s1">&#39;burstId&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">i</span><span class="p">]</span>
+            <span class="c1"># TODO: validate this step, detrend option is already given in the observations. What if the data is coming from another source?</span>
+            <span class="n">burst_signal_detrended</span> <span class="o">=</span> <span class="n">burst_signal</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">detrend</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">burst_signal_detrended</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">measured_signal</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">burst_signal</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-            <span class="n">burst_series_detrended</span> <span class="o">=</span> <span class="n">burst_series</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">detrend</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">burst_series_detrended</span><span class="p">[</span><span class="n">clean_records</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">burst_series</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">H_top_third</span><span class="p">,</span> <span class="n">Hmax</span><span class="p">,</span> <span class="n">Tmean</span><span class="p">,</span> <span class="n">Lmean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_zero_upcrossing_burst</span><span class="p">(</span><span class="n">burst_signal_detrended</span><span class="p">[</span><span class="s1">&#39;pressure[bar]&#39;</span><span class="p">],</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;anchoring_depth&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;sensor_height&#39;</span><span class="p">])</span>
 
-            <span class="n">H13</span><span class="p">,</span> <span class="n">Tm</span><span class="p">,</span> <span class="n">Lm</span><span class="p">,</span> <span class="n">Hmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zero_crossing</span><span class="p">(</span><span class="n">burst_series_detrended</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">],</span> <span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;sampling_freq&#39;</span><span class="p">],</span>
-                                    <span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;anchoring_depth&#39;</span><span class="p">],</span> <span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;sensor_height&#39;</span><span class="p">])</span>
-
-            <span class="n">wave_params_data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">burst_series_detrended</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">wave_params_data</span><span class="p">[</span><span class="s1">&#39;H1/3&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">H13</span><span class="p">)</span>
-            <span class="n">wave_params_data</span><span class="p">[</span><span class="s1">&#39;Tmean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Tm</span><span class="p">)</span>
+            <span class="n">wave_params_data</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">burst_signal_detrended</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">wave_params_data</span><span class="p">[</span><span class="s1">&#39;H1/3&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">H_top_third</span><span class="p">)</span>
+            <span class="n">wave_params_data</span><span class="p">[</span><span class="s1">&#39;Tmean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Tmean</span><span class="p">)</span>
 
         <span class="n">wave_params_data</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">wave_params_data</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">wave_params_data</span></div>
 
 
-<div class="viewcode-block" id="WaveTemporalAnalyzer.zero_crossing">
-<a class="viewcode-back" href="../../../analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.zero_crossing">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">zero_crossing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">burst</span><span class="p">,</span> <span class="n">fs</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">zp</span><span class="p">):</span>
+<div class="viewcode-block" id="WaveTemporalAnalyzer.decompose_into_IMFs_for_bursts">
+<a class="viewcode-back" href="../../../analysis/temporal.html#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.decompose_into_IMFs_for_bursts">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">decompose_into_IMFs_for_bursts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">EMD_type</span><span class="p">,</span><span class="n">maximum_IMFs</span><span class="p">,</span><span class="n">number_ensembles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">amplitude_noise_std</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                       <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">nb_processes</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function calculates the significant wave height, the period and the wavelength</span>
-<span class="sd">        with the zero-crossing method.</span>
-<span class="sd">        </span>
+<span class="sd">        Decomposes the signal into Intrinsic Mode Functions (IMFs) for each burst using Empirical Mode Decomposition (EMD) </span>
+<span class="sd">        or its variants.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        burst : array_like</span>
-<span class="sd">            A series of data without trend.</span>
-<span class="sd">        fs : float</span>
-<span class="sd">            The sampling frequency.</span>
-<span class="sd">        h : float</span>
-<span class="sd">            The measurement depth.</span>
-<span class="sd">        zp : float</span>
-<span class="sd">            The distance from the bottom to the sensor.</span>
-
+<span class="sd">        EMD_type : str</span>
+<span class="sd">            The type of EMD to use. Options are ``&#39;EMD&#39;``, ``&#39;EEMD&#39;``, or ``&#39;CEEMDAN&#39;``.</span>
+<span class="sd">        maximum_IMFs : int</span>
+<span class="sd">            The maximum number of IMFs to compute for each burst.</span>
+<span class="sd">        number_ensembles : int, optional</span>
+<span class="sd">            The number of ensembles to use for EEMD or CEEMDAN (required if ``EMD_type`` is ``&#39;EEMD&#39;`` or ``&#39;CEEMDAN&#39;``).</span>
+<span class="sd">        amplitude_noise_std : float, optional</span>
+<span class="sd">            The standard deviation of the added noise for EEMD or CEEMDAN.</span>
+<span class="sd">        parallel : bool, optional</span>
+<span class="sd">            Whether to use parallel processing for CEEMDAN (default is True).</span>
+<span class="sd">        nb_processes : int, optional</span>
+<span class="sd">            The number of processes to use for parallel processing in CEEMDAN (default is 2).</span>
+<span class="sd">        </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        Hs : float</span>
-<span class="sd">            The significant wave height.</span>
-<span class="sd">        Tm : float</span>
-<span class="sd">            The mean period.</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            A 3D array containing the IMFs for each burst, with shape (number of bursts, maximum_IMFs, burst_length_s).</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
+<span class="sd">        This function is based on the decomposition methods implemented in the PyEMD library [1].</span>
 
-<span class="sd">        23-Feb-2014 : First Matlab version - Daniel Peláez</span>
-<span class="sd">        01-Sep-2023 : First Python version - Alejandro Henao</span>
-<span class="sd">        10-Dec-2024 : Polishing            - Franklin Ayala </span>
+<span class="sd">        .. [1] Huang, N. E., et al. (1998). The empirical mode decomposition and the Hilbert spectrum for nonlinear</span>
+<span class="sd">            and non-stationary time series analysis. Proceedings of the Royal Society of London. Series A, 454(1971), 903-995.</span>
 
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If ``&#39;burstId&#39;`` is not found in the signal columns.</span>
+<span class="sd">            If ``EMD_type`` is not one of ``&#39;EMD&#39;``, ``&#39;EEMD&#39;``, or ``&#39;CEEMDAN&#39;``.</span>
+<span class="sd">            If ``EMD_type`` is ``&#39;EEMD&#39;`` or ``&#39;CEEMDAN&#39;`` and ``number_ensembles`` or</span>
+<span class="sd">            ``amplitude_noise_std`` are not provided.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">tt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">burst</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="n">fs</span><span class="p">)</span>
-        <span class="n">ratio</span> <span class="o">=</span> <span class="mi">100</span>
-        <span class="n">pp</span> <span class="o">=</span> <span class="n">resample</span><span class="p">(</span><span class="n">burst</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">burst</span><span class="p">)</span> <span class="o">*</span> <span class="n">ratio</span><span class="p">)</span>  <span class="c1"># Resample p by the ratio</span>
-        <span class="n">tt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pp</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Create the time vector</span>
-        <span class="n">sign</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">burst</span><span class="p">)</span>
-        <span class="n">index_cross</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">sign</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;burstId&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_signal</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;burstId&#39; column not found in measured_signal.&quot;</span><span class="p">)</span>
 
-        <span class="n">Hp</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">T</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">index_cross</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">a</span> <span class="o">=</span> <span class="n">index_cross</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
-            <span class="n">b</span> <span class="o">=</span> <span class="n">index_cross</span><span class="p">[</span><span class="n">p</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">Hp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">burst</span><span class="p">[</span><span class="n">a</span><span class="p">:</span><span class="n">b</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">burst</span><span class="p">[</span><span class="n">a</span><span class="p">:</span><span class="n">b</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span>
-            <span class="n">T</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tt</span><span class="p">[</span><span class="n">b</span><span class="p">]</span><span class="o">-</span><span class="n">tt</span><span class="p">[</span><span class="n">a</span><span class="p">])</span>
-        <span class="n">Hp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Hp</span><span class="p">)</span>
-        <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">valid_emd_types</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;EMD&#39;</span><span class="p">,</span> <span class="s1">&#39;EEMD&#39;</span><span class="p">,</span> <span class="s1">&#39;CEEMDAN&#39;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">EMD_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_emd_types</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;EMD_type must be one of </span><span class="si">{</span><span class="n">valid_emd_types</span><span class="si">}</span><span class="s2">, got &#39;</span><span class="si">{</span><span class="n">EMD_type</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span>
 
-        <span class="c1"># Determine the wavenumber based on the dispersion relation</span>
-        <span class="n">L</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">wave_props</span><span class="o">.</span><span class="n">wavelength</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">h</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">T</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-        <span class="n">k</span> <span class="o">=</span> <span class="mf">2.</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">L</span>
+        <span class="k">if</span> <span class="n">EMD_type</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;EEMD&#39;</span><span class="p">,</span> <span class="s1">&#39;CEEMDAN&#39;</span><span class="p">}:</span>
+            <span class="k">if</span> <span class="n">number_ensembles</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">amplitude_noise_std</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;number_ensembles&#39; and &#39;amplitude_noise_std&#39; are required for </span><span class="si">{</span><span class="n">EMD_type</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
 
-        <span class="c1"># Transference factor Kp</span>
-        <span class="n">Kp</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">k</span><span class="o">*</span><span class="n">zp</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">k</span><span class="o">*</span><span class="n">h</span><span class="p">)</span>
-        <span class="n">Kpmin</span><span class="o">=</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="n">h</span><span class="o">-</span><span class="n">zp</span><span class="p">)</span><span class="o">*</span><span class="n">zp</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="n">h</span><span class="o">-</span><span class="n">zp</span><span class="p">)</span><span class="o">*</span><span class="n">h</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">Kp</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">Kp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;</span><span class="n">Kpmin</span><span class="p">):</span>
-                <span class="n">Kp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">Kpmin</span>
+        <span class="n">burst_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_signal</span><span class="p">[</span><span class="s1">&#39;burstId&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        <span class="n">n_bursts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">burst_ids</span><span class="p">)</span>
+        <span class="n">time_seconds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;burst_length_s&#39;</span><span class="p">],</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">IMFs_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_bursts</span><span class="p">,</span><span class="n">maximum_IMFs</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;burst_length_s&#39;</span><span class="p">]))</span>
 
-        <span class="n">H</span> <span class="o">=</span> <span class="n">Hp</span><span class="o">/</span><span class="p">(</span><span class="n">Kp</span><span class="p">)</span>
-        <span class="n">H0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">H</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="n">H13</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">H</span><span class="p">[:</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">H0</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span><span class="p">)])</span>
-        <span class="n">Hmx</span> <span class="o">=</span> <span class="n">H0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># --- Decompose each burst ---</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">burst_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">burst_ids</span><span class="p">):</span>
+            <span class="n">burst_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">measured_signal</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">measured_signal</span><span class="p">[</span><span class="s1">&#39;burstId&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">burst_id</span><span class="p">]</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="n">burst_series</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_level_column</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
-        <span class="n">Tm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">T</span><span class="p">)</span>
-        <span class="n">Lm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">H13</span><span class="p">,</span><span class="n">Tm</span><span class="p">,</span><span class="n">Lm</span><span class="p">,</span><span class="n">Hmx</span><span class="p">)</span></div>
-</div>
+            <span class="n">IMFs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_IMFs</span><span class="p">(</span>
+                <span class="n">signal</span><span class="p">,</span> <span class="n">time_seconds</span><span class="p">,</span> <span class="n">EMD_type</span><span class="p">,</span>
+                <span class="n">maximum_IMFs</span><span class="p">,</span> <span class="n">number_ensembles</span><span class="p">,</span>
+                <span class="n">amplitude_noise_std</span><span class="p">,</span> <span class="n">parallel</span><span class="p">,</span> <span class="n">nb_processes</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Pad with zeros if fewer IMFs than maximum_IMFs were produced</span>
+            <span class="n">n_imfs_found</span> <span class="o">=</span> <span class="n">IMFs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">IMFs_all</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="p">:</span><span class="n">n_imfs_found</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">IMFs</span><span class="p">[:,</span> <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">sampling_data</span><span class="p">[</span><span class="s1">&#39;burst_length_s&#39;</span><span class="p">]]</span>
+
+        <span class="k">return</span> <span class="n">IMFs_all</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_IMFs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">signal</span><span class="p">,</span><span class="n">time_seconds</span><span class="p">,</span><span class="n">EMD_type</span><span class="p">,</span><span class="n">maximum_IMFs</span><span class="p">,</span><span class="n">number_ensembles</span><span class="p">,</span><span class="n">amplitude_noise_std</span><span class="p">,</span>
+                      <span class="n">parallel</span><span class="p">,</span><span class="n">nb_processes</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Internal helper: runs the appropriate EMD variant on a single burst signal.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        numpy.ndarray</span>
+<span class="sd">            2D array of shape (n_imfs, n_samples).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">EMD_type</span> <span class="o">==</span> <span class="s1">&#39;EMD&#39;</span><span class="p">:</span>
+            <span class="n">decomposer</span> <span class="o">=</span> <span class="n">EMD</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">EMD_type</span> <span class="o">==</span> <span class="s1">&#39;EEMD&#39;</span><span class="p">:</span>
+            <span class="n">decomposer</span> <span class="o">=</span> <span class="n">EEMD</span><span class="p">(</span><span class="n">trials</span><span class="o">=</span><span class="n">number_ensembles</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">amplitude_noise_std</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># np.float16 is used to reduce memory usage during ensemble averaging</span>
+            <span class="n">decomposer</span> <span class="o">=</span> <span class="n">CEEMDAN</span><span class="p">(</span><span class="n">DTYPE</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span><span class="n">trials</span><span class="o">=</span><span class="n">number_ensembles</span><span class="p">,</span><span class="n">epsilon</span><span class="o">=</span><span class="n">amplitude_noise_std</span><span class="p">,</span>
+                                 <span class="n">parallel</span><span class="o">=</span><span class="n">parallel</span><span class="p">,</span><span class="n">processes</span><span class="o">=</span><span class="n">nb_processes</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">decomposer</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">time_seconds</span><span class="p">,</span> <span class="n">max_imf</span><span class="o">=</span><span class="n">maximum_IMFs</span><span class="p">)[:</span><span class="n">maximum_IMFs</span><span class="p">,</span> <span class="p">:]</span></div>
 
 </pre></div>
 

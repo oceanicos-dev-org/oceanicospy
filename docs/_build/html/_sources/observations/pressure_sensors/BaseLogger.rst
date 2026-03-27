@@ -8,7 +8,7 @@ This class serves as a parent (base) class for specific logger implementations, 
 .. note::
    This class is not designed to be called directly in the code but is intended to be subclassed by specific logger implementations.
 
-.. automodule:: oceanicospy.observations.pressure_sensor_base
+.. automodule:: oceanicospy.observations.pressure_sensors.pressure_sensor_base
    :members:
    :undoc-members:
    :show-inheritance:

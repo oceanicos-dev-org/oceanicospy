@@ -26,8 +26,8 @@ class AWAC:
     - 10-Dec-2024 : Class implementation - Franklin Ayala
   
     """
-    def __init__(self,directory_path,sampling_data):
 
+    def __init__(self,directory_path,sampling_data):
         self.directory_path = directory_path
         self.sampling_data = sampling_data
 
@@ -56,11 +56,11 @@ class AWAC:
         -------
         dict
             Dictionary with the following keys:
-            ``'interval'`` : int
+            - ``'interval'`` : int
                 Burst interval in seconds.
-            ``'samples'`` : int
+            - ``'samples'`` : int
                 Number of samples per burst.
-            ``'sampling_rate'`` : int
+            - ``'sampling_rate'`` : int
                 Sampling rate in Hz.
         """
         lines = self._load_hdr_lines()
@@ -88,7 +88,7 @@ class AWAC:
 
     def _read_currents_header(self):
         """
-        Reads the current-profile metadata from theheader file (.hdr) to extract the column names for current data.
+        Reads the current-profile metadata from the header file (.hdr) to extract the column names for current data.
 
         Returns
         -------
@@ -96,15 +96,15 @@ class AWAC:
             Dictionary with the following keys (among others, depending on
             the ``.hdr`` content):
 
-            ``'start_time'`` : pandas.Timestamp
+            - ``'start_time'`` : pandas.Timestamp
                 Timestamp of the first current profile measurement.
-            ``'Profile interval'`` : float
+            - ``'Profile interval'`` : float
                 Time between successive profiles in seconds.
-            ``'Number of cells'`` : float
+            - ``'Number of cells'`` : float
                 Number of depth cells.
-            ``'Cell size'`` : float
+            - ``'Cell size'`` : float
                 Size of each depth cell in metres.
-            ``'Blanking distance'`` : float
+            - ``'Blanking distance'`` : float
                 Blanking distance in metres.
         """
         lines = self._load_hdr_lines()

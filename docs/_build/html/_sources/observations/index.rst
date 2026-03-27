@@ -50,10 +50,10 @@ All the classes in this subpackage are presented below and it can be imported as
    :maxdepth: 1
    :caption: Contents:
 
-   reading_field_data
    pressure_sensors/index
    weather_stations/index
    ctd/index
    AWAC
    Buoy
    HOBO
+   reading_field_data
