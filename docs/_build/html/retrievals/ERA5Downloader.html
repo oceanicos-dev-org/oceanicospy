@@ -175,7 +175,6 @@
 
 
 
-
 <li class="toctree-l2 has-children"><a class="reference internal" href="../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
@@ -350,7 +349,6 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.ERA5Downloader"><code class="docutils literal notranslate"><span class="pre">ERA5Downloader</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.ERA5Downloader.__init__"><code class="docutils literal notranslate"><span class="pre">ERA5Downloader.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.ERA5Downloader.download"><code class="docutils literal notranslate"><span class="pre">ERA5Downloader.download()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.ERA5Downloader.format_to_localtime"><code class="docutils literal notranslate"><span class="pre">ERA5Downloader.format_to_localtime()</span></code></a></li>
 </ul>
@@ -392,27 +390,6 @@ with automatic UTC time conversion from user-defined local timezone.</p>
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="oceanicospy.retrievals.ERA5Downloader.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_datetime_local</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_datetime_local</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">difference_to_UTC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/retrievals/download_ERA5_data.html#ERA5Downloader.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.retrievals.ERA5Downloader.__init__" title="Link to this definition">#</a></dt>
-<dd><p>Initializes the ERA5Downloader.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>variables</strong> (<em>list</em>) – A list of variable names to request.</p></li>
-<li><p><strong>lon_min</strong> (<em>float</em>) – Minimum longitude of the spatial domain.</p></li>
-<li><p><strong>lon_max</strong> (<em>float</em>) – Maximum longitude of the spatial domain.</p></li>
-<li><p><strong>lat_min</strong> (<em>float</em>) – Minimum latitude of the spatial domain.</p></li>
-<li><p><strong>lat_max</strong> (<em>float</em>) – Maximum latitude of the spatial domain.</p></li>
-<li><p><strong>start_datetime_local</strong> (<em>datetime.datetime</em>) – Start datetime in local timezone</p></li>
-<li><p><strong>end_datetime_local</strong> (<em>str</em>) – End datetime in local timezone</p></li>
-<li><p><strong>difference_to_UTC</strong> (<em>float</em>) – Difference in hours from local timezone to UTC (e.g. -5 for UTC-5)</p></li>
-<li><p><strong>output_path</strong> (<em>str</em>)</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="oceanicospy.retrievals.ERA5Downloader.download">
 <span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/retrievals/download_ERA5_data.html#ERA5Downloader.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.retrievals.ERA5Downloader.download" title="Link to this definition">#</a></dt>
@@ -456,7 +433,6 @@ with automatic UTC time conversion from user-defined local timezone.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.ERA5Downloader"><code class="docutils literal notranslate"><span class="pre">ERA5Downloader</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.ERA5Downloader.__init__"><code class="docutils literal notranslate"><span class="pre">ERA5Downloader.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.ERA5Downloader.download"><code class="docutils literal notranslate"><span class="pre">ERA5Downloader.download()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.ERA5Downloader.format_to_localtime"><code class="docutils literal notranslate"><span class="pre">ERA5Downloader.format_to_localtime()</span></code></a></li>
 </ul>

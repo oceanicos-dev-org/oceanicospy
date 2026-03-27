@@ -168,15 +168,6 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../observations/reading_field_data.html">Walkthrough Example</a></li>
-
-
-
-
-
-
-
-
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
@@ -193,13 +184,21 @@
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../observations/ctd/CTDBase.html">CTDBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../observations/ctd/CastawayCTD.html">CastawayCTD</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../observations/ctd/CTD48M.html">CTD48M</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../observations/ctd/CastawayCTD.html">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../observations/ctd/SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../observations/AWAC.html">AWAC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../observations/Buoy.html">Buoy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../observations/HOBO.html">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
 </ul>
 </details></li>
 </ul>
@@ -327,6 +326,7 @@ document.write(`
 <span class="sd">        Path to the directory containing the ``*_data.txt`` files.</span>
 <span class="sd">    sampling_data : dict</span>
 <span class="sd">        Dictionary containing information on device installation, including:</span>
+<span class="sd">        </span>
 <span class="sd">        - ``anchoring_depth``: Depth at which the device is anchored (in meters).</span>
 <span class="sd">        - ``sensor_height``: Height of the sensor above the seabed (in meters).</span>
 <span class="sd">        - ``sampling_freq``: Sampling frequency of the device (in Hz).</span>

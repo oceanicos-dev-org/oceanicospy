@@ -168,15 +168,6 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../observations/reading_field_data.html">Walkthrough Example</a></li>
-
-
-
-
-
-
-
-
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
@@ -193,13 +184,21 @@
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../../observations/ctd/CTDBase.html">CTDBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../observations/ctd/CastawayCTD.html">CastawayCTD</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../../observations/ctd/CTD48M.html">CTD48M</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../observations/ctd/CastawayCTD.html">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../observations/ctd/SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../observations/AWAC.html">AWAC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../observations/Buoy.html">Buoy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../observations/HOBO.html">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
 </ul>
 </details></li>
 </ul>
@@ -314,6 +313,8 @@ document.write(`
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">oceanicospy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">constants</span>
 
+<div class="viewcode-block" id="BaseLogger">
+<a class="viewcode-back" href="../../../../observations/pressure_sensors/BaseLogger.html#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseLogger</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initializes the BaseLogger class with the given directory path, sampling data.</span>
@@ -324,20 +325,21 @@ document.write(`
 <span class="sd">        Path to the directory containing the sensor pressure files.</span>
 <span class="sd">    sampling_data : dict</span>
 <span class="sd">        Dictionary containing information on device installation, including:</span>
-<span class="sd">        - anchoring_depth: The depth at which the sensor is anchored (in meters).</span>
-<span class="sd">        - sensor_height: The height of the sensor above the anchoring point (in meters).</span>
-<span class="sd">        - sampling_freq: The frequency at which the sensor records data (in Hz).</span>
-<span class="sd">        - burst_length_s: The length of each burst of data recording (in seconds).</span>
-<span class="sd">        - start_time: The start time for data analysis (as a datetime object or string).</span>
-<span class="sd">        - end_time: The end time for data analysis (as a datetime object or string).</span>
+<span class="sd">        </span>
+<span class="sd">        - ``anchoring_depth``: The depth at which the sensor is anchored (in meters).</span>
+<span class="sd">        - ``sensor_height``: The height of the sensor above the anchoring point (in meters).</span>
+<span class="sd">        - ``sampling_freq``: The frequency at which the sensor records data (in Hz).</span>
+<span class="sd">        - ``burst_length_s``: The length of each burst of data recording (in seconds).</span>
+<span class="sd">        - ``start_time``: The start time for data analysis (as a datetime object or string).</span>
+<span class="sd">        - ``end_time``: The end time for data analysis (as a datetime object or string).</span>
 <span class="sd">    filename: str, optional</span>
 <span class="sd">        The name of the file containing the records. If not provided, the first record file found in the directory will be used.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    23-Sep-2025 : Origination - Franklin Ayala</span>
-<span class="sd">    12-Oct-2025 : Adding AQUAlogger logic - Juan Diego Toro</span>
-<span class="sd">    10-Dec-2025 : Bluelog support - Daniela Rosero </span>
+<span class="sd">    - 23-Sep-2025 : Origination - Franklin Ayala</span>
+<span class="sd">    - 12-Oct-2025 : Adding AQUAlogger logic - Juan Diego Toro</span>
+<span class="sd">    - 10-Dec-2025 : Bluelog support - Daniela Rosero </span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sampling_data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -429,6 +431,8 @@ document.write(`
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No file named &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; found in the directory.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">matching_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
+<div class="viewcode-block" id="BaseLogger.get_raw_records">
+<a class="viewcode-back" href="../../../../observations/pressure_sensors/BaseLogger.html#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.get_raw_records">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_raw_records</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads the records file from the device to create a DataFrame containing data.</span>
@@ -444,10 +448,11 @@ document.write(`
 <span class="sd">        The data is trimmed to include only records between the start and end record times provided.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_raw_dataframe</span><span class="p">()</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standardize_columns</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_dates_and_trim</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">df</span>
+        <span class="k">return</span> <span class="n">df</span></div>
 
+
+<div class="viewcode-block" id="BaseLogger.get_clean_records">
+<a class="viewcode-back" href="../../../../observations/pressure_sensors/BaseLogger.html#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger.get_clean_records">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_clean_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">detrended</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes the raw data into clean, burst-segmented data with surface elevation.</span>
@@ -460,10 +465,12 @@ document.write(`
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        pandas.DataFrame</span>
-<span class="sd">            A cleaned DataFrame with bursts identified by a &#39;burstId&#39; column.</span>
+<span class="sd">            A cleaned DataFrame with bursts identified by a ``&#39;burstId&#39;`` column.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_raw_records</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standardize_columns</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_dates_and_trim</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_depth_from_pressure</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assign_burst_id</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
         <span class="n">df</span><span class="p">[</span><span class="s1">&#39;eta[m]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;burstId&#39;</span><span class="p">)[</span><span class="s1">&#39;depth[m]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
@@ -471,7 +478,8 @@ document.write(`
         <span class="k">if</span> <span class="n">detrended</span><span class="p">:</span>
             <span class="n">df</span><span class="p">[</span><span class="s1">&#39;eta[m]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;burstId&#39;</span><span class="p">)[</span><span class="s1">&#39;eta[m]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">detrend</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">df</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_dates_and_trim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Parses the start and end timmes to datetime and trims the DataFrame to include only records between the first and last submerged record times.</span>
@@ -578,7 +586,8 @@ document.write(`
 <span class="sd">        pandas.DataFrame</span>
 <span class="sd">            The DataFrame with an added &#39;burstId&#39; column that identifies the burst to which each record belongs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+        <span class="k">pass</span></div>
+
 </pre></div>
 
                 </article>

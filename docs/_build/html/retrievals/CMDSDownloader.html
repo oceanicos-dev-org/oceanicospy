@@ -175,7 +175,6 @@
 
 
 
-
 <li class="toctree-l2 has-children"><a class="reference internal" href="../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
@@ -350,7 +349,6 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.__init__"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.download"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.download()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.format_to_localtime"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.format_to_localtime()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.for_waves"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.for_waves()</span></code></a></li>
@@ -396,29 +394,6 @@ Includes an ERA5-like post-processing method to rewrite the NetCDF in LOCAL time
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="oceanicospy.retrievals.CMDSDownloader.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_datetime_local</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_datetime_local</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">difference_to_UTC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'netcdf'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/retrievals/download_CMDS_data.html#CMDSDownloader.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.retrievals.CMDSDownloader.__init__" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>str</em>) – CMDS dataset identifier (case-sensitive, as listed in the CMDS catalog).</p></li>
-<li><p><strong>variables</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Variables to request (dataset-specific names).</p></li>
-<li><p><strong>lon_min</strong> (<em>float</em>) – Bounding box in degrees (EPSG:4326).</p></li>
-<li><p><strong>lon_max</strong> (<em>float</em>) – Bounding box in degrees (EPSG:4326).</p></li>
-<li><p><strong>lat_min</strong> (<em>float</em>) – Bounding box in degrees (EPSG:4326).</p></li>
-<li><p><strong>lat_max</strong> (<em>float</em>) – Bounding box in degrees (EPSG:4326).</p></li>
-<li><p><strong>start_datetime_local</strong> (<em>datetime</em>) – Local-time window of interest.</p></li>
-<li><p><strong>end_datetime_local</strong> (<em>datetime</em>) – Local-time window of interest.</p></li>
-<li><p><strong>difference_to_UTC</strong> (<em>float</em>) – Local minus UTC (hours). Example: UTC-5 -&gt; -5.</p></li>
-<li><p><strong>output_path</strong> (<em>str</em>) – Directory where the output will be written.</p></li>
-<li><p><strong>file_format</strong> (<em>str</em>) – “netcdf” or “zarr”. The post-process method supports only “netcdf”.</p></li>
-<li><p><strong>output_filename</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – File name to write inside output_path (e.g., “winds_CMDS.nc”).</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="oceanicospy.retrievals.CMDSDownloader.download">
 <span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/retrievals/download_CMDS_data.html#CMDSDownloader.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.retrievals.CMDSDownloader.download" title="Link to this definition">#</a></dt>
@@ -522,7 +497,6 @@ Includes an ERA5-like post-processing method to rewrite the NetCDF in LOCAL time
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.__init__"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.download"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.download()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.format_to_localtime"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.format_to_localtime()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.for_waves"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.for_waves()</span></code></a></li>

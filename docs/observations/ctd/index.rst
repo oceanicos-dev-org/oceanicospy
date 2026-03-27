@@ -6,4 +6,4 @@ CTD Sensors
 
    CTDBase
    CastawayCTD
-   CTD48M
+   SeaSunMarineTechCTD

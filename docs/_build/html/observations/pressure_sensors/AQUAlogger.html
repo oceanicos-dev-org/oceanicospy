@@ -169,15 +169,6 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Observations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Walkthrough Example</a></li>
-
-
-
-
-
-
-
-
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Pressure Sensors</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">AQUAlogger</a></li>
@@ -194,13 +185,21 @@
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../ctd/CTDBase.html">CTDBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../ctd/CastawayCTD.html">CastawayCTD</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../ctd/CTD48M.html">CTD48M</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ctd/CastawayCTD.html">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ctd/SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../AWAC.html">AWAC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../Buoy.html">Buoy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../HOBO.html">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
 </ul>
 </details></li>
 </ul>
@@ -374,7 +373,7 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.pressure_sensors.aqualogger.</span></span><span class="sig-name descname"><span class="pre">AQUAlogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/oceanicospy/observations/pressure_sensors/aqualogger.html#AQUAlogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.pressure_sensors.aqualogger.AQUAlogger" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLogger</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="BaseLogger.html#oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger" title="oceanicospy.observations.pressure_sensors.pressure_sensor_base.BaseLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLogger</span></code></a></p>
 <p>A sensor-specific reader for AQUAlogger files.</p>
 <p>Inherits from <code class="docutils literal notranslate"><span class="pre">BaseLogger</span></code> and implements methods specific to AQUAlogger file formats.</p>
 <dl class="field-list simple">
@@ -383,12 +382,12 @@ document.write(`
 <li><p><strong>directory_path</strong> (<em>str</em>) – Path to the directory containing the .csv files.</p></li>
 <li><p><strong>sampling_data</strong> (<em>dict</em>) – <p>Dictionary containing information on device deployment, including:</p>
 <ul>
-<li><p>anchoring_depth: The depth at which the sensor is anchored (in meters).</p></li>
-<li><p>sensor_height: The height of the sensor above the anchoring point (in meters).</p></li>
-<li><p>sampling_freq: The frequency at which the sensor records data (in Hz).</p></li>
-<li><p>burst_length_s: The length of each burst of data recording (in seconds).</p></li>
-<li><p>start_time: The start time for data analysis (as a datetime object or string).</p></li>
-<li><p>end_time: The end time for data analysis (as a datetime object or string).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">anchoring_depth</span></code>: The depth at which the sensor is anchored (in meters).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sensor_height</span></code>: The height of the sensor above the anchoring point (in meters).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sampling_freq</span></code>: The frequency at which the sensor records data (in Hz).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">burst_length_s</span></code>: The length of each burst of data recording (in seconds).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_time</span></code>: The start time for data analysis (as a datetime object or string).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">end_time</span></code>: The end time for data analysis (as a datetime object or string).</p></li>
 </ul>
 </p></li>
 <li><p><strong>filename</strong> (<em>str</em>)</p></li>
@@ -420,7 +419,7 @@ document.write(`
 <dd class="field-odd"><p><strong>detrended</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, applies a linear detrending to the depth data within each burst. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A cleaned DataFrame with bursts identified by a ‘burstId’ column.</p>
+<dd class="field-even"><p>A cleaned DataFrame with bursts identified by a <code class="docutils literal notranslate"><span class="pre">'burstId'</span></code> column.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pandas.DataFrame</p>

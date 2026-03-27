@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>CastawayCTD &#8212; oceanicospy 0.0.1 documentation</title>
+    <title>Castaway CTD &#8212; oceanicospy 0.0.1 documentation</title>
   
   
   
@@ -45,7 +45,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'observations/ctd/CastawayCTD';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="CTD48M" href="CTD48M.html" />
+    <link rel="next" title="Sea Sun Marine Tech CTD" href="SeaSunMarineTechCTD.html" />
     <link rel="prev" title="CTDBase" href="CTDBase.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -169,15 +169,6 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Observations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Walkthrough Example</a></li>
-
-
-
-
-
-
-
-
 <li class="toctree-l2 has-children"><a class="reference internal" href="../pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../pressure_sensors/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
@@ -194,13 +185,21 @@
 </details></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">CTD Sensors</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="CTDBase.html">CTDBase</a></li>
-<li class="toctree-l3 current active"><a class="current reference internal" href="#">CastawayCTD</a></li>
-<li class="toctree-l3"><a class="reference internal" href="CTD48M.html">CTD48M</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../AWAC.html">AWAC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../Buoy.html">Buoy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../HOBO.html">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
 </ul>
 </details></li>
 </ul>
@@ -341,7 +340,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>CastawayCTD</h1>
+    <h1>Castaway CTD</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -369,46 +368,66 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="castawayctd">
-<h1>CastawayCTD<a class="headerlink" href="#castawayctd" title="Link to this heading">#</a></h1>
+  <section id="castaway-ctd">
+<h1>Castaway CTD<a class="headerlink" href="#castaway-ctd" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="oceanicospy.observations.ctd.castaway.CastawayCTD">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.ctd.castaway.</span></span><span class="sig-name descname"><span class="pre">CastawayCTD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/oceanicospy/observations/ctd/castaway.html#CastawayCTD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.ctd.castaway.CastawayCTD" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.observations.ctd.castaway.</span></span><span class="sig-name descname"><span class="pre">CastawayCTD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_header</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/oceanicospy/observations/ctd/castaway.html#CastawayCTD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.observations.ctd.castaway.CastawayCTD" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="CTDBase.html#oceanicospy.observations.ctd.ctd_base.CTDBase" title="oceanicospy.observations.ctd.ctd_base.CTDBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">CTDBase</span></code></a></p>
 <p>Reader for CastAway CTD per-cast files (YSI/Xylem format).</p>
-<p>Handles per-cast CSV files that contain only a column header row and data
-rows (no embedded metadata block). Cast metadata — device ID, cast time,
-GPS coordinates, calibration dates, etc. — is read automatically from a
-multi-cast summary CSV located in the same directory, by matching the
-current file’s stem against the <code class="docutils literal notranslate"><span class="pre">File</span> <span class="pre">name</span></code> column of the summary.</p>
+<p>Supports two file variants:</p>
+<ul class="simple">
+<li><p><strong>With embedded header</strong> (<code class="docutils literal notranslate"><span class="pre">has_header=True</span></code>): the file begins with a
+<code class="docutils literal notranslate"><span class="pre">%</span></code>-prefixed metadata block (device ID, cast time, GPS coordinates,
+calibration dates, etc.) followed by a column header row and data rows.
+Metadata is parsed directly from the file.</p></li>
+<li><p><strong>Without embedded header</strong> (<code class="docutils literal notranslate"><span class="pre">has_header=False</span></code>, default): the file
+contains only a column header row and data rows. Cast metadata is read
+from a multi-cast summary CSV located in the same directory, matched by
+file stem against the <code class="docutils literal notranslate"><span class="pre">File</span> <span class="pre">name</span></code> column.</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path to the per-cast CastAway CTD <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – Path to the per-cast CastAway CTD <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file.</p></li>
+<li><p><strong>has_header</strong> (<em>bool</em><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if the file contains a <code class="docutils literal notranslate"><span class="pre">%</span></code>-prefixed metadata block.
+<code class="docutils literal notranslate"><span class="pre">False</span></code> (default) to read metadata from the auxiliary summary CSV.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Expected per-cast file structure:</p>
+<p>Expected per-cast file structure (<code class="docutils literal notranslate"><span class="pre">has_header=False</span></code>):</p>
 <ul class="simple">
 <li><p>First row is the column header (no <code class="docutils literal notranslate"><span class="pre">%</span></code> metadata block).</p></li>
-<li><p>Data columns: Pressure (Decibar), Depth (Meter), Temperature (Celsius),
-Conductivity (MicroSiemens per Centimeter), Specific conductance
-(MicroSiemens per Centimeter), Salinity (Practical Salinity Scale),
-Sound velocity (Meters per Second), Density (Kilograms per Cubic Meter).</p></li>
 </ul>
-<p>The summary file (auto-detected in the same directory) must have a
-<code class="docutils literal notranslate"><span class="pre">File</span> <span class="pre">name</span></code> column whose values match per-cast file stems, and cast time
-columns in Excel serial date format (days since 1899-12-30).</p>
+<p>Expected per-cast file structure (<code class="docutils literal notranslate"><span class="pre">has_header=True</span></code>):</p>
+<ul class="simple">
+<li><p>Lines beginning with <code class="docutils literal notranslate"><span class="pre">%</span></code> contain metadata as <code class="docutils literal notranslate"><span class="pre">%</span> <span class="pre">Key,Value</span></code> pairs.</p></li>
+<li><p>An empty <a href="#id1"><span class="problematic" id="id2">``</span></a>% `` line acts as a separator before the data block.</p></li>
+<li><p>The first non-<code class="docutils literal notranslate"><span class="pre">%</span></code> line is the column header row.</p></li>
+</ul>
+<p>Data columns (both variants): Pressure (Decibar), Depth (Meter),
+Temperature (Celsius), Conductivity (MicroSiemens per Centimeter),
+Specific conductance (MicroSiemens per Centimeter), Salinity (Practical
+Salinity Scale), Sound velocity (Meters per Second), Density (Kilograms
+per Cubic Meter).</p>
+<p>The auxiliary summary file (<code class="docutils literal notranslate"><span class="pre">has_header=False</span></code>) must have a <code class="docutils literal notranslate"><span class="pre">File</span> <span class="pre">name</span></code>
+column whose values match per-cast file stems, and cast time columns in
+Excel serial date format (days since 1899-12-30).</p>
 <p>The cleaned DataFrame is indexed by <code class="docutils literal notranslate"><span class="pre">depth[m]</span></code>, reflecting the vertical
 profile nature of a CTD cast.</p>
 <p>24-Mar-2026 : Origination - Franklin Ayala</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="oceanicospy.observations.ctd.castaway.CastawayCTD.cast_time">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cast_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Timestamp</span></em><a class="headerlink" href="#oceanicospy.observations.ctd.castaway.CastawayCTD.cast_time" title="Link to this definition">#</a></dt>
-<dd><p>UTC timestamp of the cast start, read from the summary file.</p>
+<dd><p>UTC timestamp of the cast start.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">has_header=True</span></code> the value is an ISO datetime string read
+directly from the embedded metadata block.  When <code class="docutils literal notranslate"><span class="pre">has_header=False</span></code>
+the value is an Excel serial date (days since 1899-12-30) read from
+the auxiliary summary file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Cast start time in UTC, or <code class="docutils literal notranslate"><span class="pre">NaT</span></code> if no matching row is found
-in the summary file.</p>
+<dd class="field-odd"><p>Cast start time in UTC, or <code class="docutils literal notranslate"><span class="pre">NaT</span></code> if no matching value is found.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>pandas.Timestamp</p>
@@ -486,11 +505,11 @@ Columns follow the <code class="docutils literal notranslate"><span class="pre">
       </div>
     </a>
     <a class="right-next"
-       href="CTD48M.html"
+       href="SeaSunMarineTechCTD.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">CTD48M</p>
+        <p class="prev-next-title">Sea Sun Marine Tech CTD</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

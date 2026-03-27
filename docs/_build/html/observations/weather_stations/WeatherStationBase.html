@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>WeatherStationBase &#8212; oceanicospy 0.0.1 documentation</title>
+    <title>Weather Station Base &#8212; oceanicospy 0.0.1 documentation</title>
   
   
   
@@ -45,7 +45,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'observations/weather_stations/WeatherStationBase';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="DavisVantagePro" href="DavisVantagePro.html" />
+    <link rel="next" title="Davis Vantage Pro" href="DavisVantagePro.html" />
     <link rel="prev" title="Weather Stations" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -169,15 +169,6 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Observations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Walkthrough Example</a></li>
-
-
-
-
-
-
-
-
 <li class="toctree-l2 has-children"><a class="reference internal" href="../pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../pressure_sensors/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
@@ -186,21 +177,29 @@
 </ul>
 </details></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Weather Stations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l3 current active"><a class="current reference internal" href="#">WeatherStationBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Weather Station Base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="DavisVantagePro.html">Davis Vantage Pro</a></li>
 <li class="toctree-l3"><a class="reference internal" href="WeatherSens.html">WeatherSens</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Rainwise.html">Rainwise</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../ctd/CTDBase.html">CTDBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../ctd/CastawayCTD.html">CastawayCTD</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../ctd/CTD48M.html">CTD48M</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ctd/CastawayCTD.html">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ctd/SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../AWAC.html">AWAC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../Buoy.html">Buoy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../HOBO.html">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
 </ul>
 </details></li>
 </ul>
@@ -341,7 +340,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>WeatherStationBase</h1>
+    <h1>Weather Station Base</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -367,8 +366,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="weatherstationbase">
-<h1>WeatherStationBase<a class="headerlink" href="#weatherstationbase" title="Link to this heading">#</a></h1>
+  <section id="weather-station-base">
+<h1>Weather Station Base<a class="headerlink" href="#weather-station-base" title="Link to this heading">#</a></h1>
 <p>Because all weather stations share a common data structure consisting of atmospheric measurements such as wind speed,
 temperature, and precipitation, the <code class="docutils literal notranslate"><span class="pre">WeatherStationBase</span></code> class is designed to provide a common interface for all those stations.
 This class serves as a parent (base) class for specific weather station implementations, such as DavisVantagePro, WeatherSens, and Rainwise.</p>
@@ -386,13 +385,7 @@ records from different station models. Subclasses must implement the abstract
 methods to handle source-specific logic.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>filepath</strong> (<em>str</em>) – Path to the raw data file for the weather station.</p></li>
-<li><p><strong>Properties</strong></p></li>
-<li><p><strong>----------</strong></p></li>
-<li><p><strong>first_record_time</strong> (<em>datetime-like</em>) – Timestamp of the earliest record in the cleaned dataset.</p></li>
-<li><p><strong>last_record_time</strong> (<em>datetime-like</em>) – Timestamp of the most recent record in the cleaned dataset.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path to the raw data file for the weather station.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -462,7 +455,7 @@ ready for downstream analysis.</p>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">DavisVantagePro</p>
+        <p class="prev-next-title">Davis Vantage Pro</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

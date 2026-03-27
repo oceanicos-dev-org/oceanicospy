@@ -29,6 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -39,6 +40,7 @@
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/oceanicospy/observations/hobo';</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -149,36 +151,31 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../installing.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../analysis/conditioning.html">Signal conditioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../../../analysis/temporal.html">Temporal</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../models/swanpy/execution/run_case.html">Case Runner</a></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/walkthrough.html">Walkthrough Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
@@ -204,7 +201,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../observations/HOBO.html">HOBO</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../plots.html">Plots</a></li>
 </ul>
 
     </div>
@@ -375,36 +371,25 @@ document.write(`
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    Standardized output columns:</span>
-
-<span class="sd">    - ``date``                  — ``datetime64[ns]``</span>
-<span class="sd">    - ``temperature[C]``        — ``float``  (always present)</span>
-<span class="sd">    - ``conductivity[uS/cm]``   — ``float``  (CL only)</span>
-<span class="sd">    - ``seq``                   — ``Int64``  (if the logger records a sequence number)</span>
-
-<span class="sd">    XX-YY-ZZZZ : Origination — Daniela Rosero</span>
-<span class="sd">    24-Mar-2026 : Refactored into abstract + concrete classes — Franklin Ayala</span>
+<span class="sd">    - 01-Jun-2025 : Origination — Daniela Rosero</span>
+<span class="sd">    - 24-Mar-2026 : Refactored into abstract + concrete classes — Franklin Ayala</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">directory_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">start_dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">end_dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">rules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CleaningRules</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">encoding_main</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8-sig&quot;</span><span class="p">,</span>
         <span class="n">encoding_fallback</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;latin-1&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">directory_path</span> <span class="o">=</span> <span class="n">directory_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span> <span class="o">=</span> <span class="n">filepath</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="n">rules</span> <span class="ow">or</span> <span class="n">CleaningRules</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">encoding_main</span> <span class="o">=</span> <span class="n">encoding_main</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">encoding_fallback</span> <span class="o">=</span> <span class="n">encoding_fallback</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_dt</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">start_dt</span><span class="p">)</span> <span class="k">if</span> <span class="n">start_dt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">end_dt</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">end_dt</span><span class="p">)</span> <span class="k">if</span> <span class="n">end_dt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
-
-    <span class="c1"># ------------------------------------------------------------------ #</span>
-    <span class="c1">#  Abstract interface                                                  #</span>
-    <span class="c1"># ------------------------------------------------------------------ #</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
@@ -440,10 +425,6 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
-    <span class="c1"># ------------------------------------------------------------------ #</span>
-    <span class="c1">#  Public API                                                          #</span>
-    <span class="c1"># ------------------------------------------------------------------ #</span>
-
 <div class="viewcode-block" id="HOBOBase.get_raw_records">
 <a class="viewcode-back" href="../../../observations/HOBO.html#oceanicospy.observations.hobo.HOBOBase.get_raw_records">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_raw_records</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
@@ -465,20 +446,9 @@ document.write(`
 <span class="sd">        FileNotFoundError</span>
 <span class="sd">            If no CSV files matching the prefix are found in ``directory_path``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_csv_files</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">files</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;No &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_prefix</span><span class="si">}</span><span class="s2">*.csv&#39; files found in &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">directory_path</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
-            <span class="p">)</span>
 
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_single_file</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trim</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">)</span>
-              <span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">],</span> <span class="n">keep</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">)</span>
-              <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_order_columns</span><span class="p">(</span><span class="n">df</span><span class="p">)</span></div>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_raw_dataframe</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">df</span></div>
 
 
 <div class="viewcode-block" id="HOBOBase.get_clean_records">
@@ -496,51 +466,30 @@ document.write(`
 <span class="sd">        pandas.DataFrame</span>
 <span class="sd">            Cleaned DataFrame ready for downstream analysis.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_qc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_raw_records</span><span class="p">())</span></div>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_raw_dataframe</span><span class="p">()</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standardize_columns</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_dates_and_trim</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="c1"># df = self._apply_qc(df)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
 
 
-    <span class="c1"># ------------------------------------------------------------------ #</span>
-    <span class="c1">#  Internal helpers                                                    #</span>
-    <span class="c1"># ------------------------------------------------------------------ #</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_csv_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return CSV files in the directory whose names start with ``_file_prefix``.&quot;&quot;&quot;</span>
-        <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_file_prefix</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span>
-            <span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">directory_path</span><span class="p">,</span> <span class="s2">&quot;*.csv&quot;</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_read_single_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_raw_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read a single HOBO CSV (skip the HOBOware title row), then delegate</span>
 <span class="sd">        column renaming to :meth:`_standardize_columns` and parse types.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoding_main</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoding_main</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoding_fallback</span><span class="p">)</span>
-
-        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standardize_columns</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-
-        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;%m/</span><span class="si">%d</span><span class="s2">/%y %I:%M:%S %p&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;temperature[C]&quot;</span><span class="p">,</span> <span class="s2">&quot;conductivity[uS/cm]&quot;</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-                <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="s2">&quot;seq&quot;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;seq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;seq&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;Int64&quot;</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoding_fallback</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">df</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_trim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_dates_and_trim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Trim records to [``start_dt``, ``end_dt``] when either bound is set.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_dt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">df</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_dt</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_dt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_dt</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_dt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">start</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;date&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">start_dt</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">end_dt</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_apply_qc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply QC thresholds and drop rows where all measurement columns are NaN.&quot;&quot;&quot;</span>
@@ -601,9 +550,9 @@ document.write(`
 
 
 
-<div class="viewcode-block" id="HOBOTL">
-<a class="viewcode-back" href="../../../observations/HOBO.html#oceanicospy.observations.hobo.HOBOTL">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">HOBOTL</span><span class="p">(</span><span class="n">HOBOBase</span><span class="p">):</span>
+<div class="viewcode-block" id="HOBO_Temp">
+<a class="viewcode-back" href="../../../observations/HOBO.html#oceanicospy.observations.hobo.HOBO_Temp">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HOBO_Temp</span><span class="p">(</span><span class="n">HOBOBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reader for HOBO Temperature Logger (TL) CSV files.</span>
 
@@ -641,6 +590,10 @@ document.write(`
 <span class="sd">        -------</span>
 <span class="sd">        pandas.DataFrame</span>
 <span class="sd">            DataFrame with only the relevant columns under standard names.</span>
+<span class="sd">        </span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Date is uploaded in local time so no further timezone conversion is needed. The date column is parsed as datetime and set as index, sorted in chronological order.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">norm</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_normalize</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
         <span class="n">cols</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
@@ -665,13 +618,19 @@ document.write(`
             <span class="n">keep</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="n">temp_idx</span><span class="p">])</span>
             <span class="n">rename</span><span class="p">[</span><span class="n">cols</span><span class="p">[</span><span class="n">temp_idx</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;temperature[C]&quot;</span>
 
-        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">rename</span><span class="p">)</span></div>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">rename</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span>
+                                    <span class="nb">format</span> <span class="o">=</span> <span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">/%y %I:%M:%S %p&#39;</span><span class="p">,</span>
+                                    <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
 
 
 
-<div class="viewcode-block" id="HOBOCL">
-<a class="viewcode-back" href="../../../observations/HOBO.html#oceanicospy.observations.hobo.HOBOCL">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">HOBOCL</span><span class="p">(</span><span class="n">HOBOBase</span><span class="p">):</span>
+<div class="viewcode-block" id="HOBO_TempCond">
+<a class="viewcode-back" href="../../../observations/HOBO.html#oceanicospy.observations.hobo.HOBO_TempCond">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">HOBO_TempCond</span><span class="p">(</span><span class="n">HOBOBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reader for HOBO Conductivity Logger (CL) CSV files.</span>
 
@@ -741,7 +700,13 @@ document.write(`
             <span class="n">keep</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="n">cond_idx</span><span class="p">])</span>
             <span class="n">rename</span><span class="p">[</span><span class="n">cols</span><span class="p">[</span><span class="n">cond_idx</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;conductivity[uS/cm]&quot;</span>
 
-        <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">rename</span><span class="p">)</span></div>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">rename</span><span class="p">)</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">],</span> 
+                                    <span class="nb">format</span> <span class="o">=</span> <span class="s1">&#39;%m/</span><span class="si">%d</span><span class="s1">/%y %I:%M:%S %p&#39;</span><span class="p">,</span>
+                                    <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
 
 </pre></div>
 
