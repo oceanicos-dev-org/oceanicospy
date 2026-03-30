@@ -73,8 +73,8 @@ class CMDSDownloader:
         self.file_format = file_format
 
         # Convert local datetimes to UTC; CMDS subset requests must use UTC.
-        self.start_datetime_utc = start_datetime_local - timedelta(hours=difference_to_UTC)
-        self.end_datetime_utc = end_datetime_local - timedelta(hours=difference_to_UTC)
+        self.start_datetime_utc = start_datetime_local + timedelta(hours=difference_to_UTC)
+        self.end_datetime_utc = end_datetime_local + timedelta(hours=difference_to_UTC)
 
         # Populated by download(); consumed by _resolve_target_nc and format_to_localtime.
         self.last_result_path: Path | None = None

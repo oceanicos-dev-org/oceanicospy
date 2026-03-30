@@ -1,5 +1,8 @@
+import contextlib
+import os
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Generator
 
 import cdsapi
 import numpy as np
@@ -41,6 +44,12 @@ class ERA5Downloader:
         Name of the NetCDF file to write inside ``output_path``
         (e.g. ``"winds_ERA5.nc"``).  Required by :meth:`download`; if ``None``
         a :py:exc:`ValueError` is raised at download time.
+    cdsapi_rc : str or Path, optional
+        Path to a ``.cdsapirc`` credentials file.  When provided, the file is
+        used instead of the default ``~/.cdsapirc`` for the duration of the
+        download call only; it is never logged or exposed publicly.  If
+        ``None``, ``cdsapi`` falls back to its normal credential resolution
+        (``CDSAPI_RC`` environment variable, then ``~/.cdsapirc``).
     """
 
     def __init__(
@@ -55,6 +64,7 @@ class ERA5Downloader:
         difference_to_UTC: float,
         output_path: str | Path,
         output_filename: str | None = None,
+        cdsapi_rc: str | Path | None = None,
     ) -> None:
         self.variables = variables
         self.lon_min = lon_min
@@ -66,10 +76,39 @@ class ERA5Downloader:
         self.difference_to_UTC = difference_to_UTC
         self.output_path = Path(output_path)
         self.output_filename = output_filename
+        self._cdsapi_rc = Path(cdsapi_rc) if cdsapi_rc is not None else None
 
         # Convert local datetimes to UTC; CDS API requests must use UTC.
         self.start_datetime_utc = start_datetime_local - timedelta(hours=difference_to_UTC)
         self.end_datetime_utc = end_datetime_local - timedelta(hours=difference_to_UTC)
+
+    @contextlib.contextmanager
+    def _cdsapi_credentials(self) -> Generator[None, None, None]:
+        """
+        Context manager that temporarily points ``CDSAPI_RC`` at the
+        credentials file supplied at construction time.
+
+        If no custom ``cdsapi_rc`` was provided the environment is left
+        unchanged.  The original value of ``CDSAPI_RC`` (or its absence) is
+        always restored on exit, even if an exception is raised.
+
+        Yields
+        ------
+        None
+        """
+        if self._cdsapi_rc is None:
+            yield
+            return
+
+        previous = os.environ.get("CDSAPI_RC")
+        os.environ["CDSAPI_RC"] = str(self._cdsapi_rc)
+        try:
+            yield
+        finally:
+            if previous is None:
+                os.environ.pop("CDSAPI_RC", None)
+            else:
+                os.environ["CDSAPI_RC"] = previous
 
     def _prepare_datetime_data(self) -> tuple[list[str], list[str], list[str]]:
         """
@@ -117,6 +156,8 @@ class ERA5Downloader:
         ------
         ValueError
             If ``output_filename`` is ``None``.
+        FileNotFoundError
+            If a custom ``cdsapi_rc`` path was provided but does not exist.
         cdsapi.api.AmbiguousParameter
             If a variable name is not recognised by the CDS catalog.
         OSError
@@ -128,27 +169,33 @@ class ERA5Downloader:
                 "Pass a filename such as 'winds_ERA5.nc' to the constructor."
             )
 
+        if self._cdsapi_rc is not None and not self._cdsapi_rc.is_file():
+            raise FileNotFoundError(
+                f"Credentials file not found: {self._cdsapi_rc}"
+            )
+
         self.output_path.mkdir(parents=True, exist_ok=True)
         dest = self.output_path / self.output_filename
 
         years, months, days = self._prepare_datetime_data()
 
-        client = cdsapi.Client()
-        client.retrieve(
-            "reanalysis-era5-single-levels",
-            {
-                "product_type": "reanalysis",
-                "format": "netcdf",
-                "variable": self.variables,
-                "year": years,
-                "month": months,
-                "day": days,
-                "time": [f"{h:02d}:00" for h in range(24)],
-                "area": [self.lat_max, self.lon_min, self.lat_min, self.lon_max],  # N, W, S, E
-                "grid": [0.025, 0.025],
-            },
-            str(dest),
-        )
+        with self._cdsapi_credentials():
+            client = cdsapi.Client()
+            client.retrieve(
+                "reanalysis-era5-single-levels",
+                {
+                    "product_type": "reanalysis",
+                    "format": "netcdf",
+                    "variable": self.variables,
+                    "year": years,
+                    "month": months,
+                    "day": days,
+                    "time": [f"{h:02d}:00" for h in range(24)],
+                    "area": [self.lat_max, self.lon_min, self.lat_min, self.lon_max],  # N, W, S, E
+                    "grid": [0.025, 0.025],
+                },
+                str(dest),
+            )
 
         print(f"Downloaded {self.output_filename} to {dest.resolve()}.")
         return dest.resolve()
