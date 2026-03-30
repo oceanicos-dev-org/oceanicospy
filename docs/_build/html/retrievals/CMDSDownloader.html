@@ -30,6 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -40,11 +41,10 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'retrievals/CMDSDownloader';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="UHSLCDownloader" href="UHSLCDownloader.html" />
-    <link rel="prev" title="ERA5Downloader" href="ERA5Downloader.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -150,43 +150,56 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installing.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../analysis/conditioning.html">Signal conditioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../analysis/temporal.html">Temporal</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/execution/run_case.html">Case Runner</a></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../observations/walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../observations/BaseLogger.html">BaseLogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../observations/AQUAlogger.html">AQUAlogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../observations/RBR.html">RBR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/RBR.html">RBR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/Bluelog.html">Bluelog</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../plots.html">Plots</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../observations/weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../observations/weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/weather_stations/WeatherSens.html">WeatherSens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/weather_stations/Rainwise.html">Rainwise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../observations/ctd/CTDBase.html">CTDBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/ctd/CastawayCTD.html">CastawayCTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/ctd/CTD48M.html">CTD48M</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/Buoy.html">Buoy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/HOBO.html">HOBO</a></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -336,7 +349,6 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.__init__"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.download"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.download()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.format_to_localtime"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.format_to_localtime()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.for_waves"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.for_waves()</span></code></a></li>
@@ -382,29 +394,6 @@ Includes an ERA5-like post-processing method to rewrite the NetCDF in LOCAL time
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="oceanicospy.retrievals.CMDSDownloader.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_datetime_local</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_datetime_local</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">difference_to_UTC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'netcdf'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/retrievals/download_CMDS_data.html#CMDSDownloader.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.retrievals.CMDSDownloader.__init__" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_id</strong> (<em>str</em>) – CMDS dataset identifier (case-sensitive, as listed in the CMDS catalog).</p></li>
-<li><p><strong>variables</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Variables to request (dataset-specific names).</p></li>
-<li><p><strong>lon_min</strong> (<em>float</em>) – Bounding box in degrees (EPSG:4326).</p></li>
-<li><p><strong>lon_max</strong> (<em>float</em>) – Bounding box in degrees (EPSG:4326).</p></li>
-<li><p><strong>lat_min</strong> (<em>float</em>) – Bounding box in degrees (EPSG:4326).</p></li>
-<li><p><strong>lat_max</strong> (<em>float</em>) – Bounding box in degrees (EPSG:4326).</p></li>
-<li><p><strong>start_datetime_local</strong> (<em>datetime</em>) – Local-time window of interest.</p></li>
-<li><p><strong>end_datetime_local</strong> (<em>datetime</em>) – Local-time window of interest.</p></li>
-<li><p><strong>difference_to_UTC</strong> (<em>float</em>) – Local minus UTC (hours). Example: UTC-5 -&gt; -5.</p></li>
-<li><p><strong>output_path</strong> (<em>str</em>) – Directory where the output will be written.</p></li>
-<li><p><strong>file_format</strong> (<em>str</em>) – “netcdf” or “zarr”. The post-process method supports only “netcdf”.</p></li>
-<li><p><strong>output_filename</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – File name to write inside output_path (e.g., “winds_CMDS.nc”).</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="oceanicospy.retrievals.CMDSDownloader.download">
 <span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/retrievals/download_CMDS_data.html#CMDSDownloader.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.retrievals.CMDSDownloader.download" title="Link to this definition">#</a></dt>
@@ -491,24 +480,6 @@ Includes an ERA5-like post-processing method to rewrite the NetCDF in LOCAL time
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="ERA5Downloader.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">ERA5Downloader</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="UHSLCDownloader.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">UHSLCDownloader</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               
@@ -526,7 +497,6 @@ Includes an ERA5-like post-processing method to rewrite the NetCDF in LOCAL time
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.__init__"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.download"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.download()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.format_to_localtime"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.format_to_localtime()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.retrievals.CMDSDownloader.for_waves"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader.for_waves()</span></code></a></li>

@@ -14,4 +14,6 @@ This section also includes tools for spectral analysis like filtering, windowing
 
    conditioning
    spectral
+   spectral_analysis.ipynb
    temporal
+   temporal_analysis.ipynb
