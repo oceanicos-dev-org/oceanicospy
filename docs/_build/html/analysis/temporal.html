@@ -30,6 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -40,11 +41,12 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'analysis/temporal';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Models" href="../models/index.html" />
-    <link rel="prev" title="Spectral" href="spectral.html" />
+    <link rel="next" title="Walkthrough Example - Temporal Analysis" href="temporal_analysis.html" />
+    <link rel="prev" title="Walkthrough Example - Spectral Analysis" href="spectral_analysis.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -150,43 +152,56 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installing.html">Installation</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Analysis</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="conditioning.html">Signal conditioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Temporal</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/execution/run_case.html">Case Runner</a></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
+<li class="toctree-l2"><a class="reference internal" href="temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../observations/walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../observations/BaseLogger.html">BaseLogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../observations/AQUAlogger.html">AQUAlogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../observations/RBR.html">RBR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/RBR.html">RBR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/Bluelog.html">Bluelog</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../plots.html">Plots</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../observations/weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../observations/weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/weather_stations/WeatherSens.html">WeatherSens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/weather_stations/Rainwise.html">Rainwise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../observations/ctd/CTDBase.html">CTDBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/ctd/CastawayCTD.html">CastawayCTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/ctd/CTD48M.html">CTD48M</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/Buoy.html">Buoy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/HOBO.html">HOBO</a></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -336,9 +351,9 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.__init__"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.params_from_zero_crossing"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer.params_from_zero_crossing()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.zero_crossing"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer.zero_crossing()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.apply_zero_upcrossing_burst"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer.apply_zero_upcrossing_burst()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.compute_params_from_zero_upcrossing"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer.compute_params_from_zero_upcrossing()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.decompose_into_IMFs_for_bursts"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer.decompose_into_IMFs_for_bursts()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -354,104 +369,119 @@ document.write(`
                   
   <section id="temporal">
 <h1>Temporal<a class="headerlink" href="#temporal" title="Link to this heading">#</a></h1>
+<p>This section describes the methods used to analyze waves in the temporal domain, which are implemented through the <cite>WaveTemporalAnalyzer</cite> class.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="oceanicospy.analysis.temporal.WaveTemporalAnalyzer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.analysis.temporal.</span></span><span class="sig-name descname"><span class="pre">WaveTemporalAnalyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurement_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/temporal.html#WaveTemporalAnalyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer" title="Link to this definition">#</a></dt>
-<dd><p>Class for analyzing wave parameters from temporal data.</p>
-<p>”
-Initializes the analysis object with measurement signal and sampling data.</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.analysis.temporal.</span></span><span class="sig-name descname"><span class="pre">WaveTemporalAnalyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measured_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_level_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'eta[m]'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/temporal.html#WaveTemporalAnalyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer" title="Link to this definition">#</a></dt>
+<dd><p>Initializes the analysis object with measurement signal and sampling data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>measurement_signal</strong> (<em>array-like</em>) – The input signal data to be analyzed.</p></li>
+<li><p><strong>measured_signal</strong> (<em>array-like</em>) – The input signal data to be analyzed.</p></li>
 <li><p><strong>sampling_data</strong> (<em>dict</em>) – <dl class="simple">
 <dt>Dictionary containing sampling parameters with the following keys:</dt><dd><ul>
-<li><p>’sampling_freq’ (float): Sampling frequency of the signal.</p></li>
-<li><p>’anchoring_depth’ (float): Depth at which the sensor is anchored.</p></li>
-<li><p>’sensor_height’ (float): Height of the sensor above the bottom.</p></li>
-<li><p>’burst_length_s’ (float): Duration of each burst in seconds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sampling_freq</span></code> (float): Sampling frequency of the signal.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">anchoring_depth</span></code> (float): Depth at which the sensor is anchored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sensor_height</span></code> (float): Height of the sensor above the bottom.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">burst_length_s</span></code> (float): Duration of each burst in seconds.</p></li>
 </ul>
 </dd>
 </dl>
 </p></li>
+<li><p><strong>surface_level_column</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the column in measured_signal that contains surface level data (default is <code class="docutils literal notranslate"><span class="pre">eta[m]</span></code>).</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>23-Feb-2014 : First Matlab version - Daniel Peláez</p></li>
+<li><p>01-Sep-2023 : First Python version - Alejandro Henao</p></li>
+<li><p>10-Dec-2025 : Empirical Mode Decomposition - Franklin Ayala</p></li>
+</ul>
 <dl class="py method">
-<dt class="sig sig-object py" id="oceanicospy.analysis.temporal.WaveTemporalAnalyzer.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurement_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/temporal.html#WaveTemporalAnalyzer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.__init__" title="Link to this definition">#</a></dt>
-<dd><p>”
-Initializes the analysis object with measurement signal and sampling data.</p>
+<dt class="sig sig-object py" id="oceanicospy.analysis.temporal.WaveTemporalAnalyzer.apply_zero_upcrossing_burst">
+<span class="sig-name descname"><span class="pre">apply_zero_upcrossing_burst</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">burst_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anchoring_depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensor_height</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/temporal.html#WaveTemporalAnalyzer.apply_zero_upcrossing_burst"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.apply_zero_upcrossing_burst" title="Link to this definition">#</a></dt>
+<dd><p>This function calculates the significant wave height, the period, and the wavelength
+with the zero-upcrossing method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>measurement_signal</strong> (<em>array-like</em>) – The input signal data to be analyzed.</p></li>
-<li><p><strong>sampling_data</strong> (<em>dict</em>) – <dl class="simple">
-<dt>Dictionary containing sampling parameters with the following keys:</dt><dd><ul>
-<li><p>’sampling_freq’ (float): Sampling frequency of the signal.</p></li>
-<li><p>’anchoring_depth’ (float): Depth at which the sensor is anchored.</p></li>
-<li><p>’sensor_height’ (float): Height of the sensor above the bottom.</p></li>
-<li><p>’burst_length_s’ (float): Duration of each burst in seconds.</p></li>
-</ul>
-</dd>
-</dl>
-</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="oceanicospy.analysis.temporal.WaveTemporalAnalyzer.params_from_zero_crossing">
-<span class="sig-name descname"><span class="pre">params_from_zero_crossing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clean_records</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/temporal.html#WaveTemporalAnalyzer.params_from_zero_crossing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.params_from_zero_crossing" title="Link to this definition">#</a></dt>
-<dd><p>Calculate wave parameters from zero-crossing analysis of pressure data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>clean_records</strong> (<em>pandas.DataFrame</em>) – DataFrame containing cleaned pressure records with a ‘burstId’ column to identify different bursts.</p></li>
-<li><p><strong>sampling_data</strong> (<em>dict</em>) – Dictionary containing sampling information with keys:
-- ‘sampling_freq’: Sampling frequency of the pressure data.
-- ‘anchoring_depth’: Depth at which the sensor is anchored.
-- ‘sensor_height’: Height of the sensor from the seabed.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>DataFrame with wave parameters indexed by time, containing columns:
-- ‘H1/3’: Significant wave height (H1/3).
-- ‘Tmean’: Mean wave period (Tmean).</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pandas.DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="oceanicospy.analysis.temporal.WaveTemporalAnalyzer.zero_crossing">
-<span class="sig-name descname"><span class="pre">zero_crossing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">burst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/temporal.html#WaveTemporalAnalyzer.zero_crossing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.zero_crossing" title="Link to this definition">#</a></dt>
-<dd><p>This function calculates the significant wave height, the period and the wavelength
-with the zero-crossing method.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>burst</strong> (<em>array_like</em>) – A series of data without trend.</p></li>
-<li><p><strong>fs</strong> (<em>float</em>) – The sampling frequency.</p></li>
-<li><p><strong>h</strong> (<em>float</em>) – The measurement depth.</p></li>
-<li><p><strong>zp</strong> (<em>float</em>) – The distance from the bottom to the sensor.</p></li>
+<li><p><strong>burst_signal</strong> (<em>array_like</em>) – A series of data without a trend.</p></li>
+<li><p><strong>anchoring_depth</strong> (<em>float</em>) – The measurement depth.</p></li>
+<li><p><strong>sensor_height</strong> (<em>float</em>) – The distance from the bottom to the sensor.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>Hs</strong> (<em>float</em>) – The significant wave height.</p></li>
-<li><p><strong>Tm</strong> (<em>float</em>) – The mean period.</p></li>
+<li><p><strong>H_top_third</strong> (<em>float</em>) – The significant wave height (top third).</p></li>
+<li><p><strong>Hmax</strong> (<em>float</em>) – The maximum wave height.</p></li>
+<li><p><strong>Tmean</strong> (<em>float</em>) – The mean period.</p></li>
+<li><p><strong>Lmean</strong> (<em>float</em>) – The mean wavelength.</p></li>
 </ul>
 </p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oceanicospy.analysis.temporal.WaveTemporalAnalyzer.compute_params_from_zero_upcrossing">
+<span class="sig-name descname"><span class="pre">compute_params_from_zero_upcrossing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/temporal.html#WaveTemporalAnalyzer.compute_params_from_zero_upcrossing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.compute_params_from_zero_upcrossing" title="Link to this definition">#</a></dt>
+<dd><p>Calculate wave parameters from zero-crossing analysis of pressure data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><p>DataFrame with wave parameters indexed by time, containing columns:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">H1/3</span></code>: Significant wave height [m].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Tmean</span></code>: Mean wave period [s].</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oceanicospy.analysis.temporal.WaveTemporalAnalyzer.decompose_into_IMFs_for_bursts">
+<span class="sig-name descname"><span class="pre">decompose_into_IMFs_for_bursts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">EMD_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_IMFs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_ensembles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitude_noise_std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_processes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/temporal.html#WaveTemporalAnalyzer.decompose_into_IMFs_for_bursts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.decompose_into_IMFs_for_bursts" title="Link to this definition">#</a></dt>
+<dd><p>Decomposes the signal into Intrinsic Mode Functions (IMFs) for each burst using Empirical Mode Decomposition (EMD)
+or its variants.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>EMD_type</strong> (<em>str</em>) – The type of EMD to use. Options are <code class="docutils literal notranslate"><span class="pre">'EMD'</span></code>, <code class="docutils literal notranslate"><span class="pre">'EEMD'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'CEEMDAN'</span></code>.</p></li>
+<li><p><strong>maximum_IMFs</strong> (<em>int</em>) – The maximum number of IMFs to compute for each burst.</p></li>
+<li><p><strong>number_ensembles</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of ensembles to use for EEMD or CEEMDAN (required if <code class="docutils literal notranslate"><span class="pre">EMD_type</span></code> is <code class="docutils literal notranslate"><span class="pre">'EEMD'</span></code> or <code class="docutils literal notranslate"><span class="pre">'CEEMDAN'</span></code>).</p></li>
+<li><p><strong>amplitude_noise_std</strong> (<em>float</em><em>, </em><em>optional</em>) – The standard deviation of the added noise for EEMD or CEEMDAN.</p></li>
+<li><p><strong>parallel</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use parallel processing for CEEMDAN (default is True).</p></li>
+<li><p><strong>nb_processes</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of processes to use for parallel processing in CEEMDAN (default is 2).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A 3D array containing the IMFs for each burst, with shape (number of bursts, maximum_IMFs, burst_length_s).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
 <p class="rubric">Notes</p>
-<p>23-Feb-2014 : First Matlab version - Daniel Peláez
-01-Sep-2023 : First Python version - Alejandro Henao
-10-Dec-2024 : Polishing            - Franklin Ayala</p>
+<p>This function is based on the decomposition methods implemented in the PyEMD library [1].</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Huang, N. E., et al. (1998). The empirical mode decomposition and the Hilbert spectrum for nonlinear
+and non-stationary time series analysis. Proceedings of the Royal Society of London. Series A, 454(1971), 903-995.</p>
+</aside>
+</aside>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">'burstId'</span></code> is not found in the signal columns.
+    If <code class="docutils literal notranslate"><span class="pre">EMD_type</span></code> is not one of <code class="docutils literal notranslate"><span class="pre">'EMD'</span></code>, <code class="docutils literal notranslate"><span class="pre">'EEMD'</span></code>, or <code class="docutils literal notranslate"><span class="pre">'CEEMDAN'</span></code>.
+    If <code class="docutils literal notranslate"><span class="pre">EMD_type</span></code> is <code class="docutils literal notranslate"><span class="pre">'EEMD'</span></code> or <code class="docutils literal notranslate"><span class="pre">'CEEMDAN'</span></code> and <code class="docutils literal notranslate"><span class="pre">number_ensembles</span></code> or
+    <code class="docutils literal notranslate"><span class="pre">amplitude_noise_std</span></code> are not provided.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -470,20 +500,20 @@ with the zero-crossing method.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="spectral.html"
+       href="spectral_analysis.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Spectral</p>
+        <p class="prev-next-title">Walkthrough Example - Spectral Analysis</p>
       </div>
     </a>
     <a class="right-next"
-       href="../models/index.html"
+       href="temporal_analysis.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Models</p>
+        <p class="prev-next-title">Walkthrough Example - Temporal Analysis</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -504,9 +534,9 @@ with the zero-crossing method.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.__init__"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.params_from_zero_crossing"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer.params_from_zero_crossing()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.zero_crossing"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer.zero_crossing()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.apply_zero_upcrossing_burst"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer.apply_zero_upcrossing_burst()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.compute_params_from_zero_upcrossing"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer.compute_params_from_zero_upcrossing()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.temporal.WaveTemporalAnalyzer.decompose_into_IMFs_for_bursts"><code class="docutils literal notranslate"><span class="pre">WaveTemporalAnalyzer.decompose_into_IMFs_for_bursts()</span></code></a></li>
 </ul>
 </li>
 </ul>

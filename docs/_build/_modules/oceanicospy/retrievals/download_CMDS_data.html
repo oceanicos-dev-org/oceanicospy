@@ -1,0 +1,641 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>oceanicospy.retrievals.download_CMDS_data &#8212; oceanicospy 0.0.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=e645c8fa"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/oceanicospy/retrievals/download_CMDS_data';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">oceanicospy 0.0.1 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../installing.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/temporal.html">Temporal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/RBR.html">RBR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/Bluelog.html">Bluelog</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/WeatherSens.html">WeatherSens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/Rainwise.html">Rainwise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CTDBase.html">CTDBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CastawayCTD.html">CastawayCTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CTD48M.html">CTD48M</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/Buoy.html">Buoy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/HOBO.html">HOBO</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for oceanicospy.retrievals.download_CMDS_data</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copernicusmarine</span>
+
+
+<div class="viewcode-block" id="CMDSDownloader">
+<a class="viewcode-back" href="../../../retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CMDSDownloader</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Copernicus Marine Data Store (CMDS) downloader mirroring ERA5 input style.</span>
+<span class="sd">    Includes an ERA5-like post-processing method to rewrite the NetCDF in LOCAL time (shift + crop).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CMDSDownloader.__init__">
+<a class="viewcode-back" href="../../../retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">variables</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">lon_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">lon_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">lat_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">lat_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">start_datetime_local</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+        <span class="n">end_datetime_local</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+        <span class="n">difference_to_UTC</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">file_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;netcdf&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset_id : str</span>
+<span class="sd">            CMDS dataset identifier (case-sensitive, as listed in the CMDS catalog).</span>
+<span class="sd">        variables : List[str]</span>
+<span class="sd">            Variables to request (dataset-specific names).</span>
+<span class="sd">        lon_min, lon_max, lat_min, lat_max : float</span>
+<span class="sd">            Bounding box in degrees (EPSG:4326).</span>
+<span class="sd">        start_datetime_local, end_datetime_local : datetime</span>
+<span class="sd">            Local-time window of interest.</span>
+<span class="sd">        difference_to_UTC : float</span>
+<span class="sd">            Local minus UTC (hours). Example: UTC-5 -&gt; -5.</span>
+<span class="sd">        output_path : str</span>
+<span class="sd">            Directory where the output will be written.</span>
+<span class="sd">        file_format : str</span>
+<span class="sd">            &quot;netcdf&quot; or &quot;zarr&quot;. The post-process method supports only &quot;netcdf&quot;.</span>
+<span class="sd">        output_filename : Optional[str]</span>
+<span class="sd">            File name to write inside output_path (e.g., &quot;winds_CMDS.nc&quot;).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset_id</span> <span class="o">=</span> <span class="n">dataset_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="n">variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lon_min</span> <span class="o">=</span> <span class="n">lon_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lon_max</span> <span class="o">=</span> <span class="n">lon_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lat_min</span> <span class="o">=</span> <span class="n">lat_min</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lat_max</span> <span class="o">=</span> <span class="n">lat_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_datetime_local</span> <span class="o">=</span> <span class="n">start_datetime_local</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_datetime_local</span> <span class="o">=</span> <span class="n">end_datetime_local</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">difference_to_UTC</span> <span class="o">=</span> <span class="n">difference_to_UTC</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_path</span> <span class="o">=</span> <span class="n">output_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span> <span class="o">=</span> <span class="n">file_format</span>
+
+        <span class="c1"># Convert local datetimes to UTC (request window must be UTC for CMDS)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">difference_to_UTC</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_datetime_utc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_datetime_local</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">difference_to_UTC</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end_datetime_utc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_datetime_local</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">difference_to_UTC</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_datetime_utc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_datetime_local</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">difference_to_UTC</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end_datetime_utc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_datetime_local</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">difference_to_UTC</span><span class="p">))</span>
+
+        <span class="c1"># Will hold the absolute path returned or resolved after download</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_result_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="CMDSDownloader.download">
+<a class="viewcode-back" href="../../../retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.download">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute CMDS subset request. Returns absolute path to the created resource.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Ensure output directory exists; always write inside self.output_path</span>
+        <span class="n">output_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">output_directory</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_filename</span> <span class="o">=</span> <span class="n">filename</span>
+
+        <span class="c1"># Build request arguments for CMDS Toolbox API</span>
+        <span class="n">subset_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">dataset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset_id</span><span class="p">,</span>
+            <span class="n">variables</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">,</span>
+            <span class="n">minimum_longitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lon_min</span><span class="p">,</span>
+            <span class="n">maximum_longitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lon_max</span><span class="p">,</span>
+            <span class="n">minimum_latitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lat_min</span><span class="p">,</span>
+            <span class="n">maximum_latitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lat_max</span><span class="p">,</span>
+            <span class="n">start_datetime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_datetime_utc</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="n">end_datetime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end_datetime_utc</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+            <span class="n">output_directory</span><span class="o">=</span><span class="n">output_directory</span><span class="p">,</span>
+            <span class="n">file_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file_format</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># If a custom filename is requested, pass it to the API</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">subset_kwargs</span><span class="p">[</span><span class="s2">&quot;output_filename&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_filename</span>
+
+        <span class="c1"># Perform the subset/download</span>
+        <span class="n">result_path</span> <span class="o">=</span> <span class="n">copernicusmarine</span><span class="o">.</span><span class="n">subset</span><span class="p">(</span><span class="o">**</span><span class="n">subset_kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Resolve absolute path to the file or directory created</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">abs_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_directory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_filename</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">abs_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">result_path</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">output_directory</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_result_path</span> <span class="o">=</span> <span class="n">abs_path</span>
+        <span class="k">return</span> <span class="n">abs_path</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_target_nc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resolve the NetCDF file path to be opened for post-processing.</span>
+<span class="sd">        Preference order:</span>
+<span class="sd">          1) last_result_path if it is a .nc file.</span>
+<span class="sd">          2) If last_result_path is a directory, find a single .nc inside it.</span>
+<span class="sd">             - If multiple, prefer output_filename; otherwise, newest by mtime.</span>
+<span class="sd">          3) Fallback to output_path/output_filename if it exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_result_path</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># Case 1: already a file path to .nc</span>
+        <span class="k">if</span> <span class="n">candidate</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span> <span class="ow">and</span> <span class="n">candidate</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.nc&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">candidate</span>
+
+        <span class="c1"># Case 2: directory containing one or more .nc files</span>
+        <span class="k">if</span> <span class="n">candidate</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">candidate</span><span class="p">):</span>
+            <span class="n">nc_files</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.nc&quot;</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nc_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">nc_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nc_files</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_filename</span><span class="p">:</span>
+                    <span class="n">wanted</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_filename</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">wanted</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">wanted</span>
+                <span class="n">nc_files</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getmtime</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">nc_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Case 3: fallback to output_path + output_filename</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_filename</span><span class="p">:</span>
+            <span class="n">fallback</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_filename</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fallback</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">fallback</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="s2">&quot;Could not resolve a NetCDF file to post-process. &quot;</span>
+            <span class="s2">&quot;Ensure `download()` ran successfully and `output_filename` has a .nc extension.&quot;</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="CMDSDownloader.format_to_localtime">
+<a class="viewcode-back" href="../../../retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.format_to_localtime">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">format_to_localtime</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        - Only supports NetCDF outputs. For Zarr, implement a separate workflow.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;netcdf&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;format_to_localtime only supports NetCDF outputs. Use file_format=&#39;netcdf&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="n">target_nc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_target_nc</span><span class="p">()</span>
+
+        <span class="c1"># Open dataset; specify engine to avoid guessing errors on some systems</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">target_nc</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">&quot;netcdf4&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Detect time coordinate name</span>
+        <span class="k">if</span> <span class="s2">&quot;valid_time&quot;</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+            <span class="n">tcoord</span> <span class="o">=</span> <span class="s2">&quot;valid_time&quot;</span>
+        <span class="k">elif</span> <span class="s2">&quot;time&quot;</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+            <span class="n">tcoord</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;No time coordinate found in dataset (&#39;valid_time&#39; or &#39;time&#39;).&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Shift UTC -&gt; local: local = UTC + difference_to_UTC (e.g., -5 -&gt; subtract 5 hours)</span>
+        <span class="n">shift_hours</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">difference_to_UTC</span><span class="p">)</span>
+        <span class="n">ds</span><span class="p">[</span><span class="n">tcoord</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">tcoord</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="n">shift_hours</span><span class="p">,</span> <span class="s2">&quot;h&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Crop to the local-time window using the same time coordinate</span>
+        <span class="n">t0_local</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_datetime_local</span><span class="p">)</span>
+        <span class="n">t1_local</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_datetime_local</span><span class="p">)</span>
+        <span class="n">ds_cropped</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">({</span><span class="n">tcoord</span><span class="p">:</span> <span class="nb">slice</span><span class="p">(</span><span class="n">t0_local</span><span class="p">,</span> <span class="n">t1_local</span><span class="p">)})</span>
+
+        <span class="c1"># Overwrite the same NetCDF file</span>
+        <span class="n">ds_cropped</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">target_nc</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;NETCDF4&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ---------------- Convenience constructors ----------------</span>
+
+<div class="viewcode-block" id="CMDSDownloader.for_waves">
+<a class="viewcode-back" href="../../../retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.for_waves">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">for_waves</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">lon_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">lon_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">lat_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">lat_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">start_datetime_local</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+        <span class="n">end_datetime_local</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+        <span class="n">difference_to_UTC</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">file_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;netcdf&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;CMDSDownloader&quot;</span><span class="p">:</span>
+        <span class="n">default_dataset_id</span> <span class="o">=</span> <span class="s2">&quot;cmems_mod_glo_wav_anfc_0.083deg_PT3H-i&quot;</span>
+        <span class="n">default_variables</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;VHM0&quot;</span><span class="p">,</span> <span class="s2">&quot;VMDR&quot;</span><span class="p">,</span> <span class="s2">&quot;VTPK&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">default_dataset_id</span><span class="p">,</span>
+            <span class="n">default_variables</span><span class="p">,</span>
+            <span class="n">lon_min</span><span class="p">,</span>
+            <span class="n">lon_max</span><span class="p">,</span>
+            <span class="n">lat_min</span><span class="p">,</span>
+            <span class="n">lat_max</span><span class="p">,</span>
+            <span class="n">start_datetime_local</span><span class="p">,</span>
+            <span class="n">end_datetime_local</span><span class="p">,</span>
+            <span class="n">difference_to_UTC</span><span class="p">,</span>
+            <span class="n">output_path</span><span class="p">,</span>
+            <span class="n">file_format</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CMDSDownloader.for_winds">
+<a class="viewcode-back" href="../../../retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader.for_winds">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">for_winds</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">lon_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">lon_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">lat_min</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">lat_max</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">start_datetime_local</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+        <span class="n">end_datetime_local</span><span class="p">:</span> <span class="n">datetime</span><span class="p">,</span>
+        <span class="n">difference_to_UTC</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">file_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;netcdf&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;CMDSDownloader&quot;</span><span class="p">:</span>
+        <span class="n">default_dataset_id</span> <span class="o">=</span> <span class="s2">&quot;cmems_obs-wind_glo_phy_nrt_l4_0.125deg_PT1H&quot;</span>
+        <span class="n">default_variables</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eastward_wind&quot;</span><span class="p">,</span> <span class="s2">&quot;northward_wind&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">default_dataset_id</span><span class="p">,</span>
+            <span class="n">default_variables</span><span class="p">,</span>
+            <span class="n">lon_min</span><span class="p">,</span>
+            <span class="n">lon_max</span><span class="p">,</span>
+            <span class="n">lat_min</span><span class="p">,</span>
+            <span class="n">lat_max</span><span class="p">,</span>
+            <span class="n">start_datetime_local</span><span class="p">,</span>
+            <span class="n">end_datetime_local</span><span class="p">,</span>
+            <span class="n">difference_to_UTC</span><span class="p">,</span>
+            <span class="n">output_path</span><span class="p">,</span>
+            <span class="n">file_format</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By oceanicos
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, oceanicos.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
