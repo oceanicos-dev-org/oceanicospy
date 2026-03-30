@@ -30,6 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -40,10 +41,11 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'analysis/spectral';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Temporal" href="temporal.html" />
+    <link rel="next" title="Walkthrough Example - Spectral Analysis" href="spectral_analysis.html" />
     <link rel="prev" title="Signal conditioning" href="conditioning.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -150,43 +152,56 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../installing.html">Installation</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Analysis</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="conditioning.html">Signal conditioning</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="temporal.html">Temporal</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../models/swanpy/execution/run_case.html">Case Runner</a></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
+<li class="toctree-l2"><a class="reference internal" href="temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../observations/walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../observations/BaseLogger.html">BaseLogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../observations/AQUAlogger.html">AQUAlogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../observations/RBR.html">RBR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
+<li class="toctree-l2 has-children"><a class="reference internal" href="../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/RBR.html">RBR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/pressure_sensors/Bluelog.html">Bluelog</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../plots.html">Plots</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../observations/weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../observations/weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/weather_stations/WeatherSens.html">WeatherSens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/weather_stations/Rainwise.html">Rainwise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../observations/ctd/CTDBase.html">CTDBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/ctd/CastawayCTD.html">CastawayCTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../observations/ctd/CTD48M.html">CTD48M</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/Buoy.html">Buoy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../observations/HOBO.html">HOBO</a></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -336,26 +351,12 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.measurement_signal"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.measurement_signal</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_data"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.sampling_data</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_freq"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.sampling_freq</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.anchoring_depth"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.anchoring_depth</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sensor_height"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.sensor_height</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.burst_length_s"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.burst_length_s</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.__init__"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.__init__()</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id0"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.measurement_signal</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.sampling_data</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.sampling_freq</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.anchoring_depth</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id4"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.sensor_height</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.burst_length_s</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.smooth_psd_spectrum"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.smooth_psd_spectrum()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_wave_params_from_spectrum_v1"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.get_wave_params_from_spectrum_v1()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.correction_by_Kp"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.correction_by_Kp()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_wave_params_from_spectrum"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.get_wave_params_from_spectrum()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_direct_fft"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.compute_spectrum_from_direct_fft()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_welch"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.compute_spectrum_from_welch()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_spectra_and_params_for_bursts"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.get_spectra_and_params_for_bursts()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_wavelet_scalograms"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.compute_wavelet_scalograms()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -371,264 +372,141 @@ document.write(`
                   
   <section id="spectral">
 <h1>Spectral<a class="headerlink" href="#spectral" title="Link to this heading">#</a></h1>
-<p>Showing something classy</p>
+<p>The methods used to analyze waves in the spectral domain are implemented through the <cite>WaveSpectralAnalyzer</cite> class.
+This class provides various functionalities to compute and analyze wave spectra, including methods for calculating the power spectral density, wave energy, and other spectral properties.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.analysis.spectral.</span></span><span class="sig-name descname"><span class="pre">WaveSpectralAnalyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurement_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Initializes the analysis object with measurement signal and sampling data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>measurement_signal</strong> (<em>array-like</em>) – The input signal data to be analyzed.</p></li>
-<li><p><strong>sampling_data</strong> (<em>dict</em>) – <dl class="simple">
-<dt>Dictionary containing sampling parameters with the following keys:</dt><dd><ul>
-<li><p>’sampling_freq’ (float): Sampling frequency of the signal.</p></li>
-<li><p>’anchoring_depth’ (float): Depth at which the sensor is anchored.</p></li>
-<li><p>’sensor_height’ (float): Height of the sensor above the bottom.</p></li>
-<li><p>’burst_length_s’ (float): Duration of each burst in seconds.</p></li>
-</ul>
-</dd>
-</dl>
-</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.measurement_signal">
-<span class="sig-name descname"><span class="pre">measurement_signal</span></span><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.measurement_signal" title="Link to this definition">#</a></dt>
-<dd><p>Stores the input measurement signal.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>array-like</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_data">
-<span class="sig-name descname"><span class="pre">sampling_data</span></span><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_data" title="Link to this definition">#</a></dt>
-<dd><p>Stores the sampling parameters.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_freq">
-<span class="sig-name descname"><span class="pre">sampling_freq</span></span><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_freq" title="Link to this definition">#</a></dt>
-<dd><p>Sampling frequency extracted from sampling_data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.anchoring_depth">
-<span class="sig-name descname"><span class="pre">anchoring_depth</span></span><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.anchoring_depth" title="Link to this definition">#</a></dt>
-<dd><p>Anchoring depth extracted from sampling_data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sensor_height">
-<span class="sig-name descname"><span class="pre">sensor_height</span></span><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sensor_height" title="Link to this definition">#</a></dt>
-<dd><p>Sensor height extracted from sampling_data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.burst_length_s">
-<span class="sig-name descname"><span class="pre">burst_length_s</span></span><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.burst_length_s" title="Link to this definition">#</a></dt>
-<dd><p>Burst length in seconds extracted from sampling_data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measurement_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.__init__" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.analysis.spectral.</span></span><span class="sig-name descname"><span class="pre">WaveSpectralAnalyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">measured_signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surface_level_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'eta[m]'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer" title="Link to this definition">#</a></dt>
 <dd><p>Initializes the analysis object with measurement signal and sampling data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>measurement_signal</strong> (<em>array-like</em>) – The input signal data to be analyzed.</p></li>
+<li><p><strong>measured_signal</strong> (<em>array-like</em>) – The input signal data to be analyzed.</p></li>
 <li><p><strong>sampling_data</strong> (<em>dict</em>) – <dl class="simple">
 <dt>Dictionary containing sampling parameters with the following keys:</dt><dd><ul>
-<li><p>’sampling_freq’ (float): Sampling frequency of the signal.</p></li>
-<li><p>’anchoring_depth’ (float): Depth at which the sensor is anchored.</p></li>
-<li><p>’sensor_height’ (float): Height of the sensor above the bottom.</p></li>
-<li><p>’burst_length_s’ (float): Duration of each burst in seconds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sampling_freq</span></code> (float): Sampling frequency of the signal.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">anchoring_depth</span></code> (float): Depth at which the sensor is anchored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sensor_height</span></code> (float): Height of the sensor above the bottom.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">burst_length_s</span></code> (float): Duration of each burst in seconds.</p></li>
 </ul>
 </dd>
 </dl>
 </p></li>
+<li><p><strong>surface_level_column</strong> (<em>str</em>) – Column name in measured_signal that contains the surface level data (default is <code class="docutils literal notranslate"><span class="pre">eta[m]</span></code>).</p></li>
+<li><p><strong>logger</strong> (<em>bool</em>) – If True, initializes a logger for the class (default is True).</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">measurement_signal</span></span><a class="headerlink" href="#id0" title="Link to this definition">#</a></dt>
-<dd><p>Stores the input measurement signal.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>array-like</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">sampling_data</span></span><a class="headerlink" href="#id1" title="Link to this definition">#</a></dt>
-<dd><p>Stores the sampling parameters.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">sampling_freq</span></span><a class="headerlink" href="#id2" title="Link to this definition">#</a></dt>
-<dd><p>Sampling frequency extracted from sampling_data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">anchoring_depth</span></span><a class="headerlink" href="#id3" title="Link to this definition">#</a></dt>
-<dd><p>Anchoring depth extracted from sampling_data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">sensor_height</span></span><a class="headerlink" href="#id4" title="Link to this definition">#</a></dt>
-<dd><p>Sensor height extracted from sampling_data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="id5">
-<span class="sig-name descname"><span class="pre">burst_length_s</span></span><a class="headerlink" href="#id5" title="Link to this definition">#</a></dt>
-<dd><p>Burst length in seconds extracted from sampling_data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>01-Ago-2025 : Origination - Franklin Ayala</p></li>
+<li><p>01-Sep-2025 : FFT method - Juan Diego Toro</p></li>
+<li><p>10-Oct-2025 : Kp correction - Franklin Ayala/Juan Diego Toro/Camilo Cabrera</p></li>
+<li><p>12-Nov-2025 : Welch’s method - Franklin Ayala</p></li>
+<li><p>10-Dec-2025 : Wavelets analysis - Franklin Ayala</p></li>
+</ul>
 <dl class="py method">
-<dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.smooth_psd_spectrum">
-<span class="sig-name descname"><span class="pre">smooth_psd_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing_bins</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer.smooth_psd_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.smooth_psd_spectrum" title="Link to this definition">#</a></dt>
-<dd><p>Smooth the power spectral density (PSD) spectrum using a moving average filter.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_wave_params_from_spectrum_v1">
-<span class="sig-name descname"><span class="pre">get_wave_params_from_spectrum_v1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">psd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer.get_wave_params_from_spectrum_v1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_wave_params_from_spectrum_v1" title="Link to this definition">#</a></dt>
-<dd><p>This function computes different wave integral parameters from the spectrum</p>
+<dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.correction_by_Kp">
+<span class="sig-name descname"><span class="pre">correction_by_Kp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freqs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PSD</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kp_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'adaptive'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer.correction_by_Kp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.correction_by_Kp" title="Link to this definition">#</a></dt>
+<dd><p>Apply Kp correction to the power spectral density (PSD) based on the specified method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>psd</strong> (<em>list</em><em> or </em><em>ndarray</em>) – Density variance spectrum</p></li>
-<li><p><strong>freq</strong> (<em>list</em><em> or </em><em>ndarray</em>) – Frequencies of the spectrum</p></li>
+<li><p><strong>freqs</strong> (<em>ndarray</em>) – Frequency array corresponding to the PSD.</p></li>
+<li><p><strong>PSD</strong> (<em>ndarray</em>) – Power spectral density to be corrected.</p></li>
+<li><p><strong>kp_method</strong> (<em>str</em><em>, </em><em>optional</em>) – Method for Kp correction: <code class="docutils literal notranslate"><span class="pre">'adaptive'</span></code> or <code class="docutils literal notranslate"><span class="pre">'nonadaptive'</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">'adaptive'</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>Hs</strong> (<em>float</em>) – Significant wave heigth [m]</p></li>
-<li><p><strong>Hrms</strong> (<em>float</em>) – Root-mean squared wave heigth [m]</p></li>
-<li><p><strong>Hmean</strong> (<em>float</em>) – Mean wave heigth [m]</p></li>
-<li><p><strong>Tp</strong> (<em>float</em>) – Peak period [s]</p></li>
-<li><p><strong>Tm01</strong> (<em>float</em>) – Mean period - fisrt order [s]</p></li>
-<li><p><strong>Tm02</strong> (<em>float</em>) – Mean period - second order [s]</p></li>
+<li><p><strong>freqs</strong> (<em>ndarray</em>) – Frequency array corresponding to the PSD.</p></li>
+<li><p><strong>PSD_Kp</strong> (<em>ndarray</em>) – The Kp-corrected power spectral density.</p></li>
+<li><p><strong>PSD</strong> (<em>ndarray</em>) – The original power spectral density (returned for reference).</p></li>
 </ul>
 </p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>10-Dec-2024 : Origination - Franklin Ayala</p>
+<p>Most of the equations used on the methods are based on <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Karimpour, A., &amp; Chen, Q. (2017). Wind wave analysis in depth limited water using OCEANLYZ,
+A MATLAB toolbox. Computers &amp; Geosciences, 106, 181-189. <a class="reference external" href="https://doi.org/10.1016/j.cageo.2017.06.010">https://doi.org/10.1016/j.cageo.2017.06.010</a></p>
+</aside>
+</aside>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_wave_params_from_spectrum">
+<span class="sig-name descname"><span class="pre">get_wave_params_from_spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PSD</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freqs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer.get_wave_params_from_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_wave_params_from_spectrum" title="Link to this definition">#</a></dt>
+<dd><p>This function computes different wave integral parameters from the spectrum</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>PSD</strong> (<em>list</em><em> or </em><em>ndarray</em>) – Density variance spectrum</p></li>
+<li><p><strong>freqs</strong> (<em>list</em><em> or </em><em>ndarray</em>) – Frequencies of the spectrum</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Hs</strong> (<em>float</em>) – Significant wave height [m]</p></li>
+<li><p><strong>Hrms</strong> (<em>float</em>) – Root-mean squared wave height [m]</p></li>
+<li><p><strong>Hmean</strong> (<em>float</em>) – Mean wave height [m]</p></li>
+<li><p><strong>Tp</strong> (<em>float</em>) – Peak period [s]</p></li>
+<li><p><strong>Tm01</strong> (<em>float</em>) – Mean period - first order [s]</p></li>
+<li><p><strong>Tm02</strong> (<em>float</em>) – Mean period - second order [s]</p></li>
+</ul>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_direct_fft">
-<span class="sig-name descname"><span class="pre">compute_spectrum_from_direct_fft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer.compute_spectrum_from_direct_fft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_direct_fft" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute_spectrum_from_direct_fft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kp_correction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer.compute_spectrum_from_direct_fft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_direct_fft" title="Link to this definition">#</a></dt>
 <dd><p>Computes the density variance spectrum based on the Fast Fourier transform.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signal</strong> (<em>list</em><em> or </em><em>ndarray</em>) – An array of the signal</p></li>
-<li><p><strong>sampling_freq</strong> (<em>float</em>) – Sampling frequency for the records</p></li>
-<li><p><strong>anchoring_depth</strong> (<em>float</em>) – Depth at where the device was settled on the bottom.</p></li>
-<li><p><strong>sensor_height</strong> (<em>float</em>) – Distance from the sensor to the bottom.</p></li>
+<li><p><strong>kp_correction</strong> (<em>bool</em>) – If True, applies Kp correction to the spectrum.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>power</strong> (<em>ndarray</em>) – Density variance spectrum</p></li>
-<li><p><strong>power_kp</strong> (<em>ndarray</em>) – Density variance spectrum corrected by Kp</p></li>
-<li><p><strong>freq</strong> (<em>ndarray</em>) – Frequency of the spectrum</p></li>
+<li><p><strong>freqs</strong> (<em>ndarray</em>) – Frequency of the spectrum</p></li>
+<li><p><strong>PSD</strong> (<em>ndarray</em>) – Density variance spectrum</p></li>
+<li><p><strong>PSD_kp</strong> (<em>ndarray (optional)</em>) – Density variance spectrum corrected by Kp</p></li>
 </ul>
 </p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>Based on <a class="reference external" href="https://currents.soest.hawaii.edu/ocn_data_analysis/_static/Spectrum.html">https://currents.soest.hawaii.edu/ocn_data_analysis/_static/Spectrum.html</a></p>
-<p>01-Sep-2023 : Origination - Juan Diego Toro</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_welch">
-<span class="sig-name descname"><span class="pre">compute_spectrum_from_welch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer.compute_spectrum_from_welch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_welch" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">compute_spectrum_from_welch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kp_correction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer.compute_spectrum_from_welch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_welch" title="Link to this definition">#</a></dt>
 <dd><p>Compute PSD using Welch method and smooth across frequency bins.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>signal</strong> (<em>ndarray</em>) – 1D numpy array containing the signal.</p></li>
-<li><p><strong>window_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of window to use (default is ‘hamming’).
+<li><p><strong>kp_correction</strong> (<em>bool</em>) – If True, applies Kp correction to the spectrum.</p></li>
+<li><p><strong>window_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of window to use (default is <code class="docutils literal notranslate"><span class="pre">'hamming'</span></code>).
 Can be any window name supported by scipy.signal.windows, e.g.,
-‘hann’, ‘blackman’, ‘boxcar’, etc.</p></li>
+<code class="docutils literal notranslate"><span class="pre">'hann'</span></code>, <code class="docutils literal notranslate"><span class="pre">'blackman'</span></code>, <code class="docutils literal notranslate"><span class="pre">'boxcar'</span></code>, etc.</p></li>
 <li><p><strong>window_length</strong> (<em>int</em>) – Length of the Hamming window in samples.</p></li>
-<li><p><strong>smoothing_bins</strong> (<em>int</em>) – Number of adjacent frequency bins to smooth over.</p></li>
+<li><p><strong>overlap</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of overlapping samples between segments (default is half of window_length).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>freqs</strong> (<em>ndarray</em>) – Frequency array.</p></li>
-<li><p><strong>psd_smoothed</strong> (<em>ndarray</em>) – PSD after smoothing.</p></li>
-<li><p><strong>dof</strong> (<em>float</em>) – Estimated degrees of freedom.</p></li>
+<li><p><strong>PSD</strong> (<em>ndarray</em>) – Power spectral density.</p></li>
+<li><p><strong>PSD_kp</strong> (<em>ndarray (optional)</em>) – Density variance spectrum corrected by Kp</p></li>
 </ul>
 </p>
 </dd>
@@ -637,26 +515,77 @@ Can be any window name supported by scipy.signal.windows, e.g.,
 
 <dl class="py method">
 <dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_spectra_and_params_for_bursts">
-<span class="sig-name descname"><span class="pre">get_spectra_and_params_for_bursts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer.get_spectra_and_params_for_bursts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_spectra_and_params_for_bursts" title="Link to this definition">#</a></dt>
-<dd><p>Get wave spectra for each burst in the cleaned records.</p>
+<span class="sig-name descname"><span class="pre">get_spectra_and_params_for_bursts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kp_correction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ig_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer.get_spectra_and_params_for_bursts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_spectra_and_params_for_bursts" title="Link to this definition">#</a></dt>
+<dd><p>Compute wave spectra and integral parameters for each burst in the measurement signal.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p><strong>wave_spectra_data</strong> (<em>dict</em>) – Dictionary containing wave spectra data with keys:
-- ‘S’: List of power spectral densities for each burst.
-- ‘dir’: List of directions (currently not computed, placeholder).
-- ‘freq’: List of frequency arrays for each burst.
-- ‘time’: List of timestamps corresponding to each burst.</p></li>
-<li><p><strong>wave_params_data</strong> (<em>pandas.DataFrame</em>) – DataFrame containing wave parameters with columns:
-- ‘Hm0’: Zero-moment wave height.
-- ‘Hrms’: Root mean square wave height.
-- ‘Hmean’: Mean wave height.
-- ‘Tp’: Peak period.
-- ‘Tm01’: Mean period (first moment).
-- ‘Tm02’: Mean period (second moment).
-- Index is the timestamp corresponding to each burst.</p></li>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>method</strong> (<em>str</em>) – Spectrum computation method: <code class="docutils literal notranslate"><span class="pre">'fft'</span></code> or <code class="docutils literal notranslate"><span class="pre">'welch'</span></code>.</p></li>
+<li><p><strong>kp_correction</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to apply Kp pressure correction. Default is True.</p></li>
+<li><p><strong>ig_split</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to compute infragravity and wind wave Hm0 separately. Default is False.</p></li>
+<li><p><strong>freq_split</strong> (<em>float</em><em>, </em><em>optional</em>) – Frequency that separates infragravity from short waves (required if <code class="docutils literal notranslate"><span class="pre">ig_split</span></code> is True). Default is None.</p></li>
+<li><p><strong>window_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Window type for Welch method (e.g., <code class="docutils literal notranslate"><span class="pre">'hamming'</span></code>, <code class="docutils literal notranslate"><span class="pre">'hann'</span></code>). Default is None.</p></li>
+<li><p><strong>window_length</strong> (<em>int</em><em>, </em><em>optional</em>) – Window length for Welch method in samples. Default is None.</p></li>
+<li><p><strong>overlap</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of overlapping samples for Welch method. Default is None.</p></li>
+<li><p><strong>smoothing_bins</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of bins for moving-average smoothing (Welch only). Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>wave_spectra_data</strong> (<em>dict</em>) – Dictionary with keys:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">S</span></code>: ndarray of shape (n_bursts, n_freqs) containing power spectral densities.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freq</span></code>: ndarray of frequency values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dir</span></code>: empty list (placeholder for directional info).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: DatetimeIndex of hourly timestamps.</p></li>
+</ul>
+</li>
+<li><p><strong>wave_params_data</strong> (<em>pd.DataFrame</em>) – Wave parameters indexed by time, with columns:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Hm0</span></code>: Zero-moment wave height [m].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Hrms</span></code>: Root-mean-square wave height [m].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Hmean</span></code>: Mean wave height [m].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Tp</span></code>: Peak period [s].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Tm01</span></code>: Mean period (first moment) [s].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Tm02</span></code>: Mean period (second moment) [s].</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Hm0_ig</span></code>: Infragravity wave height [m] (if ig_split is True).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Hm0_sw</span></code>: Short wave height [m] (if ig_split is True).</p></li>
+</ul>
+</li>
 </ul>
 </p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">burstId</span></code> column is missing in the measurement signal.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_wavelet_scalograms">
+<span class="sig-name descname"><span class="pre">compute_wavelet_scalograms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mother_wavelet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points_scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">burst_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oceanicospy/analysis/spectral.html#WaveSpectralAnalyzer.compute_wavelet_scalograms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_wavelet_scalograms" title="Link to this definition">#</a></dt>
+<dd><p>Compute wavelet scalograms for all bursts in the measurement signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mother_wavelet</strong> (<em>str</em>) – The mother wavelet to use (e.g., <code class="docutils literal notranslate"><span class="pre">'morl'</span></code>, <code class="docutils literal notranslate"><span class="pre">'cmor'</span></code>, etc.).</p></li>
+<li><p><strong>points_scale</strong> (<em>int</em>) – The number of frequency points</p></li>
+<li><p><strong>burst_mode</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, computes scalograms for each burst separately using overlapping windows. Default is False.
+If False, computes a single scalogram for the entire measurement signal without windowing.</p></li>
+<li><p><strong>window_length</strong> (<em>int</em><em>, </em><em>optional</em>) – The length of each window in samples (required if <code class="docutils literal notranslate"><span class="pre">burst_mode</span></code> is True). Default is None.</p></li>
+<li><p><strong>overlap</strong> (<em>float</em><em>, </em><em>optional</em>) – The overlap between consecutive windows (required if <code class="docutils literal notranslate"><span class="pre">burst_mode</span></code> is True). Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>coefs_all</strong> (<em>ndarray</em>) – The computed wavelet scalograms for all bursts.</p></li>
+<li><p><strong>freqs</strong> (<em>ndarray</em>) – The corresponding frequencies in Hz.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">burst_mode</span></code> is True and <code class="docutils literal notranslate"><span class="pre">window_length</span></code> or <code class="docutils literal notranslate"><span class="pre">overlap</span></code> is not provided.
+    If <code class="docutils literal notranslate"><span class="pre">burst_mode</span></code> is True and <code class="docutils literal notranslate"><span class="pre">'burstId'</span></code> column is missing in the measurement signal.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -686,11 +615,11 @@ Can be any window name supported by scipy.signal.windows, e.g.,
       </div>
     </a>
     <a class="right-next"
-       href="temporal.html"
+       href="spectral_analysis.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Temporal</p>
+        <p class="prev-next-title">Walkthrough Example - Spectral Analysis</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -711,26 +640,12 @@ Can be any window name supported by scipy.signal.windows, e.g.,
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.measurement_signal"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.measurement_signal</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_data"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.sampling_data</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sampling_freq"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.sampling_freq</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.anchoring_depth"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.anchoring_depth</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.sensor_height"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.sensor_height</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.burst_length_s"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.burst_length_s</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.__init__"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.__init__()</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id0"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.measurement_signal</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.sampling_data</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id2"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.sampling_freq</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.anchoring_depth</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id4"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.sensor_height</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id5"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.burst_length_s</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.smooth_psd_spectrum"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.smooth_psd_spectrum()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_wave_params_from_spectrum_v1"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.get_wave_params_from_spectrum_v1()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.correction_by_Kp"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.correction_by_Kp()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_wave_params_from_spectrum"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.get_wave_params_from_spectrum()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_direct_fft"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.compute_spectrum_from_direct_fft()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_spectrum_from_welch"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.compute_spectrum_from_welch()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.get_spectra_and_params_for_bursts"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.get_spectra_and_params_for_bursts()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.compute_wavelet_scalograms"><code class="docutils literal notranslate"><span class="pre">WaveSpectralAnalyzer.compute_wavelet_scalograms()</span></code></a></li>
 </ul>
 </li>
 </ul>
