@@ -5,4 +5,4 @@ UHSLCDownloader
    :maxdepth: 1
 
 .. autoclass:: oceanicospy.retrievals.UHSLCDownloader
-    :members:
+   :members:
