@@ -25,6 +25,7 @@ dependencies = [
   "copernicusmarine>=2.2.1",
   "EMD-signal==1.6.4",
   "h5py==3.16.0",
+  "ipywidgets>=8.0.0",
   "matplotlib>=3.9.2",
   "netcdf4>=1.6.3",
   "numpy>=2.1.3",
