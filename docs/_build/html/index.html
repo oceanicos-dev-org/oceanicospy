@@ -205,6 +205,22 @@
 
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="retrievals/index.html">Retrievals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="retrievals/UHSLCDownloader.html">UHSLCDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="retrievals/CMDSDownloader.html">CMDSDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="retrievals/ERA5Downloader.html">ERA5Downloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="retrievals/data_fetcher.html">Walkthrough Example - Data Fetcher</a></li>
+
+
+
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -367,7 +383,27 @@ documentation for details.</p>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installing.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installing.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installing.html#for-users">For users</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installing.html#google-colab-recommended">Google Colab (recommended)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installing.html#local-environment">Local environment</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="installing.html#importing-the-library">Importing the library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installing.html#package-structure">Package structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installing.html#for-developers">For developers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="installing.html#create-a-github-account">1. Create a GitHub account</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installing.html#fork-the-repository">1. Fork the repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installing.html#set-up-ssh-authentication">1. Set up SSH authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installing.html#clone-your-fork">4. Clone your fork</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installing.html#install-in-editable-mode">5. Install in editable mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installing.html#create-a-feature-branch">6. Create a feature branch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installing.html#make-changes-and-commit">7. Make changes and commit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="installing.html#open-a-pull-request">8. Open a pull request</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="analysis/index.html">Analysis</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="analysis/conditioning.html">Signal conditioning</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="analysis/conditioning.html#nyquist-frequency">Nyquist frequency</a></li>
@@ -455,6 +491,29 @@ documentation for details.</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="observations/reading_field_data.html#spotter-buoy">Spotter buoy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="observations/reading_field_data.html#hobo-sensors">HOBO sensors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="retrievals/index.html">Retrievals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="retrievals/UHSLCDownloader.html">UHSLCDownloader</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="retrievals/UHSLCDownloader.html#oceanicospy.retrievals.UHSLCDownloader"><code class="docutils literal notranslate"><span class="pre">UHSLCDownloader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="retrievals/CMDSDownloader.html">CMDSDownloader</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="retrievals/CMDSDownloader.html#oceanicospy.retrievals.CMDSDownloader"><code class="docutils literal notranslate"><span class="pre">CMDSDownloader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="retrievals/ERA5Downloader.html">ERA5Downloader</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="retrievals/ERA5Downloader.html#oceanicospy.retrievals.ERA5Downloader"><code class="docutils literal notranslate"><span class="pre">ERA5Downloader</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="retrievals/data_fetcher.html">Walkthrough Example - Data Fetcher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retrievals/data_fetcher.html#university-of-hawaii-sea-level-center-uhslc-data-downloader">University of Hawaii Sea Level Center (UHSLC) Data Downloader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="retrievals/data_fetcher.html#copernicus-marine-data-store-cmds-downloader">Copernicus Marine Data Store (CMDS) downloader</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="retrievals/data_fetcher.html#for-winds">For winds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="retrievals/data_fetcher.html#for-waves">For waves</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="retrievals/data_fetcher.html#era5-downloader">ERA5 Downloader</a></li>
 </ul>
 </li>
 </ul>
