@@ -43,6 +43,7 @@ imagesize==2.0.0
 importlib_metadata==9.0.0
 ipykernel==7.2.0
 ipython==8.38.0
+ipywidgets==8.1.8
 jedi==0.19.2
 Jinja2==3.1.6
 jmespath==1.1.0
@@ -52,6 +53,7 @@ jupyter-cache==1.0.1
 jupyter_client==8.8.0
 jupyter_core==5.9.1
 jupyterlab_pygments==0.3.0
+jupyterlab_widgets==3.0.16
 kiwisolver==1.5.0
 locket==1.0.0
 markdown-it-py==3.0.0
@@ -141,6 +143,7 @@ wavespectra==4.4.2
 wcwidth==0.6.0
 webencodings==0.5.1
 wget==3.2
+widgetsnbextension==4.0.15
 windrose==1.9.2
 xarray==2025.6.1
 zarr==2.18.3

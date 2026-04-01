@@ -2,11 +2,7 @@ UHSLCDownloader
 ================
 
 .. toctree::
-   :maxdepth: 2
-   :hidden:
+   :maxdepth: 1
 
 .. autoclass:: oceanicospy.retrievals.UHSLCDownloader
-    :members:
-    :undoc-members:
-    :show-inheritance:
-    :noindex:   
+   :members:

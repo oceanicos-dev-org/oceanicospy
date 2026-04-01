@@ -2,10 +2,7 @@ CMDSDownloader
 ==============
 
 .. toctree::
-   :maxdepth: 2
-   :hidden:
+   :maxdepth: 1
 
 .. autoclass:: oceanicospy.retrievals.CMDSDownloader
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:

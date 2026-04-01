@@ -168,14 +168,6 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/reading_field_data.html">Walkthrough Example</a></li>
-
-
-
-
-
-
-
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
@@ -184,21 +176,41 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/WeatherStationBase.html">Weather Station Base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/DavisVantagePro.html">Davis Vantage Pro</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/WeatherSens.html">WeatherSens</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/Rainwise.html">Rainwise</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CTDBase.html">CTDBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CastawayCTD.html">CastawayCTD</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CTD48M.html">CTD48M</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CastawayCTD.html">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../observations/AWAC.html">AWAC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../observations/Buoy.html">Buoy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../observations/HOBO.html">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../retrievals/index.html">Retrievals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../retrievals/UHSLCDownloader.html">UHSLCDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../retrievals/ERA5Downloader.html">ERA5Downloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../retrievals/CMDSDownloader.html">CMDSDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
 </ul>
 </details></li>
 </ul>
@@ -315,8 +327,6 @@ document.write(`
 <div class="viewcode-block" id="WaveSpectralAnalyzer">
 <a class="viewcode-back" href="../../../analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WaveSpectralAnalyzer</span><span class="p">():</span>
-<div class="viewcode-block" id="WaveSpectralAnalyzer.__init__">
-<a class="viewcode-back" href="../../../analysis/spectral.html#oceanicospy.analysis.spectral.WaveSpectralAnalyzer.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">measured_signal</span><span class="p">,</span><span class="n">sampling_data</span><span class="p">,</span><span class="n">surface_level_column</span><span class="o">=</span><span class="s1">&#39;eta[m]&#39;</span><span class="p">,</span><span class="n">logger</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the analysis object with measurement signal and sampling data.</span>
@@ -364,8 +374,7 @@ document.write(`
                     <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
                 <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span></div>
-
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_burst_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">burst_series</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Verify that the burst has the expected number of samples based on the sampling frequency and burst length.</span>
