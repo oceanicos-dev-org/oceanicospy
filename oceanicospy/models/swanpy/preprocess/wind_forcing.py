@@ -4,6 +4,8 @@ import numpy as np
 import glob as glob
 import os
 
+from pathlib import Path
+
 from .. import utils
 from ....retrievals import *
 
@@ -45,17 +47,18 @@ class WindForcing():
         filepath : str or None, optional
             The file path where the downloaded ERA5 data will be saved. If None, a default path is used.
         """
-    
+        filepath = Path(filepath)
         ERA5download_obj = ERA5Downloader(
-                        variables=['10m_u_component_of_wind', '10m_v_component_of_wind'],
-                        lon_min=self.wind_info['lon_ll_wind'],
-                        lon_max=self.wind_info['lon_ll_wind'] + (self.wind_info['meshes_x_wind'] * self.wind_info['dx_wind']),
-                        lat_min=self.wind_info['lat_ll_wind'],
-                        lat_max=self.wind_info['lat_ll_wind'] + (self.wind_info['meshes_y_wind'] * self.wind_info['dy_wind']),
-                        start_datetime_local=self.init.ini_date,
-                        end_datetime_local=self.init.end_date,
-                        difference_to_UTC=difference_to_UTC,
-                        output_path=filepath
+                        variables = ['10m_u_component_of_wind', '10m_v_component_of_wind'],
+                        lon_min = self.wind_info['lon_ll_wind'],
+                        lon_max = self.wind_info['lon_ll_wind'] + (self.wind_info['meshes_x_wind'] * self.wind_info['dx_wind']),
+                        lat_min = self.wind_info['lat_ll_wind'],
+                        lat_max = self.wind_info['lat_ll_wind'] + (self.wind_info['meshes_y_wind'] * self.wind_info['dy_wind']),
+                        start_datetime_local = self.init.ini_date,
+                        end_datetime_local = self.init.end_date,
+                        difference_to_UTC = difference_to_UTC,
+                        output_path = filepath.parent,
+                        output_filename = filepath.name
                         )
         ERA5download_obj.download()
         ERA5download_obj.format_to_localtime()
@@ -73,16 +76,17 @@ class WindForcing():
         filepath : str or None, optional
             The file path where the downloaded ERA5 data will be saved. If None, a default path is used.
         """
-    
+        filepath = Path(filepath)
         CMDSdownload_obj = CMDSDownloader.for_winds(
-                        lon_min=self.wind_info['lon_ll_wind'],
-                        lon_max=self.wind_info['lon_ll_wind'] + (self.wind_info['meshes_x_wind'] * self.wind_info['dx_wind']),
-                        lat_min=self.wind_info['lat_ll_wind'],
-                        lat_max=self.wind_info['lat_ll_wind'] + (self.wind_info['meshes_y_wind'] * self.wind_info['dy_wind']),
-                        start_datetime_local=self.init.ini_date,
-                        end_datetime_local=self.init.end_date,
-                        difference_to_UTC=difference_to_UTC,
-                        output_path=filepath
+                        lon_min = self.wind_info['lon_ll_wind'],
+                        lon_max = self.wind_info['lon_ll_wind'] + (self.wind_info['meshes_x_wind'] * self.wind_info['dx_wind']),
+                        lat_min = self.wind_info['lat_ll_wind'],
+                        lat_max = self.wind_info['lat_ll_wind'] + (self.wind_info['meshes_y_wind'] * self.wind_info['dy_wind']),
+                        start_datetime_local = self.init.ini_date,
+                        end_datetime_local = self.init.end_date,
+                        difference_to_UTC = difference_to_UTC,
+                        output_path = filepath.parent,
+                        output_filename = filepath.name
                         )
         CMDSdownload_obj.download()
         CMDSdownload_obj.format_to_localtime()
@@ -143,7 +147,6 @@ class WindForcing():
             file.write(pd.DataFrame(u10_to_write).to_csv(index=False, header=False, na_rep=0, float_format='%7.3f').replace(',', ' '))
             file.write(pd.DataFrame(v10_to_write).to_csv(index=False, header=False, na_rep=0, float_format='%7.3f').replace(',', ' '))
         file.close()
-
 
     def get_winds_from_ERA5(self,difference_to_UTC,filename='winds_era5.nc',override=False):
         """
@@ -312,6 +315,19 @@ class WindForcing():
                 self.wind_info.update({"winds_file":f"../../input/domain_01/winds.wnd"})
 
             return self.wind_info
+
+    def use_constant_wind(self,wind_speed,wind_dir):
+        """
+        Configures a constant wind field for the model run based on the parameters provided in `self.wind_info`.
+        This method does not involve file handling but updates the wind information metadata with the necessary parameters
+        for defining a constant wind field in the SWAN configuration.
+        Returns
+        -------
+        dict or None
+            Updated wind information dictionary with constant wind parameters if `self.wind_info` is not None, otherwise None.
+        """
+        wind_info =  {"wind_speed":wind_speed, "wind_dir":wind_dir}
+        return wind_info
 
     def fill_wind_section(self,dict_wind_data):
         """

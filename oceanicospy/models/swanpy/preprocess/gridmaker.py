@@ -24,7 +24,7 @@ class GridMaker():
     This class is used to generate and manage grid information for SWAN simulations.
     """
 
-    def __init__(self,init,domain_number,grid_info=None,dx=None,dy=None):
+    def __init__(self, init, domain_number, grid_info = None, dx = None, dy = None):
         self.init = init
         self.domain_number = domain_number
         self.grid_info = grid_info

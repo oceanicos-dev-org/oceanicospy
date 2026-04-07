@@ -34,7 +34,7 @@ class BathyMaker():
         self.use_link = use_link
         print(f'\n*** Initializing bathymaker for domain {self.domain_number} ***\n')
 
-    def get_direct_from_user(self):
+    def use_ascii_file_from_user(self):
         """
         Handles the selection and linking or copying of a bathymetry file for the current domain.
 
@@ -55,8 +55,6 @@ class BathyMaker():
         """
     
         bathy_filepaths = glob.glob(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/*.bot')
-        print(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/*.bot')
-        print(f'Found bathymetry files: {bathy_filepaths}')
         if not bathy_filepaths:
             raise FileNotFoundError(f'Bathymetry file not found in {self.init.dict_folders["input"]}domain_0{self.domain_number}/ or file extension is not .bot')
         bathy_filepath = bathy_filepaths[0]
@@ -88,7 +86,7 @@ class BathyMaker():
         else:
             raise ValueError('No bathymetry information provided at initialization. Bathymetry file has been linked/copied to run directory, but no metadata dictionary to return.')
 
-    def xyz2asc(self,nodata_value):
+    def convert_xyz2asc(self,nodata_value):
         """
         Converts bathymetry data from XYZ format to ESRI ASCII Grid format.
 
@@ -150,7 +148,7 @@ class BathyMaker():
 
         dict_asc={'lon_ll_bat_corner':min_longitude,'lat_ll_bat_corner':min_latitude,'x_bot':nx_bathy,'y_bot':ny_bathy,'spacing_x':self.dx_bat,'spacing_y':self.dx_bat}
         for key,value in dict_asc.items():
-            dict_asc[key]=str(value)
+            dict_asc[key] = str(value)
         return dict_asc
     
 
