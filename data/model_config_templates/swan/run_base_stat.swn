@@ -1,20 +1,20 @@
-$$ Header --------------------------------------------
+$ Header --------------------------------------------
 PROJECT '$name' '$case_number'
 '$case_description'
 $$
-$$ Computational mesh -----------------------------------
+$ Computational mesh -----------------------------------
 SET NAUT
 MODE $stat_label TWOD
 COORD SPHE CCM
 CGRID REG lon_ll_corner lat_ll_corner 0 x_extent y_extent nx ny CIRCLE 72 0.04 1
 $
 $ Bathymetry --------------------------------------------
-INP BOT REG lon_ll_corner lat_ll_corner 0 x_bot y_bot spacing_x_bot spacing_y_bot EXC -9999.
-READ BOT 1 'bathy_file.bot' 1 FREE
+INP BOT REG lon_ll_corner_bot lat_ll_corner_bot 0 x_bot y_bot dx_bot dy_bot EXC -9999.
+READ BOT 1 bathy_file 1 FREE
 $
 $ Bottom friction ---------------------------------------
 INP FR REG lon_ll_corner lat_ll_corner 0 x_fric y_fric spacing_x_fric spacing_y_fric EXC -9. 
-READ FR 1 'fric_file.fric' 3 FREE
+READ FR 1 friction_file 3 FREE
 $
 $ Wind --------------------------------------------------
 WIND wind_speed wind_dir

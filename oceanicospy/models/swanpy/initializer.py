@@ -162,11 +162,6 @@ class Initializer:
         ``run/domain_0{N}/run.swn`` for every domain in
         ``[1, number_domains]``.
 
-        Side effects
-        ------------
-        * Sets ``self.stat_label`` to ``'STAT'`` or ``'NONSTAT'``.
-        * Adds ``'stat_label'`` to ``self.dict_ini_data``.
-        * Sets ``self.script_dir`` and ``self.data_dir`` for template resolution.
         """
         self.stat_label = 'NONSTAT' if self.dict_ini_data['stat_id'] == 0 else 'STAT'
         self.dict_ini_data['stat_label'] = self.stat_label

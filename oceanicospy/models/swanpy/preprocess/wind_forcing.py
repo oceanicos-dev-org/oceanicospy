@@ -10,7 +10,7 @@ from .. import utils
 from ....retrievals import *
 
 class WindForcing():
-    def __init__(self,init,domain_number,wind_info=None,filename=None,share_winds=True,use_link=None):
+    def __init__(self,init,domain_number,grid_info=None,filename=None,share_winds=True,use_link=None):
         """
         Parameters
         ----------
@@ -18,10 +18,10 @@ class WindForcing():
             An initialization object containing configuration data and folder paths.
         domain_number : int
             Identifier for the domain being processed.
-        wind_info : dict or None, optional
+        grid_info : dict or None, optional
             Dictionary containing wind information. If None, winds must be provided via `filename`.
         filename : str or None, optional
-            Path to the file containing wind data. If None, wind must be provided via `wind_info`.
+            Path to the file containing wind data. If None, wind must be provided via `grid_info`.
         use_link: bool, optional
             If True, creates symbolic links for wind files instead of copying them. Defaults to True.
         share_winds: bool, optional
@@ -29,7 +29,7 @@ class WindForcing():
         """
         self.init = init
         self.domain_number = domain_number
-        self.wind_info = wind_info
+        self.grid_info = grid_info
         self.input_filename = filename
         self.share_winds = share_winds
         self.use_link = use_link
@@ -50,10 +50,10 @@ class WindForcing():
         filepath = Path(filepath)
         ERA5download_obj = ERA5Downloader(
                         variables = ['10m_u_component_of_wind', '10m_v_component_of_wind'],
-                        lon_min = self.wind_info['lon_ll_wind'],
-                        lon_max = self.wind_info['lon_ll_wind'] + (self.wind_info['meshes_x_wind'] * self.wind_info['dx_wind']),
-                        lat_min = self.wind_info['lat_ll_wind'],
-                        lat_max = self.wind_info['lat_ll_wind'] + (self.wind_info['meshes_y_wind'] * self.wind_info['dy_wind']),
+                        lon_min = self.grid_info['lon_ll_wind'],
+                        lon_max = self.grid_info['lon_ll_wind'] + (self.grid_info['meshes_x_wind'] * self.grid_info['dx_wind']),
+                        lat_min = self.grid_info['lat_ll_wind'],
+                        lat_max = self.grid_info['lat_ll_wind'] + (self.grid_info['meshes_y_wind'] * self.grid_info['dy_wind']),
                         start_datetime_local = self.init.ini_date,
                         end_datetime_local = self.init.end_date,
                         difference_to_UTC = difference_to_UTC,
@@ -78,10 +78,10 @@ class WindForcing():
         """
         filepath = Path(filepath)
         CMDSdownload_obj = CMDSDownloader.for_winds(
-                        lon_min = self.wind_info['lon_ll_wind'],
-                        lon_max = self.wind_info['lon_ll_wind'] + (self.wind_info['meshes_x_wind'] * self.wind_info['dx_wind']),
-                        lat_min = self.wind_info['lat_ll_wind'],
-                        lat_max = self.wind_info['lat_ll_wind'] + (self.wind_info['meshes_y_wind'] * self.wind_info['dy_wind']),
+                        lon_min = self.grid_info['lon_ll_wind'],
+                        lon_max = self.grid_info['lon_ll_wind'] + (self.grid_info['meshes_x_wind'] * self.grid_info['dx_wind']),
+                        lat_min = self.grid_info['lat_ll_wind'],
+                        lat_max = self.grid_info['lat_ll_wind'] + (self.grid_info['meshes_y_wind'] * self.grid_info['dy_wind']),
                         start_datetime_local = self.init.ini_date,
                         end_datetime_local = self.init.end_date,
                         difference_to_UTC = difference_to_UTC,
