@@ -5,51 +5,27 @@ import os
 from .. import utils
 
 class BathyMaker():
-    """"
+    """
     BathyMaker is a utility class for generating and managing the bathymetry information for SWAN.
 
-    Attributes
+    Parameters
     ----------
     init : object
-        Initialization object with configuration and folder paths.
+        An initialization object containing configuration data and folder paths.
     domain_number : int
-        Domain identifier.
-    bathy_info : dict or None
-        Bathymetric information dictionary.
-    filename : str or None
-        Bathymetry file name.
-    dx_bat : float or None
-        Bathymetry grid spacing.
-    use_link : bool
-        Whether to use symbolic links for bathymetry files.
-    Methods
-    -------
-    ascii_from_user()
-        Handles bathymetry files provided by the user, creating links or copying files as needed.
-    xyz2asc(nodata_value)
-        Converts bathymetry data from XYZ format to ESRI ASCII Grid format, interpolating and handling missing data.
-    fill_bathy_section(dict_bathy_data)
-        Updates the configuration file with bathymetry information for the specified domain.
+        Identifier for the domain being processed.
+    bathy_info : dict or None, optional
+        Dictionary containing bathymetric information. If None, bathymetry must be provided via `filename`.
+    filename : str or None, optional
+        Path to the file containing bathymetric data. If None, bathymetry must be provided via `bathy_info`.
+    dx_bat : float or None, optional
+        Grid spacing for the bathymetric data. If None, default spacing is used.
+    use_link: bool, optional
+        If True, creates symbolic links for bathymetry files instead of copying them. Defaults to True.
+
     """
 
-    def __init__(self, init, domain_number, bathy_info=None, filename=None, dx_bat=None, use_link = None):
-        """
-        Parameters
-        ----------
-        init : object
-            An initialization object containing configuration data and folder paths.
-        domain_number : int
-            Identifier for the domain being processed.
-        bathy_info : dict or None, optional
-            Dictionary containing bathymetric information. If None, bathymetry must be provided via `filename`.
-        filename : str or None, optional
-            Path to the file containing bathymetric data. If None, bathymetry must be provided via `bathy_info`.
-        dx_bat : float or None, optional
-            Grid spacing for the bathymetric data. If None, default spacing is used.
-        use_link: bool, optional
-            If True, creates symbolic links for bathymetry files instead of copying them. Defaults to True.
-        """
-
+    def __init__(self, init, domain_number, bathy_info = None, filename = None, dx_bat = None, use_link = None):
         self.init = init
         self.domain_number = domain_number
         self.bathy_info = bathy_info
@@ -58,17 +34,29 @@ class BathyMaker():
         self.use_link = use_link
         print(f'\n*** Initializing bathymaker for domain {self.domain_number} ***\n')
 
-    def get_from_user(self):
+    def get_direct_from_user(self):
         """
         Handles the selection and linking or copying of a bathymetry file for the current domain.
-        This method searches for a `.bot` bathymetry file in the input directory for the specified domain.
 
-        Returns:
-        --------
-            dict or None: The updated `bathy_info` dictionary if it exists, otherwise None.
+        Searches for a `.bot` bathymetry file in the input directory for the specified domain.
+        Depending on ``use_link``, the file is either symlinked or physically copied into the
+        run directory.
+
+        Returns
+        -------
+        dict or None
+            The updated ``bathy_info`` dictionary if it was provided at initialisation,
+            otherwise ``None``.
+
+        Raises
+        ------
+        FileNotFoundError
+            If no `.bot` file is found in the expected input directory.
         """
     
         bathy_filepaths = glob.glob(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/*.bot')
+        print(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/*.bot')
+        print(f'Found bathymetry files: {bathy_filepaths}')
         if not bathy_filepaths:
             raise FileNotFoundError(f'Bathymetry file not found in {self.init.dict_folders["input"]}domain_0{self.domain_number}/ or file extension is not .bot')
         bathy_filepath = bathy_filepaths[0]
@@ -95,22 +83,34 @@ class BathyMaker():
                 )
 
         if self.bathy_info!=None:
-            self.bathy_info.update({"bathy_file":f"../../input/domain_0{self.domain_number}/{bathy_filename}"})
+            self.bathy_info.update({"bathy_file":f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{bathy_filename}"})
             return self.bathy_info
+        else:
+            raise ValueError('No bathymetry information provided at initialization. Bathymetry file has been linked/copied to run directory, but no metadata dictionary to return.')
 
     def xyz2asc(self,nodata_value):
         """
         Converts bathymetry data from XYZ format to ESRI ASCII Grid format.
 
-        Args:
-            nodata_value (float): The value to replace NaN values in the grid.
+        Reads a space-delimited `.dat` file, interpolates the scattered data onto a
+        regular grid using linear interpolation, and writes the result as an ESRI
+        ASCII Grid (`.bot`) file.
 
-        Returns:
-            dict: A dictionary containing the metadata of the generated grid.
+        Parameters
+        ----------
+        nodata_value : float
+            Value used to fill cells where interpolation produced NaN.
+
+        Returns
+        -------
+        dict
+            Dictionary with string-valued bathymetry metadata: ``lon_ll_bat_corner``,
+            ``lat_ll_bat_corner``, ``x_bot``, ``y_bot``, ``spacing_x``, and ``spacing_y``.
         """
         bathy_xyz_path = glob.glob(f'{self.dict_folders["input"]}*.dat')[0]
         ascfile = f'{self.dict_folders["run"]}{self.filename}.bot'
         np.set_printoptions(formatter={'float_kind':'{:f}'.format})
+
         # Read bathymetry file
         longitude,latitude,z = np.loadtxt(bathy_xyz_path, delimiter=' ', unpack=True)
 
@@ -156,7 +156,12 @@ class BathyMaker():
 
     def fill_bathy_section(self,dict_bathy_data):
         """
-        Replaces and updates the .swn file with the bathymetry configuration for a specific domain.
+        Replaces and updates the `.swn` file with the bathymetry configuration for a specific domain.
+
+        Parameters
+        ----------
+        dict_bathy_data : dict
+            Dictionary containing the bathymetry parameters to be written into the configuration file.
         """
         print (f'\n \t*** Adding/Editing bathymetry information for domain {self.domain_number} in configuration file ***\n')
         utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_bathy_data)

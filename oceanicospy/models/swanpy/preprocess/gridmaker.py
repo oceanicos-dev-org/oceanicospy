@@ -10,44 +10,21 @@ class GridMaker():
     ----------
     init : object
         An initialization object containing configuration data and folder paths.
-    dx : float
-        Grid spacing in the x-direction (longitude).
-    dy : float
-        Grid spacing in the y-direction (latitude).
     domain_number : int
         Identifier for the domain being processed.
     grid_info : dict, optional
         User-provided grid information dictionary.
+    dx : float
+        Grid spacing in the x-direction (longitude).
+    dy : float
+        Grid spacing in the y-direction (latitude).
 
-    Methods
-    -------
-    params_from_bathy():
-        Extracts grid parameters from a bathymetry file, calculating extents and grid size based on bathymetric data.
-    params_from_user():
-        Retrieves grid parameters provided by the user. Raises ValueError if not set.
-    fill_grid_section(dict_grid_data):
-        Fills or updates the grid section in the configuration file for the specified domain using provided grid data.
+    Notes
+    -----
+    This class is used to generate and manage grid information for SWAN simulations.
     """
 
     def __init__(self,init,domain_number,grid_info=None,dx=None,dy=None):
-        """
-        Initializes the gridmaker object with the specified parameters.
-
-        Parameters:
-        -----------
-            init: object
-                Initialization parameter for the gridmaker.
-            domain_number: int
-                Identifier for the computational domain.
-            grid_info: dict or None, optional
-                Additional information about the grid. Defaults to None.
-            dx: float, optional
-                Grid spacing in the x-direction.
-            dy: float, optional
-                Grid spacing in the y-direction.
-
-        """
-
         self.init = init
         self.domain_number = domain_number
         self.grid_info = grid_info
@@ -55,7 +32,19 @@ class GridMaker():
         self.dy = dy     
         print(f'\n*** Initializing gridmaker for domain {self.domain_number} ***\n')
 
-    def params_from_bathy(self):
+    def get_info_from_bathy(self):
+        """
+        Extracts grid parameters from the bathymetry file for the specified domain.
+
+        Reads the `.dat` bathymetry file, computes the geographic extents, and derives
+        the number of grid cells in each direction based on `dx` and `dy`.
+
+        Returns
+        -------
+        dict
+            Dictionary with string-valued grid parameters: ``lon_ll_corner``,
+            ``lat_ll_corner``, ``x_extent``, ``y_extent``, ``nx``, and ``ny``.
+        """
         if self.init.dict_ini_data["nested_domains"]>0:
             bathy_file_path = glob.glob(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/*.dat')[0]
         else:
@@ -64,7 +53,6 @@ class GridMaker():
         data = np.loadtxt(bathy_file_path)
         longitude = data[:, 0]
         latitude = data[:, 1]
-        elevation = data[:, 2]
 
         min_longitude = np.min(longitude)
         min_latitude = np.min(latitude)
@@ -88,13 +76,29 @@ class GridMaker():
 
         return grid_dict
     
-    def params_from_user(self):
+    def get_info_from_user(self):
         """
         Retrieves grid parameters provided by the user.
 
-        Returns:
-        --------
-        dict: The grid information if it has been set.
+        The grid_info dictionary should contain the following keys: 
+        ``lon_ll_corner``: longitude of the lower-left corner of the grid
+        ``lat_ll_corner``: latitude of the lower-left corner of the grid
+        ``x_extent``: total extent of the grid in the x-direction (longitude)
+        ``y_extent``: total extent of the grid in the y-direction (latitude)
+        ``nx`` : number of grid cells in the x-direction
+        ``ny``: number of grid cells in the y-direction
+        
+        All values should be convertible to strings.
+
+        Returns
+        -------
+        dict
+            The ``grid_info`` dictionary supplied at initialisation.
+
+        Raises
+        ------
+        ValueError
+            If ``grid_info`` was not provided (is ``None``).
         """
         if self.grid_info is not None:
             return self.grid_info
@@ -103,10 +107,15 @@ class GridMaker():
 
     def fill_grid_section(self,dict_grid_data):
         """
-        Replaces and updates the .swn file with the grid configuration for a specific domain.
+        Replaces and updates the `.swn` file with the grid configuration for a specific domain.
+
+        Parameters
+        ----------
+        dict_grid_data : dict
+            Dictionary containing the grid parameters to be written into the configuration file.
         """
 
-        dict_grid_data["domain_number"]=self.domain_number
+        dict_grid_data["domain_number"] = self.domain_number
 
         print (f'\n \t*** Adding/Editing grid information for domain {self.domain_number} in configuration file ***\n')
         utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_grid_data)
