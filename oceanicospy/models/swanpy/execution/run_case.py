@@ -1,41 +1,64 @@
 import shutil
-import subprocess
 import pandas as pd
 from pathlib import Path
-import os
 import re
 
 from .. import utils
-from ..preprocess import GridMaker
 
 class CaseRunner():
-    def __init__(self,init,domain_number,dict_comp_data,all_domains):
+    """
+    CaseRunner is a utility class for finalizing the configuration of a SWAN case and preparing it for execution.
+
+    Parameters
+    ----------
+    init : object
+        Initialization object containing configuration data and folder paths.
+    domain_number : int
+        Identifier for the domain being processed.
+    dict_comp_data : dict
+        Computation parameters for the SWAN run (dates, time step, stationary flag, etc.).
+    all_domains : dict
+        Dictionary with configuration info for all domains in the simulation.
+    """
+
+    def __init__(self,init,domain_number,dict_comp_data,all_domains=None):
         self.init = init
-        self.dict_comp_data = dict_comp_data
         self.domain_number = domain_number
+        self.dict_comp_data = dict_comp_data
         self.all_domains = all_domains
-        print(f'\n*** Initializing Case Runner for domain {self.domain_number} ***\n')  
+        print(f'\n*** Initializing Case Runner for domain {self.domain_number} ***\n')
 
     def define_output_from_file(self,filename=None):
         """
-        Reads a CSV file containing point coordinates, adjusts negative longitude values,
-        and writes the processed coordinates to a .loc file for SWAN model output.
-        
+        Write a SWAN output location file from a CSV of point coordinates.
+
+        Reads a CSV file with ``X`` and ``Y`` coordinate columns, wraps any
+        negative longitudes to [0, 360), and writes the result to
+        ``points.loc`` in the domain run directory.
+
         Parameters
         ----------
         filename : str, optional
-            Name of the CSV file to read, located in the input folder for the current domain.
-            The file must contain at least 'X' and 'Y' columns representing coordinates.
-            If not provided, defaults to 'points.csv'.
+            Name of the CSV file located in the domain input folder. Must
+            contain at least ``X`` and ``Y`` columns. Defaults to ``'points.csv'``.
         """
 
         ds = pd.read_csv(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{filename}',delimiter=',')
         ds = ds[['X','Y']]
         if (ds['X'] < 0).any():
             ds.loc[ds['X'] < 0, 'X'] += 360
-        ds.to_csv(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/points.loc',index=False, header=False, na_rep=0, float_format='%7.7f',sep=' ')
+        ds.to_csv(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/points.loc',
+                  index=False, header=False, na_rep=0, float_format='%7.7f',sep=' ')
     
     def write_nest_section(self):
+        """
+        Write the nesting section of the SWAN run file for the current domain.
+
+        Determines which domains are nested inside the current one. If there are
+        no child domains, removes the ``NESTOUT`` and ``NGRID`` lines from the
+        run file. Otherwise, fills in the grid and nest identifiers for each
+        child domain, duplicating template lines as needed.
+        """
         dict_parent_doms = self.init.dict_ini_data["parent_domains"]
         nested_doms = [child for child,parent in dict_parent_doms.items() if parent==self.domain_number]
         if len(nested_doms)==0:
@@ -57,8 +80,11 @@ class CaseRunner():
 
     def fill_slurm_file(self):
         """
-        Fills the SLURM script with the necessary parameters for running the SWAN model.
-        This includes paths, simulation name, number of domains, and parent domains.
+        Populate the SLURM launcher script with simulation-specific parameters.
+
+        Copies the base SLURM template to the run directory and fills in the
+        case path, simulation name, number of domains, and parent-domain
+        mapping as a bash associative array.
         """
         self.script_dir = Path(__file__).resolve().parent.parent
         self.data_dir = self.script_dir.parent.parent.parent / 'data'
@@ -80,13 +106,29 @@ class CaseRunner():
         utils.fill_files(f'{self.init.dict_folders["run"]}../launcher_swan.slurm', launch_dict, strict=False)
 
     def _delete_placeholder_leftover(self):
+        """
+        Replace any unfilled ``$placeholder`` tokens in the run file with whitespace.
+
+        Scans the domain ``.swn`` run file and overwrites any remaining
+        ``$word`` tokens that were not substituted during preprocessing.
+        """
         run_file = Path(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn')
         text = run_file.read_text()
         text = re.sub(r"\$\w+", " ", text)  # wipe leftovers
         run_file.write_text(text)
 
     def fill_computation_section(self):
-        self._delete_placeholder_leftover()
+        """
+        Build and write the computation section of the SWAN run file.
+
+        Cleans up any leftover placeholders, then constructs the ``COMP``
+        command string based on whether the run is stationary or non-stationary.
+        For non-stationary runs, a single ``COMP NONSTAT`` line is built. For
+        stationary runs, one ``COMP STAT`` line is built per computation date,
+        optionally separated by ``INIT`` commands. The result is written into
+        the domain ``.swn`` file via key substitution.
+        """
+        #self._delete_placeholder_leftover()
 
         if self.dict_comp_data['stat_comp'] in (0,"0"): # If the computation is non-stationary
             self.stat_label = 'NONSTAT'

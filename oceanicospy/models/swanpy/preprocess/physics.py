@@ -15,6 +15,6 @@ class PhysicsMaker():
         Replaces and updates the .swn file with the physics configuration for a specific domain.
         """
         print (f'\n \t*** Adding/Editing physics information for domain {self.domain_number} in configuration file ***\n')
-        utils.fill_files_2(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_physics_data)
+        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',dict_physics_data)
 
 

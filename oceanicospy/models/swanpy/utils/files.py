@@ -69,68 +69,7 @@ def delete_link(file_name, target_path):
     else:
         print(f"No symbolic link found at: {link_path}")
 
-def fill_files(file_name,dict_,strict=True):
-    """
-    Replaces occurrences of keys with their corresponding values in a file.
-
-    Args:
-        file_name (str): The path of the file to be modified.
-        dict (dict): A dictionary containing the key-value pairs to be replaced.
-
-    Returns:
-        None: This function does not return any value.
-
-        Example:
-            >>> fill_files('/path/to/file.txt', {'key1': 'value1', 'key2': 'value2'})
-        """
-
-    dict_to_use=dict_.copy()
-    for key_,value_ in dict_.items():
-        if (type(value_)==float) or (type(value_)==int):
-            dict_to_use[key_]=str(value_)
-        dict_to_use[key_]=str(value_)
-    
-    if strict == True:
-        for key,value in dict_to_use.items():
-            with fileinput.FileInput(file_name,inplace=True,backup='') as file:
-                    for line in file:
-                        line_splitted=[string.replace("'","") for string in line.split()]
-                        if key in line_splitted:
-                                line=line.replace(key,value)
-                                print(line,end='')
-                        else:
-                            print(line,end='')
-    else:
-        for key,value in dict_to_use.items():  
-            with fileinput.FileInput(file_name,inplace=True,backup='') as file:
-                    for line in file:
-                        print(line.replace(key,value),end="")
-def fill_files_only_once(file_name, dict_):
-
-    dict_to_use=dict_.copy()
-    for key_,value_ in dict_.items():
-        if (type(value_)==float) or (type(value_)==int):
-            dict_to_use[key_]=str(value_)
-        dict_to_use[key_]=str(value_)
-
-    for key,value in dict_to_use.items():
-        count = 0
-        with fileinput.FileInput(file_name,inplace=True,backup='') as file:
-                for line in file:
-                    line_splitted=[string.replace("'","") for string in line.split()]
-                    if key in line_splitted:
-                        if count ==0:
-                            line = line.replace(key,value)                        
-                            count += 1
-                        elif count ==1:
-                            if key == 'nest_id':
-                                line = line.replace(key,value)
-                                count += 1
-                        print(line,end='')
-                    else:
-                        print(line,end='')
-
-def fill_files_2(file_path: str, replacements: dict):
+def fill_files(file_path: str, replacements: dict):
     """
     Replaces placeholders in an existing .swn file with given values.
     If a value is empty string, replaces placeholder with whitespace.
@@ -180,3 +119,65 @@ def duplicate_lines(file_name, start_line_number):
 def count_lines(file_name):
     with open(file_name, "r") as f:
         return sum(1 for _ in f)
+
+# def fill_files(file_name,dict_,strict=True):
+#     """
+#     Replaces occurrences of keys with their corresponding values in a file.
+
+#     Args:
+#         file_name (str): The path of the file to be modified.
+#         dict (dict): A dictionary containing the key-value pairs to be replaced.
+
+#     Returns:
+#         None: This function does not return any value.
+
+#         Example:
+#             >>> fill_files('/path/to/file.txt', {'key1': 'value1', 'key2': 'value2'})
+#         """
+
+#     dict_to_use=dict_.copy()
+#     for key_,value_ in dict_.items():
+#         if (type(value_)==float) or (type(value_)==int):
+#             dict_to_use[key_]=str(value_)
+#         dict_to_use[key_]=str(value_)
+    
+#     if strict == True:
+#         for key,value in dict_to_use.items():
+#             with fileinput.FileInput(file_name,inplace=True,backup='') as file:
+#                     for line in file:
+#                         line_splitted=[string.replace("'","") for string in line.split()]
+#                         if key in line_splitted:
+#                                 line=line.replace(key,value)
+#                                 print(line,end='')
+#                         else:
+#                             print(line,end='')
+#     else:
+#         for key,value in dict_to_use.items():  
+#             with fileinput.FileInput(file_name,inplace=True,backup='') as file:
+#                     for line in file:
+#                         print(line.replace(key,value),end="")
+# def fill_files_only_once(file_name, dict_):
+
+#     dict_to_use=dict_.copy()
+#     for key_,value_ in dict_.items():
+#         if (type(value_)==float) or (type(value_)==int):
+#             dict_to_use[key_]=str(value_)
+#         dict_to_use[key_]=str(value_)
+
+#     for key,value in dict_to_use.items():
+#         count = 0
+#         with fileinput.FileInput(file_name,inplace=True,backup='') as file:
+#                 for line in file:
+#                     line_splitted=[string.replace("'","") for string in line.split()]
+#                     if key in line_splitted:
+#                         if count ==0:
+#                             line = line.replace(key,value)                        
+#                             count += 1
+#                         elif count ==1:
+#                             if key == 'nest_id':
+#                                 line = line.replace(key,value)
+#                                 count += 1
+#                         print(line,end='')
+#                     else:
+#                         print(line,end='')
+

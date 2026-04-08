@@ -9,15 +9,15 @@ COORD SPHE CCM
 CGRID REG 278.2265167 12.4413166 0 0.13185 0.1908 293 424 CIRCLE 72 0.04 1
 $
 $ Bathymetry --------------------------------------------
-INP BOT REG 278.2265167 12.4413166 0 293 424 d293 d424 EXC -9999.
-READ BOT 1 bathymetry.bot 1 FREE
+INP BOT REG 278.2265167 12.4413166 0 293 424 0.00045 0.00045 EXC -9999.
+READ BOT 1 'bathymetry.bot' 1 FREE
 $
 $ Bottom friction ---------------------------------------
-INP FR REG 278.2265167 12.4413166 0 293 424 spacing_293 spacing_424 EXC -9. 
-READ FR 1 kn.fric 3 FREE
+INP FR REG 278.2265167 12.4413166 0 293 424 0.00045 0.00045 EXC -9. 
+READ FR 1 'kn.fric' 3 FREE
 $
 $ Wind --------------------------------------------------
-WIND wind_speed wind_dir
+WIND 12.8 90
 $
 $ Condiciones iniciales----------------------------------
 INIT DEF
@@ -39,11 +39,15 @@ PROP BSBT
 NUM STOPC 0 0.01 0.001 101 STAT mxitst=120
 NUM CT 0.4
 $
-$ Resultados ---------------------------------------------
-$  -> Campos de oleaje
+$ Output ---------------------------------------------
+$  -> Wave field
 BLOCK 'COMPGRID' NOHEAD 'wave_field.mat' LAY 3 HSIGN TPS TM01 DIR
+$  -> Output points
+POINTS 'out' FILE 'points.loc'
+TABLE 'out' HEADER 'SalidasSWAN.out' TIME XP YP DEP WIND HSIGN TPS TM01 TM02 DIR
+SPEC 'out' SPEC2D ABS L 'SpecSWAN.out'
 $
 $ Final --------------------------------------------------
 TEST 1, 0
-COMP 
+COMP STAT 20161001.000000
 STOP

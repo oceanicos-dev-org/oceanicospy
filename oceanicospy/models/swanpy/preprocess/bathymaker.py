@@ -21,10 +21,10 @@ class BathyMaker():
         If True, creates symbolic links for bathymetry files instead of copying them. Defaults to True.
     """
 
-    def __init__(self, init, domain_number, grid_info = None, use_link = None):
+    def __init__(self, init, domain_number, dict_info = None, use_link = None):
         self.init = init
         self.domain_number = domain_number
-        self.grid_info = grid_info
+        self.dict_info = dict_info
         self.use_link = use_link
         print(f'\n*** Initializing bathymaker for domain {self.domain_number} ***\n')
 
@@ -39,7 +39,7 @@ class BathyMaker():
         Returns
         -------
         dict or None
-            The updated ``grid_info`` dictionary if it was provided at initialisation,
+            The updated ``dict_info`` dictionary if it was provided at initialisation,
             otherwise ``None``.
 
         Raises
@@ -73,13 +73,14 @@ class BathyMaker():
                     f'cp {self.init.dict_folders["input"]}domain_0{self.domain_number}/{bathy_filename} '
                     f'{run_domain_dir}'
                 )
-
-        if self.grid_info != None:
-            self.grid_info.update({"bathy_file":bathy_filename})
-            return self.grid_info
+        
+        if self.dict_info!=None:
+            self.dict_info.update({"bathy_file":f"{bathy_filename}"})
+            return self.dict_info
         else:
-            raise ValueError('No bathymetry information provided at initialization. Bathymetry file has been linked/copied to run directory, but no metadata dictionary to return.')
-
+            raise ValueError('No bathymetry information provided at initialization. ' \
+            'Bathymetry file has been linked/copied to run directory, but no metadata dictionary to return.')
+        
     # TODO: this can be more like a call to gis module to obtain a standardized bathymetry info.
     # def convert_xyz2asc(self,nodata_value):
     #     """
@@ -146,7 +147,6 @@ class BathyMaker():
     #         self.grid_info[key] = str(value)
     #     return self.grid_info
     
-
     def fill_bathy_section(self):
         """
         Replaces and updates the `.swn` file with the bathymetry configuration for a specific domain.
@@ -157,10 +157,8 @@ class BathyMaker():
             If no bathymetry information was provided at initialization.
         """
 
-        if self.grid_info == None:
+        if self.dict_info == None:
             raise ValueError('No bathymetry information provided at initialization. Cannot fill bathymetry section in configuration file.')
 
         print (f'\n \t*** Adding/Editing bathymetry information for domain {self.domain_number} in configuration file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.grid_info)
-
-
+        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_info)

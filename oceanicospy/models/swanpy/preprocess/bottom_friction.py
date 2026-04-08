@@ -14,16 +14,16 @@ class BottomFrictionProcessor():
         An initialization object containing configuration data and folder paths.
     domain_number : int
         Identifier for the domain being processed.
-    grid_info : dict or None, optional
+    dict_info : dict or None, optional
         Dictionary containing bottom friction information. If None, friction must be provided via `filename`.
     use_link: bool, optional
         If True, creates symbolic links for bathymetry files instead of copying them. Defaults to True.
     """
 
-    def __init__(self,init,domain_number,grid_info=None,use_link=None):
+    def __init__(self,init,domain_number,dict_info=None,use_link=None):
         self.init = init
         self.domain_number = domain_number
-        self.grid_info = grid_info
+        self.dict_info = dict_info
         self.use_link = use_link
         print(f'\n*** Initializing BottomFrictionProcessor for domain {self.domain_number} ***\n')
 
@@ -62,9 +62,9 @@ class BottomFrictionProcessor():
                     f'{run_domain_dir}'
                 )
 
-        if self.grid_info!=None:
-            self.grid_info.update({"friction_file":f"{friction_filename}"})
-            return self.grid_info
+        if self.dict_info != None:
+            self.dict_info.update({"friction_file":f"{friction_filename}"})
+            return self.dict_info
 
     def fill_friction_section(self):
         """
@@ -76,8 +76,8 @@ class BottomFrictionProcessor():
             If no friction information was provided at initialization.
         """
 
-        if self.grid_info == None:
+        if self.dict_info == None:
             raise ValueError(f'Friction information is not provided for domain {self.domain_number}.')
 
         print (f'\n \t*** Adding/Editing friction information for domain {self.domain_number} in configuration file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.grid_info)
+        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_info)
