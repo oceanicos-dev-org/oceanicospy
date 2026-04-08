@@ -19,13 +19,12 @@ $
 $ Wind --------------------------------------------------
 WIND $wind_speed $wind_dir
 $
-$ Condiciones iniciales----------------------------------
+$ Initial conditions----------------------------------
 INIT DEF
 $
-$ Condiciones de frontera -------------------------------
+$ Boundary conditions -------------------------------
 BOU SHAP JON PEAK
-$
-BOU SIDE segment_dir CLOCKW CON values_bounds
+$boundaries_line
 $
 $ Parametros fisicos y numericos ------------------------
 GEN3 JANS 9 1

@@ -21,7 +21,7 @@ class BathyMaker():
         If True, creates symbolic links for bathymetry files instead of copying them. Defaults to True.
     """
 
-    def __init__(self, init, domain_number, dict_info = None, use_link = None):
+    def __init__(self, init, domain_number, dict_info = None, use_link = True):
         self.init = init
         self.domain_number = domain_number
         self.dict_info = dict_info
@@ -56,23 +56,22 @@ class BathyMaker():
 
         run_domain_dir = f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/'
 
-        if self.use_link !=None:
-            if self.use_link:
-                if utils.verify_file(f'{run_domain_dir}{bathy_filename}'):
-                    os.remove(f'{run_domain_dir}{bathy_filename}')
-                if not utils.verify_link(bathy_filename, run_domain_dir):
-                    utils.create_link(
-                        bathy_filename,
-                        f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/',
-                        run_domain_dir
-                    )
-            else:
-                if utils.verify_link(bathy_filename, run_domain_dir):
-                    utils.remove_link(bathy_filename, run_domain_dir)
-                os.system(
-                    f'cp {self.init.dict_folders["input"]}domain_0{self.domain_number}/{bathy_filename} '
-                    f'{run_domain_dir}'
+        if self.use_link:
+            if utils.verify_file(f'{run_domain_dir}{bathy_filename}'):
+                os.remove(f'{run_domain_dir}{bathy_filename}')
+            if not utils.verify_link(bathy_filename, run_domain_dir):
+                utils.create_link(
+                    bathy_filename,
+                    f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/',
+                    run_domain_dir
                 )
+        else:
+            if utils.verify_link(bathy_filename, run_domain_dir):
+                utils.remove_link(bathy_filename, run_domain_dir)
+            os.system(
+                f'cp {self.init.dict_folders["input"]}domain_0{self.domain_number}/{bathy_filename} '
+                f'{run_domain_dir}'
+            )
         
         if self.dict_info!=None:
             self.dict_info.update({"bathy_file":f"{bathy_filename}"})

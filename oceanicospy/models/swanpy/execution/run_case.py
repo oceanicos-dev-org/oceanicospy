@@ -28,6 +28,18 @@ class CaseRunner():
         self.all_domains = all_domains
         print(f'\n*** Initializing Case Runner for domain {self.domain_number} ***\n')
 
+    def _delete_placeholder_leftover(self):
+        """
+        Replace any unfilled ``$placeholder`` tokens in the run file with whitespace.
+
+        Scans the domain ``.swn`` run file and overwrites any remaining
+        ``$word`` tokens that were not substituted during preprocessing.
+        """
+        run_file = Path(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn')
+        text = run_file.read_text()
+        text = re.sub(r"\$\w+", " ", text)  # wipe leftovers
+        run_file.write_text(text)
+
     def define_output_from_file(self,filename=None):
         """
         Write a SWAN output location file from a CSV of point coordinates.
@@ -78,45 +90,6 @@ class CaseRunner():
                 nested_dom_info_.update(nest_id=f'n0{self.domain_number}_0{nested_dom_id}',nest_grid_file=f'child0{self.domain_number}_0{nested_dom_id}.NEST')
                 utils.fill_files_only_once(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',nested_dom_info_)
 
-    def fill_slurm_file(self):
-        """
-        Populate the SLURM launcher script with simulation-specific parameters.
-
-        Copies the base SLURM template to the run directory and fills in the
-        case path, simulation name, number of domains, and parent-domain
-        mapping as a bash associative array.
-        """
-        self.script_dir = Path(__file__).resolve().parent.parent
-        self.data_dir = self.script_dir.parent.parent.parent / 'data'
-
-        shutil.copy(f'{self.data_dir}/model_config_templates/swan/launcher_base_nest_cecc.slurm',
-                    f'{self.init.dict_folders["run"]}/../launcher_swan.slurm')
-        
-        bash_code = "declare -a bash_dict\n"
-        for key, value in self.init.dict_ini_data["parent_domains"].items():
-            bash_value = "" if value is None else value
-            bash_code += f'bash_dict[{key}]={bash_value}\n'
-
-        launch_dict = {
-            'path_case': self.init.root_path,
-            'simulation_name': self.init.dict_ini_data["name"].replace(" ", "_"),
-            'number_domains': self.init.dict_ini_data["number_domains"],
-            'parent_domains': bash_code
-        }
-        utils.fill_files(f'{self.init.dict_folders["run"]}../launcher_swan.slurm', launch_dict, strict=False)
-
-    def _delete_placeholder_leftover(self):
-        """
-        Replace any unfilled ``$placeholder`` tokens in the run file with whitespace.
-
-        Scans the domain ``.swn`` run file and overwrites any remaining
-        ``$word`` tokens that were not substituted during preprocessing.
-        """
-        run_file = Path(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn')
-        text = run_file.read_text()
-        text = re.sub(r"\$\w+", " ", text)  # wipe leftovers
-        run_file.write_text(text)
-
     def fill_computation_section(self):
         """
         Build and write the computation section of the SWAN run file.
@@ -130,29 +103,58 @@ class CaseRunner():
         """
         #self._delete_placeholder_leftover()
 
-        if self.dict_comp_data['stat_comp'] in (0,"0"): # If the computation is non-stationary
-            self.stat_label = 'NONSTAT'
-            self.string_comp = f'COMP {self.stat_label} {self.dict_comp_data["ini_comp_date"]} {self.dict_comp_data["dt_min"]} MIN {self.dict_comp_data["end_comp_date"]}'
-        else:
-            self.stat_label = 'STAT'
-            self.string_comp = ''
-            for idx,date in enumerate(self.dict_comp_data['comp_dates']):
-                self.date=date.strftime('%Y%m%d.%H%M%S')
-                if idx == len(self.dict_comp_data['comp_dates']) - 1:
-                    self.string_comp += f'COMP {self.stat_label} {self.date}'
-                else:
-                    if self.dict_comp_data['init_intermediate']:
-                        self.string_comp += f'COMP {self.stat_label} {self.date}\nINIT\n'
-                    else:
-                        self.string_comp += f'COMP {self.stat_label} {self.date}\n'
+        if self.dict_comp_data['stat_comp'] in (1,"1"): # If the computation is non-stationary
+            if self.init.dict_ini_data["stat_id"] == 1:
+                self.string_comp = 'COMP'
+            else:
+                self.stat_label = 'NONSTAT'
+                self.string_comp = f'COMP {self.stat_label} {self.dict_comp_data["ini_comp_date"]} {self.dict_comp_data["dt_min"]} MIN {self.dict_comp_data["end_comp_date"]}'
+        
+        # else:
+        #     self.stat_label = 'STAT'
+        #     self.string_comp = ''
+        #     for idx,date in enumerate(self.dict_comp_data['comp_dates']):
+        #         self.date=date.strftime('%Y%m%d.%H%M%S')
+        #         if idx == len(self.dict_comp_data['comp_dates']) - 1:
+        #             self.string_comp += f'COMP {self.stat_label} {self.date}'
+        #         else:
+        #             if self.dict_comp_data['init_intermediate']:
+        #                 self.string_comp += f'COMP {self.stat_label} {self.date}\nINIT\n'
+        #             else:
+        #                 self.string_comp += f'COMP {self.stat_label} {self.date}\n'
 
         self.dict_comp_data['string_comp'] = self.string_comp
-        self.dict_comp_data['stat_label_comp'] = self.stat_label
         for param in self.dict_comp_data:
             self.dict_comp_data[param] = str(self.dict_comp_data[param])
 
-        # print(self.dict_comp_data) # More keys than needed
         print (f'\n \t*** Adding/Editing compilation information for domain {self.domain_number} in configuration file ***\n')
         utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_comp_data)
 
-        # subprocess.run([f'rm -rf {self.dict_folders["run"]}run.erf-*'],shell=True)
+
+    # def fill_slurm_file(self):
+    #     """
+    #     Populate the SLURM launcher script with simulation-specific parameters.
+
+    #     Copies the base SLURM template to the run directory and fills in the
+    #     case path, simulation name, number of domains, and parent-domain
+    #     mapping as a bash associative array.
+    #     """
+    #     self.script_dir = Path(__file__).resolve().parent.parent
+    #     self.data_dir = self.script_dir.parent.parent.parent / 'data'
+
+    #     shutil.copy(f'{self.data_dir}/model_config_templates/swan/launcher_base_nest_cecc.slurm',
+    #                 f'{self.init.dict_folders["run"]}/../launcher_swan.slurm')
+        
+    #     bash_code = "declare -a bash_dict\n"
+    #     for key, value in self.init.dict_ini_data["parent_domains"].items():
+    #         bash_value = "" if value is None else value
+    #         bash_code += f'bash_dict[{key}]={bash_value}\n'
+
+    #     launch_dict = {
+    #         'path_case': self.init.root_path,
+    #         'simulation_name': self.init.dict_ini_data["name"].replace(" ", "_"),
+    #         'number_domains': self.init.dict_ini_data["number_domains"],
+    #         'parent_domains': bash_code
+    #     }
+    #     utils.fill_files(f'{self.init.dict_folders["run"]}../launcher_swan.slurm', launch_dict, strict=False)
+

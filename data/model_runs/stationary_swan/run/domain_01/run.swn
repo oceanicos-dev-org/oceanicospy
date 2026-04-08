@@ -19,13 +19,12 @@ $
 $ Wind --------------------------------------------------
 WIND 12.8 90
 $
-$ Condiciones iniciales----------------------------------
+$ Initial conditions----------------------------------
 INIT DEF
 $
-$ Condiciones de frontera -------------------------------
+$ Boundary conditions -------------------------------
 BOU SHAP JON PEAK
-$
-BOU SIDE segment_dir CLOCKW CON values_bounds
+BOUN SIDE N CLOCKW CON PAR 1.7 9 90 2
 $
 $ Parametros fisicos y numericos ------------------------
 GEN3 JANS 9 1
@@ -44,10 +43,10 @@ $  -> Wave field
 BLOCK 'COMPGRID' NOHEAD 'wave_field.mat' LAY 3 HSIGN TPS TM01 DIR
 $  -> Output points
 POINTS 'out' FILE 'points.loc'
-TABLE 'out' HEADER 'SalidasSWAN.out' TIME XP YP DEP WIND HSIGN TPS TM01 TM02 DIR
+TABLE 'out' HEADER 'PointSWAN.out' TIME XP YP DEP WIND HSIGN TPS TM01 TM02 DIR
 SPEC 'out' SPEC2D ABS L 'SpecSWAN.out'
 $
 $ Final --------------------------------------------------
 TEST 1, 0
-COMP STAT 20161001.000000
+COMP
 STOP

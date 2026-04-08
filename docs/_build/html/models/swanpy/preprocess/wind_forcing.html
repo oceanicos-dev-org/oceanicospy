@@ -167,14 +167,6 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../observations/reading_field_data.html">Walkthrough Example</a></li>
-
-
-
-
-
-
-
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
@@ -183,21 +175,45 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/WeatherStationBase.html">WeatherStationBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/DavisVantagePro.html">DavisVantagePro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/WeatherStationBase.html">Weather Station Base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/DavisVantagePro.html">Davis Vantage Pro</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/WeatherSens.html">WeatherSens</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../observations/weather_stations/Rainwise.html">Rainwise</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CTDBase.html">CTDBase</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CastawayCTD.html">CastawayCTD</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CTD48M.html">CTD48M</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/CastawayCTD.html">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../observations/ctd/SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../observations/AWAC.html">AWAC</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../observations/Buoy.html">Buoy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../observations/HOBO.html">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../retrievals/index.html">Retrievals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../retrievals/UHSLCDownloader.html">UHSLCDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../retrievals/CMDSDownloader.html">CMDSDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../retrievals/ERA5Downloader.html">ERA5Downloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../retrievals/data_fetcher.html">Walkthrough Example - Data Fetcher</a></li>
+
+
+
 </ul>
 </details></li>
 </ul>
@@ -358,55 +374,77 @@ document.write(`
 It includes functionalities to download, process, and save wind data from various sources.</p>
 <dl class="py class">
 <dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.models.swanpy.preprocess.</span></span><span class="sig-name descname"><span class="pre">WindForcing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">share_winds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_link</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/oceanicospy/models/swanpy/preprocess/wind_forcing.html#WindForcing"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.models.swanpy.preprocess.</span></span><span class="sig-name descname"><span class="pre">WindForcing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">share_winds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_link</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/oceanicospy/models/swanpy/preprocess/wind_forcing.html#WindForcing"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>init</strong> (<em>object</em>) – An initialization object containing configuration data and folder paths.</p></li>
 <li><p><strong>domain_number</strong> (<em>int</em>) – Identifier for the domain being processed.</p></li>
-<li><p><strong>wind_info</strong> (<em>dict</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Dictionary containing wind information. If None, winds must be provided via <cite>filename</cite>.</p></li>
-<li><p><strong>filename</strong> (<em>str</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Path to the file containing wind data. If None, wind must be provided via <cite>wind_info</cite>.</p></li>
-<li><p><strong>use_link</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, creates symbolic links for wind files instead of copying them. Defaults to True.</p></li>
+<li><p><strong>dict_info</strong> (<em>dict</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Dictionary containing spatial wind information. If None, winds must be provided via <cite>filename</cite>.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Path to the file containing wind data. If None, wind must be provided via <cite>dict_info</cite>.</p></li>
 <li><p><strong>share_winds</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, shares wind data across domains. Defaults to True.</p></li>
+<li><p><strong>use_link</strong> (<em>bool</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – If True, creates symbolic links for wind files instead of copying them.
+If False, copies the files. If None, no file placement is performed.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">get_winds_from_ERA5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">difference_to_UTC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'winds_era5.nc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/oceanicospy/models/swanpy/preprocess/wind_forcing.html#WindForcing.get_winds_from_ERA5"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Downloads or verifies the existence of ERA5 wind data for the specified domain.
-This method checks if the ERA5 wind data NetCDF file exists in the input directory for the current domain.
-If the file does not exist, it downloads the wind data using the parameters specified in <cite>self.wind_info</cite>
-and saves it to the appropriate location. If the file already exists, the download is skipped.</p>
+<dd><p>Download ERA5 wind data for the current domain, or skip if already present.</p>
+<p>Checks if the ERA5 NetCDF file exists in the domain input directory. If not,
+downloads it. When <cite>share_winds</cite> is True, only domain 1 downloads the data;
+other domains reuse it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>difference_to_UTC</strong> (<em>int</em>) – Time difference to UTC in hours for local time conversion.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the ERA5 NetCDF output file. Defaults to <code class="docutils literal notranslate"><span class="pre">'winds_era5.nc'</span></code>.</p></li>
+<li><p><strong>override</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, re-downloads the file even if it already exists. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">get_winds_from_CMDS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">difference_to_UTC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'winds_cmds.nc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">override</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/oceanicospy/models/swanpy/preprocess/wind_forcing.html#WindForcing.get_winds_from_CMDS"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Downloads or verifies the existence of CMDS wind data for the specified domain.
-This method checks if the CMDS wind data NetCDF file exists in the input directory for the current domain.
-If the file does not exist, it downloads the wind data using the parameters specified in <cite>self.wind_info</cite>
-and saves it to the appropriate location. If the file already exists, the download is skipped.</p>
+<dd><p>Download CMDS wind data for the current domain, or skip if already present.</p>
+<p>Checks if the CMDS NetCDF file exists in the domain input directory. If not,
+downloads it. When <cite>share_winds</cite> is True, only domain 1 downloads the data;
+other domains reuse it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>difference_to_UTC</strong> (<em>int</em>) – Time difference to UTC in hours for local time conversion.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the CMDS NetCDF output file. Defaults to <code class="docutils literal notranslate"><span class="pre">'winds_cmds.nc'</span></code>.</p></li>
+<li><p><strong>override</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, re-downloads the file even if it already exists. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">write_ERA5_ascii</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">era5_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascii_filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/oceanicospy/models/swanpy/preprocess/wind_forcing.html#WindForcing.write_ERA5_ascii"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Converts ERA5 wind data from NetCDF to ASCII format and manages file/link placement for SWAN model input.
-Depending on the configuration, this method processes the ERA5 NetCDF wind file, converts it to ASCII format,
-and ensures the resulting file is correctly placed or linked in the appropriate domain directory for model runs.
-It also updates wind information metadata if available.
-:param era5_filename: Path to the input ERA5 NetCDF wind file.
-:type era5_filename: str
-:param ascii_filename: Name of the output ASCII file to be generated or linked.
-:type ascii_filename: str</p>
+<dd><p>Convert ERA5 wind data to ASCII and place it for the SWAN model run.</p>
+<p>Converts the ERA5 NetCDF wind file to ASCII format and ensures the output
+is correctly placed or linked in the domain run directory. When <cite>share_winds</cite>
+is True, only domain 1 performs the conversion; other domains link to it.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Updated wind information dictionary if <cite>self.wind_info</cite> is not None, otherwise None.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>era5_filename</strong> (<em>str</em>) – Name of the ERA5 NetCDF wind file located in the domain input directory.</p></li>
+<li><p><strong>ascii_filename</strong> (<em>str</em>) – Name of the output ASCII file to be generated or linked.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict or None</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated wind information dictionary if <code class="docutils literal notranslate"><span class="pre">self.dict_info</span></code> is not None,
+otherwise None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict or None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -414,28 +452,60 @@ It also updates wind information metadata if available.
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">write_CMDS_ascii</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cdms_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascii_filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/oceanicospy/models/swanpy/preprocess/wind_forcing.html#WindForcing.write_CMDS_ascii"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Converts CMDS wind data from NetCDF to ASCII format and manages file/link placement for SWAN model input.
-Depending on the configuration, this method processes the CMDS NetCDF wind file, converts it to ASCII format,
-and ensures the resulting file is correctly placed or linked in the appropriate domain directory for model runs.
-It also updates wind information metadata if available.
-:param cdms_filename: Path to the input CMDS NetCDF wind file.
-:type cdms_filename: str
-:param ascii_filename: Name of the output ASCII file to be generated or linked.
-:type ascii_filename: str</p>
+<dd><p>Convert CMDS wind data to ASCII and place it for the SWAN model run.</p>
+<p>Converts the CMDS NetCDF wind file to ASCII format and ensures the output
+is correctly placed or linked in the domain run directory. When <cite>share_winds</cite>
+is True, only domain 1 performs the conversion; other domains link to it.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Updated wind information dictionary if <cite>self.wind_info</cite> is not None, otherwise None.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cdms_filename</strong> (<em>str</em>) – Name of the CMDS NetCDF wind file located in the domain input directory.</p></li>
+<li><p><strong>ascii_filename</strong> (<em>str</em>) – Name of the output ASCII file to be generated or linked.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>dict or None</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated wind information dictionary if <code class="docutils literal notranslate"><span class="pre">self.dict_info</span></code> is not None,
+otherwise None.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict or None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">fill_wind_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_wind_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/oceanicospy/models/swanpy/preprocess/wind_forcing.html#WindForcing.fill_wind_section"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Replaces and updates the .swn file with the wind configuration for a specific domain.</p>
+<span class="sig-name descname"><span class="pre">use_constant_wind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wind_speed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/oceanicospy/models/swanpy/preprocess/wind_forcing.html#WindForcing.use_constant_wind"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return a constant wind field configuration for the SWAN model.</p>
+<p>Does not perform any file handling. Returns a dictionary with the wind
+speed and direction needed to configure a spatially uniform wind field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wind_speed</strong> (<em>float</em>) – Constant wind speed in meters per second (m/s).</p></li>
+<li><p><strong>wind_dir</strong> (<em>float</em>) – Constant wind direction in degrees under nautical convention
+(0° = North, 90° = East).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary with keys <code class="docutils literal notranslate"><span class="pre">'wind_speed'</span></code> and <code class="docutils literal notranslate"><span class="pre">'wind_dir'</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">fill_wind_section</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/oceanicospy/models/swanpy/preprocess/wind_forcing.html#WindForcing.fill_wind_section"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Write wind configuration into the SWAN run file for the current domain.
+Uses the information in <code class="docutils literal notranslate"><span class="pre">self.dict_info</span></code> to fill the appropriate section of the .swn file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If no wind information was provided at initialization.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
