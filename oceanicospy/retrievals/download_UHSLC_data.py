@@ -33,12 +33,13 @@ class UHSLCDownloader:
 
     BASE_URL = "https://uhslc.soest.hawaii.edu/data/csv/fast/hourly/"
 
-    def __init__(self, station_id: str, output_path: str | Path, 
+    def __init__(self, station_id: str, output_path: str | Path, output_filename: str,
                  start_datetime_local: str | None = None, 
                  end_datetime_local: str | None = None,
                  difference_from_UTC: float = 5) -> None:
         self.station_id = station_id
-        self.output_path = Path(output_path)
+        self.output_path = output_path
+        self.output_filename = output_filename
         self.start_datetime_local = start_datetime_local
         self.end_datetime_local = end_datetime_local
         self.difference_from_UTC = difference_from_UTC
@@ -62,6 +63,7 @@ class UHSLCDownloader:
         OSError
             If the output directory cannot be created or the file cannot be written.
         """
+
         filename = f"h{self.station_id}.csv"
         file_url = self.BASE_URL + filename
 
@@ -69,7 +71,7 @@ class UHSLCDownloader:
         response.raise_for_status()
 
         self.output_path.mkdir(parents=True, exist_ok=True)
-        dest = self.output_path / filename
+        dest = self.output_path / self.output_filename
         dest.write_bytes(response.content)
 
         print(f"Downloaded {filename} to {dest}.")

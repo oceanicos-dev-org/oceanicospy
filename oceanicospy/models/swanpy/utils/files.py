@@ -1,4 +1,5 @@
 import os
+import shutil
 import fileinput
 from pathlib import Path
 import re
@@ -51,23 +52,70 @@ def create_link(file_name,source_path,target_path):
     else:
         os.symlink(f'{source_path}{file_name}',f'{target_path}{file_name}')
 
-def delete_link(file_name, target_path):
+def remove_link(file_name, target_path):
     """
-    Deletes a symbolic link in the target path.
+    Remove a symbolic link from the target directory.
 
-    Parameters:
-        file_name (str): The name of the link to be deleted.
-        target_path (str): The path where the symbolic link is located.
+    Parameters
+    ----------
+    file_name : str
+        Name of the symbolic link to remove.
+    target_path : str
+        Directory that contains the symbolic link.
 
-    Returns:
-        None
+    Returns
+    -------
+    None
     """
     link_path = os.path.join(target_path, file_name)
     if os.path.islink(link_path):
         os.unlink(link_path)
-        print(f"Deleted symbolic link: {link_path}")
+        print(f"Removed symbolic link: {link_path}")
     else:
         print(f"No symbolic link found at: {link_path}")
+
+
+def deploy_forcing_file(
+    filename: str,
+    origin_dir: str,
+    run_dir: str,
+    use_link: bool | None,
+) -> None:
+    """
+    Deploy a forcing file from an input directory to a run directory,
+    either as a symbolic link or as a physical copy.
+
+    Parameters
+    ----------
+    filename : str
+        Name of the file to deploy (e.g. ``"winds.wnd"``).
+    origin_dir : str
+        Directory that contains the source file.  Must end with ``/``.
+    run_dir : str
+        Target run directory where the file or link should appear.
+        Must end with ``/``.
+    use_link : bool
+        * ``True``  — remove any regular file at the target location and
+          create a symbolic link pointing to the source.
+        * ``False`` — remove any existing symbolic link and copy the file.
+
+    Returns
+    -------
+    None
+    """
+
+    if use_link is None:
+        return
+
+    if use_link:
+        if verify_file(f'{run_dir}{filename}'):
+            os.remove(f'{run_dir}{filename}')
+        if not verify_link(filename, run_dir):
+            create_link(filename, origin_dir, run_dir)
+    else:
+        if verify_link(filename, run_dir):
+            remove_link(filename, run_dir)
+        shutil.copy2(f'{origin_dir}{filename}', run_dir)
 
 def fill_files(file_path: str, replacements: dict):
     """

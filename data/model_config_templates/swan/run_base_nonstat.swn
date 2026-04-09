@@ -17,11 +17,11 @@ INP FR REG $lon_ll_corner_fric $lat_ll_corner_fric 0 $nx_fric $ny_fric $dx_fric 
 READ FR 1 '$friction_file' 3 FREE
 $
 $ Wind (spatial, time-varying) --------------------------
-INP WIND REG $lon_ll_wind $lat_ll_wind 0. $meshes_x_wind $meshes_y_wind $dx_wind $dy_wind
+INP WIND REG $lon_ll_corner_wind $lat_ll_corner_wind 0. $nx_wind $ny_wind $dx_wind $dy_wind
 READ WIND 1 '$winds_file' 3 FREE
 $
 $ Water level -------------------------------------------
-INP WLEV REG $lon_ll_wl $lat_ll_wl 0. $meshes_x_wl $meshes_y_wl $dx_wl $dy_wl EXC -9999.
+INP WLEV REG $lon_ll_corner_wl $lat_ll_corner_wl 0. $nx_wl $ny_wl $dx_wl $dy_wl EXC -9999.
 READ WLEV 1 '$wl_file' 3 FREE
 $
 $ Initial conditions-------------------------------------

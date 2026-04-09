@@ -151,23 +151,7 @@ class BoundaryConditions():
         bnd_files = [f for f in os.listdir(self.input_path) if f.endswith('.bnd')]
 
         for bnd_file in bnd_files:
-            if self.use_link != None:
-                if self.use_link:
-                    if utils.verify_file(f'{run_domain_dir}{bnd_file}'):
-                        os.remove(f'{run_domain_dir}{bnd_file}')
-                    if not utils.verify_link(bnd_file, run_domain_dir):
-                        utils.create_link(
-                            bnd_file,
-                            origin_domain_dir,
-                            run_domain_dir
-                        )
-                else:
-                    if utils.verify_link(bnd_file, run_domain_dir):
-                        utils.remove_link(bnd_file, run_domain_dir)
-                    os.system(
-                        f'cp {origin_domain_dir}/{bnd_file} '
-                        f'{run_domain_dir}'
-                    )
+            utils.deploy_forcing_file(bnd_file, origin_domain_dir, run_domain_dir, self.use_link)
 
     def get_waves_from_ERA5(self,difference_to_UTC,wind_info_dict,filename='waves_era5.nc',override=False):
         """

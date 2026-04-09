@@ -12,3 +12,5 @@ now there are two ways to pass the grid information:
 Bathymaker and bottomfrictionprocessor:
 
 - the use_link logic can be sent to utils because is repeated across multiple modules
+
+A way has to be found to make the correction mask for big jumps in the time series easier to apply: see def_UHSLC_csv_to_ascii(

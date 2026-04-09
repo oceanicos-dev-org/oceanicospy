@@ -1,7 +1,6 @@
 import xarray as xr
 import pandas as pd
 import glob as glob
-import os
 
 from pathlib import Path
 
@@ -9,28 +8,29 @@ from .. import utils
 from ....retrievals import *
 
 class WindForcing():
+    """
+    Parameters
+    ----------
+    init : object
+        An initialization object containing configuration data and folder paths.
+    domain_number : int
+        Identifier for the domain being processed.
+    dict_info : dict or None, optional
+        Dictionary containing spatial wind information. If None, winds must be provided via `filename`.
+    filename : str or None, optional
+        Path to the file containing wind data. If None, wind must be provided via `dict_info`.
+    share_winds : bool, optional
+        If True, shares wind data across domains. Defaults to True.
+    use_link : bool or None, optional
+        If True, creates symbolic links for wind files instead of copying them.
+        If False, copies the files. If None, no file placement is performed.
+    """
+
     def __init__(self,init,domain_number,dict_info=None,filename=None,share_winds=True,use_link=None):
-        """
-        Parameters
-        ----------
-        init : object
-            An initialization object containing configuration data and folder paths.
-        domain_number : int
-            Identifier for the domain being processed.
-        dict_info : dict or None, optional
-            Dictionary containing spatial wind information. If None, winds must be provided via `filename`.
-        filename : str or None, optional
-            Path to the file containing wind data. If None, wind must be provided via `dict_info`.
-        share_winds : bool, optional
-            If True, shares wind data across domains. Defaults to True.
-        use_link : bool or None, optional
-            If True, creates symbolic links for wind files instead of copying them.
-            If False, copies the files. If None, no file placement is performed.
-        """
         self.init = init
         self.domain_number = domain_number
         self.dict_info = dict_info
-        self.input_filename = filename
+        self.filename = filename
         self.share_winds = share_winds
         self.use_link = use_link
         print(f'\n*** Initializing winds for domain {self.domain_number} ***\n')
@@ -260,23 +260,7 @@ class WindForcing():
                 origin_domain_dir = f'{self.init.dict_folders["input"]}domain_01/'
                 print(f"\t ERA5 wind data converted to ASCII format and saved as {ascii_filename} in domain 01, linking to domain {self.domain_number}")
 
-        if self.use_link != None:
-            if self.use_link:
-                if utils.verify_file(f'{run_domain_dir}{ascii_filename}'):
-                    os.remove(f'{run_domain_dir}{ascii_filename}')
-                if not utils.verify_link(ascii_filename, run_domain_dir):
-                    utils.create_link(
-                        ascii_filename,
-                        origin_domain_dir,
-                        run_domain_dir
-                    )
-            else:
-                if utils.verify_link(ascii_filename, run_domain_dir):
-                    utils.remove_link(ascii_filename, run_domain_dir)
-                os.system(
-                    f'cp {origin_domain_dir}/{ascii_filename} '
-                    f'{run_domain_dir}'
-                )
+        utils.deploy_forcing_file(ascii_filename, origin_domain_dir, run_domain_dir, self.use_link)
 
         if self.dict_info!=None:
             if not self.share_winds:
@@ -323,23 +307,7 @@ class WindForcing():
                 origin_domain_dir = f'{self.init.dict_folders["input"]}domain_01/'
                 print(f"\t CMDS wind data converted to ASCII format and saved as {ascii_filename} in domain 01, linking to domain {self.domain_number}")
 
-        if self.use_link != None:
-            if self.use_link:
-                if utils.verify_file(f'{run_domain_dir}{ascii_filename}'):
-                    os.remove(f'{run_domain_dir}{ascii_filename}')
-                if not utils.verify_link(ascii_filename, run_domain_dir):
-                    utils.create_link(
-                        ascii_filename,
-                        origin_domain_dir,
-                        run_domain_dir
-                    )
-            else:
-                if utils.verify_link(ascii_filename, run_domain_dir):
-                    utils.remove_link(ascii_filename, run_domain_dir)
-                os.system(
-                    f'cp {origin_domain_dir}/{ascii_filename} '
-                    f'{run_domain_dir}'
-                )
+        utils.deploy_forcing_file(ascii_filename, origin_domain_dir, run_domain_dir, self.use_link)
 
         if self.dict_info!=None:
             if not self.share_winds:
