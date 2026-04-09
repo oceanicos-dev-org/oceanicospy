@@ -12,9 +12,9 @@ class GridMaker():
         An initialization object containing configuration data and folder paths.
     domain_number : int
         Identifier for the domain being processed.
-    grid_info : dict or None, optional
+    dict_info : dict or None, optional
         User-provided grid information dictionary.
-        If the grid_info dictionary is passed it should contain the following keys: 
+        If the dict_info dictionary is passed it should contain the following keys: 
         ``lon_ll_corner``: longitude of the lower-left corner of the grid
         ``lat_ll_corner``: latitude of the lower-left corner of the grid
         ``x_extent``: total extent of the grid in the x-direction (longitude)

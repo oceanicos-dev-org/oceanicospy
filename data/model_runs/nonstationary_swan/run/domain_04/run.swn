@@ -1,0 +1,58 @@
+$ Header --------------------------------------------
+PROJECT 'Non-stationary case for San Andres' '2'
+'Example non-stat'
+$
+$ Computational mesh -----------------------------------
+SET NAUT
+MODE NONSTAT TWOD
+COORD SPHE CCM
+CGRID REG 278.28 12.5 0 0.055 0.055 243 243 CIRCLE 36 0.04 1
+$
+$ Bathymetry --------------------------------------------
+INP BOT REG 278.28 12.5 0 243 243 0.000225 0.000225 EXC -9999.
+READ BOT 1 'Cal_bat_soundbay_25m.bot' 1 FREE
+$
+$ Bottom friction ----------------------------------------
+INP FR REG 278.28 12.5 0 243 243 0.000225 0.000225 EXC -9.
+READ FR 1 'kn_soundbay_25m.fric' 3 FREE
+$
+$ Wind (spatial, time-varying) --------------------------
+INP WIND REG $lon_ll_wind $lat_ll_wind 0. $meshes_x_wind $meshes_y_wind 0.025 0.025
+READ WIND 1 '../../input/domain_01/winds.wnd' 3 FREE
+$
+$ Water level -------------------------------------------
+INP WLEV REG $lon_ll_wl $lat_ll_wl 0. $meshes_x_wl $meshes_y_wl $dx_wl $dy_wl EXC -9999.
+READ WLEV 1 '$wl_file' 3 FREE
+$
+$ Initial conditions-------------------------------------
+INIT DEF
+$
+$ Boundary conditions ------------------------------------
+BOU SHAP JON PEAK
+$boundaries_line
+$
+$ Physics ------------------------------------------------
+GEN3 WESTIN $cds1 $delta
+QUAD
+TRI
+BRE
+FRIC MAD
+DIFFR
+$ Numerics ----------------------------------------------
+NUM STOPC 0 0.01 0.001 101 NONSTAT mxitns=10
+PROP BSBT
+$
+$ Output -------------------------------------------------
+BLOCK 'COMPGRID' NOHEAD 'wave_field.mat' LAY 3 HSIGN TPS TM01 TM02 DISSIP DISBOT DISWCAP REDQUAD REDTRIAD OUTPUT $ini_output_date $output_res_min MIN
+POINTS 'out' FILE 'points.loc'
+TABLE 'out' HEADER 'SalidasSWAN.out' TIME XP YP DEP WIND HSIGN TPS TM01 TM02 DIR OUTPUT $ini_output_date $output_res_min MIN
+SPEC 'out' SPEC2D ABS L 'SpecSWAN.out' OUTPUT $ini_output_date $output_res_min MIN
+$
+$ Nest output (removed for non-nested domains by write_nest_section) --
+NGRID '$nest_id' $child_lon_ll_corner $child_lat_ll_corner 0 $child_x_extent $child_y_extent $child_nx $child_ny
+NESTOUT '$nest_id' '$nest_grid_file' OUTPUT $ini_nest_date $output_res_min MIN
+$
+$ Final --------------------------------------------------
+TEST 1, 0
+$string_comp
+STOP

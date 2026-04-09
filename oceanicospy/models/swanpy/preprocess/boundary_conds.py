@@ -237,6 +237,7 @@ class BoundaryConditions():
         self._process_boundary_points(points_lat,points_lon,self._single_tpar_from_ERA5)
 
     def create_boundary_line(self,list_sides=None,wave_params=None):
+        # TODO: this can be splitted into other functions as the conditions became larger and more complex. 
         if self.dict_info != None:
             self.boundary_type = self.dict_info['boundary_type']
             if self.boundary_type == 'side':

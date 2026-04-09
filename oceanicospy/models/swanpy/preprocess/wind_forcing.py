@@ -52,10 +52,10 @@ class WindForcing():
         filepath = Path(filepath)
         ERA5download_obj = ERA5Downloader(
                         variables = ['10m_u_component_of_wind', '10m_v_component_of_wind'],
-                        lon_min = self.dict_info['lon_ll_wind'],
-                        lon_max = self.dict_info['lon_ll_wind'] + (self.dict_info['meshes_x_wind'] * self.dict_info['dx_wind']),
-                        lat_min = self.dict_info['lat_ll_wind'],
-                        lat_max = self.dict_info['lat_ll_wind'] + (self.dict_info['meshes_y_wind'] * self.dict_info['dy_wind']),
+                        lon_min = self.dict_info['lon_ll_corner_wind'],
+                        lon_max = self.dict_info['lon_ll_corner_wind'] + (self.dict_info['nx_wind'] * self.dict_info['dx_wind']),
+                        lat_min = self.dict_info['lat_ll_corner_wind'],
+                        lat_max = self.dict_info['lat_ll_corner_wind'] + (self.dict_info['ny_wind'] * self.dict_info['dy_wind']),
                         start_datetime_local = self.init.ini_date,
                         end_datetime_local = self.init.end_date,
                         difference_to_UTC = difference_to_UTC,
@@ -82,10 +82,10 @@ class WindForcing():
         """
         filepath = Path(filepath)
         CMDSdownload_obj = CMDSDownloader.for_winds(
-                        lon_min = self.dict_info['lon_ll_wind'],
-                        lon_max = self.dict_info['lon_ll_wind'] + (self.dict_info['meshes_x_wind'] * self.dict_info['dx_wind']),
-                        lat_min = self.dict_info['lat_ll_wind'],
-                        lat_max = self.dict_info['lat_ll_wind'] + (self.dict_info['meshes_y_wind'] * self.dict_info['dy_wind']),
+                        lon_min = self.dict_info['lon_ll_corner_wind'],
+                        lon_max = self.dict_info['lon_ll_corner_wind'] + (self.dict_info['nx_wind'] * self.dict_info['dx_wind']),
+                        lat_min = self.dict_info['lat_ll_corner_wind'],
+                        lat_max = self.dict_info['lat_ll_corner_wind'] + (self.dict_info['ny_wind'] * self.dict_info['dy_wind']),
                         start_datetime_local = self.init.ini_date,
                         end_datetime_local = self.init.end_date,
                         difference_to_UTC = difference_to_UTC,

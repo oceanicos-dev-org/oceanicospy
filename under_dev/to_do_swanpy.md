@@ -8,3 +8,7 @@ now there are two ways to pass the grid information:
 # Bathymaker
 
 - Convert_xyz2asc should be exmplified through any guide.
+
+Bathymaker and bottomfrictionprocessor:
+
+- the use_link logic can be sent to utils because is repeated across multiple modules

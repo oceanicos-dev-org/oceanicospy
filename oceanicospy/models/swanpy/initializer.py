@@ -18,13 +18,13 @@ class Initializer:
 
         root_path/
         ├── input/
-        │   └── domain_01/      ← place ERA5 .nc and bathymetry .dat files here
+        │   └── domain_XX/      ← this needs to be populated by the user with input files before running the case
         ├── pros/
         ├── run/
-        │   └── domain_01/
+        │   └── domain_XX/
         │       └── run.swn     ← generated from template
         └── output/
-            └── domain_01/
+            └── domain_XX/
 
     Parameters
     ----------
@@ -39,7 +39,6 @@ class Initializer:
         * ``case_description`` (*str*) – free-text description.
         * ``stat_id`` (*int*) – ``0`` for non-stationary, ``1`` for stationary.
         * ``number_domains`` (*int*) – total number of computational domains.
-        * ``nested_domains`` (*int*) – number of nested (child) domains.
         * ``parent_domains`` (*dict*) – mapping ``{child_id: parent_id}`` where
           ``parent_id`` is ``None`` for top-level domains.
 
@@ -111,21 +110,6 @@ class Initializer:
         All directories are created with ``Path.mkdir(parents=True,
         exist_ok=True)``, so missing intermediate paths are handled
         automatically.
-
-        Examples
-        --------
-        Single-domain case (``number_domains=1``) produces::
-
-            root_path/
-            ├── input/
-            ├── pros/
-            ├── run/
-            │   └── domain_01/
-            └── output/
-                └── domain_01/
-
-        Two-domain nested case (``number_domains=2``) additionally produces
-        ``run/domain_02/`` and ``output/domain_02/``.
         """
         print('\n\t*** Creating project folder structure ***\n')
 
