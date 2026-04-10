@@ -10,11 +10,11 @@ CGRID REG 278.2265167 12.4413166 0 0.13185 0.1908 293 424 CIRCLE 72 0.04 1
 $
 $ Bathymetry --------------------------------------------
 INP BOT REG 278.2265167 12.4413166 0 293 424 0.00045 0.00045 EXC -9999.
-READ BOT 1 'bathymetry.bot' 1 FREE
+READ BOT 1 '../../input/domain_01/bathymetry.bot' 1 FREE
 $
 $ Bottom friction ---------------------------------------
 INP FR REG 278.2265167 12.4413166 0 293 424 0.00045 0.00045 EXC -9. 
-READ FR 1 'kn.fric' 3 FREE
+READ FR 1 '../../input/domain_01/kn.fric' 3 FREE
 $
 $ Wind --------------------------------------------------
 WIND 12.8 90
@@ -24,7 +24,7 @@ INIT DEF
 $
 $ Boundary conditions -------------------------------
 BOU SHAP JON PEAK
-BOUN SIDE N CLOCKW CON PAR 1.7 9 90 2
+ 
 $
 $ Parametros fisicos y numericos ------------------------
 GEN3 JANS 9 1

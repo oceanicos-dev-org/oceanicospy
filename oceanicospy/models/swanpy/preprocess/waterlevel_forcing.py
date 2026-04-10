@@ -10,6 +10,25 @@ from .... import utils
 from ....retrievals import *
 
 class WaterLevelForcing():
+    """
+    WaterLevelForcing is a utility class for generating and managing the water level forcing information for
+    SWAN.
+    
+    Parameters
+    ----------
+    init : object
+        An initialization object containing configuration data and folder paths.
+    domain_number : int
+        Identifier for the domain being processed.
+    dict_info : dict or None, optional
+        Dictionary containing water level information. If None, water level data must be provided via `get_waterlevel_from_UHSLC()`.
+    filename : str or None, optional
+        Name of the water level ASCII file to create or link in the domain input directory. Defaults to None.
+    share_wl : bool, optional
+        If True, water level data is shared across domains by linking to the domain 1 file. Defaults to True.
+    use_link: bool, optional
+        If True, creates symbolic links for water level files instead of copying them. Defaults to True
+    """
     def __init__ (self,init,domain_number,dict_info=None,filename=None,share_wl=True,use_link=None):
         self.init = init
         self.domain_number = domain_number
@@ -183,6 +202,19 @@ class WaterLevelForcing():
                 np.savetxt(fh, water_level, fmt="%10.4f")
 
     def get_waterlevel_from_UHSLC(self,station_id):
+        """
+        Obtain water level data from the UHSLC for a given station ID, handling file management and optional sharing across domains.
+
+        Parameters
+        ----------
+        station_id : int
+            The UHSLC station ID for which to retrieve water level data.
+        
+        Returns
+        -------
+        pd.DataFrame
+            A DataFrame containing the cleanedwater level data for the specified station.
+        """
         filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/h{station_id}.csv"
         file_exists = utils.verify_file(filepath)
 
@@ -215,6 +247,21 @@ class WaterLevelForcing():
         return df_waterlevel
 
     def write_UHSLC_ascii(self,UHSLC_dataframe,ascii_filename):
+        """
+        Write the cleaned UHSLC water level data to a SWAN ASCII file, handling file management and optional sharing across domains.
+
+        Parameters
+        ----------
+        UHSLC_dataframe : pd.DataFrame
+            The cleaned UHSLC water level data as a pandas DataFrame.
+        ascii_filename : str
+            Name of the SWAN water-level ASCII output file to create in the same input directory (e.g. ``"water_levels.wl"``).
+
+        Notes
+        -----
+        If *share_wl* is ``True``, the ASCII file is created in domain 1 and linked to other domains. If ``False``, each domain 
+        gets its own ASCII file created from the UHSLC data. In either case, the method updates the domain's water level
+        """
         run_domain_dir = f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/'
         origin_domain_dir = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/'
 

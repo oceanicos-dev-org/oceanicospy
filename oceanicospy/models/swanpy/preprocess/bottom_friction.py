@@ -34,7 +34,8 @@ class BottomFrictionProcessor():
 
         Returns:
         --------
-            dict or None: The updated `friction_info` dictionary if it exists, otherwise None.
+        dict or None: 
+            The updated `friction_info` dictionary if it exists, otherwise None.
         """
     
         friction_filepaths = glob.glob(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/*.fric')

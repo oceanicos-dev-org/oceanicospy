@@ -15,9 +15,11 @@ class BoundaryConditions():
         self.input_filename = input_filename
         self.use_link = use_link 
 
-
-        if self.init.dict_ini_data["parent_domains"][domain_number] != None:
-            self.isnested = True
+        if "parent_domains" in self.init.dict_ini_data:
+            if self.init.dict_ini_data["parent_domains"][domain_number] != None:
+                self.isnested = True
+            else:
+                self.isnested = False
         else:
             self.isnested = False
 
@@ -349,6 +351,14 @@ class BoundaryConditions():
 
 
     def fill_boundaries_section(self):
+        """
+        Replaces and updates the .swn file with the boundary configuration for a specific domain.
+
+        Raises
+        ------
+        ValueError
+            If no boundary information was provided at initialization.
+        """
         if self.boundary_line is not None:
             self.dict_boundaries={'boundaries_line':self.boundary_line}
             print (f'\n \t*** Adding/Editing boundary information for domain {self.domain_number} in configuration file ***\n')
