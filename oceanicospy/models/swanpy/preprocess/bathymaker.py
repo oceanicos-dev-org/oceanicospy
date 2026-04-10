@@ -74,7 +74,7 @@ class BathyMaker():
             )
         
         if self.dict_info!=None:
-            self.dict_info.update({"bathy_file":f"{bathy_filename}"})
+            self.dict_info.update({"bathy_file":f"../../input/domain_0{self.domain_number}/{bathy_filename}"})
             return self.dict_info
         else:
             raise ValueError('No bathymetry information provided at initialization. ' \

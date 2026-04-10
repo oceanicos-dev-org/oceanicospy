@@ -22,7 +22,7 @@ class WaterLevelForcing():
     def _download_UHSLC(self,station_id,filepath):
         filepath = Path(filepath)
 
-        self.UHSLCDownloader_obj = UHSLCDownloader(
+        UHSLCDownloader_obj = UHSLCDownloader(
                             station_id=station_id,
                             output_path=filepath.parent,
                             output_filename=filepath.name,
@@ -30,9 +30,12 @@ class WaterLevelForcing():
                             end_datetime_local=self.init.end_date.strftime('%Y-%m-%d %H:%M:%S'),
                             difference_from_UTC=-5
                             )
-        self.UHSLCDownloader_obj.download()
+        UHSLCDownloader_obj.download()
+        df_clean = UHSLCDownloader_obj.clean_data(filepath)
+
         
         print('\t UHSLC water level data was successfully downloaded')
+        return df_clean
     
     def _load_bathymetry(self) -> np.ndarray:
         """
@@ -104,7 +107,7 @@ class WaterLevelForcing():
 
     def _UHSLC_csv_to_ascii(
         self,
-        UHSLC_filename: str,
+        UHSLC_dataframe: pd.DataFrame,
         ascii_filename: str,
         detrend_wl: bool = False,
     ) -> None:
@@ -129,9 +132,8 @@ class WaterLevelForcing():
 
         Parameters
         ----------
-        UHSLC_filename : str
-            Name of the raw UHSLC CSV file located in the domain input
-            directory (e.g. ``"h737.csv"``).
+        UHSLC_dataframe : pd.DataFrame
+            The cleaned UHSLC data as a pandas DataFrame.
         ascii_filename : str
             Name of the SWAN water-level ASCII output file to create in
             the same input directory (e.g. ``"water_levels.wl"``).
@@ -153,35 +155,21 @@ class WaterLevelForcing():
         """
         domain_dir = Path(self.init.dict_folders["input"]) / f"domain_0{self.domain_number}"
 
-        reader = UHSLCDownloader(
-            station_id="",
-            output_path=domain_dir,
-            output_filename=UHSLC_filename,
-            difference_from_UTC=5,
-        )
-        df = reader.clean_data(domain_dir / UHSLC_filename)
 
-        df.loc[df["depth[m]"] < -30.0, "depth[m]"] = np.nan
-
-        # TODO: generalization --- Station datum correction: −2.0 m for 1997-01-01 00:00 – 2018-12-31 18:00 local ---
-        correction_mask = (
-            (df.index >= datetime(1997, 1, 1, 0)) &
-            (df.index <= datetime(2018, 12, 31, 18))
-        )
-        df.loc[correction_mask, "depth[m]"] -= 2.0
+        UHSLC_dataframe.loc[UHSLC_dataframe["depth[m]"] < -30.0, "depth[m]"] = np.nan
 
         # --- Optional linear detrending (NaN-safe) ---
         if detrend_wl:
-            valid_mask = np.isfinite(df["depth[m]"])
-            detrended = np.full(len(df), np.nan)
+            valid_mask = np.isfinite(UHSLC_dataframe["depth[m]"])
+            detrended = np.full(len(UHSLC_dataframe), np.nan)
             detrended[valid_mask.values] = detrend(
-                df.loc[valid_mask, "depth[m]"].values
+                UHSLC_dataframe.loc[valid_mask, "depth[m]"].values
             )
-            df["depth[m]"] = detrended
+            UHSLC_dataframe["depth[m]"] = detrended
 
-        self.dataset = df
-        self.dataset_filtered = df.loc[
-            (df.index >= self.init.ini_date) & (df.index <= self.init.end_date)
+        self.dataset = UHSLC_dataframe
+        self.dataset_filtered = UHSLC_dataframe.loc[
+            (UHSLC_dataframe.index >= self.init.ini_date) & (UHSLC_dataframe.index <= self.init.end_date)
         ]
 
         bathymetry_grid = self._load_bathymetry()
@@ -200,29 +188,43 @@ class WaterLevelForcing():
 
         if not self.share_wl:
             if not file_exists:
-                self._download_UHSLC(station_id, filepath=filepath)
+                df_waterlevel = self._download_UHSLC(station_id, filepath=filepath)
             else:
+                reader = UHSLCDownloader(station_id=station_id,
+                                        output_path=None,
+                                        output_filename=None)
+                df_waterlevel = reader.clean_data(filepath)
                 print("\t UHSLC water level data already exists, skipping download")
         else:
             if self.domain_number == 1:
                 if not file_exists:
-                    self._download_UHSLC(station_id, filepath=filepath)
+                    df_waterlevel = self._download_UHSLC(station_id, filepath=filepath)
                 else:
+                    reader = UHSLCDownloader(station_id=station_id,
+                                            output_path=None,
+                                            output_filename=None)
+                    df_waterlevel = reader.clean_data(filepath)
                     print("\t UHSLC water level data already exists, skipping download")
             else:
-                    print("\t UHSLC water level data already exists in domain 1, skipping download") 
+                    filepath_domain1 = f"{self.init.dict_folders['input']}domain_01/h{station_id}.csv"
+                    reader = UHSLCDownloader(station_id=station_id,
+                                            output_path=None,
+                                            output_filename=None)
+                    df_waterlevel = reader.clean_data(filepath_domain1)
+                    print("\t UHSLC water level data already exists in domain 1, skipping download")
+        return df_waterlevel
 
-    def write_UHSLC_ascii(self,UHSLC_filename,ascii_filename):
+    def write_UHSLC_ascii(self,UHSLC_dataframe,ascii_filename):
         run_domain_dir = f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/'
         origin_domain_dir = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/'
 
         # verification of file existence and conversion to ascii format if needed 
         if not self.share_wl:
-            self._UHSLC_csv_to_ascii(UHSLC_filename, ascii_filename)
+            self._UHSLC_csv_to_ascii(UHSLC_dataframe, ascii_filename)
             print('\t UHSLC water level data converted to ASCII format and saved as', ascii_filename)
         else:
             if self.domain_number == 1:
-                self._UHSLC_csv_to_ascii(UHSLC_filename, ascii_filename)
+                self._UHSLC_csv_to_ascii(UHSLC_dataframe, ascii_filename)
                 print('\t UHSLC water level data converted to ASCII format and saved as', ascii_filename)
             else:
                 origin_domain_dir = f'{self.init.dict_folders["input"]}domain_01/'

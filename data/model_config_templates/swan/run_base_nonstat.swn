@@ -32,7 +32,7 @@ BOU SHAP JON PEAK
 $boundaries_line
 $
 $ Physics ------------------------------------------------
-GEN3 WESTIN $cds1 $delta
+$genmode $diss_form $cds1 $delta
 QUAD
 TRI
 BRE

@@ -63,7 +63,7 @@ class BottomFrictionProcessor():
             )
 
         if self.dict_info != None:
-            self.dict_info.update({"friction_file":f"{friction_filename}"})
+            self.dict_info.update({"friction_file":f"../../input/domain_0{self.domain_number}/{friction_filename}"})
             return self.dict_info
 
     def fill_friction_section(self):
