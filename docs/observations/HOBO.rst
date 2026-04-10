@@ -1,6 +1,9 @@
 HOBO
 ====
 
+.. toctree::
+   :maxdepth: 2
+
 HOBO data loggers are compact, battery-powered instruments used to measure environmental parameters such as
 temperature and conductivity. The ``HOBOBase`` class provides a common interface for all HOBO logger implementations,
 while ``HOBO_Temp`` and ``HOBO_TempCond`` handle temperature and conductivity loggers respectively.

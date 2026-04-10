@@ -1,6 +1,9 @@
 Signal conditioning
 ===================
 
+.. toctree::
+   :maxdepth: 2
+
 Most of the time series recorded by different devices need to be conditioned before
 using them in spectral analysis. Different key concepts will be explained in this section
 to obtain the most feasible results.

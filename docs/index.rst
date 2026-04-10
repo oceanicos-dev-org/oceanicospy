@@ -23,3 +23,4 @@ documentation for details.
    analysis/index
    observations/index
    retrievals/index
+   models/index
