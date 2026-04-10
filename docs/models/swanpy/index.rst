@@ -13,7 +13,7 @@ is based on a typical worflow for numerical wave modeling.
    execution/index
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Examples:
 
    swan_stationary_case

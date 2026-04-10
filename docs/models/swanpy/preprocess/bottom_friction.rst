@@ -2,8 +2,7 @@ Bottom Friction
 ===============
 
 .. toctree::
-   :maxdepth: 2
-   :hidden:
+   :maxdepth: 4
 
 This module handles the bottom friction parameters for SWAN simulations.
 
