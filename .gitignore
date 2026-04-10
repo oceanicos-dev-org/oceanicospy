@@ -1,5 +1,9 @@
 /data/observations/*
 /data/temp/*
+<<<<<<< HEAD
+/data/model_runs/*
+=======
+>>>>>>> 5d48c5cb29036c1269753c1321a4ce9d6bc43c90
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
