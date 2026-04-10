@@ -98,8 +98,12 @@ class WindForcing():
 
     def _ERA5_nc_to_ascii(self,era5_filename,ascii_filename):
         """
+<<<<<<< HEAD
         Convert ERA5 wind data from a NetCDF file to a custom ASCII format.
 
+=======
+        Converts ERA5 wind data from a NetCDF file to a custom ASCII format.
+>>>>>>> 5d48c5cb29036c1269753c1321a4ce9d6bc43c90
         Parameters
         ----------
         era5_filename : str

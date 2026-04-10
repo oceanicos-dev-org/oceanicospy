@@ -63,7 +63,6 @@ class UHSLCDownloader:
         OSError
             If the output directory cannot be created or the file cannot be written.
         """
-
         filename = f"h{self.station_id}.csv"
         file_url = self.BASE_URL + filename
 
