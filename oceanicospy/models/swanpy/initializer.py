@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import shutil
 from pathlib import Path
 from string import Template
@@ -54,56 +53,10 @@ class Initializer:
     """
 
     def __init__(self, root_path, dict_ini_data, ini_date = None, end_date = None):
-=======
-import subprocess
-from pathlib import Path
-from . import utils
-import shutil
-import os
-from string import Template
-import re
-
-class Initializer():
-    """
-    SWANInitializer is a utility class for setting up the directory structure and initial configuration files
-    required to run SWAN (Simulating WAves Nearshore) model simulations. It automates the creation and cleanup
-    of project folders, domain-specific subfolders, and the initialization of configuration files for each domain.
-
-    Attributes
-    ----------
-    root_path : str
-        The root directory path where the project structure will be created.
-    dict_ini_data : dict
-        Dictionary containing initialization data and configuration parameters for the SWAN model.
-    ini_date : str or None
-        The initial date for the model run (optional).
-    end_date : str or None
-        The end date for the model run (optional). 
-    """
-        
-    def __init__(self,root_path,dict_ini_data,ini_date=None,end_date=None):
-        """
-        Initialize the Initializer instance with the specified root path, initialization data,
-        and optional start and end dates for the model run.
-
-        Parameters
-        ----------
-        root_path : str
-            The root directory path where the project structure will be created.
-        dict_ini_data : dict
-            Dictionary containing initialization data and configuration parameters for the SWAN model.
-        ini_date : str or None, optional
-            The initial date for the model run (default is None).
-        end_date : str or None, optional
-            The end date for the model run (default is None).
-        """
-
->>>>>>> 5d48c5cb29036c1269753c1321a4ce9d6bc43c90
         self.root_path = root_path
         self.ini_date = ini_date
         self.end_date = end_date
         self.dict_ini_data = dict_ini_data
-<<<<<<< HEAD
         self.folder_names = ['input', 'pros', 'run', 'output']
         self.dict_folders = {
             name: f'{self.root_path}{name}/' for name in self.folder_names
@@ -195,76 +148,10 @@ class Initializer():
         self.dict_ini_data['stat_label'] = self.stat_label
 
         print('\n\t*** Copying base SWAN configuration file into run folder ***\n')
-=======
-        self.folder_names = ['input','pros','run','output']
-        self.dict_folders = {}
-        for folder_name in self.folder_names:
-            self.dict_folders[folder_name]=f'{self.root_path}{folder_name}/'
-        
-        print('*** Initializing SWAN model ***\n')
-
-    def _generate_baseline_SWAN(self,template_in,template_out,replacement_dict):
-        template_text = Path(template_in).read_text()
-
-        # substitute available keys, leave others as-is
-        filled_text = Template(template_text).safe_substitute(replacement_dict)
-
-        Path(template_out).write_text(filled_text)
-
-
-    def create_folders_l1(self):
-        """
-        Creates the primary project folder structure and cleans specific directories.
-        """
-        
-        print ('\n \t *** Creating top-level project structure ***\n')
-        for folder_name in self.folder_names:
-            if not os.path.exists(self.dict_folders[folder_name]):
-                subprocess.call(['mkdir','-p',f'{self.dict_folders[folder_name]}'])
-            else:
-                if folder_name in ['output','run']:
-                    os.system(f'rm -rf {self.dict_folders[folder_name]}*')
-
-
-    def create_folders_l2(self):
-        """
-        Creates and prepares output and run directories for each computational domain.
-        Directories are named as `domain_0{domain}` and are created under the paths specified in
-        `output` and `run` directories.
-        """
-
-        print ('\n \t *** Creating subfolders per each domain ***\n')
-
-        for domain in range(1,self.dict_ini_data["number_domains"]+1):
-            if not os.path.exists(f'{self.dict_folders["output"]}domain_0{domain}/'):
-                subprocess.call(['mkdir','-p',f'{self.dict_folders["output"]}domain_0{domain}/'])
-            else:
-                os.system(f'rm -rf {self.dict_folders["output"]}domain_0{domain}/*')
-                
-            if not os.path.exists(f'{self.dict_folders["run"]}domain_0{domain}/'):
-                subprocess.call(['mkdir','-p',f'{self.dict_folders["run"]}domain_0{domain}/'])
-            else:
-                os.system(f'rm -rf {self.dict_folders["run"]}domain_0{domain}/*')
-
-
-    def replace_ini_data(self):
-        """
-        Replaces and updates the SWAN model initialization data and configuration files for each domain.
-        """
-
-        if self.dict_ini_data['stat_id']==0:
-            self.stat_label='NONSTAT'
-        else:
-            self.stat_label='STAT'
-        self.dict_ini_data['stat_label']=self.stat_label
-
-        print ('\n \t *** Copying base swan configuration file into run folder ***\n')
->>>>>>> 5d48c5cb29036c1269753c1321a4ce9d6bc43c90
 
         self.script_dir = Path(__file__).resolve().parent
         self.data_dir = self.script_dir.parent.parent.parent / 'data'
 
-<<<<<<< HEAD
         template_path = (
             f'{self.data_dir}/model_config_templates/swan/'
             f'run_base_{self.stat_label.lower()}.swn'
@@ -273,10 +160,3 @@ class Initializer():
         for domain in range(1, self.dict_ini_data['number_domains'] + 1):
             output_path = f'{self.dict_folders["run"]}domain_0{domain}/run.swn'
             self._generate_baseline_SWAN(template_path, output_path, self.dict_ini_data)
-=======
-        for domain in range(1,self.dict_ini_data["number_domains"]+1):
-                merged = {**utils.defaults, **self.dict_ini_data}
-                self._generate_baseline_SWAN(f'{self.data_dir}/model_config_templates/swan/run_base_{self.stat_label.lower()}.swn', 
-                                             f'{self.dict_folders["run"]}domain_0{domain}/run.swn',merged)
-
->>>>>>> 5d48c5cb29036c1269753c1321a4ce9d6bc43c90
