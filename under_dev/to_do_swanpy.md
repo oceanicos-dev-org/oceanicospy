@@ -9,8 +9,10 @@ now there are two ways to pass the grid information:
 
 - Convert_xyz2asc should be exmplified through any guide.
 
-Bathymaker and bottomfrictionprocessor:
+# BoundaryConds
 
-- the use_link logic can be sent to utils because is repeated across multiple modules
+- Verify properly the domain 1 in comparison
 
-A way has to be found to make the correction mask for big jumps in the time series easier to apply: see def_UHSLC_csv_to_ascii(
+# CaseRunner
+
+- Deciding about the slurm templates

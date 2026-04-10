@@ -2,8 +2,6 @@ import shutil
 from pathlib import Path
 from string import Template
 
-from . import utils
-
 class Initializer:
     """
     Utility class for setting up the directory structure and baseline configuration
@@ -138,8 +136,7 @@ class Initializer:
         * ``stat_id == 1`` → ``run_base_stat.swn``
 
         The selected template is filled using :meth:`_generate_baseline_SWAN`
-        with a merged dictionary of library defaults (see :data:`utils.defaults`)
-        and the user-supplied ``dict_ini_data``.  User values take precedence
+        with user-supplied ``dict_ini_data``.  User values take precedence
         over defaults for any key that appears in both.
 
         The rendered ``run.swn`` is written to
@@ -160,8 +157,6 @@ class Initializer:
             f'run_base_{self.stat_label.lower()}.swn'
         )
 
-        merged = {**utils.defaults, **self.dict_ini_data}
-
         for domain in range(1, self.dict_ini_data['number_domains'] + 1):
             output_path = f'{self.dict_folders["run"]}domain_0{domain}/run.swn'
-            self._generate_baseline_SWAN(template_path, output_path, merged)
+            self._generate_baseline_SWAN(template_path, output_path, self.dict_ini_data)

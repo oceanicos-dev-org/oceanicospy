@@ -32,7 +32,7 @@ BOU SHAP JON PEAK
 BOUN NEST 'child01_02.NEST' CLOSED
 $
 $ Physics ------------------------------------------------
-GEN3 WESTIN $cds1 $delta
+GEN3 JANS
 QUAD
 TRI
 BRE
@@ -43,16 +43,18 @@ NUM STOPC 0 0.01 0.001 101 NONSTAT mxitns=10
 PROP BSBT
 $
 $ Output -------------------------------------------------
-BLOCK 'COMPGRID' NOHEAD 'wave_field.mat' LAY 3 HSIGN TPS TM01 TM02 DISSIP DISBOT DISWCAP REDQUAD REDTRIAD OUTPUT $ini_output_date $output_res_min MIN
+BLOCK 'COMPGRID' NOHEAD 'wave_field.mat' LAY 3 HSIGN TPS TM01 TM02 OUTPUT 20230512.000000 60 MIN
 POINTS 'out' FILE 'points.loc'
-TABLE 'out' HEADER 'SalidasSWAN.out' TIME XP YP DEP WIND HSIGN TPS TM01 TM02 DIR OUTPUT $ini_output_date $output_res_min MIN
-SPEC 'out' SPEC2D ABS L 'SpecSWAN.out' OUTPUT $ini_output_date $output_res_min MIN
+TABLE 'out' HEADER 'PointSWAN.out' TIME XP YP DEP WIND HSIGN TPS TM01 TM02 DIR OUTPUT 20230512.000000 60 MIN
+SPEC 'out' SPEC2D ABS L 'SpecSWAN.out' OUTPUT 20230512.000000 60 MIN
 $
-$ Nest output (removed for non-nested domains by write_nest_section) --
-NGRID '$nest_id' $child_lon_ll_corner $child_lat_ll_corner 0 $child_x_extent $child_y_extent $child_nx $child_ny
-NESTOUT '$nest_id' '$nest_grid_file' OUTPUT $ini_nest_date $output_res_min MIN
+$ Nest output --------------------------------------------
+NGRID 'n02_03' 278.270165 12.550217 0 0.0747 0.0747 332 332
+NESTOUT 'n02_03' 'child02_03.NEST' OUTPUT 20230509.000000 60 MIN
+NGRID 'n02_04' 278.28 12.5 0 0.055 0.055 243 243
+NESTOUT 'n02_04' 'child02_04.NEST' OUTPUT 20230509.000000 60 MIN
 $
 $ Final --------------------------------------------------
 TEST 1, 0
-$string_comp
+COMP NONSTAT 20230509.000000 10 MIN 20230531.230000
 STOP

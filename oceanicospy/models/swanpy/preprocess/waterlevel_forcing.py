@@ -6,7 +6,7 @@ from scipy.signal import detrend
 
 from pathlib import Path
 
-from .. import utils
+from .... import utils
 from ....retrievals import *
 
 class WaterLevelForcing():
@@ -231,7 +231,7 @@ class WaterLevelForcing():
                 print(f"\t UHSLC water level data converted to ASCII format and saved as {ascii_filename} in domain 01, linking to domain {self.domain_number}")
         
         # validation of file creation and deployment to run directory
-        utils.deploy_forcing_file(ascii_filename, origin_domain_dir, run_domain_dir, self.use_link)
+        utils.deploy_input_file(ascii_filename, origin_domain_dir, run_domain_dir, self.use_link)
 
         if self.dict_info!=None:
             if not self.share_wl:
@@ -251,14 +251,3 @@ class WaterLevelForcing():
 
         print (f'\n \t*** Adding/Editing water level information for domain {self.domain_number} in configuration file ***\n')
         utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_info)
-
-    # def waterlevel_from_user(self):
-    #     wl_file_path = glob.glob(f'{self.dict_folders["input"]}domain_0{self.domain_number}/*.wl')[0]
-    #     wl_filename=wl_file_path.split('/')[-1]
-
-    #     os.system(f'cp {self.dict_folders["input"]}domain_0{self.domain_number}/{wl_filename}\
-    #                              {self.dict_folders["run"]}domain_0{self.domain_number}/')
-
-    #     if self.dict_info!=None:
-    #         self.dict_info.update({"water_levels.wl":wl_filename})
-    #         return self.dict_info

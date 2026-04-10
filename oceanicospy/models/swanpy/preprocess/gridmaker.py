@@ -1,6 +1,6 @@
 import numpy as np
 import glob as glob
-from .. import utils
+from .... import utils
 
 class GridMaker():
     """

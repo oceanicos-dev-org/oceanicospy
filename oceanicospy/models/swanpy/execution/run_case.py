@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 import re
 
-from .. import utils
+from .... import utils
 
 class CaseRunner():
     """
@@ -73,7 +73,7 @@ class CaseRunner():
         """
         dict_parent_doms = self.init.dict_ini_data["parent_domains"]
         nested_doms = [child for child,parent in dict_parent_doms.items() if parent==self.domain_number]
-        if len(nested_doms)==0:
+        if len(nested_doms) == 0:
             utils.delete_line(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn','NESTOUT')
             utils.delete_line(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn','NGRID')
         else:
@@ -82,7 +82,9 @@ class CaseRunner():
                 nested_doms_info.append(self.all_domains[nest_dom]["grid"])
 
             if len(nested_doms)>1:
-                utils.duplicate_lines(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn', 55)
+                if utils.count_NGRID_occurrences(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn')==1:
+                    NGRID_line_number = utils.look_for_NGRID_linenumber(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn')
+                    utils.duplicate_lines(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn', NGRID_line_number)
             for nested_dom_id,nested_dom_info in zip(nested_doms,nested_doms_info):
                 nested_dom_info_=dict()
                 for key in nested_dom_info.copy().keys():
@@ -103,25 +105,26 @@ class CaseRunner():
         """
         #self._delete_placeholder_leftover()
 
-        if self.dict_comp_data['stat_comp'] in (1,"1"): # If the computation is non-stationary
+        if self.dict_comp_data['stat_comp'] in (1,"1"): # If the computation is stationary
             if self.init.dict_ini_data["stat_id"] == 1:
                 self.string_comp = 'COMP'
             else:
-                self.stat_label = 'NONSTAT'
-                self.string_comp = f'COMP {self.stat_label} {self.dict_comp_data["ini_comp_date"]} {self.dict_comp_data["dt_min"]} MIN {self.dict_comp_data["end_comp_date"]}'
-        
-        # else:
-        #     self.stat_label = 'STAT'
-        #     self.string_comp = ''
-        #     for idx,date in enumerate(self.dict_comp_data['comp_dates']):
-        #         self.date=date.strftime('%Y%m%d.%H%M%S')
-        #         if idx == len(self.dict_comp_data['comp_dates']) - 1:
-        #             self.string_comp += f'COMP {self.stat_label} {self.date}'
-        #         else:
-        #             if self.dict_comp_data['init_intermediate']:
-        #                 self.string_comp += f'COMP {self.stat_label} {self.date}\nINIT\n'
-        #             else:
-        #                 self.string_comp += f'COMP {self.stat_label} {self.date}\n'
+                self.stat_comp_label = 'NONSTAT'
+                # TODO: review the logic for multiple COMP lines
+                # self.string_comp = ''
+                # for idx,date in enumerate(self.dict_comp_data['comp_dates']):
+                #     self.date=date.strftime('%Y%m%d.%H%M%S')
+                #     if idx == len(self.dict_comp_data['comp_dates']) - 1:
+                #         self.string_comp += f'COMP {self.stat_comp_label} {self.date}'
+                #     else:
+                #         if self.dict_comp_data['init_intermediate']:
+                #             self.string_comp += f'COMP {self.stat_comp_label} {self.date}\nINIT\n'
+                #         else:
+                #             self.string_comp += f'COMP {self.stat_comp_label} {self.date}\n'
+
+        else:
+            self.stat_comp_label = 'NONSTAT'
+            self.string_comp = f'COMP {self.stat_comp_label} {self.dict_comp_data["ini_comp_date"]} {self.dict_comp_data["dt_min"]} MIN {self.dict_comp_data["end_comp_date"]}'
 
         self.dict_comp_data['string_comp'] = self.string_comp
         for param in self.dict_comp_data:
@@ -129,7 +132,6 @@ class CaseRunner():
 
         print (f'\n \t*** Adding/Editing compilation information for domain {self.domain_number} in configuration file ***\n')
         utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_comp_data)
-
 
     # def fill_slurm_file(self):
     #     """

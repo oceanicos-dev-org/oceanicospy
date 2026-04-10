@@ -1,6 +1,5 @@
 import os
 import shutil
-import fileinput
 from pathlib import Path
 import re
 
@@ -75,14 +74,14 @@ def remove_link(file_name, target_path):
         print(f"No symbolic link found at: {link_path}")
 
 
-def deploy_forcing_file(
+def deploy_input_file(
     filename: str,
     origin_dir: str,
     run_dir: str,
     use_link: bool | None,
 ) -> None:
     """
-    Deploy a forcing file from an input directory to a run directory,
+    Deploy a input file from an input directory to a run directory,
     either as a symbolic link or as a physical copy.
 
     Parameters
@@ -131,7 +130,6 @@ def fill_files(file_path: str, replacements: dict):
             return str(val) if val else " "  # empty -> whitespace
         return match.group(0)  # leave untouched if not in replacements
 
-    # replace only placeholders like $cds1, $delta, etc.
     updated = re.sub(r"\$\w+", replace_placeholder, text)
 
     Path(file_path).write_text(updated)
@@ -143,6 +141,20 @@ def delete_line(file_name,string_to_find):
         for line in lines:
             if string_to_find not in line.split():
                 f.write(line)
+
+def look_for_NGRID_linenumber(file_name):
+    with open(file_name, "r") as f:
+        lines = f.readlines()
+    for i, line in enumerate(lines):
+        if 'NGRID' in line.split():
+            return i + 1  # Return 1-based line number
+    return False
+
+def count_NGRID_occurrences(file_name):
+    with open(file_name, "r") as f:
+        lines = f.readlines()
+    count = sum(1 for line in lines if 'NGRID' in line.split())
+    return count
 
 def duplicate_lines(file_name, start_line_number):
     with open(file_name, "r") as f:
@@ -168,64 +180,12 @@ def count_lines(file_name):
     with open(file_name, "r") as f:
         return sum(1 for _ in f)
 
-# def fill_files(file_name,dict_,strict=True):
-#     """
-#     Replaces occurrences of keys with their corresponding values in a file.
+def fill_files_only_once(file_name, dict_):
+    replacements = {k: str(v) for k, v in dict_.items()}
+    text = Path(file_name).read_text()
 
-#     Args:
-#         file_name (str): The path of the file to be modified.
-#         dict (dict): A dictionary containing the key-value pairs to be replaced.
+    for key, value in replacements.items():
+        max_replacements = 2 if key == 'nest_id' else 1
+        text = re.sub(r"\$"+re.escape(key), value, text, count=max_replacements)
 
-#     Returns:
-#         None: This function does not return any value.
-
-#         Example:
-#             >>> fill_files('/path/to/file.txt', {'key1': 'value1', 'key2': 'value2'})
-#         """
-
-#     dict_to_use=dict_.copy()
-#     for key_,value_ in dict_.items():
-#         if (type(value_)==float) or (type(value_)==int):
-#             dict_to_use[key_]=str(value_)
-#         dict_to_use[key_]=str(value_)
-    
-#     if strict == True:
-#         for key,value in dict_to_use.items():
-#             with fileinput.FileInput(file_name,inplace=True,backup='') as file:
-#                     for line in file:
-#                         line_splitted=[string.replace("'","") for string in line.split()]
-#                         if key in line_splitted:
-#                                 line=line.replace(key,value)
-#                                 print(line,end='')
-#                         else:
-#                             print(line,end='')
-#     else:
-#         for key,value in dict_to_use.items():  
-#             with fileinput.FileInput(file_name,inplace=True,backup='') as file:
-#                     for line in file:
-#                         print(line.replace(key,value),end="")
-# def fill_files_only_once(file_name, dict_):
-
-#     dict_to_use=dict_.copy()
-#     for key_,value_ in dict_.items():
-#         if (type(value_)==float) or (type(value_)==int):
-#             dict_to_use[key_]=str(value_)
-#         dict_to_use[key_]=str(value_)
-
-#     for key,value in dict_to_use.items():
-#         count = 0
-#         with fileinput.FileInput(file_name,inplace=True,backup='') as file:
-#                 for line in file:
-#                     line_splitted=[string.replace("'","") for string in line.split()]
-#                     if key in line_splitted:
-#                         if count ==0:
-#                             line = line.replace(key,value)                        
-#                             count += 1
-#                         elif count ==1:
-#                             if key == 'nest_id':
-#                                 line = line.replace(key,value)
-#                                 count += 1
-#                         print(line,end='')
-#                     else:
-#                         print(line,end='')
-
+    Path(file_name).write_text(text)

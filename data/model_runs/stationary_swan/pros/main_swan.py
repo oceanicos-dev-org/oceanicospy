@@ -25,6 +25,8 @@ case.replace_ini_data()     # writes run.swn from the STAT template
 
 DOMAIN_ID = 1   # domain identifier (1-indexed)
 
+#--------- Grid information ------------#
+
 case_grid = GridMaker(
     init         = case,
     domain_number= DOMAIN_ID,
@@ -39,6 +41,8 @@ case_grid = GridMaker(
 print(f'The grid info dictionary for domain {DOMAIN_ID} is: {case_grid.dict_info}')
 case_grid.fill_grid_section()
 
+#--------- Bathymetry information ------------#
+
 case_bathy = BathyMaker(
     init         = case,
     domain_number= DOMAIN_ID,
@@ -51,6 +55,8 @@ case_bathy.use_ascii_file_from_user()
 
 print(f'The bathymetry info dictionary for domain {DOMAIN_ID} is: {case_bathy.dict_info}')
 case_bathy.fill_bathy_section()
+
+# -------- Bottom friction information ------------#
 
 case_bottom_friction = BottomFrictionProcessor(
     init         = case,
@@ -65,6 +71,8 @@ case_bottom_friction.use_ascii_file_from_user()
 print(case_bottom_friction.dict_info)
 case_bottom_friction.fill_friction_section()
 
+# -------- Wind forcing information ------------#
+
 case_winds = WindForcing(
     init         = case,
     domain_number= DOMAIN_ID,
@@ -73,6 +81,8 @@ case_winds = WindForcing(
 case_winds.use_constant_wind(wind_speed=12.8, wind_dir=90)
 print(f'The wind info dictionary for domain {DOMAIN_ID} is: {case_winds.dict_info}')
 case_winds.fill_wind_section()
+
+# -------- Boundary conditions information ------------#
 
 case_boundary = BoundaryConditions(
     init        = case,
@@ -86,6 +96,7 @@ comp_data_stat = dict(
     stat_comp        = 1,               # 1 → stationary
 )
 
+# --------- Run section------------#
 case_run = CaseRunner(
     init         = case,
     domain_number= DOMAIN_ID,
