@@ -1,0 +1,71 @@
+$ Header --------------------------------------------
+PROJECT 'Non-stationary case for San Andres' '2'
+'Example non-stat'
+$
+$ Computational mesh -----------------------------------
+SET NAUT
+MODE NONSTAT TWOD
+COORD SPHE CCM
+CGRID REG 278.2 12.4 0 0.2 0.3 222 333 CIRCLE 36 0.04 1
+$
+$ Bathymetry --------------------------------------------
+INP BOT REG 278.1811 12.372 0 322 422 0.0009 0.0009 EXC -9999.
+READ BOT 1 '../../input/domain_01/Cal_batsai_idw100.bot' 1 FREE
+$
+$ Bottom friction ----------------------------------------
+INP FR REG 278.1811 12.372 0 322 422 0.0009 0.0009 EXC -9.
+READ FR 1 '../../input/domain_01/kn_100v2.fric' 3 FREE
+$
+$ Wind (spatial, time-varying) --------------------------
+INP WIND REG 278 12.3 0. 24 24 0.025 0.025
+READ WIND 1 '../../input/domain_01/winds.wnd' 3 FREE
+$
+$ Water level -------------------------------------------
+INP WLEV REG 278.1811 12.372 0. 322 422 0.0009 0.0009 EXC -9999.
+READ WLEV 1 '../../input/domain_01/water_levels.wl' 3 FREE
+$
+$ Initial conditions-------------------------------------
+INIT DEF
+$
+$ Boundary conditions ------------------------------------
+BOU SHAP JON PEAK
+BOUN SIDE N CLOCKW VAR FILE 0.0 '../data/model_runs/nonstationary_swan/input/domain_01/TparN_1.bnd' 1 & 
+0.1 '../data/model_runs/nonstationary_swan/input/domain_01/TparN_2.bnd' 1 & 
+0.2 '../data/model_runs/nonstationary_swan/input/domain_01/TparN_3.bnd' 1 &
+BOUN SIDE S CLOCKW VAR FILE 0.0 '../data/model_runs/nonstationary_swan/input/domain_01/TparS_1.bnd' 1 & 
+0.1 '../data/model_runs/nonstationary_swan/input/domain_01/TparS_2.bnd' 1 & 
+0.2 '../data/model_runs/nonstationary_swan/input/domain_01/TparS_3.bnd' 1 &
+BOUN SIDE E CLOCKW VAR FILE 0.0 '../data/model_runs/nonstationary_swan/input/domain_01/TparE_1.bnd' 1 & 
+0.1 '../data/model_runs/nonstationary_swan/input/domain_01/TparE_2.bnd' 1 & 
+0.2 '../data/model_runs/nonstationary_swan/input/domain_01/TparE_3.bnd' 1 & 
+0.3 '../data/model_runs/nonstationary_swan/input/domain_01/TparE_4.bnd' 1 &
+BOUN SIDE W CLOCKW VAR FILE 0.0 '../data/model_runs/nonstationary_swan/input/domain_01/TparW_1.bnd' 1 & 
+0.1 '../data/model_runs/nonstationary_swan/input/domain_01/TparW_2.bnd' 1 & 
+0.2 '../data/model_runs/nonstationary_swan/input/domain_01/TparW_3.bnd' 1 & 
+0.3 '../data/model_runs/nonstationary_swan/input/domain_01/TparW_4.bnd' 1 &
+$
+$ Physics ------------------------------------------------
+GEN3 JANS
+QUAD
+TRI
+BRE
+FRIC MAD
+DIFFR
+$ Numerics ----------------------------------------------
+NUM STOPC 0 0.01 0.001 101 NONSTAT mxitns=10
+PROP BSBT
+$
+$ Output -------------------------------------------------
+BLOCK 'COMPGRID' NOHEAD 'wave_field.mat' LAY 3 HSIGN TPS TM01 TM02 OUTPUT 20230512.000000 60 MIN
+POINTS 'out' FILE 'points.loc'
+TABLE 'out' HEADER 'PointSWAN.out' TIME XP YP DEP WIND HSIGN TPS TM01 TM02 DIR OUTPUT 20230512.000000 60 MIN
+SPEC 'out' SPEC2D ABS L 'SpecSWAN.out' OUTPUT 20230512.000000 60 MIN
+$
+$ Nest output --------------------------------------------
+NGRID 'n01_02' 278.2265167 12.4413166 0 0.13185 0.1908 293 424
+NESTOUT 'n01_02' 'child01_02.NEST' OUTPUT 20230509.000000 60 MIN
+$
+$ Final --------------------------------------------------
+TEST 1, 0
+COMP NONSTAT 20230507.000000 10 MIN 20230531.230000
+STOP

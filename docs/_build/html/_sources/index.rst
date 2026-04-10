@@ -22,4 +22,9 @@ documentation for details.
    installing
    analysis/index
    observations/index
+<<<<<<< HEAD
    retrievals/index
+=======
+   retrievals/index
+   models/index
+>>>>>>> ffayalac/refactor/swanpy

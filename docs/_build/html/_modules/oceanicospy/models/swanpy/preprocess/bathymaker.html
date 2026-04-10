@@ -29,6 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -39,6 +40,7 @@
     <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/oceanicospy/models/swanpy/preprocess/bathymaker';</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -149,43 +151,72 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installing.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/conditioning.html">Signal conditioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/temporal.html">Temporal</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
-</ul>
-</details></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/execution/run_case.html">Case Runner</a></li>
-</ul>
-</details></li>
-</ul>
-</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/BaseLogger.html">BaseLogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/AQUAlogger.html">AQUAlogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/RBR.html">RBR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/pressure_sensors/RBR.html">RBR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/pressure_sensors/Bluelog.html">Bluelog</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../plots.html">Plots</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../observations/weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/weather_stations/WeatherStationBase.html">Weather Station Base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/weather_stations/DavisVantagePro.html">Davis Vantage Pro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/weather_stations/WeatherSens.html">WeatherSens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/weather_stations/Rainwise.html">Rainwise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/ctd/CTDBase.html">CTDBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/ctd/CastawayCTD.html">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/ctd/SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/Buoy.html">Buoy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/HOBO.html">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../retrievals/index.html">Retrievals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../retrievals/UHSLCDownloader.html">UHSLCDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../retrievals/CMDSDownloader.html">CMDSDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../retrievals/ERA5Downloader.html">ERA5Downloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../retrievals/data_fetcher.html">Walkthrough Example - Data Fetcher</a></li>
+
+
+
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -293,180 +324,173 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">glob</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">glob</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">griddata</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
 
 <div class="viewcode-block" id="BathyMaker">
 <a class="viewcode-back" href="../../../../../models/swanpy/preprocess/bathymaker.html#oceanicospy.models.swanpy.preprocess.BathyMaker">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BathyMaker</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    BathyMaker is a utility class for generating and managing the bathymetry information for SWAN.</span>
 
-<span class="sd">    Attributes</span>
+<span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    init : object</span>
-<span class="sd">        Initialization object with configuration and folder paths.</span>
+<span class="sd">        An initialization object containing configuration data and folder paths.</span>
 <span class="sd">    domain_number : int</span>
-<span class="sd">        Domain identifier.</span>
-<span class="sd">    bathy_info : dict or None</span>
-<span class="sd">        Bathymetric information dictionary.</span>
-<span class="sd">    filename : str or None</span>
-<span class="sd">        Bathymetry file name.</span>
-<span class="sd">    dx_bat : float or None</span>
-<span class="sd">        Bathymetry grid spacing.</span>
-<span class="sd">    use_link : bool</span>
-<span class="sd">        Whether to use symbolic links for bathymetry files.</span>
-<span class="sd">    Methods</span>
-<span class="sd">    -------</span>
-<span class="sd">    ascii_from_user()</span>
-<span class="sd">        Handles bathymetry files provided by the user, creating links or copying files as needed.</span>
-<span class="sd">    xyz2asc(nodata_value)</span>
-<span class="sd">        Converts bathymetry data from XYZ format to ESRI ASCII Grid format, interpolating and handling missing data.</span>
-<span class="sd">    fill_bathy_section(dict_bathy_data)</span>
-<span class="sd">        Updates the configuration file with bathymetry information for the specified domain.</span>
+<span class="sd">        Identifier for the domain being processed.</span>
+<span class="sd">    grid_info : dict or None, optional</span>
+<span class="sd">        Dictionary containing bathymetric information. If None, spatial info for bathymetry must be provided via `get_info_from_bathy()`.</span>
+<span class="sd">    use_link: bool, optional</span>
+<span class="sd">        If True, creates symbolic links for bathymetry files instead of copying them. Defaults to True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BathyMaker.__init__">
-<a class="viewcode-back" href="../../../../../models/swanpy/preprocess/bathymaker.html#oceanicospy.models.swanpy.preprocess.BathyMaker.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">domain_number</span><span class="p">,</span> <span class="n">bathy_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx_bat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_link</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        init : object</span>
-<span class="sd">            An initialization object containing configuration data and folder paths.</span>
-<span class="sd">        domain_number : int</span>
-<span class="sd">            Identifier for the domain being processed.</span>
-<span class="sd">        bathy_info : dict or None, optional</span>
-<span class="sd">            Dictionary containing bathymetric information. If None, bathymetry must be provided via `filename`.</span>
-<span class="sd">        filename : str or None, optional</span>
-<span class="sd">            Path to the file containing bathymetric data. If None, bathymetry must be provided via `bathy_info`.</span>
-<span class="sd">        dx_bat : float or None, optional</span>
-<span class="sd">            Grid spacing for the bathymetric data. If None, default spacing is used.</span>
-<span class="sd">        use_link: bool, optional</span>
-<span class="sd">            If True, creates symbolic links for bathymetry files instead of copying them. Defaults to True.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">domain_number</span><span class="p">,</span> <span class="n">dict_info</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_link</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="n">init</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span> <span class="o">=</span> <span class="n">domain_number</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bathy_info</span> <span class="o">=</span> <span class="n">bathy_info</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dx_bat</span> <span class="o">=</span> <span class="n">dx_bat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span> <span class="o">=</span> <span class="n">dict_info</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span> <span class="o">=</span> <span class="n">use_link</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">*** Initializing bathymaker for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">*** Initializing bathymaker for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
-
-<div class="viewcode-block" id="BathyMaker.get_from_user">
-<a class="viewcode-back" href="../../../../../models/swanpy/preprocess/bathymaker.html#oceanicospy.models.swanpy.preprocess.BathyMaker.get_from_user">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_from_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BathyMaker.use_ascii_file_from_user">
+<a class="viewcode-back" href="../../../../../models/swanpy/preprocess/bathymaker.html#oceanicospy.models.swanpy.preprocess.BathyMaker.use_ascii_file_from_user">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">use_ascii_file_from_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handles the selection and linking or copying of a bathymetry file for the current domain.</span>
-<span class="sd">        This method searches for a `.bot` bathymetry file in the input directory for the specified domain.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">        --------</span>
-<span class="sd">            dict or None: The updated `bathy_info` dictionary if it exists, otherwise None.</span>
+<span class="sd">        Searches for a `.bot` bathymetry file in the input directory for the specified domain.</span>
+<span class="sd">        Depending on ``use_link``, the file is either symlinked or physically copied into the</span>
+<span class="sd">        run directory.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict or None</span>
+<span class="sd">            The updated ``dict_info`` dictionary if it was provided at initialisation,</span>
+<span class="sd">            otherwise ``None``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        FileNotFoundError</span>
+<span class="sd">            If no `.bot` file is found in the expected input directory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
     
         <span class="n">bathy_filepaths</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/*.bot&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">bathy_filepaths</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Bathymetry file not found in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/ or file extension is not .bot&#39;</span><span class="p">)</span>
-        <span class="n">bathy_filepath</span> <span class="o">=</span> <span class="n">bathy_filepaths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">bathy_filename</span> <span class="o">=</span> <span class="n">bathy_filepath</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">bathy_filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bathy_filepaths</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">bathy_filename</span> <span class="o">=</span> <span class="n">bathy_filepath</span><span class="o">.</span><span class="n">name</span>
 
         <span class="n">run_domain_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span> <span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_file</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">bathy_filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">bathy_filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">bathy_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
-                    <span class="n">utils</span><span class="o">.</span><span class="n">create_link</span><span class="p">(</span>
-                        <span class="n">bathy_filename</span><span class="p">,</span>
-                        <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span><span class="p">,</span>
-                        <span class="n">run_domain_dir</span>
-                    <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">bathy_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
-                    <span class="n">utils</span><span class="o">.</span><span class="n">remove_link</span><span class="p">(</span><span class="n">bathy_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">)</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;cp </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">bathy_filename</span><span class="si">}</span><span class="s1"> &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_file</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">bathy_filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">bathy_filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">bathy_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
+                <span class="n">utils</span><span class="o">.</span><span class="n">create_link</span><span class="p">(</span>
+                    <span class="n">bathy_filename</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span><span class="p">,</span>
+                    <span class="n">run_domain_dir</span>
                 <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">bathy_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
+                <span class="n">utils</span><span class="o">.</span><span class="n">remove_link</span><span class="p">(</span><span class="n">bathy_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;cp </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">bathy_filename</span><span class="si">}</span><span class="s1"> &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;bathy_file&quot;</span><span class="p">:</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bathy_filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">})</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No bathymetry information provided at initialization. &#39;</span> \
+            <span class="s1">&#39;Bathymetry file has been linked/copied to run directory, but no metadata dictionary to return.&#39;</span><span class="p">)</span></div>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bathy_info</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bathy_info</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;bathy_file&quot;</span><span class="p">:</span><span class="sa">f</span><span class="s2">&quot;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">bathy_filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">})</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bathy_info</span></div>
+        
+    <span class="c1"># TODO: this can be more like a call to gis module to obtain a standardized bathymetry info.</span>
+    <span class="c1"># def convert_xyz2asc(self,nodata_value):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Converts bathymetry data from XYZ format to ESRI ASCII Grid format.</span>
 
+    <span class="c1">#     Reads a space-delimited `.dat` file, interpolates the scattered data onto a</span>
+    <span class="c1">#     regular grid using linear interpolation, and writes the result as an ESRI</span>
+    <span class="c1">#     ASCII Grid (`.bot`) file.</span>
 
-<div class="viewcode-block" id="BathyMaker.xyz2asc">
-<a class="viewcode-back" href="../../../../../models/swanpy/preprocess/bathymaker.html#oceanicospy.models.swanpy.preprocess.BathyMaker.xyz2asc">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">xyz2asc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nodata_value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Converts bathymetry data from XYZ format to ESRI ASCII Grid format.</span>
+    <span class="c1">#     Parameters</span>
+    <span class="c1">#     ----------</span>
+    <span class="c1">#     nodata_value : float</span>
+    <span class="c1">#         Value used to fill cells where interpolation produced NaN.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            nodata_value (float): The value to replace NaN values in the grid.</span>
+    <span class="c1">#     Returns</span>
+    <span class="c1">#     -------</span>
+    <span class="c1">#     dict</span>
+    <span class="c1">#         Dictionary with string-valued bathymetry metadata: ``lon_ll_bat_corner``,</span>
+    <span class="c1">#         ``lat_ll_bat_corner``, ``x_bot``, ``y_bot``, ``spacing_x``, and ``spacing_y``.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     bathy_xyz_path = glob.glob(f&#39;{self.dict_folders[&quot;input&quot;]}*.dat&#39;)[0]</span>
+    <span class="c1">#     ascfile = f&#39;{self.dict_folders[&quot;run&quot;]}{self.filename}.bot&#39;</span>
+    <span class="c1">#     np.set_printoptions(formatter={&#39;float_kind&#39;:&#39;{:f}&#39;.format})</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            dict: A dictionary containing the metadata of the generated grid.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">bathy_xyz_path</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">*.dat&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">ascfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s1">.bot&#39;</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">formatter</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;float_kind&#39;</span><span class="p">:</span><span class="s1">&#39;</span><span class="si">{:f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">})</span>
-        <span class="c1"># Read bathymetry file</span>
-        <span class="n">longitude</span><span class="p">,</span><span class="n">latitude</span><span class="p">,</span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">bathy_xyz_path</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1">#     # Read bathymetry file</span>
+    <span class="c1">#     longitude,latitude,z = np.loadtxt(bathy_xyz_path, delimiter=&#39; &#39;, unpack=True)</span>
 
-        <span class="n">min_longitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">longitude</span><span class="p">)</span>
-        <span class="n">min_latitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">latitude</span><span class="p">)</span>
+    <span class="c1">#     min_longitude = np.min(longitude)</span>
+    <span class="c1">#     min_latitude = np.min(latitude)</span>
 
-        <span class="n">max_longitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">longitude</span><span class="p">)</span>
-        <span class="n">max_latitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">latitude</span><span class="p">)</span>
+    <span class="c1">#     max_longitude = np.max(longitude)</span>
+    <span class="c1">#     max_latitude = np.max(latitude)</span>
 
-        <span class="n">min_longitude</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">min_longitude</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
-        <span class="n">max_longitude</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">max_longitude</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
-        <span class="n">min_latitude</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">min_latitude</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
-        <span class="n">max_latitude</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">max_latitude</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="c1">#     min_longitude = int(np.ceil(min_longitude / 100) * 100)</span>
+    <span class="c1">#     max_longitude = int(np.floor(max_longitude / 100) * 100)</span>
+    <span class="c1">#     min_latitude = int(np.ceil(min_latitude / 100) * 100)</span>
+    <span class="c1">#     max_latitude = int(np.floor(max_latitude / 100) * 100)</span>
 
-        <span class="n">xmax</span><span class="o">=</span><span class="n">max_longitude</span>
-        <span class="n">xmin</span><span class="o">=</span><span class="n">min_longitude</span>
-        <span class="n">ymax</span><span class="o">=</span><span class="n">max_latitude</span>
-        <span class="n">ymin</span><span class="o">=</span><span class="n">min_latitude</span>
+    <span class="c1">#     xmax=max_longitude</span>
+    <span class="c1">#     xmin=min_longitude</span>
+    <span class="c1">#     ymax=max_latitude</span>
+    <span class="c1">#     ymin=min_latitude</span>
 
-        <span class="n">nx_bathy</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">xmax</span> <span class="o">-</span> <span class="n">xmin</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dx_bat</span><span class="p">)</span>
-        <span class="n">ny_bathy</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">ymax</span> <span class="o">-</span> <span class="n">ymin</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dx_bat</span><span class="p">)</span>
-        <span class="c1"># Generate grid with data</span>
-        <span class="n">xi</span><span class="p">,</span> <span class="n">yi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="n">xmin</span><span class="p">:</span><span class="n">xmax</span><span class="p">:(</span><span class="n">nx_bathy</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">j</span><span class="p">,</span> <span class="n">ymin</span><span class="p">:</span><span class="n">ymax</span><span class="p">:(</span><span class="n">ny_bathy</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">j</span><span class="p">]</span>
+    <span class="c1">#     nx_bathy = int((xmax - xmin)/self.dx_bat)</span>
+    <span class="c1">#     ny_bathy = int((ymax - ymin)/self.dx_bat)</span>
+    <span class="c1">#     # Generate grid with data</span>
+    <span class="c1">#     xi, yi = np.mgrid[xmin:xmax:(nx_bathy+1)*1j, ymin:ymax:(ny_bathy+1)*1j]</span>
 
-        <span class="c1"># Interpolate bathymetry. Method can be &#39;linear&#39;, &#39;nearest&#39; or &#39;cubic&#39;</span>
-        <span class="n">zi</span> <span class="o">=</span> <span class="n">griddata</span><span class="p">((</span><span class="n">longitude</span><span class="p">,</span><span class="n">latitude</span><span class="p">),</span> <span class="n">z</span><span class="p">,</span> <span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
-        <span class="c1"># Change Nans for values</span>
-        <span class="n">zi</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">zi</span><span class="p">)]</span> <span class="o">=</span> <span class="n">nodata_value</span>
-        <span class="c1"># Flip array in the left/right direction</span>
-        <span class="n">zi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fliplr</span><span class="p">(</span><span class="n">zi</span><span class="p">)</span>
-        <span class="c1"># Transpose it</span>
-        <span class="n">zi</span> <span class="o">=</span> <span class="n">zi</span><span class="o">.</span><span class="n">T</span>
-        <span class="c1"># Write ESRI ASCII Grid file</span>
-        <span class="n">zi_str</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">zi</span> <span class="o">==</span> <span class="n">nodata_value</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">nodata_value</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">zi</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">ascfile</span><span class="p">,</span> <span class="n">zi_str</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%8s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;File </span><span class="si">%s</span><span class="s1"> saved successfuly.&#39;</span> <span class="o">%</span> <span class="n">ascfile</span><span class="p">)</span>
+    <span class="c1">#     # Interpolate bathymetry. Method can be &#39;linear&#39;, &#39;nearest&#39; or &#39;cubic&#39;</span>
+    <span class="c1">#     zi = griddata((longitude,latitude), z, (xi, yi), method=&#39;linear&#39;)</span>
+    <span class="c1">#     # Change Nans for values</span>
+    <span class="c1">#     zi[np.isnan(zi)] = nodata_value</span>
+    <span class="c1">#     # Flip array in the left/right direction</span>
+    <span class="c1">#     zi = np.fliplr(zi)</span>
+    <span class="c1">#     # Transpose it</span>
+    <span class="c1">#     zi = zi.T</span>
+    <span class="c1">#     # Write ESRI ASCII Grid file</span>
+    <span class="c1">#     zi_str = np.where(zi == nodata_value, str(nodata_value), np.round(zi, 3))</span>
+    <span class="c1">#     np.savetxt(ascfile, zi_str, fmt=&#39;%8s&#39;, delimiter=&#39; &#39;)</span>
+    <span class="c1">#     print(&#39;File %s saved successfuly.&#39; % ascfile)</span>
 
-        <span class="n">dict_asc</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;lon_ll_bat_corner&#39;</span><span class="p">:</span><span class="n">min_longitude</span><span class="p">,</span><span class="s1">&#39;lat_ll_bat_corner&#39;</span><span class="p">:</span><span class="n">min_latitude</span><span class="p">,</span><span class="s1">&#39;x_bot&#39;</span><span class="p">:</span><span class="n">nx_bathy</span><span class="p">,</span><span class="s1">&#39;y_bot&#39;</span><span class="p">:</span><span class="n">ny_bathy</span><span class="p">,</span><span class="s1">&#39;spacing_x&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">dx_bat</span><span class="p">,</span><span class="s1">&#39;spacing_y&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">dx_bat</span><span class="p">}</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">dict_asc</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">dict_asc</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dict_asc</span></div>
-
+    <span class="c1">#     self.grid_info={&#39;lon_ll_bat_corner&#39;:min_longitude,&#39;lat_ll_bat_corner&#39;:min_latitude,&#39;x_bot&#39;:nx_bathy,&#39;y_bot&#39;:ny_bathy,&#39;spacing_x&#39;:self.dx_bat,&#39;spacing_y&#39;:self.dx_bat}</span>
+    <span class="c1">#     for key,value in self.grid_info.items():</span>
+    <span class="c1">#         self.grid_info[key] = str(value)</span>
+    <span class="c1">#     return self.grid_info</span>
     
-
 <div class="viewcode-block" id="BathyMaker.fill_bathy_section">
 <a class="viewcode-back" href="../../../../../models/swanpy/preprocess/bathymaker.html#oceanicospy.models.swanpy.preprocess.BathyMaker.fill_bathy_section">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fill_bathy_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dict_bathy_data</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fill_bathy_section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Replaces and updates the .swn file with the bathymetry configuration for a specific domain.</span>
+<span class="sd">        Replaces and updates the `.swn` file with the bathymetry configuration for a specific domain.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If no bathymetry information was provided at initialization.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No bathymetry information provided at initialization. Cannot fill bathymetry section in configuration file.&#39;</span><span class="p">)</span>
+
         <span class="nb">print</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> </span><span class="se">\t</span><span class="s1">*** Adding/Editing bathymetry information for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> in configuration file ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">fill_files</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/run.swn&#39;</span><span class="p">,</span><span class="n">dict_bathy_data</span><span class="p">)</span></div>
+        <span class="n">utils</span><span class="o">.</span><span class="n">fill_files</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/run.swn&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">)</span></div>
 </div>
-
-
 
 </pre></div>
 
