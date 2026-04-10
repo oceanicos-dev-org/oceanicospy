@@ -29,6 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -39,6 +40,7 @@
     <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/oceanicospy/models/swanpy/preprocess/boundary_conds';</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -149,10 +151,70 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installing.html">Installation</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/conditioning.html">Signal conditioning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
 <li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/temporal.html">Temporal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/pressure_sensors/RBR.html">RBR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/pressure_sensors/Bluelog.html">Bluelog</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../observations/weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/weather_stations/WeatherStationBase.html">Weather Station Base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/weather_stations/DavisVantagePro.html">Davis Vantage Pro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/weather_stations/WeatherSens.html">WeatherSens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/weather_stations/Rainwise.html">Rainwise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/ctd/CTDBase.html">CTDBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/ctd/CastawayCTD.html">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../observations/ctd/SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/Buoy.html">Buoy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/HOBO.html">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../retrievals/index.html">Retrievals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../retrievals/UHSLCDownloader.html">UHSLCDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../retrievals/CMDSDownloader.html">CMDSDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../retrievals/ERA5Downloader.html">ERA5Downloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../retrievals/data_fetcher.html">Walkthrough Example - Data Fetcher</a></li>
+
+
+
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -163,10 +225,10 @@
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -177,15 +239,6 @@
 </details></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/walkthrough.html">Walkthrough Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/BaseLogger.html">BaseLogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/AQUAlogger.html">AQUAlogger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/RBR.html">RBR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../observations/AWAC.html">AWAC</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../plots.html">Plots</a></li>
 </ul>
 
     </div>
@@ -292,45 +345,29 @@ document.write(`
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">....</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">....retrievals</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
 <div class="viewcode-block" id="BoundaryConditions">
 <a class="viewcode-back" href="../../../../../models/swanpy/preprocess/boundary_conds.html#oceanicospy.models.swanpy.preprocess.BoundaryConditions">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BoundaryConditions</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class representing the boundary conditions for a simulation.</span>
-<span class="sd">    Args:</span>
-<span class="sd">        input_filename (str): The name of the input file.</span>
-<span class="sd">        dict_bounds_params (dict): A dictionary containing the boundary parameters.</span>
-<span class="sd">        list_sides (list): A list of sides.</span>
-<span class="sd">    Attributes:</span>
-<span class="sd">        input_filename (str): The name of the input file.</span>
-<span class="sd">        dict_bounds_params (dict): A dictionary containing the boundary parameters.</span>
-<span class="sd">        list_sides (list): A list of sides.</span>
-<span class="sd">        tpar_method_invoked (bool): Indicates whether the tpar method has been invoked.</span>
-<span class="sd">    Methods:</span>
-<span class="sd">        tpar_from_rawdata(output_filename): Generate TPAR data from raw data.</span>
-<span class="sd">        tpar_from_ERA5_wave_data(output_filename): Generate TPAR data from ERA5 wave data.</span>
-<span class="sd">        fill_boundaries_section(*args): Fill the boundaries section of the simulation.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">init</span><span class="p">,</span><span class="n">domain_number</span><span class="p">,</span><span class="n">input_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">dict_bounds_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">list_sides</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">use_link</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">init</span><span class="p">,</span><span class="n">domain_number</span><span class="p">,</span><span class="n">dict_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">input_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">use_link</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="n">init</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span> <span class="o">=</span> <span class="n">domain_number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span> <span class="o">=</span> <span class="n">dict_info</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_filename</span> <span class="o">=</span> <span class="n">input_filename</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dict_bounds_params</span> <span class="o">=</span> <span class="n">dict_bounds_params</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">list_sides</span> <span class="o">=</span> <span class="n">list_sides</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tpar_method_invoked</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bounds_var</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span> <span class="o">=</span> <span class="n">use_link</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span> <span class="o">=</span> <span class="n">use_link</span> 
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_ini_data</span><span class="p">[</span><span class="s2">&quot;parent_domains&quot;</span><span class="p">][</span><span class="n">domain_number</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">boundary_line</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">*** Initializing boundary conditions for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_download_ERA5</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">difference_to_UTC</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">wind_info</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -345,19 +382,20 @@ document.write(`
 <span class="sd">        filepath : str or None, optional</span>
 <span class="sd">            The file path where the downloaded ERA5 data will be saved. If None, a default path is used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-    
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
         <span class="n">ERA5download_obj</span> <span class="o">=</span> <span class="n">ERA5Downloader</span><span class="p">(</span>
-                        <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mean_wave_direction&quot;</span><span class="p">,</span>
+                        <span class="n">variables</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mean_wave_direction&quot;</span><span class="p">,</span>
                                    <span class="s2">&quot;significant_height_of_combined_wind_waves_and_swell&quot;</span><span class="p">,</span>
                                    <span class="s2">&quot;peak_wave_period&quot;</span><span class="p">],</span>
-                        <span class="n">lon_min</span><span class="o">=</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_wind&#39;</span><span class="p">],</span>
-                        <span class="n">lon_max</span><span class="o">=</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;meshes_x_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;dx_wind&#39;</span><span class="p">]),</span>
-                        <span class="n">lat_min</span><span class="o">=</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_wind&#39;</span><span class="p">],</span>
-                        <span class="n">lat_max</span><span class="o">=</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;meshes_y_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;dy_wind&#39;</span><span class="p">]),</span>
-                        <span class="n">start_datetime_local</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">ini_date</span><span class="p">,</span>
-                        <span class="n">end_datetime_local</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">end_date</span><span class="p">,</span>
-                        <span class="n">difference_to_UTC</span><span class="o">=</span><span class="n">difference_to_UTC</span><span class="p">,</span>
-                        <span class="n">output_path</span><span class="o">=</span><span class="n">filepath</span>
+                        <span class="n">lon_min</span> <span class="o">=</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_corner_wind&#39;</span><span class="p">],</span>
+                        <span class="n">lon_max</span> <span class="o">=</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_corner_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;nx_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;dx_wind&#39;</span><span class="p">]),</span>
+                        <span class="n">lat_min</span> <span class="o">=</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_corner_wind&#39;</span><span class="p">],</span>
+                        <span class="n">lat_max</span> <span class="o">=</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_corner_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;ny_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;dy_wind&#39;</span><span class="p">]),</span>
+                        <span class="n">start_datetime_local</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">ini_date</span><span class="p">,</span>
+                        <span class="n">end_datetime_local</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">end_date</span><span class="p">,</span>
+                        <span class="n">difference_to_UTC</span> <span class="o">=</span> <span class="n">difference_to_UTC</span><span class="p">,</span>
+                        <span class="n">output_path</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span>
+                        <span class="n">output_filename</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">.</span><span class="n">name</span>
                         <span class="p">)</span>
         <span class="n">ERA5download_obj</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
         <span class="n">ERA5download_obj</span><span class="o">.</span><span class="n">format_to_localtime</span><span class="p">()</span>
@@ -375,16 +413,17 @@ document.write(`
 <span class="sd">        filepath : str or None, optional</span>
 <span class="sd">            The file path where the downloaded ERA5 data will be saved. If None, a default path is used.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-    
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
         <span class="n">CMDSdownload_obj</span> <span class="o">=</span> <span class="n">CMDSDownloader</span><span class="o">.</span><span class="n">for_waves</span><span class="p">(</span>
-                        <span class="n">lon_min</span><span class="o">=</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_wind&#39;</span><span class="p">],</span>
-                        <span class="n">lon_max</span><span class="o">=</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;meshes_x_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;dx_wind&#39;</span><span class="p">]),</span>
-                        <span class="n">lat_min</span><span class="o">=</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_wind&#39;</span><span class="p">],</span>
-                        <span class="n">lat_max</span><span class="o">=</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;meshes_y_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;dy_wind&#39;</span><span class="p">]),</span>
-                        <span class="n">start_datetime_local</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">ini_date</span><span class="p">,</span>
-                        <span class="n">end_datetime_local</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">end_date</span><span class="p">,</span>
-                        <span class="n">difference_to_UTC</span><span class="o">=</span><span class="n">difference_to_UTC</span><span class="p">,</span>
-                        <span class="n">output_path</span><span class="o">=</span><span class="n">filepath</span>
+                        <span class="n">lon_min</span> <span class="o">=</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_corner_wind&#39;</span><span class="p">],</span>
+                        <span class="n">lon_max</span> <span class="o">=</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_corner_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;nx_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;dx_wind&#39;</span><span class="p">]),</span>
+                        <span class="n">lat_min</span> <span class="o">=</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_corner_wind&#39;</span><span class="p">],</span>
+                        <span class="n">lat_max</span> <span class="o">=</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_corner_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;ny_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">wind_info</span><span class="p">[</span><span class="s1">&#39;dy_wind&#39;</span><span class="p">]),</span>
+                        <span class="n">start_datetime_local</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">ini_date</span><span class="p">,</span>
+                        <span class="n">end_datetime_local</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">end_date</span><span class="p">,</span>
+                        <span class="n">difference_to_UTC</span> <span class="o">=</span> <span class="n">difference_to_UTC</span><span class="p">,</span>
+                        <span class="n">output_path</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span>
+                        <span class="n">output_filename</span> <span class="o">=</span> <span class="n">filepath</span><span class="o">.</span><span class="n">name</span>
                         <span class="p">)</span>
         <span class="n">CMDSdownload_obj</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
         <span class="n">CMDSdownload_obj</span><span class="o">.</span><span class="n">format_to_localtime</span><span class="p">()</span>
@@ -433,6 +472,32 @@ document.write(`
                 <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;TPAR </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">file</span><span class="p">,</span><span class="n">df_tpar</span><span class="p">,</span><span class="n">fmt</span> <span class="o">=</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">  </span><span class="si">%7.9f</span><span class="s1">  </span><span class="si">%8.9f</span><span class="s1">  </span><span class="si">%9.9f</span><span class="s1">  </span><span class="si">%5.1f</span><span class="s1">&#39;</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">df_tpar</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_boundary_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">points_lat</span><span class="p">,</span><span class="n">points_lon</span><span class="p">,</span><span class="n">single_tpar_fn</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span>
+        <span class="k">for</span> <span class="n">idx_lon</span><span class="p">,</span><span class="n">lon</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">points_lon</span><span class="p">):</span>
+            <span class="n">single_tpar_fn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}</span><span class="s1">TparN_</span><span class="si">{</span><span class="n">idx_lon</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="nb">max</span><span class="p">(</span><span class="n">points_lat</span><span class="p">),</span><span class="n">lon</span><span class="p">)</span>
+            <span class="n">single_tpar_fn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}</span><span class="s1">TparS_</span><span class="si">{</span><span class="n">idx_lon</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">points_lat</span><span class="p">),</span><span class="n">lon</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">idx_lat</span><span class="p">,</span><span class="n">lat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">points_lat</span><span class="p">):</span>
+            <span class="n">single_tpar_fn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}</span><span class="s1">TparE_</span><span class="si">{</span><span class="n">idx_lat</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="nb">max</span><span class="p">(</span><span class="n">points_lon</span><span class="p">))</span>
+            <span class="n">single_tpar_fn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}</span><span class="s1">TparW_</span><span class="si">{</span><span class="n">idx_lat</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">points_lon</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_copy_or_link_bnd_files</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">*** Finished processing boundary files for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_copy_or_link_bnd_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">run_domain_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span>
+        <span class="n">origin_domain_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span>
+
+        <span class="n">bnd_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.bnd&#39;</span><span class="p">)]</span>
+
+        <span class="k">for</span> <span class="n">bnd_file</span> <span class="ow">in</span> <span class="n">bnd_files</span><span class="p">:</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">deploy_input_file</span><span class="p">(</span><span class="n">bnd_file</span><span class="p">,</span> <span class="n">origin_domain_dir</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BoundaryConditions.get_waves_from_ERA5">
 <a class="viewcode-back" href="../../../../../models/swanpy/preprocess/boundary_conds.html#oceanicospy.models.swanpy.preprocess.BoundaryConditions.get_waves_from_ERA5">[docs]</a>
@@ -491,40 +556,8 @@ document.write(`
         <span class="n">points_lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points_lon</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">points_lon</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">):</span>
             <span class="n">points_lon</span> <span class="o">+=</span> <span class="mi">360</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">input_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span>
-            <span class="k">for</span> <span class="n">idx_lon</span><span class="p">,</span><span class="n">lon</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">points_lon</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_single_tpar_from_ERA5</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}</span><span class="s1">TparN2025_</span><span class="si">{</span><span class="n">idx_lon</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="nb">max</span><span class="p">(</span><span class="n">points_lat</span><span class="p">),</span><span class="n">lon</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_single_tpar_from_ERA5</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}</span><span class="s1">TparS2025_</span><span class="si">{</span><span class="n">idx_lon</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">points_lat</span><span class="p">),</span><span class="n">lon</span><span class="p">)</span>
 
-            <span class="k">for</span> <span class="n">idx_lat</span><span class="p">,</span><span class="n">lat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">points_lat</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_single_tpar_from_ERA5</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}</span><span class="s1">TparE2025_</span><span class="si">{</span><span class="n">idx_lat</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="nb">max</span><span class="p">(</span><span class="n">points_lon</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_single_tpar_from_ERA5</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}</span><span class="s1">TparO2025_</span><span class="si">{</span><span class="n">idx_lat</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">points_lon</span><span class="p">))</span>
-
-            <span class="n">run_domain_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span>
-            <span class="n">origin_domain_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span>
-
-            <span class="n">bnd_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.bnd&#39;</span><span class="p">)]</span>
-
-            <span class="k">for</span> <span class="n">bnd_file</span> <span class="ow">in</span> <span class="n">bnd_files</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_file</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">bnd_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
-                            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">bnd_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">bnd_file</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
-                            <span class="n">utils</span><span class="o">.</span><span class="n">create_link</span><span class="p">(</span>
-                                <span class="n">bnd_file</span><span class="p">,</span>
-                                <span class="n">origin_domain_dir</span><span class="p">,</span>
-                                <span class="n">run_domain_dir</span>
-                            <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">bnd_file</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
-                            <span class="n">utils</span><span class="o">.</span><span class="n">remove_link</span><span class="p">(</span><span class="n">bnd_file</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">)</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">&#39;cp </span><span class="si">{</span><span class="n">origin_domain_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">bnd_file</span><span class="si">}</span><span class="s1"> &#39;</span>
-                            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}</span><span class="s1">&#39;</span>
-                        <span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">*** Finished processing boundary files for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_boundary_points</span><span class="p">(</span><span class="n">points_lat</span><span class="p">,</span><span class="n">points_lon</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_single_tpar_from_ERA5</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BoundaryConditions.tpar_from_CMDS">
@@ -544,225 +577,147 @@ document.write(`
 <span class="sd">            List of longitude points defining the boundary.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">points_lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">points_lon</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_boundary_points</span><span class="p">(</span><span class="n">points_lat</span><span class="p">,</span><span class="n">points_lon</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_single_tpar_from_CMDS</span><span class="p">)</span></div>
+
+
+    <span class="n">_VALID_SIDES</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;W&#39;</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_side_boundary_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">wave_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> 
+                                  <span class="n">points_lon</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">points_lat</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a single SWAN ``BOUN SIDE`` command string for one boundary side.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        side : str</span>
+<span class="sd">            Cardinal direction of the boundary side.  Must be one of</span>
+<span class="sd">            ``&#39;N&#39;``, ``&#39;S&#39;``, ``&#39;E&#39;``, ``&#39;O&#39;``.</span>
+<span class="sd">        wave_params : dict or None</span>
+<span class="sd">            Wave parameters required when ``dict_info[&#39;variable_bound&#39;]``</span>
+<span class="sd">            is ``&#39;constant&#39;``.  Expected keys:</span>
+
+<span class="sd">            * ``&#39;hs&#39;``     — significant wave height (m)</span>
+<span class="sd">            * ``&#39;tp&#39;``     — peak period (s)</span>
+<span class="sd">            * ``&#39;dir&#39;``    — mean wave direction (deg)</span>
+<span class="sd">            * ``&#39;spread&#39;`` — directional spreading</span>
+
+<span class="sd">            Must be ``None`` or omitted for variable (file-driven) boundaries.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            A single SWAN boundary command, e.g.</span>
+<span class="sd">            ``&quot;BOUN SIDE N CLOCKW CON PAR 1.5 10.0 270 4&quot;`` or</span>
+<span class="sd">            ``&quot;BOUN SIDE N CLOCKW CON VAR FILE&quot;``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If *side* is not in ``{&#39;N&#39;, &#39;S&#39;, &#39;E&#39;, &#39;O&#39;}``.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If ``variable_bound`` is ``&#39;constant&#39;`` but *wave_params* is ``None``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">side</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_VALID_SIDES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid boundary side &#39;</span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Valid options are: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_VALID_SIDES</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;variable_bound&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">wave_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;wave_params must be provided when variable_bound is &#39;constant&#39;.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">lines_per_side</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;BOUN SIDE </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2"> CLOCKW CON PAR </span><span class="si">{</span><span class="n">wave_params</span><span class="p">[</span><span class="s1">&#39;hs&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">wave_params</span><span class="p">[</span><span class="s1">&#39;tp&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">wave_params</span><span class="p">[</span><span class="s1">&#39;dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">wave_params</span><span class="p">[</span><span class="s1">&#39;spread&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">input_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span>
-            <span class="k">for</span> <span class="n">idx_lon</span><span class="p">,</span><span class="n">lon</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">points_lon</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_single_tpar_from_CMDS</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}</span><span class="s1">TparN2025_</span><span class="si">{</span><span class="n">idx_lon</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="nb">max</span><span class="p">(</span><span class="n">points_lat</span><span class="p">),</span><span class="n">lon</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_single_tpar_from_CMDS</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}</span><span class="s1">TparS2025_</span><span class="si">{</span><span class="n">idx_lon</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">points_lat</span><span class="p">),</span><span class="n">lon</span><span class="p">)</span>
+            <span class="n">bnd_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.bnd&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s1">&#39;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">]</span>
+            <span class="n">sorted_bnd_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">bnd_files</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">isdigit</span><span class="p">,</span> <span class="n">x</span><span class="p">))))</span>
 
-            <span class="k">for</span> <span class="n">idx_lat</span><span class="p">,</span><span class="n">lat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">points_lat</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_single_tpar_from_CMDS</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}</span><span class="s1">TparE2025_</span><span class="si">{</span><span class="n">idx_lat</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="nb">max</span><span class="p">(</span><span class="n">points_lon</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_single_tpar_from_CMDS</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}</span><span class="s1">TparO2025_</span><span class="si">{</span><span class="n">idx_lat</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">lat</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="n">points_lon</span><span class="p">))</span>
+            <span class="n">lines_per_side</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">bnd_file</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sorted_bnd_files</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">side</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">]:</span>
+                    <span class="n">difference</span> <span class="o">=</span> <span class="n">points_lon</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">points_lon</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">difference</span> <span class="o">=</span> <span class="n">points_lat</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">points_lat</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">round_difference</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">difference</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
-            <span class="n">run_domain_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span>
-            <span class="n">origin_domain_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span>
+                <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">lines_per_side</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;BOUN SIDE </span><span class="si">{</span><span class="n">side</span><span class="si">}</span><span class="s2"> CLOCKW VAR FILE </span><span class="si">{</span><span class="n">round_difference</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}{</span><span class="n">bnd_file</span><span class="si">}</span><span class="s2">&#39; 1 &amp; </span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">is_last</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">sorted_bnd_files</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="n">newline</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">is_last</span> <span class="k">else</span> <span class="s1">&#39; </span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="n">lines_per_side</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">round_difference</span><span class="si">}</span><span class="s2"> &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="si">}{</span><span class="n">bnd_file</span><span class="si">}</span><span class="s2">&#39; 1 &amp;</span><span class="si">{</span><span class="n">newline</span><span class="si">}</span><span class="s2">&quot;</span>
+            
+            <span class="nb">print</span><span class="p">(</span><span class="n">lines_per_side</span><span class="p">)</span>
 
-            <span class="n">bnd_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.bnd&#39;</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">lines_per_side</span>
 
-            <span class="k">for</span> <span class="n">bnd_file</span> <span class="ow">in</span> <span class="n">bnd_files</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_file</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">bnd_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
-                            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">bnd_file</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">bnd_file</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
-                            <span class="n">utils</span><span class="o">.</span><span class="n">create_link</span><span class="p">(</span>
-                                <span class="n">bnd_file</span><span class="p">,</span>
-                                <span class="n">origin_domain_dir</span><span class="p">,</span>
-                                <span class="n">run_domain_dir</span>
-                            <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">bnd_file</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
-                            <span class="n">utils</span><span class="o">.</span><span class="n">remove_link</span><span class="p">(</span><span class="n">bnd_file</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">)</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s1">&#39;cp </span><span class="si">{</span><span class="n">origin_domain_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">bnd_file</span><span class="si">}</span><span class="s1"> &#39;</span>
-                            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}</span><span class="s1">&#39;</span>
-                        <span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">*** Finished processing boundary files for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="BoundaryConditions.create_boundary_line">
+<a class="viewcode-back" href="../../../../../models/swanpy/preprocess/boundary_conds.html#oceanicospy.models.swanpy.preprocess.BoundaryConditions.create_boundary_line">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_boundary_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_sides</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                              <span class="n">wave_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                              <span class="n">points_lon</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">points_lat</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build and store the SWAN boundary command lines for all requested sides.</span>
+
+<span class="sd">        For each entry in *list_sides*, delegates to</span>
+<span class="sd">        :meth:`_build_side_boundary_line` to produce one ``BOUN SIDE``</span>
+<span class="sd">        command.  All commands are joined with newlines and stored in</span>
+<span class="sd">        :attr:`boundary_line`, ready for :meth:`fill_boundaries_section`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        list_sides : list of str, optional</span>
+<span class="sd">            Ordered list of boundary sides to configure, e.g.</span>
+<span class="sd">            ``[&#39;N&#39;, &#39;S&#39;, &#39;E&#39;, &#39;O&#39;]``.  Each entry must be a valid side</span>
+<span class="sd">            accepted by :meth:`_build_side_boundary_line`.</span>
+<span class="sd">        wave_params : dict or None, optional</span>
+<span class="sd">            Wave parameters forwarded to :meth:`_build_side_boundary_line`</span>
+<span class="sd">            when ``dict_info[&#39;variable_bound&#39;]`` is ``&#39;constant&#39;``.</span>
+<span class="sd">            Ignored for variable (file-driven) boundaries.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If :attr:`dict_info` is ``None`` (boundary type not configured).</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            If ``dict_info[&#39;bound_type&#39;]`` is not ``&#39;side&#39;``.</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If any entry in *list_sides* is not a valid boundary side.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Boundary type information is missing. &quot;</span>
+                <span class="s2">&quot;Please ensure &#39;dict_info&#39; is provided at initialisation.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;bound_type&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;side&#39;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Boundary type &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;bound_type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; is not supported. &quot;</span>
+                    <span class="s2">&quot;Only &#39;side&#39; boundaries are currently implemented.&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">list_sides</span> <span class="o">=</span> <span class="n">list_sides</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">boundary_line</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_side_boundary_line</span><span class="p">(</span><span class="n">side</span><span class="p">,</span> <span class="n">wave_params</span><span class="p">,</span> <span class="n">points_lon</span><span class="p">,</span> <span class="n">points_lat</span><span class="p">)</span> <span class="k">for</span> <span class="n">side</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_sides</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">boundary_line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;BOUN NEST &#39;child0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_ini_data</span><span class="p">[</span><span class="s1">&#39;parent_domains&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="p">]</span><span class="si">}</span><span class="s2">_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">.NEST&#39; CLOSED&quot;</span></div>
+
 
 
 <div class="viewcode-block" id="BoundaryConditions.fill_boundaries_section">
 <a class="viewcode-back" href="../../../../../models/swanpy/preprocess/boundary_conds.html#oceanicospy.models.swanpy.preprocess.BoundaryConditions.fill_boundaries_section">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fill_boundaries_section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>  <span class="c1"># This is hardcoded</span>
-            <span class="n">string_bounds</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;$ Frontera Norte </span><span class="se">\n\</span>
-<span class="s2">BOUN SIDE N CLOCKW VAR FILE 0 &#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparN2025_1.bnd&#39; 1 &amp; </span><span class="se">\n\</span>
-<span class="s2">                        0.1	&#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparN2025_2.bnd&#39; 1 &amp; </span><span class="se">\n\</span>
-<span class="s2">                        0.2	&#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparN2025_3.bnd&#39; 1  </span><span class="se">\n\</span>
-<span class="s2">$ Frontera oeste </span><span class="se">\n\</span>
-<span class="s2">BOUN SIDE W CLOCKW VAR FILE 0	&#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparO2025_1.bnd&#39; 1 &amp; </span><span class="se">\n\</span>
-<span class="s2">                        0.1	&#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparO2025_2.bnd&#39; 1 &amp;</span><span class="se">\n\</span>
-<span class="s2">                        0.2	&#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparO2025_3.bnd&#39; 1 &amp;</span><span class="se">\n\</span>
-<span class="s2">                        0.3	&#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparO2025_4.bnd&#39; 1  </span><span class="se">\n\</span>
-<span class="s2">$ Frontera sur</span><span class="se">\n\</span>
-<span class="s2">BOUN SIDE S CLOCKW VAR FILE 0	&#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparS2025_3.bnd&#39; 1 &amp;</span><span class="se">\n\</span>
-<span class="s2">                        0.1	&#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparS2025_2.bnd&#39; 1 &amp;</span><span class="se">\n\</span>
-<span class="s2">                        0.2	&#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparS2025_1.bnd&#39; 1 </span><span class="se">\n\</span>
-<span class="s2">$ Frontera este</span><span class="se">\n\</span>
-<span class="s2">BOUN SIDE E CLOCKW VAR FILE 0	&#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparE2025_4.bnd&#39; 1 &amp;</span><span class="se">\n\</span>
-<span class="s2">                        0.1	&#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparE2025_3.bnd&#39; 1 &amp;</span><span class="se">\n\</span>
-<span class="s2">                        0.2	&#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparE2025_2.bnd&#39; 1 &amp;</span><span class="se">\n\</span>
-<span class="s2">                        0.3	&#39;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/TparE2025_1.bnd&#39; 1&quot;</span> 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_line</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dict_boundaries</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;boundaries_line&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">boundary_line</span><span class="p">}</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> </span><span class="se">\t</span><span class="s1">*** Adding/Editing boundary information for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> in configuration file ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">fill_files</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/run.swn&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_boundaries</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">string_bounds</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;BOUN NEST </span><span class="se">\&#39;</span><span class="s1">child0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_ini_data</span><span class="p">[</span><span class="s2">&quot;parent_domains&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="p">]</span><span class="si">}</span><span class="s1">_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">.NEST</span><span class="se">\&#39;</span><span class="s1"> CLOSED&#39;</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">dict_boundaries</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;values_bounds&#39;</span><span class="p">:</span><span class="n">string_bounds</span><span class="p">}</span>
-        <span class="nb">print</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> </span><span class="se">\t</span><span class="s1">*** Adding/Editing boundary information for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> in configuration file ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">fill_files</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/run.swn&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_boundaries</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="BoundaryConditions.tpar_from_rawdata">
-<a class="viewcode-back" href="../../../../../models/swanpy/preprocess/boundary_conds.html#oceanicospy.models.swanpy.preprocess.BoundaryConditions.tpar_from_rawdata">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">tpar_from_rawdata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">output_filename</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate TPAR data from raw data.</span>
-<span class="sd">        Args:</span>
-<span class="sd">            output_filename (str): The name of the output file.</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tpar_method_invoked</span><span class="o">=</span><span class="kc">True</span>
-        <span class="n">file</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-        <span class="n">dates</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ini_date</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">end_date</span><span class="p">,</span><span class="n">freq</span><span class="o">=</span><span class="s1">&#39;1h&#39;</span><span class="p">)</span>
-        <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
-        <span class="n">file</span><span class="p">[</span><span class="s1">&#39;Dir_spread&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>  
-        <span class="n">file_to_save</span><span class="o">=</span><span class="n">file</span><span class="p">[[</span><span class="s1">&#39;Hs&#39;</span><span class="p">,</span><span class="s1">&#39;Tp&#39;</span><span class="p">,</span><span class="s1">&#39;Dir&#39;</span><span class="p">,</span><span class="s1">&#39;Dir_spread&#39;</span><span class="p">]]</span>
-        <span class="n">file_to_save</span><span class="o">.</span><span class="n">index</span><span class="o">=</span><span class="n">file_to_save</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">.%H%M%S&#39;</span><span class="p">)</span>
-
-        <span class="n">output_file_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}{</span><span class="n">output_filename</span><span class="si">}</span><span class="s1">&#39;</span>
-        
-        <span class="c1"># Open the file in write mode and write the first line</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TPAR</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    
-        <span class="c1"># Append the dataset to the file</span>
-        <span class="n">formatted_data</span> <span class="o">=</span> <span class="n">file_to_save</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{:7.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file_path</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">formatted_data</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="BoundaryConditions.tpar_from_ERA5_wave_data_pre">
-<a class="viewcode-back" href="../../../../../models/swanpy/preprocess/boundary_conds.html#oceanicospy.models.swanpy.preprocess.BoundaryConditions.tpar_from_ERA5_wave_data_pre">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">tpar_from_ERA5_wave_data_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">output_filename</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate TPAR data from ERA5 wave data.</span>
-<span class="sd">        Args:</span>
-<span class="sd">            output_filename (str): The name of the output file.</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tpar_method_invoked</span><span class="o">=</span><span class="kc">True</span>
-        <span class="n">era5_wave_data</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">waveparams_1980_2023.nc&#39;</span><span class="p">)</span>
-        <span class="n">era5_wave_data</span> <span class="o">=</span> <span class="n">era5_wave_data</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">valid_time</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ini_date</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">end_date</span><span class="p">))</span>
-        <span class="n">dict_vars</span><span class="o">=</span><span class="p">{}</span>
-        <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="n">era5_wave_data</span><span class="o">.</span><span class="n">data_vars</span><span class="p">:</span>
-            <span class="n">lat_interp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">11.5</span><span class="p">,</span> <span class="mi">12</span><span class="p">])</span>
-            <span class="n">var</span><span class="o">=</span><span class="n">era5_wave_data</span><span class="p">[</span><span class="n">variable</span><span class="p">][:,:,</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">var_interp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">([</span><span class="mf">11.7</span><span class="p">],</span> <span class="n">lat_interp</span><span class="p">,</span> <span class="n">var</span><span class="p">[</span><span class="n">x</span><span class="p">,:])[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">var</span><span class="p">))])</span>
-            <span class="n">var_interp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">var_interp</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-            <span class="n">dict_vars</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span><span class="o">=</span><span class="n">var_interp</span>
-        <span class="n">file_to_save</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dict_vars</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ini_date</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">end_date</span><span class="p">,</span><span class="n">freq</span><span class="o">=</span><span class="s1">&#39;1h&#39;</span><span class="p">))</span>
-        <span class="n">file_to_save</span><span class="p">[</span><span class="s1">&#39;Dir_spread&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>  
-        <span class="n">file_to_save</span><span class="o">.</span><span class="n">index</span><span class="o">=</span><span class="n">file_to_save</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">.%H%M%S&#39;</span><span class="p">)</span>
-
-        <span class="n">output_file_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}{</span><span class="n">output_filename</span><span class="si">}</span><span class="s1">&#39;</span>
-        
-        <span class="c1"># Open the file in write mode and write the first line</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;TPAR</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-    
-        <span class="c1"># Append the dataset to the file</span>
-        <span class="n">formatted_data</span> <span class="o">=</span> <span class="n">file_to_save</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{:7.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file_path</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">formatted_data</span><span class="p">)</span></div>
-
-    
-<div class="viewcode-block" id="BoundaryConditions.tpar_from_user">
-<a class="viewcode-back" href="../../../../../models/swanpy/preprocess/boundary_conds.html#oceanicospy.models.swanpy.preprocess.BoundaryConditions.tpar_from_user">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">tpar_from_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tpar_method_invoked</span><span class="o">=</span><span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bounds_var</span><span class="o">=</span><span class="kc">True</span></div>
-
-
-<div class="viewcode-block" id="BoundaryConditions.fill_boundaries_section_v2">
-<a class="viewcode-back" href="../../../../../models/swanpy/preprocess/boundary_conds.html#oceanicospy.models.swanpy.preprocess.BoundaryConditions.fill_boundaries_section_v2">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">fill_boundaries_section_v2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fill the boundaries section of the simulation.</span>
-<span class="sd">        Args:</span>
-<span class="sd">            *args: Variable length argument list.</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds_var</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-            <span class="n">var</span><span class="o">=</span><span class="s2">&quot;VAR&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">var</span><span class="o">=</span><span class="s2">&quot;CON&quot;</span>
-
-        <span class="c1"># if self.domain_number==1:</span>
-        <span class="c1">#     os.system(f&#39;cp {self.dict_folders[&quot;input&quot;]}domain_0{self.domain_number}/*.bnd \</span>
-        <span class="c1">#                 {self.dict_folders[&quot;run&quot;]}domain_0{self.domain_number}/&#39;)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ln -sf </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/*.bnd </span><span class="se">\</span>
-<span class="s1">                        </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span><span class="p">)</span>
-
-        <span class="c1"># if self.domain_number==1:</span>
-        <span class="c1">#     if self.tpar_method_invoked:</span>
-        <span class="c1">#         if len(args)&gt;0:</span>
-        <span class="c1">#             output_filename=args[0]</span>
-        <span class="c1">#             if len(self.list_sides)==1:</span>
-        <span class="c1">#                     filename_parts = output_filename.split(&#39;.&#39;)</span>
-        <span class="c1">#                     filename_parts.insert(1, self.list_sides[0])</span>
-        <span class="c1">#                     string_to_replace = f&quot;BOU SIDE {self.list_sides[0]} CLOCW {var} FILE &#39;{&#39;.&#39;.join(filename_parts)}&#39;&quot;</span>
-        <span class="c1">#                     subprocess.run([&#39;cp&#39;,f&#39;{self.dict_folders[&quot;run&quot;]}{output_filename}&#39;,f&#39;{self.dict_folders[&quot;run&quot;]}{output_filename.replace(&quot;.&quot;,f&quot;.{self.list_sides[0]}.&quot;)}&#39;])</span>
-        <span class="c1">#             else:</span>
-        <span class="c1">#                 string_to_replace=&#39;&#39;</span>
-        <span class="c1">#                 for idx,side in enumerate(self.list_sides):</span>
-        <span class="c1">#                     filename_parts = output_filename.split(&#39;.&#39;)</span>
-        <span class="c1">#                     filename_parts.insert(1, side)</span>
-        <span class="c1">#                     if idx!=len(self.list_sides)-1:</span>
-        <span class="c1">#                         string_to_replace += f&quot;BOU SIDE {side} CLOCKW {var} FILE &#39;{&#39;.&#39;.join(filename_parts)}&#39;\n&quot;</span>
-        <span class="c1">#                     else:</span>
-        <span class="c1">#                         string_to_replace += f&quot;BOU SIDE {side} CLOCKW {var} FILE &#39;{&#39;.&#39;.join(filename_parts)}&#39;&quot;</span>
-        <span class="c1">#                     subprocess.run([&#39;cp&#39;,f&#39;{self.dict_folders[&quot;run&quot;]}{output_filename}&#39;,f&#39;{self.dict_folders[&quot;run&quot;]}{output_filename.replace(&quot;.&quot;,f&quot;.{side}.&quot;)}&#39;])</span>
-        <span class="c1">#         else:</span>
-        <span class="c1">#             string_to_replace=&#39;&#39;</span>
-                
-        <span class="c1">#     else:</span>
-        <span class="c1">#         for param in self.dict_bounds_params:</span>
-        <span class="c1">#             if type(self.dict_bounds_params[param])==float:</span>
-        <span class="c1">#                 self.dict_bounds_params[param]=str(self.dict_bounds_params[param])</span>
-
-        <span class="c1">#         if type(self.dict_bounds_params[&#39;dir&#39;])==str:</span>
-        <span class="c1">#             if self.dict_bounds_params[&#39;dir&#39;].isalpha():</span>
-        <span class="c1">#                 self.segment_dir=self.dict_bounds_params[&#39;dir&#39;]</span>
-
-        <span class="c1">#                 if self.dict_bounds_params[&#39;dir&#39;]==&#39;ENE&#39;:</span>
-        <span class="c1">#                     self.dict_bounds_params[&#39;dir&#39;]=60.</span>
-        <span class="c1">#                 elif self.dict_bounds_params[&#39;dir&#39;]==&#39;E&#39;:</span>
-        <span class="c1">#                     self.dict_bounds_params[&#39;dir&#39;]=90.</span>
-        <span class="c1">#                 elif self.dict_bounds_params[&#39;dir&#39;]==&#39;SE&#39;:</span>
-        <span class="c1">#                     self.dict_bounds_params[&#39;dir&#39;]=135.</span>
-        <span class="c1">#             else:</span>
-        <span class="c1">#                 self.dict_bounds_params[param]=str(self.dict_bounds_params[param])</span>
-        <span class="c1">#         list_string=[str(value) for key,value in self.dict_bounds_params.items() if key!=&#39;segment_dir&#39;]</span>
-        <span class="c1">#         string=&#39; &#39;.join(list_string)</span>
-        <span class="c1">#         string_to_replace = f&quot;BOU SIDE {self.list_sides[0]} CLOCW {var} PAR {string}&quot;</span>
-        <span class="c1"># else:</span>
-        <span class="c1">#     string_to_replace=&#39;NEST&#39;</span>
-        
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">)):</span>
-            <span class="n">values_bounds</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">values_bounds</span><span class="o">=</span><span class="n">string_to_replace</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">dict_boundaries</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;values_bounds&#39;</span><span class="p">:</span><span class="n">values_bounds</span><span class="p">}</span>
-
-        <span class="nb">print</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">*** Adding/Editing boundary information for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> in configuration file ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">fill_files</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/run.swn&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_boundaries</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Boundary line information is missing. Please ensure &#39;create_boundary_line&#39; method has been called successfully before filling the boundaries section.&quot;</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

@@ -217,6 +217,28 @@
 
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../models/swanpy/execution/run_case.html">Case Runner</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -324,8 +346,6 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">string</span><span class="w"> </span><span class="kn">import</span> <span class="n">Template</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
-
 <div class="viewcode-block" id="Initializer">
 <a class="viewcode-back" href="../../../../models/swanpy/initializer.html#oceanicospy.models.swanpy.Initializer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Initializer</span><span class="p">:</span>
@@ -342,13 +362,13 @@ document.write(`
 
 <span class="sd">        root_path/</span>
 <span class="sd">        ├── input/</span>
-<span class="sd">        │   └── domain_01/      ← place ERA5 .nc and bathymetry .dat files here</span>
+<span class="sd">        │   └── domain_XX/      ← this needs to be populated by the user with input files before running the case</span>
 <span class="sd">        ├── pros/</span>
 <span class="sd">        ├── run/</span>
-<span class="sd">        │   └── domain_01/</span>
+<span class="sd">        │   └── domain_XX/</span>
 <span class="sd">        │       └── run.swn     ← generated from template</span>
 <span class="sd">        └── output/</span>
-<span class="sd">            └── domain_01/</span>
+<span class="sd">            └── domain_XX/</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -363,7 +383,6 @@ document.write(`
 <span class="sd">        * ``case_description`` (*str*) – free-text description.</span>
 <span class="sd">        * ``stat_id`` (*int*) – ``0`` for non-stationary, ``1`` for stationary.</span>
 <span class="sd">        * ``number_domains`` (*int*) – total number of computational domains.</span>
-<span class="sd">        * ``nested_domains`` (*int*) – number of nested (child) domains.</span>
 <span class="sd">        * ``parent_domains`` (*dict*) – mapping ``{child_id: parent_id}`` where</span>
 <span class="sd">          ``parent_id`` is ``None`` for top-level domains.</span>
 
@@ -437,21 +456,6 @@ document.write(`
 <span class="sd">        All directories are created with ``Path.mkdir(parents=True,</span>
 <span class="sd">        exist_ok=True)``, so missing intermediate paths are handled</span>
 <span class="sd">        automatically.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        Single-domain case (``number_domains=1``) produces::</span>
-
-<span class="sd">            root_path/</span>
-<span class="sd">            ├── input/</span>
-<span class="sd">            ├── pros/</span>
-<span class="sd">            ├── run/</span>
-<span class="sd">            │   └── domain_01/</span>
-<span class="sd">            └── output/</span>
-<span class="sd">                └── domain_01/</span>
-
-<span class="sd">        Two-domain nested case (``number_domains=2``) additionally produces</span>
-<span class="sd">        ``run/domain_02/`` and ``output/domain_02/``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\t</span><span class="s1">*** Creating project folder structure ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
@@ -483,8 +487,7 @@ document.write(`
 <span class="sd">        * ``stat_id == 1`` → ``run_base_stat.swn``</span>
 
 <span class="sd">        The selected template is filled using :meth:`_generate_baseline_SWAN`</span>
-<span class="sd">        with a merged dictionary of library defaults (see :data:`utils.defaults`)</span>
-<span class="sd">        and the user-supplied ``dict_ini_data``.  User values take precedence</span>
+<span class="sd">        with user-supplied ``dict_ini_data``.  User values take precedence</span>
 <span class="sd">        over defaults for any key that appears in both.</span>
 
 <span class="sd">        The rendered ``run.swn`` is written to</span>
@@ -505,11 +508,9 @@ document.write(`
             <span class="sa">f</span><span class="s1">&#39;run_base_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stat_label</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s1">.swn&#39;</span>
         <span class="p">)</span>
 
-        <span class="n">merged</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">utils</span><span class="o">.</span><span class="n">defaults</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_ini_data</span><span class="p">}</span>
-
         <span class="k">for</span> <span class="n">domain</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_ini_data</span><span class="p">[</span><span class="s1">&#39;number_domains&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">output_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s1">/run.swn&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_generate_baseline_SWAN</span><span class="p">(</span><span class="n">template_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">merged</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_generate_baseline_SWAN</span><span class="p">(</span><span class="n">template_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_ini_data</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

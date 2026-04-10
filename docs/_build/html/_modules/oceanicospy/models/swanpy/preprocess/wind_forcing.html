@@ -217,6 +217,28 @@
 
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/execution/run_case.html">Case Runner</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -323,38 +345,38 @@ document.write(`
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">glob</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">glob</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">....</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">....retrievals</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
 <div class="viewcode-block" id="WindForcing">
 <a class="viewcode-back" href="../../../../../models/swanpy/preprocess/wind_forcing.html#oceanicospy.models.swanpy.preprocess.WindForcing">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">WindForcing</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    init : object</span>
+<span class="sd">        An initialization object containing configuration data and folder paths.</span>
+<span class="sd">    domain_number : int</span>
+<span class="sd">        Identifier for the domain being processed.</span>
+<span class="sd">    dict_info : dict or None, optional</span>
+<span class="sd">        Dictionary containing spatial wind information. If None, winds must be provided via `filename`.</span>
+<span class="sd">    filename : str or None, optional</span>
+<span class="sd">        Path to the file containing wind data. If None, wind must be provided via `dict_info`.</span>
+<span class="sd">    share_winds : bool, optional</span>
+<span class="sd">        If True, shares wind data across domains. Defaults to True.</span>
+<span class="sd">    use_link : bool or None, optional</span>
+<span class="sd">        If True, creates symbolic links for wind files instead of copying them.</span>
+<span class="sd">        If False, copies the files. If None, no file placement is performed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">init</span><span class="p">,</span><span class="n">domain_number</span><span class="p">,</span><span class="n">dict_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">share_winds</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">use_link</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        init : object</span>
-<span class="sd">            An initialization object containing configuration data and folder paths.</span>
-<span class="sd">        domain_number : int</span>
-<span class="sd">            Identifier for the domain being processed.</span>
-<span class="sd">        dict_info : dict or None, optional</span>
-<span class="sd">            Dictionary containing spatial wind information. If None, winds must be provided via `filename`.</span>
-<span class="sd">        filename : str or None, optional</span>
-<span class="sd">            Path to the file containing wind data. If None, wind must be provided via `dict_info`.</span>
-<span class="sd">        share_winds : bool, optional</span>
-<span class="sd">            If True, shares wind data across domains. Defaults to True.</span>
-<span class="sd">        use_link : bool or None, optional</span>
-<span class="sd">            If True, creates symbolic links for wind files instead of copying them.</span>
-<span class="sd">            If False, copies the files. If None, no file placement is performed.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="n">init</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span> <span class="o">=</span> <span class="n">domain_number</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span> <span class="o">=</span> <span class="n">dict_info</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">input_filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">share_winds</span> <span class="o">=</span> <span class="n">share_winds</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span> <span class="o">=</span> <span class="n">use_link</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">*** Initializing winds for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -376,10 +398,10 @@ document.write(`
         <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
         <span class="n">ERA5download_obj</span> <span class="o">=</span> <span class="n">ERA5Downloader</span><span class="p">(</span>
                         <span class="n">variables</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;10m_u_component_of_wind&#39;</span><span class="p">,</span> <span class="s1">&#39;10m_v_component_of_wind&#39;</span><span class="p">],</span>
-                        <span class="n">lon_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_wind&#39;</span><span class="p">],</span>
-                        <span class="n">lon_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;meshes_x_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;dx_wind&#39;</span><span class="p">]),</span>
-                        <span class="n">lat_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_wind&#39;</span><span class="p">],</span>
-                        <span class="n">lat_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;meshes_y_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;dy_wind&#39;</span><span class="p">]),</span>
+                        <span class="n">lon_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_corner_wind&#39;</span><span class="p">],</span>
+                        <span class="n">lon_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_corner_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;nx_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;dx_wind&#39;</span><span class="p">]),</span>
+                        <span class="n">lat_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_corner_wind&#39;</span><span class="p">],</span>
+                        <span class="n">lat_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_corner_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;ny_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;dy_wind&#39;</span><span class="p">]),</span>
                         <span class="n">start_datetime_local</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">ini_date</span><span class="p">,</span>
                         <span class="n">end_datetime_local</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">end_date</span><span class="p">,</span>
                         <span class="n">difference_to_UTC</span> <span class="o">=</span> <span class="n">difference_to_UTC</span><span class="p">,</span>
@@ -406,10 +428,10 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
         <span class="n">CMDSdownload_obj</span> <span class="o">=</span> <span class="n">CMDSDownloader</span><span class="o">.</span><span class="n">for_winds</span><span class="p">(</span>
-                        <span class="n">lon_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_wind&#39;</span><span class="p">],</span>
-                        <span class="n">lon_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;meshes_x_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;dx_wind&#39;</span><span class="p">]),</span>
-                        <span class="n">lat_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_wind&#39;</span><span class="p">],</span>
-                        <span class="n">lat_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;meshes_y_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;dy_wind&#39;</span><span class="p">]),</span>
+                        <span class="n">lon_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_corner_wind&#39;</span><span class="p">],</span>
+                        <span class="n">lon_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lon_ll_corner_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;nx_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;dx_wind&#39;</span><span class="p">]),</span>
+                        <span class="n">lat_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_corner_wind&#39;</span><span class="p">],</span>
+                        <span class="n">lat_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;lat_ll_corner_wind&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;ny_wind&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">[</span><span class="s1">&#39;dy_wind&#39;</span><span class="p">]),</span>
                         <span class="n">start_datetime_local</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">ini_date</span><span class="p">,</span>
                         <span class="n">end_datetime_local</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">end_date</span><span class="p">,</span>
                         <span class="n">difference_to_UTC</span> <span class="o">=</span> <span class="n">difference_to_UTC</span><span class="p">,</span>
@@ -592,23 +614,7 @@ document.write(`
                 <span class="n">origin_domain_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_01/&#39;</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> ERA5 wind data converted to ASCII format and saved as </span><span class="si">{</span><span class="n">ascii_filename</span><span class="si">}</span><span class="s2"> in domain 01, linking to domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_file</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">ascii_filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">ascii_filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">ascii_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
-                    <span class="n">utils</span><span class="o">.</span><span class="n">create_link</span><span class="p">(</span>
-                        <span class="n">ascii_filename</span><span class="p">,</span>
-                        <span class="n">origin_domain_dir</span><span class="p">,</span>
-                        <span class="n">run_domain_dir</span>
-                    <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">ascii_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
-                    <span class="n">utils</span><span class="o">.</span><span class="n">remove_link</span><span class="p">(</span><span class="n">ascii_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">)</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;cp </span><span class="si">{</span><span class="n">origin_domain_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">ascii_filename</span><span class="si">}</span><span class="s1"> &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}</span><span class="s1">&#39;</span>
-                <span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">deploy_input_file</span><span class="p">(</span><span class="n">ascii_filename</span><span class="p">,</span> <span class="n">origin_domain_dir</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">share_winds</span><span class="p">:</span>
@@ -658,23 +664,7 @@ document.write(`
                 <span class="n">origin_domain_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_01/&#39;</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2"> CMDS wind data converted to ASCII format and saved as </span><span class="si">{</span><span class="n">ascii_filename</span><span class="si">}</span><span class="s2"> in domain 01, linking to domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_file</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">ascii_filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">ascii_filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">ascii_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
-                    <span class="n">utils</span><span class="o">.</span><span class="n">create_link</span><span class="p">(</span>
-                        <span class="n">ascii_filename</span><span class="p">,</span>
-                        <span class="n">origin_domain_dir</span><span class="p">,</span>
-                        <span class="n">run_domain_dir</span>
-                    <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">ascii_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
-                    <span class="n">utils</span><span class="o">.</span><span class="n">remove_link</span><span class="p">(</span><span class="n">ascii_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">)</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;cp </span><span class="si">{</span><span class="n">origin_domain_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">ascii_filename</span><span class="si">}</span><span class="s1"> &#39;</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}</span><span class="s1">&#39;</span>
-                <span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">deploy_input_file</span><span class="p">(</span><span class="n">ascii_filename</span><span class="p">,</span> <span class="n">origin_domain_dir</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">share_winds</span><span class="p">:</span>
@@ -735,63 +725,6 @@ document.write(`
         <span class="nb">print</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> </span><span class="se">\t</span><span class="s1">*** Adding/Editing winds information for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> in configuration file ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">fill_files</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/run.swn&#39;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="p">)</span></div>
 </div>
-
-
-    <span class="c1"># def write_constant_wind(self, ascii_filepath):</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     Writes constant wind data to an ASCII file.</span>
-    <span class="c1">#     Args:</span>
-    <span class="c1">#         ascii_filepath (str): Path to the output ASCII file.</span>
-    <span class="c1">#     Returns:</span>
-    <span class="c1">#         dict: Dictionary containing wind parameters.</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     ds=pd.read_csv(f&#39;{self.dict_folders[&quot;input&quot;]}{self.input_filename}&#39;,delimiter=&#39; &#39;)</span>
-    <span class="c1">#     dates=pd.date_range(self.ini_date,self.end_date,freq=&#39;1h&#39;)</span>
-    <span class="c1">#     ds=ds.set_index(dates)</span>
-    <span class="c1">#     ds_to_save=ds[[&#39;Dir&#39;,&#39;Vel&#39;]]</span>
-    <span class="c1">#     ds_to_save.index=ds_to_save.index.strftime(&#39;%Y%m%d.%H%M%S&#39;)</span>
-        
-    <span class="c1">#     file = open(f&#39;{self.dict_folders[&quot;run&quot;]}{ascii_filepath}&#39;,&#39;w&#39;)</span>
-    <span class="c1">#     for idx,t in enumerate(ds_to_save.index):</span>
-    <span class="c1">#         file.write(t)</span>
-    <span class="c1">#         file.write(&#39;\n&#39;)</span>
-    <span class="c1">#         ds_to_save[&#39;Dir_to&#39;] = (ds_to_save[&#39;Dir&#39;] + 180) % 360</span>
-    <span class="c1">#         u10_to_write = ds_to_save[&#39;Vel&#39;].iloc[idx] * np.sin(np.deg2rad(ds_to_save[&#39;Dir_to&#39;].iloc[idx]))</span>
-    <span class="c1">#         v10_to_write = ds_to_save[&#39;Vel&#39;].iloc[idx] * np.cos(np.deg2rad(ds_to_save[&#39;Dir_to&#39;].iloc[idx]))</span>
-
-    <span class="c1">#         u10_to_write = round(u10_to_write,2)</span>
-    <span class="c1">#         v10_to_write = round(v10_to_write,2)</span>
-
-    <span class="c1">#         u10_to_write = u10_to_write*np.ones((25,25))</span>
-    <span class="c1">#         v10_to_write = v10_to_write*np.ones((25,25))</span>
-                        
-    <span class="c1">#         file.write(pd.DataFrame(u10_to_write).to_csv(index=False, header=False, na_rep=0, float_format=&#39;%7.3f&#39;).replace(&#39;,&#39;, &#39; &#39;))</span>
-    <span class="c1">#         file.write(pd.DataFrame(v10_to_write).to_csv(index=False, header=False, na_rep=0, float_format=&#39;%7.3f&#39;).replace(&#39;,&#39;, &#39; &#39;))</span>
-
-    <span class="c1">#     file.close()</span>
-    
-    <span class="c1">#     ll_lon_on,ll_lat_on=4931900,2799400 #quemado</span>
-
-    <span class="c1">#     self.wind_params=dict(lon_ll_wind=ll_lon_on,lat_ll_wind=ll_lat_on,</span>
-    <span class="c1">#                           meshes_x_wind=24,meshes_y_wind=24,</span>
-    <span class="c1">#                           dx_wind=2000,dy_wind=2000,ini_wind_date=ds_to_save.index[0],</span>
-    <span class="c1">#                           dt_wind_hours=1,end_wind_date=ds_to_save.index[-1])</span>
-    <span class="c1">#     return self.wind_params</span>
-
-    <span class="c1"># def winds_from_user(self):</span>
-    <span class="c1">#     wind_file_path = glob.glob(f&#39;{self.dict_folders[&quot;input&quot;]}domain_0{self.domain_number}/*.wnd&#39;)[0]</span>
-    <span class="c1">#     wind_filename=wind_file_path.split(&#39;/&#39;)[-1]</span>
-
-    <span class="c1">#     if not utils.verify_link(wind_filename,f&#39;{self.dict_folders[&quot;run&quot;]}domain_0{self.domain_number}/&#39;):</span>
-    <span class="c1">#         utils.create_link(wind_filename,f&#39;{self.dict_folders[&quot;input&quot;]}domain_0{self.domain_number}/&#39;,</span>
-    <span class="c1">#                             f&#39;{self.dict_folders[&quot;run&quot;]}domain_0{self.domain_number}/&#39;)</span>
-
-    <span class="c1">#     # os.system(f&#39;rsync {self.dict_folders[&quot;input&quot;]}domain_0{self.domain_number}/{wind_filename}\</span>
-    <span class="c1">#     #                         {self.dict_folders[&quot;run&quot;]}domain_0{self.domain_number}/&#39;)</span>
-
-    <span class="c1">#     if self.wind_info!=None:</span>
-    <span class="c1">#         self.wind_info.update({&quot;winds.wnd&quot;:wind_filename})</span>
-    <span class="c1">#         return self.wind_info</span>
 
 </pre></div>
 

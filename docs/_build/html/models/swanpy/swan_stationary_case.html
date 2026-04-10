@@ -1,0 +1,932 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Launching SWAN Cases with swanpy &#8212; oceanicospy 0.0.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css?v=8cd3d715" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e645c8fa"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'models/swanpy/swan_stationary_case';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Launching SWAN Cases with swanpy" href="swan_nonstationary_case.html" />
+    <link rel="prev" title="Case Runner" href="execution/run_case.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">oceanicospy 0.0.1 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../installing.html">Installation</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../analysis/index.html">Analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/conditioning.html">Signal conditioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/spectral.html">Spectral</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/spectral_analysis.html">Walkthrough Example - Spectral Analysis</a></li>
+
+
+
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/temporal.html">Temporal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../analysis/temporal_analysis.html">Walkthrough Example - Temporal Analysis</a></li>
+
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../observations/index.html">Observations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../observations/pressure_sensors/index.html">Pressure Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/pressure_sensors/BaseLogger.html">BaseLogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/pressure_sensors/AQUAlogger.html">AQUAlogger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/pressure_sensors/RBR.html">RBR</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/pressure_sensors/Bluelog.html">Bluelog</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../observations/weather_stations/index.html">Weather Stations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/weather_stations/WeatherStationBase.html">Weather Station Base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/weather_stations/DavisVantagePro.html">Davis Vantage Pro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/weather_stations/WeatherSens.html">WeatherSens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/weather_stations/Rainwise.html">Rainwise</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../observations/ctd/index.html">CTD Sensors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/ctd/CTDBase.html">CTDBase</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/ctd/CastawayCTD.html">Castaway CTD</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../observations/ctd/SeaSunMarineTechCTD.html">Sea Sun Marine Tech CTD</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../observations/AWAC.html">AWAC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../observations/Buoy.html">Buoy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../observations/HOBO.html">HOBO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../observations/reading_field_data.html">Walkthrough Example</a></li>
+
+
+
+
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../retrievals/index.html">Retrievals</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../retrievals/UHSLCDownloader.html">UHSLCDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../retrievals/CMDSDownloader.html">CMDSDownloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../retrievals/ERA5Downloader.html">ERA5Downloader</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../retrievals/data_fetcher.html">Walkthrough Example - Data Fetcher</a></li>
+
+
+
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Models</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Swanpy</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="preprocess/gridmaker.html">Gridmaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="preprocess/bathymaker.html">Bathymaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="preprocess/bottom_friction.html">Bottom Friction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="preprocess/boundary_conds.html">Boundary conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="preprocess/waterlevel_forcing.html">Water level forcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="preprocess/wind_forcing.html">Wind forcing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="execution/run_case.html">Case Runner</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Launching SWAN Cases with <code class="docutils literal notranslate"><span class="pre">swanpy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="swan_nonstationary_case.html">Launching SWAN Cases with <code class="docutils literal notranslate"><span class="pre">swanpy</span></code></a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/models/swanpy/swan_stationary_case.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Launching SWAN Cases with swanpy</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imports">Imports</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-case">Stationary case:</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#case-parameters-definition">Case parameters definition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-setup">Initial setup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-the-grid">Creating the grid</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-bathymetry">Setting up the bathymetry</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-bottom-friction-information">Defining bottom friction information</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-wind-forcing">Defining wind forcing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-boundary-conditions">Defining boundary conditions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computation-and-run-configuration">Computation and run configuration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-the-output">Reading the output</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+</pre></div>
+</div>
+</div>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<section id="launching-swan-cases-with-swanpy">
+<h1>Launching SWAN Cases with <code class="docutils literal notranslate"><span class="pre">swanpy</span></code><a class="headerlink" href="#launching-swan-cases-with-swanpy" title="Link to this heading">#</a></h1>
+<section id="imports">
+<h2>Imports<a class="headerlink" href="#imports" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">oceanicospy.models.swanpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Initializer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">oceanicospy.models.swanpy.preprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">GridMaker</span><span class="p">,</span> <span class="n">BathyMaker</span><span class="p">,</span> <span class="n">WindForcing</span><span class="p">,</span> <span class="n">BottomFrictionProcessor</span><span class="p">,</span> <span class="n">BoundaryConditions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">oceanicospy.models.swanpy.execution</span><span class="w"> </span><span class="kn">import</span> <span class="n">CaseRunner</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="stationary-case">
+<h2>Stationary case:<a class="headerlink" href="#stationary-case" title="Link to this heading">#</a></h2>
+<p>This notebook walks through a complete SWAN <strong>stationary</strong> modelling workflow using the <code class="docutils literal notranslate"><span class="pre">swanpy</span></code> subpackage inside <code class="docutils literal notranslate"><span class="pre">oceanicospy</span></code>. The example is based on a stationary case for the San Andres island in Colombia.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The workflow assumes that input data (bathymetry <code class="docutils literal notranslate"><span class="pre">.bot</span></code>, friction <code class="docutils literal notranslate"><span class="pre">.fric</span></code> and output points <code class="docutils literal notranslate"><span class="pre">.csv</span></code>) are already placed in the appropriate <code class="docutils literal notranslate"><span class="pre">input/domain_01/</span></code> folder inside the case directory.</p>
+</div>
+<section id="case-parameters-definition">
+<h3>Case parameters definition<a class="headerlink" href="#case-parameters-definition" title="Link to this heading">#</a></h3>
+<p>Three main parameters are required to set up a SWAN case:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">path_case</span></code></p></td>
+<td><p>Root directory that will hold <code class="docutils literal notranslate"><span class="pre">input/</span></code>, <code class="docutils literal notranslate"><span class="pre">run/</span></code>, <code class="docutils literal notranslate"><span class="pre">output/</span></code>, <code class="docutils literal notranslate"><span class="pre">pros/</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dict_ini_data</span></code></p></td>
+<td><p>Metadata dictionary consumed by <code class="docutils literal notranslate"><span class="pre">Initializer</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ini_date</span></code> / <code class="docutils literal notranslate"><span class="pre">end_date</span></code></p></td>
+<td><p>Simulation window</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The initialization metadata dictionary (<code class="docutils literal notranslate"><span class="pre">dict_ini_data</span></code>) is a key component of the workflow, as it contains all the necessary information to retrieve and process input data (e.g., ERA5 files). This dictionary is expetected to have the following keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: A string identifier for the case (e.g., “hurricane_matthew_guajira_2016”).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">case_number</span></code> (optional): An integer to differentiate between multiple cases (e.g., 1, 2, 3).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">case_description</span></code>: A brief description of the case (e.g., “Stationary”, “Non-stationary”).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stat_id</span></code>: An integer indicating the type of run (0 for non-stationary, 1 for stationary).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nested_domains</span></code>: number of nested domains (e.g., 0, 1, 2) if applicable.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">parent_domains</span></code>: a dictionary specifying the parent domain for each nested domain (e.g., {“domain_02”: “domain_01”, “domain_03”: “domain_02”}). If there are no nested domains, this can be set to None or an empty dictionary.</p></li>
+</ul>
+<p>The expected structure of this dictionary is detailed in the <code class="docutils literal notranslate"><span class="pre">Initializer</span></code> documentation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">path_case</span> <span class="o">=</span> <span class="s1">&#39;../data/model_runs/stationary_swan/&#39;</span>
+
+<span class="n">dict_ini_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">name</span>            <span class="o">=</span> <span class="s1">&#39;Stationary case for San Andres&#39;</span><span class="p">,</span>
+    <span class="n">case_number</span>     <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">case_description</span><span class="o">=</span> <span class="s1">&#39;Example&#39;</span><span class="p">,</span>
+    <span class="n">stat_id</span>         <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">number_domains</span>  <span class="o">=</span> <span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p><code class="docutils literal notranslate"><span class="pre">stat_id</span></code> convention</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">stat_id</span> <span class="pre">=</span> <span class="pre">0</span></code> → <strong>non-stationary</strong> run</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stat_id</span> <span class="pre">=</span> <span class="pre">1</span></code> → <strong>stationary</strong> run  ← <em>used in this notebook</em></p></li>
+</ul>
+</div>
+</section>
+<section id="initial-setup">
+<h3>Initial setup<a class="headerlink" href="#initial-setup" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Initializer</span></code> class creates the project directory tree and writes the baseline SWAN configuration file (<code class="docutils literal notranslate"><span class="pre">run.swn</span></code>) from a template. The tree has a structure like the following, where <code class="docutils literal notranslate"><span class="pre">domain_01</span></code> is the main domain (and only domain in this case):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>path_case/
+├── input/
+│   └── domain_01/          ← place ERA5 .nc and bathymetry .dat files here
+├── pros/
+├── run/
+│   └── domain_01/
+│       └── run.swn         ← generated from template
+└── output/
+    └── domain_01/
+</pre></div>
+</div>
+<p>All of this code is expected to be in a python file inside the <code class="docutils literal notranslate"><span class="pre">pros/</span></code> folder so <code class="docutils literal notranslate"><span class="pre">pros/</span></code> is the working directory when running the script and it should be already created before calling <code class="docutils literal notranslate"><span class="pre">Initializer</span></code>. The folder <code class="docutils literal notranslate"><span class="pre">input/domain_0X/</span></code> should also be created and populated with the necessary input files (ERA5 NetCDF files and bathymetry <code class="docutils literal notranslate"><span class="pre">.dat</span></code> file) before running the script.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">create_folders_l2()</span></code> is only required when running <strong>nested</strong> domains.<br />
+For a single-domain run <code class="docutils literal notranslate"><span class="pre">create_folders_l1()</span></code> is sufficient.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">case</span> <span class="o">=</span> <span class="n">Initializer</span><span class="p">(</span>
+    <span class="n">root_path</span>    <span class="o">=</span> <span class="n">path_case</span><span class="p">,</span>
+    <span class="n">dict_ini_data</span><span class="o">=</span> <span class="n">dict_ini_data</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">case</span><span class="o">.</span><span class="n">create_folders</span><span class="p">()</span>    <span class="c1"># creates all project folders (data/, output/, etc.)</span>
+<span class="k">case</span><span class="o">.</span><span class="n">replace_ini_data</span><span class="p">()</span>     <span class="c1"># writes run.swn from the STAT template</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>*** Initializing SWAN model ***
+
+
+	*** Creating project folder structure ***
+
+
+	*** Copying base SWAN configuration file into run folder ***
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="creating-the-grid">
+<h3>Creating the grid<a class="headerlink" href="#creating-the-grid" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">GridMaker</span></code> is a class inside <code class="docutils literal notranslate"><span class="pre">swanpy</span></code> that populates the <code class="docutils literal notranslate"><span class="pre">CGRID</span></code> and <code class="docutils literal notranslate"><span class="pre">INPGRID</span></code> sections of configuration file <code class="docutils literal notranslate"><span class="pre">run.swn</span></code>.</p>
+<p>One method is available to obtain the grid parameters:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>When to use</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">params_from_bathy()</span></code></p></td>
+<td><p>Derive extent and resolution automatically from the <code class="docutils literal notranslate"><span class="pre">.dat</span></code> bathymetry file</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the params_from_bathy() method is used, the grid parameters will be automatically derived from the <code class="docutils literal notranslate"><span class="pre">.dat</span></code> bathymetry file. In this case, the user must ensure that the bathymetry file is correctly formatted and placed in the appropriate <code class="docutils literal notranslate"><span class="pre">input/domain_0X/</span></code> folder before running the script.</p>
+</div>
+<p>When the user provides the grid parameters, the following keys are expected in the <code class="docutils literal notranslate"><span class="pre">grid_info</span></code> dictionary:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lon_ll_corner</span></code>: longitude of the lower-left corner of the grid</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lat_ll_corner</span></code>: latitude of the lower-left corner of the grid</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x_extent</span></code>: total extent of the grid in the x-direction (longitude)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y_extent</span></code>: total extent of the grid in the y-direction (latitude)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nx</span></code> : number of grid cells in the x-direction</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ny</span></code>: number of grid cells in the y-direction</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DOMAIN_ID</span> <span class="o">=</span> <span class="mi">1</span>   <span class="c1"># domain identifier (1-indexed)</span>
+
+<span class="n">case_grid</span> <span class="o">=</span> <span class="n">GridMaker</span><span class="p">(</span>
+    <span class="n">init</span>         <span class="o">=</span> <span class="n">case</span><span class="p">,</span>
+    <span class="n">domain_number</span><span class="o">=</span> <span class="n">DOMAIN_ID</span><span class="p">,</span>
+    <span class="n">dict_info</span>    <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;lon_ll_corner&#39;</span><span class="p">:</span> <span class="mf">278.2265167</span><span class="p">,</span> 
+                    <span class="s1">&#39;lat_ll_corner&#39;</span><span class="p">:</span> <span class="mf">12.4413166</span><span class="p">,</span> 
+                    <span class="s1">&#39;x_extent&#39;</span><span class="p">:</span> <span class="mf">0.13185</span><span class="p">,</span> 
+                    <span class="s1">&#39;y_extent&#39;</span><span class="p">:</span> <span class="mf">0.1908</span><span class="p">,</span> 
+                    <span class="s1">&#39;nx&#39;</span><span class="p">:</span> <span class="mi">293</span><span class="p">,</span>
+                    <span class="s1">&#39;ny&#39;</span><span class="p">:</span> <span class="mi">424</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="c1"># Option – derive grid parameters from the bathymetry file</span>
+<span class="c1"># dict_grid = case_grid.params_from_bathy()</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The grid info dictionary for domain </span><span class="si">{</span><span class="n">DOMAIN_ID</span><span class="si">}</span><span class="s1"> is: </span><span class="si">{</span><span class="n">case_grid</span><span class="o">.</span><span class="n">dict_info</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">case_grid</span><span class="o">.</span><span class="n">fill_grid_section</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>*** Initializing gridmaker for domain 1 ***
+
+The grid info dictionary for domain 1 is: {&#39;lon_ll_corner&#39;: 278.2265167, &#39;lat_ll_corner&#39;: 12.4413166, &#39;x_extent&#39;: 0.13185, &#39;y_extent&#39;: 0.1908, &#39;nx&#39;: 293, &#39;ny&#39;: 424}
+
+ 	*** Adding/Editing grid information for domain 1 in configuration file ***
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="setting-up-the-bathymetry">
+<h3>Setting up the bathymetry<a class="headerlink" href="#setting-up-the-bathymetry" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">BathyMaker</span></code> class fills the <code class="docutils literal notranslate"><span class="pre">BOTTOM</span></code> section of <code class="docutils literal notranslate"><span class="pre">run.swn</span></code>. There is one method to set up the bathymetry file for the model:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">use_ascii_file_from_user</span></code> is used when a pre-processed <code class="docutils literal notranslate"><span class="pre">.bot</span></code> file already exists in <code class="docutils literal notranslate"><span class="pre">input/domain_01/</span></code>. This method implies the use of a dictionary with bathymetry metadata.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">use_ascii_file_from_user()</span></code> method is used, make sure that the pre-processed <code class="docutils literal notranslate"><span class="pre">.bot</span></code> file is correctly formatted and placed in the appropriate <code class="docutils literal notranslate"><span class="pre">input/domain_0X/</span></code> folder before running the script. This method will link or copy the existing <code class="docutils literal notranslate"><span class="pre">.bot</span></code> file to the run directory and update the bathymetry information in the configuration metadata, but it does not perform any processing on the file itself.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">case_bathy</span> <span class="o">=</span> <span class="n">BathyMaker</span><span class="p">(</span>
+    <span class="n">init</span>         <span class="o">=</span> <span class="n">case</span><span class="p">,</span>
+    <span class="n">domain_number</span><span class="o">=</span> <span class="n">DOMAIN_ID</span><span class="p">,</span>
+    <span class="n">dict_info</span>   <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;lon_ll_corner_bot&#39;</span><span class="p">:</span> <span class="mf">278.2265167</span><span class="p">,</span> <span class="s1">&#39;lat_ll_corner_bot&#39;</span><span class="p">:</span> <span class="mf">12.4413166</span><span class="p">,</span>
+                    <span class="s1">&#39;nx_bot&#39;</span><span class="p">:</span> <span class="mi">293</span><span class="p">,</span> <span class="s1">&#39;ny_bot&#39;</span><span class="p">:</span> <span class="mi">424</span><span class="p">,</span> 
+                    <span class="s1">&#39;dx_bot&#39;</span><span class="p">:</span> <span class="mf">0.00045</span><span class="p">,</span> <span class="s1">&#39;dy_bot&#39;</span><span class="p">:</span> <span class="mf">0.00045</span><span class="p">},</span>     
+<span class="p">)</span>
+
+<span class="n">case_bathy</span><span class="o">.</span><span class="n">use_ascii_file_from_user</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The bathymetry info dictionary for domain </span><span class="si">{</span><span class="n">DOMAIN_ID</span><span class="si">}</span><span class="s1"> is: </span><span class="si">{</span><span class="n">case_bathy</span><span class="o">.</span><span class="n">dict_info</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">case_bathy</span><span class="o">.</span><span class="n">fill_bathy_section</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>*** Initializing bathymaker for domain 1 ***
+
+The bathymetry info dictionary for domain 1 is: {&#39;lon_ll_corner_bot&#39;: 278.2265167, &#39;lat_ll_corner_bot&#39;: 12.4413166, &#39;nx_bot&#39;: 293, &#39;ny_bot&#39;: 424, &#39;dx_bot&#39;: 0.00045, &#39;dy_bot&#39;: 0.00045, &#39;bathy_file&#39;: &#39;../../input/domain_01/bathymetry.bot&#39;}
+
+ 	*** Adding/Editing bathymetry information for domain 1 in configuration file ***
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>If you already have a ready-to-use <code class="docutils literal notranslate"><span class="pre">.bot</span></code> file in <code class="docutils literal notranslate"><span class="pre">input/domain_01/</span></code>, call <code class="docutils literal notranslate"><span class="pre">case_bathy.use_ascii_file_from_user()</span></code> instead of <code class="docutils literal notranslate"><span class="pre">convert_xyz2asc</span></code>. Pass the metadata dict (or <code class="docutils literal notranslate"><span class="pre">None</span></code>) as <code class="docutils literal notranslate"><span class="pre">bathy_info=</span></code> at construction time and use <code class="docutils literal notranslate"><span class="pre">use_link=True</span></code> to symlink rather than copy the file into the run directory.</p>
+</div>
+</section>
+<section id="defining-bottom-friction-information">
+<h3>Defining bottom friction information<a class="headerlink" href="#defining-bottom-friction-information" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">BottomFrictionProcessor</span></code> is a class inside <code class="docutils literal notranslate"><span class="pre">swanpy</span></code> that fills the <code class="docutils literal notranslate"><span class="pre">FRICTION</span></code> section of <code class="docutils literal notranslate"><span class="pre">run.swn</span></code> with the appropriate parameters for bottom friction.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">case_bottom_friction</span> <span class="o">=</span> <span class="n">BottomFrictionProcessor</span><span class="p">(</span>
+    <span class="n">init</span>         <span class="o">=</span> <span class="n">case</span><span class="p">,</span>
+    <span class="n">domain_number</span><span class="o">=</span> <span class="n">DOMAIN_ID</span><span class="p">,</span>
+    <span class="n">dict_info</span>    <span class="o">=</span> 
+        <span class="p">{</span><span class="s1">&#39;lon_ll_corner_fric&#39;</span><span class="p">:</span> <span class="mf">278.2265167</span><span class="p">,</span> <span class="s1">&#39;lat_ll_corner_fric&#39;</span><span class="p">:</span> <span class="mf">12.4413166</span><span class="p">,</span>
+         <span class="s1">&#39;nx_fric&#39;</span><span class="p">:</span> <span class="mi">293</span><span class="p">,</span> <span class="s1">&#39;ny_fric&#39;</span><span class="p">:</span> <span class="mi">424</span><span class="p">,</span>
+         <span class="s1">&#39;dx_fric&#39;</span><span class="p">:</span> <span class="mf">0.00045</span><span class="p">,</span> <span class="s1">&#39;dy_fric&#39;</span><span class="p">:</span> <span class="mf">0.00045</span><span class="p">}</span>
+    <span class="p">)</span>  <span class="c1"># using grid info to fill friction section</span>
+
+
+<span class="n">case_bottom_friction</span><span class="o">.</span><span class="n">use_ascii_file_from_user</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">case_bottom_friction</span><span class="o">.</span><span class="n">dict_info</span><span class="p">)</span>
+<span class="n">case_bottom_friction</span><span class="o">.</span><span class="n">fill_friction_section</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>*** Initializing BottomFrictionProcessor for domain 1 ***
+
+{&#39;lon_ll_corner_fric&#39;: 278.2265167, &#39;lat_ll_corner_fric&#39;: 12.4413166, &#39;nx_fric&#39;: 293, &#39;ny_fric&#39;: 424, &#39;dx_fric&#39;: 0.00045, &#39;dy_fric&#39;: 0.00045, &#39;friction_file&#39;: &#39;../../input/domain_01/kn.fric&#39;}
+
+ 	*** Adding/Editing friction information for domain 1 in configuration file ***
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="defining-wind-forcing">
+<h3>Defining wind forcing<a class="headerlink" href="#defining-wind-forcing" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">WindForcing</span></code> handles the retrieval of wind data, it converts it to the required format, and writes the <code class="docutils literal notranslate"><span class="pre">WIND</span></code> section of <code class="docutils literal notranslate"><span class="pre">run.swn</span></code>. For this scenario the data is not downloaded from any external source and it is explicitly provided as constant using the method <code class="docutils literal notranslate"><span class="pre">use_constant_wind()</span></code>. This method requieres the wind speed (in m/s) and direction (in degrees, where 0° is North, 90° is East, etc.) to be provided as arguments.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">case_winds</span> <span class="o">=</span> <span class="n">WindForcing</span><span class="p">(</span>
+    <span class="n">init</span>         <span class="o">=</span> <span class="n">case</span><span class="p">,</span>
+    <span class="n">domain_number</span><span class="o">=</span> <span class="n">DOMAIN_ID</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">case_winds</span><span class="o">.</span><span class="n">use_constant_wind</span><span class="p">(</span><span class="n">wind_speed</span><span class="o">=</span><span class="mf">12.8</span><span class="p">,</span> <span class="n">wind_dir</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The wind info dictionary for domain </span><span class="si">{</span><span class="n">DOMAIN_ID</span><span class="si">}</span><span class="s1"> is: </span><span class="si">{</span><span class="n">case_winds</span><span class="o">.</span><span class="n">dict_info</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="n">case_winds</span><span class="o">.</span><span class="n">fill_wind_section</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>*** Initializing winds for domain 1 ***
+
+The wind info dictionary for domain 1 is: {&#39;wind_speed&#39;: 12.8, &#39;wind_dir&#39;: 90}
+
+ 	*** Adding/Editing winds information for domain 1 in configuration file ***
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="defining-boundary-conditions">
+<h3>Defining boundary conditions<a class="headerlink" href="#defining-boundary-conditions" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">BoundaryConditions</span></code> writes the <code class="docutils literal notranslate"><span class="pre">BOUNDARY</span></code> section of <code class="docutils literal notranslate"><span class="pre">run.swn</span></code>. For this stationary case, the boudnary conditions are defined through the sides of the domains so that informations has to be provided as a dictionary called <code class="docutils literal notranslate"><span class="pre">dict_info</span></code> at construction time. This dictionary is expected to have the following keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">boundary_type</span></code>: A string with the type of boundary condition (“side” or “segment”)</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">case_boundary</span> <span class="o">=</span> <span class="n">BoundaryConditions</span><span class="p">(</span>
+    <span class="n">init</span>        <span class="o">=</span> <span class="n">case</span><span class="p">,</span>
+    <span class="n">domain_number</span><span class="o">=</span> <span class="n">DOMAIN_ID</span><span class="p">,</span>
+    <span class="n">dict_info</span>   <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;boundary_type&quot;</span><span class="p">:</span> <span class="s2">&quot;side&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">case_boundary</span> <span class="o">=</span> <span class="n">BoundaryConditions</span><span class="p">(</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="n">init</span>        <span class="o">=</span> <span class="n">case</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">domain_number</span><span class="o">=</span> <span class="n">DOMAIN_ID</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="n">dict_info</span>   <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;boundary_type&quot;</span><span class="p">:</span> <span class="s2">&quot;side&quot;</span><span class="p">})</span>
+
+<span class="nn">File ~/Documents/projects/oceanicospy/oceanicospy/models/swanpy/preprocess/boundary_conds.py:19,</span> in <span class="ni">BoundaryConditions.__init__</span><span class="nt">(self, init, domain_number, dict_info, input_filename, use_link)</span>
+<span class="g g-Whitespace">     </span><span class="mi">15</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_filename</span> <span class="o">=</span> <span class="n">input_filename</span>
+<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span> <span class="o">=</span> <span class="n">use_link</span> 
+<span class="ne">---&gt; </span><span class="mi">19</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_ini_data</span><span class="p">[</span><span class="s2">&quot;parent_domains&quot;</span><span class="p">][</span><span class="n">domain_number</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">20</span>     <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="g g-Whitespace">     </span><span class="mi">21</span> <span class="k">else</span><span class="p">:</span>
+
+<span class="ne">KeyError</span>: &#39;parent_domains&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Once the class is initialized, the method <code class="docutils literal notranslate"><span class="pre">create_boundary_line()</span></code> can be used to define the boundary conditions along the sides of the domain. This method requires a list of sides (e.g., [“N”, “S”, “E”, “W”]) and a dictionary with wave parameters (e.g., {‘hs’: 1.5, ‘tp’: 8, ‘dir’: 90}) to be provided as arguments. The wave parameters include significant wave height (<code class="docutils literal notranslate"><span class="pre">hs</span></code>), peak period (<code class="docutils literal notranslate"><span class="pre">tp</span></code>), and wave direction (<code class="docutils literal notranslate"><span class="pre">dir</span></code>).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">case_boundary</span><span class="o">.</span><span class="n">create_boundary_line</span><span class="p">(</span><span class="n">list_sides</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">],</span><span class="n">wave_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;hs&#39;</span><span class="p">:</span> <span class="mf">1.7</span><span class="p">,</span> <span class="s1">&#39;tp&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="s1">&#39;dir&#39;</span><span class="p">:</span> <span class="mi">90</span> <span class="p">,</span> <span class="s1">&#39;spread&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">})</span>
+<span class="n">case_boundary</span><span class="o">.</span><span class="n">fill_boundaries_section</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="computation-and-run-configuration">
+<h3>Computation and run configuration<a class="headerlink" href="#computation-and-run-configuration" title="Link to this heading">#</a></h3>
+<p>Finally, after all the input data is set up, the <code class="docutils literal notranslate"><span class="pre">CaseRunner</span></code> class handles the final steps to finish the configuration of the case and prepare it for running:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">define_output_from_file()</span></code> – reads a CSV of output point coordinates and writes a <code class="docutils literal notranslate"><span class="pre">.loc</span></code> file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fill_computation_section()</span></code> – writes the <code class="docutils literal notranslate"><span class="pre">COMPUTE</span></code> command (stationary or non-stationary).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fill_slurm_file()</span></code> – (HPC only) generates a SLURM launcher script.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">CaseRunner</span></code> expects a dictionary of computation parameters (<code class="docutils literal notranslate"><span class="pre">dict_comp_data</span></code>) that contains all the necessary information to write the <code class="docutils literal notranslate"><span class="pre">COMPUTE</span></code> section of <code class="docutils literal notranslate"><span class="pre">run.swn</span></code>. All the supported keys are listed below.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">stat_comp</span></code>: 1 for stationary, 0 for non-stationary</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">comp_dates</span></code>: list of datetime objects for computation dates</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">init_intermediate</span></code>: boolean to insert INIT commands between snapshots</p></li>
+</ul>
+<p>For a stationary run, the following keys are expected in this dictionary:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">comp_data_stat</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">stat_comp</span>        <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>               <span class="c1"># 1 → stationary</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally the CaseRunner is instantiated with the initialized case and the computation parameters. Then the <code class="docutils literal notranslate"><span class="pre">define_output_from_file()</span></code> and <code class="docutils literal notranslate"><span class="pre">fill_computation_section()</span></code> methods are called to write the output definition and the COMPUTE command in run.swn, respectively. The case is now ready to be run with SWAN.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">case_run</span> <span class="o">=</span> <span class="n">CaseRunner</span><span class="p">(</span>
+    <span class="n">init</span>         <span class="o">=</span> <span class="n">case</span><span class="p">,</span>
+    <span class="n">domain_number</span><span class="o">=</span> <span class="n">DOMAIN_ID</span><span class="p">,</span>
+    <span class="n">dict_comp_data</span><span class="o">=</span> <span class="n">comp_data_stat</span>
+<span class="p">)</span>
+
+<span class="c1"># define point output locations from a CSV with X, Y columns</span>
+<span class="n">case_run</span><span class="o">.</span><span class="n">define_output_from_file</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;output_points.csv&#39;</span><span class="p">)</span>
+
+<span class="c1"># Write the COMPUTE command and clean up any remaining template placeholders</span>
+<span class="n">case_run</span><span class="o">.</span><span class="n">fill_computation_section</span><span class="p">()</span>
+
+<span class="c1"># (Optional) generate SLURM launcher for HPC submission</span>
+<span class="c1"># case_run.fill_slurm_file()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>All the information ready to be used for the stationary case is now set up and it can be found in the <code class="docutils literal notranslate"><span class="pre">run/domain_01</span></code> folder- The next step is to run the case using the swan executable on the HPC or locally, depending on the setup.</p>
+</section>
+<section id="reading-the-output">
+<h3>Reading the output<a class="headerlink" href="#reading-the-output" title="Link to this heading">#</a></h3>
+<p>After running the case, the output files will be generated in the <code class="docutils literal notranslate"><span class="pre">output/domain_01/</span></code> folder, and they can be post-processed and visualized as needed.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="execution/run_case.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Case Runner</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="swan_nonstationary_case.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Launching SWAN Cases with <code class="docutils literal notranslate"><span class="pre">swanpy</span></code></p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imports">Imports</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stationary-case">Stationary case:</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#case-parameters-definition">Case parameters definition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-setup">Initial setup</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-the-grid">Creating the grid</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-bathymetry">Setting up the bathymetry</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-bottom-friction-information">Defining bottom friction information</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-wind-forcing">Defining wind forcing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-boundary-conditions">Defining boundary conditions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#computation-and-run-configuration">Computation and run configuration</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-the-output">Reading the output</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By oceanicos
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2025, oceanicos.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

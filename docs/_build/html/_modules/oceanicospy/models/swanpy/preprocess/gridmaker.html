@@ -217,6 +217,28 @@
 
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/execution/run_case.html">Case Runner</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -322,7 +344,7 @@ document.write(`
   <h1>Source code for oceanicospy.models.swanpy.preprocess.gridmaker</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">glob</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">glob</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">....</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
 
 <div class="viewcode-block" id="GridMaker">
 <a class="viewcode-back" href="../../../../../models/swanpy/preprocess/gridmaker.html#oceanicospy.models.swanpy.preprocess.GridMaker">[docs]</a>
@@ -336,9 +358,9 @@ document.write(`
 <span class="sd">        An initialization object containing configuration data and folder paths.</span>
 <span class="sd">    domain_number : int</span>
 <span class="sd">        Identifier for the domain being processed.</span>
-<span class="sd">    grid_info : dict or None, optional</span>
+<span class="sd">    dict_info : dict or None, optional</span>
 <span class="sd">        User-provided grid information dictionary.</span>
-<span class="sd">        If the grid_info dictionary is passed it should contain the following keys: </span>
+<span class="sd">        If the dict_info dictionary is passed it should contain the following keys: </span>
 <span class="sd">        ``lon_ll_corner``: longitude of the lower-left corner of the grid</span>
 <span class="sd">        ``lat_ll_corner``: latitude of the lower-left corner of the grid</span>
 <span class="sd">        ``x_extent``: total extent of the grid in the x-direction (longitude)</span>

@@ -217,6 +217,28 @@
 
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/gridmaker.html">Gridmaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/bathymaker.html">Bathymaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/bottom_friction.html">Bottom Friction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/boundary_conds.html">Boundary conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/waterlevel_forcing.html">Water level forcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/preprocess/wind_forcing.html">Wind forcing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/execution/run_case.html">Case Runner</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -324,7 +346,7 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">....</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
 
 <div class="viewcode-block" id="BottomFrictionProcessor">
 <a class="viewcode-back" href="../../../../../models/swanpy/preprocess/bottom_friction.html#oceanicospy.models.swanpy.preprocess.BottomFrictionProcessor">[docs]</a>
@@ -344,7 +366,7 @@ document.write(`
 <span class="sd">        If True, creates symbolic links for bathymetry files instead of copying them. Defaults to True.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">init</span><span class="p">,</span><span class="n">domain_number</span><span class="p">,</span><span class="n">dict_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">use_link</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">init</span><span class="p">,</span><span class="n">domain_number</span><span class="p">,</span><span class="n">dict_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">use_link</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="n">init</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span> <span class="o">=</span> <span class="n">domain_number</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span> <span class="o">=</span> <span class="n">dict_info</span>
@@ -371,25 +393,10 @@ document.write(`
 
         <span class="n">run_domain_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_file</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">friction_filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}{</span><span class="n">friction_filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">friction_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
-                <span class="n">utils</span><span class="o">.</span><span class="n">create_link</span><span class="p">(</span>
-                    <span class="n">friction_filename</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span><span class="p">,</span>
-                    <span class="n">run_domain_dir</span>
-                <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">verify_link</span><span class="p">(</span><span class="n">friction_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">):</span>
-                <span class="n">utils</span><span class="o">.</span><span class="n">remove_link</span><span class="p">(</span><span class="n">friction_filename</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;cp </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">friction_filename</span><span class="si">}</span><span class="s1"> &#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">run_domain_dir</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">deploy_input_file</span><span class="p">(</span><span class="n">friction_filename</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_folders</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1">/&#39;</span><span class="p">,</span> <span class="n">run_domain_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;friction_file&quot;</span><span class="p">:</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">friction_filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;friction_file&quot;</span><span class="p">:</span><span class="sa">f</span><span class="s2">&quot;../../input/domain_0</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">friction_filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">})</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict_info</span></div>
 
 

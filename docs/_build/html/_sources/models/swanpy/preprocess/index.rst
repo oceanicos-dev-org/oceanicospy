@@ -8,3 +8,8 @@ The preprocessing module is responsible for preparing the project structure and 
    :caption: Contents:
 
    gridmaker
+   bathymaker
+   bottom_friction
+   boundary_conds
+   waterlevel_forcing
+   wind_forcing

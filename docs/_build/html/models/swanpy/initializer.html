@@ -45,6 +45,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'models/swanpy/initializer';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Preprocessing" href="preprocess/index.html" />
     <link rel="prev" title="Swanpy" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -219,7 +220,24 @@
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Models</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Swanpy</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l3 current active"><a class="current reference internal" href="#">Initializer</a></li>
+<li class="toctree-l3 current active has-children"><a class="current reference internal" href="#">Initializer</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="preprocess/index.html">Preprocessing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="preprocess/gridmaker.html">Gridmaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="preprocess/bathymaker.html">Bathymaker</a></li>
+<li class="toctree-l4"><a class="reference internal" href="preprocess/bottom_friction.html">Bottom Friction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="preprocess/boundary_conds.html">Boundary conditions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="preprocess/waterlevel_forcing.html">Water level forcing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="preprocess/wind_forcing.html">Wind forcing</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="execution/index.html">Execution</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="execution/run_case.html">Case Runner</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="swan_stationary_case.html">Launching SWAN Cases with <code class="docutils literal notranslate"><span class="pre">swanpy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="swan_nonstationary_case.html">Launching SWAN Cases with <code class="docutils literal notranslate"><span class="pre">swanpy</span></code></a></li>
 </ul>
 </details></li>
 </ul>
@@ -390,6 +408,8 @@ document.write(`
                   
   <section id="initializer">
 <h1>Initializer<a class="headerlink" href="#initializer" title="Link to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+</div>
 <p>The Initializer module is responsible for setting up the project structure.
 It ensures that all required directories and files are created, providing a clean starting point for further preprocessing and simulation tasks.</p>
 <dl class="py class">
@@ -402,13 +422,13 @@ sub-folders, and the generation of a per-domain <code class="docutils literal no
 <p>The directory layout produced by this class is:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>root_path/
 ├── input/
-│   └── domain_01/      ← place ERA5 .nc and bathymetry .dat files here
+│   └── domain_XX/      ← this needs to be populated by the user with input files before running the case
 ├── pros/
 ├── run/
-│   └── domain_01/
+│   └── domain_XX/
 │       └── run.swn     ← generated from template
 └── output/
-    └── domain_01/
+    └── domain_XX/
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -423,7 +443,6 @@ Expected keys:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">case_description</span></code> (<em>str</em>) – free-text description.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">stat_id</span></code> (<em>int</em>) – <code class="docutils literal notranslate"><span class="pre">0</span></code> for non-stationary, <code class="docutils literal notranslate"><span class="pre">1</span></code> for stationary.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">number_domains</span></code> (<em>int</em>) – total number of computational domains.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nested_domains</span></code> (<em>int</em>) – number of nested (child) domains.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">parent_domains</span></code> (<em>dict</em>) – mapping <code class="docutils literal notranslate"><span class="pre">{child_id:</span> <span class="pre">parent_id}</span></code> where
 <code class="docutils literal notranslate"><span class="pre">parent_id</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code> for top-level domains.</p></li>
 </ul>
@@ -462,19 +481,6 @@ created fresh — if it already exists it is removed first.</p>
 <p>All directories are created with <code class="docutils literal notranslate"><span class="pre">Path.mkdir(parents=True,</span>
 <span class="pre">exist_ok=True)</span></code>, so missing intermediate paths are handled
 automatically.</p>
-<p class="rubric">Examples</p>
-<p>Single-domain case (<code class="docutils literal notranslate"><span class="pre">number_domains=1</span></code>) produces:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>root_path/
-├── input/
-├── pros/
-├── run/
-│   └── domain_01/
-└── output/
-    └── domain_01/
-</pre></div>
-</div>
-<p>Two-domain nested case (<code class="docutils literal notranslate"><span class="pre">number_domains=2</span></code>) additionally produces
-<code class="docutils literal notranslate"><span class="pre">run/domain_02/</span></code> and <code class="docutils literal notranslate"><span class="pre">output/domain_02/</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -487,8 +493,7 @@ automatically.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">stat_id</span> <span class="pre">==</span> <span class="pre">1</span></code> → <code class="docutils literal notranslate"><span class="pre">run_base_stat.swn</span></code></p></li>
 </ul>
 <p>The selected template is filled using <code class="xref py py-meth docutils literal notranslate"><span class="pre">_generate_baseline_SWAN()</span></code>
-with a merged dictionary of library defaults (see <code class="xref py py-data docutils literal notranslate"><span class="pre">utils.defaults</span></code>)
-and the user-supplied <code class="docutils literal notranslate"><span class="pre">dict_ini_data</span></code>.  User values take precedence
+with user-supplied <code class="docutils literal notranslate"><span class="pre">dict_ini_data</span></code>.  User values take precedence
 over defaults for any key that appears in both.</p>
 <p>The rendered <code class="docutils literal notranslate"><span class="pre">run.swn</span></code> is written to
 <code class="docutils literal notranslate"><span class="pre">run/domain_0{N}/run.swn</span></code> for every domain in
@@ -518,6 +523,15 @@ over defaults for any key that appears in both.</p>
         <p class="prev-next-subtitle">previous</p>
         <p class="prev-next-title">Swanpy</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="preprocess/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Preprocessing</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
