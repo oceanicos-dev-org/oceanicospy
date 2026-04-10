@@ -32,7 +32,7 @@ class BottomFrictionProcessor():
         Handles the selection and linking or copying of a friction file for the current domain.
         This method searches for a `.fric` bottom friction file in the input directory for the specified domain.
 
-        Returns:
+        Returns
         --------
         dict or None: 
             The updated `friction_info` dictionary if it exists, otherwise None.
