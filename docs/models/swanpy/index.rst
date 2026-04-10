@@ -10,3 +10,4 @@ is based on a typical worflow for numerical wave modeling.
 
    initializer
    preprocess/index
+   execution/index
