@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Launching SWAN Cases with swanpy &#8212; oceanicospy 0.0.1 documentation</title>
+    <title>Stationary case: walkthrough &#8212; oceanicospy 0.0.1 documentation</title>
   
   
   
@@ -45,7 +45,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'models/swanpy/swan_stationary_case';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Launching SWAN Cases with swanpy" href="swan_nonstationary_case.html" />
+    <link rel="next" title="Nonstationsary case: walkthrough" href="swan_nonstationary_case.html" />
     <link rel="prev" title="Case Runner" href="execution/run_case.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -219,7 +219,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Models</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Swanpy</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">swanpy</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3 has-children"><a class="reference internal" href="initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
 </ul>
 </details></li>
@@ -236,8 +236,8 @@
 <li class="toctree-l4"><a class="reference internal" href="execution/run_case.html">Case Runner</a></li>
 </ul>
 </details></li>
-<li class="toctree-l3 current active"><a class="current reference internal" href="#">Launching SWAN Cases with <code class="docutils literal notranslate"><span class="pre">swanpy</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="swan_nonstationary_case.html">Launching SWAN Cases with <code class="docutils literal notranslate"><span class="pre">swanpy</span></code></a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Stationary case: walkthrough</a></li>
+<li class="toctree-l3"><a class="reference internal" href="swan_nonstationary_case.html">Nonstationsary case: walkthrough</a></li>
 </ul>
 </details></li>
 </ul>
@@ -380,7 +380,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Launching SWAN Cases with swanpy</h1>
+    <h1>Stationary case: walkthrough</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -424,8 +424,8 @@ document.write(`
 </div>
 <div class="toctree-wrapper compound">
 </div>
-<section id="launching-swan-cases-with-swanpy">
-<h1>Launching SWAN Cases with <code class="docutils literal notranslate"><span class="pre">swanpy</span></code><a class="headerlink" href="#launching-swan-cases-with-swanpy" title="Link to this heading">#</a></h1>
+<section id="stationary-case-walkthrough">
+<h1>Stationary case: walkthrough<a class="headerlink" href="#stationary-case-walkthrough" title="Link to this heading">#</a></h1>
 <section id="imports">
 <h2>Imports<a class="headerlink" href="#imports" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
@@ -728,27 +728,12 @@ The wind info dictionary for domain 1 is: {&#39;wind_speed&#39;: 12.8, &#39;wind
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">case_boundary</span> <span class="o">=</span> <span class="n">BoundaryConditions</span><span class="p">(</span>
     <span class="n">init</span>        <span class="o">=</span> <span class="n">case</span><span class="p">,</span>
     <span class="n">domain_number</span><span class="o">=</span> <span class="n">DOMAIN_ID</span><span class="p">,</span>
-    <span class="n">dict_info</span>   <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;boundary_type&quot;</span><span class="p">:</span> <span class="s2">&quot;side&quot;</span><span class="p">})</span>
+    <span class="n">dict_info</span>   <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bound_type&quot;</span><span class="p">:</span> <span class="s2">&quot;side&quot;</span><span class="p">,</span><span class="s2">&quot;variable_bound&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">case_boundary</span> <span class="o">=</span> <span class="n">BoundaryConditions</span><span class="p">(</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="n">init</span>        <span class="o">=</span> <span class="n">case</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">domain_number</span><span class="o">=</span> <span class="n">DOMAIN_ID</span><span class="p">,</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span>     <span class="n">dict_info</span>   <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;boundary_type&quot;</span><span class="p">:</span> <span class="s2">&quot;side&quot;</span><span class="p">})</span>
-
-<span class="nn">File ~/Documents/projects/oceanicospy/oceanicospy/models/swanpy/preprocess/boundary_conds.py:19,</span> in <span class="ni">BoundaryConditions.__init__</span><span class="nt">(self, init, domain_number, dict_info, input_filename, use_link)</span>
-<span class="g g-Whitespace">     </span><span class="mi">15</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_filename</span> <span class="o">=</span> <span class="n">input_filename</span>
-<span class="g g-Whitespace">     </span><span class="mi">16</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span> <span class="o">=</span> <span class="n">use_link</span> 
-<span class="ne">---&gt; </span><span class="mi">19</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_ini_data</span><span class="p">[</span><span class="s2">&quot;parent_domains&quot;</span><span class="p">][</span><span class="n">domain_number</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">20</span>     <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="g g-Whitespace">     </span><span class="mi">21</span> <span class="k">else</span><span class="p">:</span>
-
-<span class="ne">KeyError</span>: &#39;parent_domains&#39;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>*** Initializing boundary conditions for domain 1 ***
 </pre></div>
 </div>
 </div>
@@ -758,6 +743,11 @@ The wind info dictionary for domain 1 is: {&#39;wind_speed&#39;: 12.8, &#39;wind
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">case_boundary</span><span class="o">.</span><span class="n">create_boundary_line</span><span class="p">(</span><span class="n">list_sides</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;N&quot;</span><span class="p">],</span><span class="n">wave_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;hs&#39;</span><span class="p">:</span> <span class="mf">1.7</span><span class="p">,</span> <span class="s1">&#39;tp&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="s1">&#39;dir&#39;</span><span class="p">:</span> <span class="mi">90</span> <span class="p">,</span> <span class="s1">&#39;spread&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">})</span>
 <span class="n">case_boundary</span><span class="o">.</span><span class="n">fill_boundaries_section</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span> 	*** Adding/Editing boundary information for domain 1 in configuration file ***
 </pre></div>
 </div>
 </div>
@@ -807,6 +797,14 @@ The wind info dictionary for domain 1 is: {&#39;wind_speed&#39;: 12.8, &#39;wind
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>*** Initializing Case Runner for domain 1 ***
+
+
+ 	*** Adding/Editing compilation information for domain 1 in configuration file ***
+</pre></div>
+</div>
+</div>
 </div>
 <p>All the information ready to be used for the stationary case is now set up and it can be found in the <code class="docutils literal notranslate"><span class="pre">run/domain_01</span></code> folder- The next step is to run the case using the swan executable on the HPC or locally, depending on the setup.</p>
 </section>
@@ -842,7 +840,7 @@ The wind info dictionary for domain 1 is: {&#39;wind_speed&#39;: 12.8, &#39;wind
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Launching SWAN Cases with <code class="docutils literal notranslate"><span class="pre">swanpy</span></code></p>
+        <p class="prev-next-title">Nonstationsary case: walkthrough</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

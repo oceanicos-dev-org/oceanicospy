@@ -218,7 +218,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../../../models/index.html">Models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../models/swanpy/index.html">Swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../../../models/swanpy/index.html">swanpy</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../../../../models/swanpy/initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
 </ul>
 </details></li>
@@ -235,6 +235,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../../../models/swanpy/execution/run_case.html">Case Runner</a></li>
 </ul>
 </details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../models/swanpy/swan_stationary_case.html">Stationary case: walkthrough</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../../../models/swanpy/swan_nonstationary_case.html">Nonstationary case: walkthrough</a></li>
 </ul>
 </details></li>
 </ul>
@@ -361,9 +363,11 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">input_filename</span> <span class="o">=</span> <span class="n">input_filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_link</span> <span class="o">=</span> <span class="n">use_link</span> 
 
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_ini_data</span><span class="p">[</span><span class="s2">&quot;parent_domains&quot;</span><span class="p">][</span><span class="n">domain_number</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="s2">&quot;parent_domains&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_ini_data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">dict_ini_data</span><span class="p">[</span><span class="s2">&quot;parent_domains&quot;</span><span class="p">][</span><span class="n">domain_number</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">isnested</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -712,6 +716,14 @@ document.write(`
 <div class="viewcode-block" id="BoundaryConditions.fill_boundaries_section">
 <a class="viewcode-back" href="../../../../../models/swanpy/preprocess/boundary_conds.html#oceanicospy.models.swanpy.preprocess.BoundaryConditions.fill_boundaries_section">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fill_boundaries_section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replaces and updates the .swn file with the boundary configuration for a specific domain.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If no boundary information was provided at initialization.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_line</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dict_boundaries</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;boundaries_line&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">boundary_line</span><span class="p">}</span>
             <span class="nb">print</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> </span><span class="se">\t</span><span class="s1">*** Adding/Editing boundary information for domain </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">domain_number</span><span class="si">}</span><span class="s1"> in configuration file ***</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>

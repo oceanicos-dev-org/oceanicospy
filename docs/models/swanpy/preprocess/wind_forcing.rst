@@ -11,5 +11,4 @@ It includes functionalities to download, process, and save wind data from variou
 .. autoclass:: oceanicospy.models.swanpy.preprocess.WindForcing
    :members:
    :undoc-members:
-   :show-inheritance:
    :noindex:

@@ -11,5 +11,4 @@ It processes input data to generate the necessary bathymetry files, ensuring tha
 .. autoclass:: oceanicospy.models.swanpy.preprocess.BathyMaker
    :members:
    :undoc-members:
-   :show-inheritance:
    :noindex:

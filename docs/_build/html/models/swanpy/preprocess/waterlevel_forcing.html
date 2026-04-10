@@ -219,7 +219,7 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../../index.html">Models</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="../index.html">Swanpy</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../index.html">swanpy</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3 has-children"><a class="reference internal" href="../initializer.html">Initializer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="simple">
 </ul>
 </details></li>
@@ -236,6 +236,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../execution/run_case.html">Case Runner</a></li>
 </ul>
 </details></li>
+<li class="toctree-l3"><a class="reference internal" href="../swan_stationary_case.html">Stationary case: walkthrough</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../swan_nonstationary_case.html">Nonstationary case: walkthrough</a></li>
 </ul>
 </details></li>
 </ul>
@@ -399,16 +401,53 @@ It includes functionalities to download, process, and save water level data from
 <dl class="py class">
 <dt class="sig sig-object py">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">oceanicospy.models.swanpy.preprocess.</span></span><span class="sig-name descname"><span class="pre">WaterLevelForcing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain_number</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_info</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">share_wl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_link</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/oceanicospy/models/swanpy/preprocess/waterlevel_forcing.html#WaterLevelForcing"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>WaterLevelForcing is a utility class for generating and managing the water level forcing information for
+SWAN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>init</strong> (<em>object</em>) – An initialization object containing configuration data and folder paths.</p></li>
+<li><p><strong>domain_number</strong> (<em>int</em>) – Identifier for the domain being processed.</p></li>
+<li><p><strong>dict_info</strong> (<em>dict</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Dictionary containing water level information. If None, water level data must be provided via <cite>get_waterlevel_from_UHSLC()</cite>.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – Name of the water level ASCII file to create or link in the domain input directory. Defaults to None.</p></li>
+<li><p><strong>share_wl</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, water level data is shared across domains by linking to the domain 1 file. Defaults to True.</p></li>
+<li><p><strong>use_link</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, creates symbolic links for water level files instead of copying them. Defaults to True</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">get_waterlevel_from_UHSLC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">station_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/oceanicospy/models/swanpy/preprocess/waterlevel_forcing.html#WaterLevelForcing.get_waterlevel_from_UHSLC"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd></dd></dl>
+<dd><p>Obtain water level data from the UHSLC for a given station ID, handling file management and optional sharing across domains.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>station_id</strong> (<em>int</em>) – The UHSLC station ID for which to retrieve water level data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A DataFrame containing the cleanedwater level data for the specified station.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">write_UHSLC_ascii</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">UHSLC_dataframe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ascii_filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/oceanicospy/models/swanpy/preprocess/waterlevel_forcing.html#WaterLevelForcing.write_UHSLC_ascii"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd></dd></dl>
+<dd><p>Write the cleaned UHSLC water level data to a SWAN ASCII file, handling file management and optional sharing across domains.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>UHSLC_dataframe</strong> (<em>pd.DataFrame</em>) – The cleaned UHSLC water level data as a pandas DataFrame.</p></li>
+<li><p><strong>ascii_filename</strong> (<em>str</em>) – Name of the SWAN water-level ASCII output file to create in the same input directory (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;water_levels.wl&quot;</span></code>).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If <em>share_wl</em> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the ASCII file is created in domain 1 and linked to other domains. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, each domain
+gets its own ASCII file created from the UHSLC data. In either case, the method updates the domain’s water level</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py">

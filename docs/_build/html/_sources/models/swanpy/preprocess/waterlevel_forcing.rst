@@ -11,5 +11,4 @@ It includes functionalities to download, process, and save water level data from
 .. autoclass:: oceanicospy.models.swanpy.preprocess.WaterLevelForcing
    :members:
    :undoc-members:
-   :show-inheritance:
    :noindex:

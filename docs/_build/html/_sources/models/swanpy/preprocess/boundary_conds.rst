@@ -11,5 +11,4 @@ It includes functionalities to download, process, and save boundary condition da
 .. autoclass:: oceanicospy.models.swanpy.preprocess.BoundaryConditions
    :members:
    :undoc-members:
-   :show-inheritance:
    :noindex:

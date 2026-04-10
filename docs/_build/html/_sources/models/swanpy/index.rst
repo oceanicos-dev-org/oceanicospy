@@ -1,4 +1,4 @@
-Swanpy
+swanpy
 ======
 
 swanpy is a whole python package designed to preprocess all the required files for SWAN simulations. All of its structure
