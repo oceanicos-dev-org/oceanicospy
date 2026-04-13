@@ -17,11 +17,11 @@ wind = $act_wnd
 
 %%% Grid parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-xfile     = xfilepath
-yfile     = yfilepath
-depfile   = depfilepath
-nx        = meshes_x
-ny        = meshes_y
+xfile     = $xfilepath
+yfile     = $yfilepath
+depfile   = $depfilepath
+nx        = $meshes_x
+ny        = $meshes_y
 vardx     = 1
 thetamin  = 0
 thetamax  = 190
