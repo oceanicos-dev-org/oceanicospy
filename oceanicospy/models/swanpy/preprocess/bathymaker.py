@@ -3,7 +3,7 @@ from scipy.interpolate import griddata
 from pathlib import Path
 from .... import utils
 
-class BathyMaker():
+class BathyMaker:
     """
     BathyMaker is a utility class for generating and managing the bathymetry information for SWAN.
 

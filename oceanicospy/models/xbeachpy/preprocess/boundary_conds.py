@@ -8,7 +8,7 @@ import os
 
 from .. import utils
 
-class BoundaryConditions():
+class BoundaryConditions:
     """
     Class representing the boundary conditions for a simulation.
     Args:
@@ -21,10 +21,8 @@ class BoundaryConditions():
     Methods:
         fill_boundaries_section(*args): Fill the boundaries section of the simulation.
     """
-    def __init__ (self,init,input_filename=None,dict_bounds_params=None):
+    def __init__ (self,init):
         self.init = init
-        self.input_filename=input_filename
-        self.dict_bounds_params=dict_bounds_params
         print('*** Initializing Boundary Conditions ***')
 
     def create_filelist(self):

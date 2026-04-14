@@ -32,16 +32,16 @@ alfa      = 180
 %%% Wave boundary condition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 wbctype    = swan
-bcfile     = bcfilepath
-wbcversion = w_bc_version
-nspectrumloc = n_spectrum_loc
+bcfile     = $bcfilepath
+wbcversion = $w_bc_version
+nspectrumloc = $n_spectrum_loc
 
 %%% Wind %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-windfile     = windfilepath
+windfile     = $windfilepath
 
 %%% Tide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tideloc      = 1
-zs0file      = sealevelfilepath
+zs0file      = $sealevelfilepath
 
 %%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tstart       = 0

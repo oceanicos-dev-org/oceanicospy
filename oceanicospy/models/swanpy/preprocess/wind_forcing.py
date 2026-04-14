@@ -2,12 +2,10 @@ import xarray as xr
 import pandas as pd
 import glob as glob
 
-from pathlib import Path
-
 from .... import utils
-from ....retrievals import *
+from ....utils.wind import download_era5_winds, download_cmds_winds
 
-class WindForcing():
+class WindForcing:
     """
     Parameters
     ----------
@@ -35,75 +33,35 @@ class WindForcing():
         self.use_link = use_link
         print(f'\n*** Initializing winds for domain {self.domain_number} ***\n')
 
-    def _download_ERA5(self,difference_to_UTC, filepath=None):
+    def _download_ERA5(self, difference_to_UTC, filepath=None):
         """
         Download ERA5 wind data for the specified region and time period.
 
-        Initializes an ERA5Downloader with the required wind variables and region
-        boundaries, downloads the data, and converts it to local time.
-
         Parameters
         ----------
         difference_to_UTC : int
             Time difference to UTC in hours for local time conversion.
         filepath : str or None, optional
-            File path where the downloaded ERA5 data will be saved.
+            Full path where the downloaded ERA5 file will be saved.
         """
-        filepath = Path(filepath)
-        ERA5download_obj = ERA5Downloader(
-                        variables = ['10m_u_component_of_wind', '10m_v_component_of_wind'],
-                        lon_min = self.dict_info['lon_ll_corner_wind'],
-                        lon_max = self.dict_info['lon_ll_corner_wind'] + (self.dict_info['nx_wind'] * self.dict_info['dx_wind']),
-                        lat_min = self.dict_info['lat_ll_corner_wind'],
-                        lat_max = self.dict_info['lat_ll_corner_wind'] + (self.dict_info['ny_wind'] * self.dict_info['dy_wind']),
-                        start_datetime_local = self.init.ini_date,
-                        end_datetime_local = self.init.end_date,
-                        difference_to_UTC = difference_to_UTC,
-                        output_path = filepath.parent,
-                        output_filename = filepath.name
-                        )
-        ERA5download_obj.download()
-        ERA5download_obj.format_to_localtime()
-        print("\t ERA5 wind data downloaded successfully")
+        download_era5_winds(self.dict_info, self.init.ini_date, self.init.end_date, difference_to_UTC, filepath)
 
-    def _download_CMDS(self,difference_to_UTC, filepath=None):
+    def _download_CMDS(self, difference_to_UTC, filepath=None):
         """
         Download CMDS wind data for the specified region and time period.
 
-        Initializes a CMDSDownloader with the required wind variables and region
-        boundaries, downloads the data, and converts it to local time.
-
         Parameters
         ----------
         difference_to_UTC : int
             Time difference to UTC in hours for local time conversion.
         filepath : str or None, optional
-            File path where the downloaded CMDS data will be saved.
+            Full path where the downloaded CMDS file will be saved.
         """
-        filepath = Path(filepath)
-        CMDSdownload_obj = CMDSDownloader.for_winds(
-                        lon_min = self.dict_info['lon_ll_corner_wind'],
-                        lon_max = self.dict_info['lon_ll_corner_wind'] + (self.dict_info['nx_wind'] * self.dict_info['dx_wind']),
-                        lat_min = self.dict_info['lat_ll_corner_wind'],
-                        lat_max = self.dict_info['lat_ll_corner_wind'] + (self.dict_info['ny_wind'] * self.dict_info['dy_wind']),
-                        start_datetime_local = self.init.ini_date,
-                        end_datetime_local = self.init.end_date,
-                        difference_to_UTC = difference_to_UTC,
-                        output_path = filepath.parent,
-                        output_filename = filepath.name
-                        )
-        CMDSdownload_obj.download()
-        CMDSdownload_obj.format_to_localtime()
-        print("\t CMDS wind data downloaded successfully")
+        download_cmds_winds(self.dict_info, self.init.ini_date, self.init.end_date, difference_to_UTC, filepath)
 
     def _ERA5_nc_to_ascii(self,era5_filename,ascii_filename):
         """
-<<<<<<< HEAD
-        Convert ERA5 wind data from a NetCDF file to a custom ASCII format.
-
-=======
         Converts ERA5 wind data from a NetCDF file to a custom ASCII format.
->>>>>>> 5d48c5cb29036c1269753c1321a4ce9d6bc43c90
         Parameters
         ----------
         era5_filename : str

@@ -53,7 +53,6 @@ class BathyMaker:
         self.output_filename = output_filename
         self._bathy_dict = None
 
-    
     @property
     def metadata(self):
         """
