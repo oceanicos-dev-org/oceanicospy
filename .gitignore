@@ -8,7 +8,7 @@ _build/
 
 # no tracking DS_ files created by macOS
 .DS_Store
-*/.DS_Store
+**/.DS_Store
 
 # no tracking under-dev files
 under-dev/

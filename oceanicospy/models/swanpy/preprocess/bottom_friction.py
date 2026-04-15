@@ -4,7 +4,7 @@ from pathlib import Path
 
 from .... import utils
 
-class BottomFrictionProcessor():
+class BottomFrictionProcessor:
     """
     BottomFrictionProcessor is a utility class for generating and managing the bottom friction information for SWAN.
 

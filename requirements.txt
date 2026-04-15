@@ -75,6 +75,7 @@ nest-asyncio==1.6.0
 netCDF4==1.7.4
 numcodecs==0.13.1
 numpy==2.2.6
+-e git+ssh://git@github.com/oceanicos/oceanicospy.git@8336f01cd457fbd0cadcaf6ecfe0d329183284bb#egg=oceanicospy
 openpyxl==3.1.5
 packaging==26.0
 pandas==2.3.3
@@ -100,6 +101,7 @@ pyemd==1.1.0
 Pygments==2.19.2
 pyparsing==3.3.2
 pyproj==3.7.1
+pyshp==3.0.3
 pystac==1.14.3
 python-dateutil==2.9.0.post0
 pytz==2026.1.post1
@@ -112,6 +114,7 @@ rpds-py==0.30.0
 s3transfer==0.16.0
 scipy==1.15.3
 semver==3.0.4
+shapely==2.1.2
 six==1.17.0
 snowballstemmer==3.0.1
 sortedcontainers==2.4.0

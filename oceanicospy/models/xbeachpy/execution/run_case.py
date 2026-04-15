@@ -1,82 +1,149 @@
-import shutil
-import subprocess
-import pandas as pd
-import datetime as dt
+import glob
 import numpy as np
-import glob as glob
-import scipy.interpolate
-from pathlib import Path
 
-from .. import utils
+from .... import utils
+
 
 class CaseRunner():
-    def __init__(self,init,dict_comp_data):
+    """
+    Finalizes the XBeach ``params.txt`` configuration and prepares the case for execution.
+
+    After all forcing and bathymetry inputs have been written, ``CaseRunner``
+    fills the remaining sections of ``params.txt``: the output file path,
+    optional output point locations, global and point-based output variable
+    lists, and the computation timing block.
+
+    Parameters
+    ----------
+    init : object
+        Case initialization object.  Must expose ``ini_date``, ``end_date``,
+        and ``dict_folders`` (a mapping with at least ``"input"`` and ``"run"``
+        keys pointing to the respective directories).
+    dict_comp_data : dict
+        Mutable dictionary whose keys correspond to ``$placeholder`` tokens in
+        ``params.txt``.  Methods in this class populate or update values in
+        this dictionary before ``fill_computation_section`` writes it to disk.
+    """
+
+    def __init__(self, init, dict_comp_data):
         self.init = init
         self.dict_comp_data = dict_comp_data
-        print(f'\n*** Initializing Case Runner ***\n')  
+        print('\n*** Initializing Case Runner ***\n')
 
-    def write_output_file(self,filename=None):
-        self.dict_comp_data['outputfilepath']=f'{filename}'
-    
-    def write_output_points(self,filename=None):
+    def write_output_file(self, filename):
+        """
+        Set the NetCDF output file name in the computation parameters.
+
+        Parameters
+        ----------
+        filename : str
+            Name (or relative path) of the NetCDF output file that XBeach
+            will create, e.g. ``'output.nc'``.
+        """
+        self.dict_comp_data['outputfilepath'] = filename
+
+    def write_output_points(self, filename=None):
+        """
+        Load output point coordinates from a text file and register them.
+
+        Searches the case input directory for ``filename``, reads the two-column
+        (x, y) coordinate table, and stores the formatted point list and its
+        length in ``dict_comp_data`` so they can be injected into ``params.txt``.
+        If the file is not found, the point list is left empty (zero points).
+
+        Parameters
+        ----------
+        filename : str, optional
+            Name of the whitespace-delimited text file with output point
+            coordinates (two columns: x, y).  The file must reside in the
+            case input directory (``init.dict_folders["input"]``).
+        """
         try:
-            points_file = glob.glob(f'{self.init.dict_folders["input"]}{filename}')[0] # the file has to be named with the word points
+            points_file = glob.glob(f'{self.init.dict_folders["input"]}{filename}')[0]
         except IndexError:
             points_file = None
-            
+
         if points_file:
-            date_points = np.loadtxt(points_file)
-            self.dict_comp_data['len_points']=len(date_points)
-            string_points=[f'{point[0]} {point[1]}\n' for point in date_points]
-            string_points[-1]=string_points[-1].strip()  # remove last new line
-            self.dict_comp_data['string_points']=''.join(string_points)
+            points_data = np.loadtxt(points_file)
+            self.dict_comp_data['len_points'] = len(points_data)
+            string_points = [f'{point[0]} {point[1]}\n' for point in points_data]
+            string_points[-1] = string_points[-1].strip()  # remove trailing newline
+            self.dict_comp_data['string_points'] = ''.join(string_points)
         else:
             self.dict_comp_data['len_points'] = 0
-            self.dict_comp_data['string_points'] = '' 
+            self.dict_comp_data['string_points'] = ''
 
-    def select_global_vars(self,list_vars=[]):
+    def select_global_vars(self, list_vars=None):
+        """
+        Register global (grid-wide) output variables.
+
+        Global variables are written to the NetCDF output file for every grid
+        cell at every output time step.
+
+        Parameters
+        ----------
+        list_vars : list of str, optional
+            XBeach variable names to include in the global output block
+            (e.g. ``['zb', 'zs', 'urms']``).  When ``None`` or empty, the
+            global output block is left empty (zero variables).
+        """
         if list_vars:
-            string_list_vars = '\n'.join(str(var) for var in list_vars)
             self.dict_comp_data['len_global_vars'] = len(list_vars)
-            self.dict_comp_data['global_vars'] = string_list_vars
+            self.dict_comp_data['global_vars'] = '\n'.join(str(var) for var in list_vars)
         else:
-            string_list_vars = ''
+            self.dict_comp_data['len_global_vars'] = 0
+            self.dict_comp_data['global_vars'] = ''
 
-    def select_point_vars(self,list_vars=[]):
+    def select_point_vars(self, list_vars=None):
+        """
+        Register point-based output variables.
+
+        Point variables are written to the NetCDF output file only at the
+        locations defined via :meth:`write_output_points`.
+
+        Parameters
+        ----------
+        list_vars : list of str, optional
+            XBeach variable names to include in the point output block
+            (e.g. ``['zs', 'u', 'v']``).  When ``None`` or empty, the point
+            output block is left empty (zero variables).
+        """
         if list_vars:
-            string_list_vars = '\n'.join(str(var) for var in list_vars)
             self.dict_comp_data['len_point_vars'] = len(list_vars)
-            self.dict_comp_data['point_vars'] = string_list_vars
+            self.dict_comp_data['point_vars'] = '\n'.join(str(var) for var in list_vars)
         else:
             self.dict_comp_data['len_point_vars'] = 0
             self.dict_comp_data['point_vars'] = ''
 
-    def fill_slurm_file(self,case_name):
+    # def fill_slurm_file(self, case_name):
+    #     """
+    #     Fills the SLURM script with the necessary parameters for running the XBeach model.
+    #     This includes paths, simulation name, number of domains, and parent domains.
+    #     """
+    #     self.script_dir = Path(__file__).resolve().parent.parent
+    #     self.data_dir = self.script_dir.parent.parent.parent / 'data'
+    #
+    #     shutil.copy(f'{self.data_dir}/model_config_templates/xbeach/launcher_xbeach_base.slurm',
+    #                 f'{self.init.dict_folders["run"]}launcher_xbeach.slurm')
+    #
+    #     launch_dict = dict(output_path_case=f'{self.init.dict_folders["output"]}', case_name=case_name)
+    #     utils.fill_files(f'{self.init.dict_folders["run"]}launcher_xbeach.slurm', launch_dict, strict=False)
+
+    def fill_computation_section(self):
         """
-        Fills the SLURM script with the necessary parameters for running the XBeach model.
-        This includes paths, simulation name, number of domains, and parent domains.
+        Compute the simulation duration and write all parameters to ``params.txt``.
+
+        Derives ``tstop`` (in seconds) from the difference between
+        ``init.end_date`` and ``init.ini_date``, stores it in
+        ``dict_comp_data``, converts every value to ``str`` (required by the
+        placeholder-substitution engine), and calls :func:`utils.fill_files` to
+        replace all ``$placeholder`` tokens in ``params.txt`` with their
+        corresponding values.
         """
-        self.script_dir = Path(__file__).resolve().parent.parent
-        self.data_dir = self.script_dir.parent.parent.parent / 'data'
-
-        shutil.copy(f'{self.data_dir}/model_config_templates/xbeach/launcher_xbeach_base.slurm',
-                    f'{self.init.dict_folders["run"]}launcher_xbeach.slurm')
-        
-        launch_dict = dict(output_path_case=f'{self.init.dict_folders["output"]}',case_name=case_name)
-
-        utils.fill_files(f'{self.init.dict_folders["run"]}launcher_xbeach.slurm', launch_dict,strict=False)
-
-
-    def fill_computation_section(self): 
-        self.script_dir = Path(__file__).resolve().parent
-        self.data_dir = self.script_dir.parent.parent.parent.parent / 'data'
-
-        ini_comp_date = dt.datetime.strptime(self.dict_comp_data['ini_comp_date'], '%Y%m%d.%H%M%S')
-        end_comp_date = dt.datetime.strptime(self.dict_comp_data['end_comp_date'], '%Y%m%d.%H%M%S')
-
-        seconds = (end_comp_date - ini_comp_date).total_seconds()
+        seconds = (self.init.end_date - self.init.ini_date).total_seconds()
         self.dict_comp_data['tstop_value'] = int(seconds)
-        for param in self.dict_comp_data:
-            self.dict_comp_data[param]=str(self.dict_comp_data[param])
 
-        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',self.dict_comp_data)
+        str_comp_data = {k: str(v) for k, v in self.dict_comp_data.items()}
+        self.dict_comp_data.update(str_comp_data)
+
+        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt', self.dict_comp_data)

@@ -3,7 +3,7 @@
 %%%                                                                          %%%
 %%% date:     30-May-24 	                                                 %%%
 %%% function: manual   
-%%% case:     case_description                                               %%%
+%%% case:     2D Sound Bay - C2                                               %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Physics %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -12,51 +12,64 @@ morphology = 0
 sedtrans = 0
 swrunup = 0
 wavemodel = 1
+vegetation = 0
 
 %%% Grid parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-xyfile    = grdfilepath
-gridform  = model_origin
-depfile   = depfilepath
-posdwn    = 1
-thetamin  = 270
-thetamax  = 90
+xfile     = x.grd
+yfile     = y.grd
+depfile   = bathymetry.dep
+nx        = 100
+ny        = 110
+vardx     = 1
+thetamin  = 0
+thetamax  = 190
 dtheta    = 10
 thetanaut = 1
+alfa      = 180
 
 %%% Wave boundary condition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-wbctype   = params
-Hrms      = hsig_value
-Trep      = tp_value
-dir0      = dir_value
+
+wbctype    = swan
+bcfile     = bounds_conds/loclist.txt
+wbcversion = 3
+nspectrumloc = 12
 
 %%% Wind %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-windv      = wind_speed
-windth     = wind_direction
+windfile     = winds.wnd
 
 %%% Tide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-tideloc      = 0
-zs0          = sealevelvalue
-
-%%% Bed composition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-D50          = 0.005
+tideloc      = 1
+zs0file      = water_levels.wl
 
 %%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tstart       = 0
-tstop        = tstop_value
-tint         = tint_value
-tintg        = tintg_value
+CFL          = 0.7
+tstop        = 3600
+tint         = 3600
+tintg        = 3600
 
 %%% Output variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 outputformat = netcdf
-ncfilename = outputfilepath
+ncfilename = SoundBay2D.nc
 
-nglobalvar   = 8
+nglobalvar   = 6
 zs
 hh
 zb0
 H
-sigm
-thet
+u
+v
+
+npoints = 3
+-319.2 -664.0
+-838.3 -678.0
+-859.5 -687.5
+
+npointvar    = 6
+zs
+hh
+zb0
+H
 u
 v
