@@ -2,8 +2,7 @@ Boundary conditions
 ====================
 
 .. toctree::
-   :maxdepth: 2
-   :hidden:
+   :maxdepth: 4
 
 The boundary conditions module is responsible for managing the boundary conditions for SWAN simulations. 
 It includes functionalities to download, process, and save boundary condition data from various sources.
@@ -11,5 +10,4 @@ It includes functionalities to download, process, and save boundary condition da
 .. autoclass:: oceanicospy.models.swanpy.preprocess.BoundaryConditions
    :members:
    :undoc-members:
-   :show-inheritance:
    :noindex:

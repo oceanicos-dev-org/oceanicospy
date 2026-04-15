@@ -6,5 +6,4 @@ This module provides functionality to run SWAN cases using the `oceanicospy` pac
 .. autoclass:: oceanicospy.models.swanpy.execution.CaseRunner
    :members:
    :undoc-members:
-   :show-inheritance:
    :noindex:
