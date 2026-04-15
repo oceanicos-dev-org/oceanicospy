@@ -28,7 +28,7 @@ class BoundaryConditions:
         """
         Purge the boundary conditions.
         """
-        print('*** Purging Boundary Conditions ***')
+        print('*** Cleaning Boundary Conditions ***')
         os.system(f'rm -rf {self.init.dict_folders["run"]}bounds_conds')
 
     # def create_filelist(self):
@@ -122,22 +122,35 @@ class BoundaryConditions:
             line = forigin.readline()
             if 'date and time' in line:
                 break
-            if 'number of locations' in line:
+            # If the line contains the number of locations, we need to rewrite it to 1 
+            # and find the matching location line
+            elif 'number of locations' in line: 
                 line = re.sub(r'\d+', "1", line)
-                for _ in range(self.number_spectrum_locs): # sounds better a while
-                    next_line = forigin.readline()
-                    print(f"Checking lat {lat:.5f} lon {lon}, line: {next_line}")
+                next_line = forigin.readline()
+                while next_line.strip().isalpha() == False:
                     next_line_list = [float(x) for x in next_line.split('   ') if x]
-                    print(f"Parsed line into floats: {next_line_list}")
                     if (lon in next_line_list) and (lat in next_line_list):
-                        line = line + next_line
-                        print(line)
-            line+='This is a comment line added to the header\n'
-            if 'number of directions' in line:
+                        line += next_line
+                        break
+                    next_line = forigin.readline()
+                fdest.write(line)
+
+            # if the line contains the number of directions, we need to read the following 36 lines 
+            # and add 270 to each direction value
+            elif 'number of directions' in line:
                 for _ in range(36):
                     next_line = forigin.readline()
                     line = line + str(float(next_line) + 270) + '\n'
-            fdest.write(line)
+                fdest.write(line)
+
+            # if the line has two numeric values separated by three spaces, we assume it's a coordinate line 
+            # and skip it (except for the matching location line handled above)
+            elif all(x.strip()!= '' for x in line.split('   ')):
+                continue
+            else:
+                fdest.write(line)
+
+
 
     def _write_sp2_spectrum(self, fdest, spec_matrix, time_str):
         """
