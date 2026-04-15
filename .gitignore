@@ -11,7 +11,7 @@ _build/
 */.DS_Store
 
 # no tracking under-dev files
-/under-dev/*
+under-dev/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -25,3 +25,4 @@ dist/
 
 # no tracking personal vs settings
 .vscode/
+generate_requirements.py
