@@ -1,18 +1,28 @@
-import subprocess
-from . import utils
-from pathlib import Path
 import shutil
-import os
+from pathlib import Path
 from string import Template
+from . import utils
 
-class Initializer():
+
+class Initializer:
     """
-    Set up the directory structure and base configuration for an XBeach simulation.
+    Utility class for setting up the directory structure and baseline configuration
+    files required to run XBeach model simulations.
 
-    ``Initializer`` is the entry point for every XBeach case.  It builds the
-    standard four-folder layout (``input/``, ``pros/``, ``run/``, ``output/``),
-    and stamps the bundled ``params_base.txt`` template with the user-supplied
-    case flags via :meth:`replace_ini_data`.
+    It automates the creation and cleanup of the project folder tree and the
+    generation of a ``params.txt`` file from a template stamped with user-supplied
+    configuration flags.
+
+    The directory layout produced by this class is:
+
+    .. code-block:: text
+
+        root_path/
+        ├── input/      ← place your static input files here before running
+        ├── pros/
+        ├── run/
+        │   └── params.txt     ← generated from the bundled template
+        └── output/
 
     Parameters
     ----------
@@ -43,57 +53,58 @@ class Initializer():
         self.ini_date = ini_date
         self.end_date = end_date
         self.dict_ini_data = dict_ini_data
-        self.folder_names = ['input','pros','run','output']
-        self.dict_folders = {}
-        for folder_name in self.folder_names:
-            self.dict_folders[folder_name] = f'{self.root_path}{folder_name}/'
+        self.folder_names = ['input', 'pros', 'run', 'output']
+        self.dict_folders = {
+            name: f'{self.root_path}{name}/' for name in self.folder_names
+        }
 
         print('*** Initializing XBeach model ***\n')
 
     def _generate_baseline_XBeach(self, template_in, template_out, replacement_dict):
         """
-        Render a ``$placeholder`` template file and write the result to disk.
+        Render an XBeach configuration template and write the result to disk.
 
-        Reads ``template_in``, applies :class:`string.Template.safe_substitute`
-        with ``replacement_dict`` (leaving any unmatched placeholders untouched),
-        and writes the rendered text to ``template_out``.
+        Uses :class:`string.Template` with ``safe_substitute`` so that any
+        placeholder not present in *replacement_dict* is left unchanged rather
+        than raising an error.
 
         Parameters
         ----------
         template_in : str or Path
-            Path to the source template file containing ``$key`` placeholders.
+            Path to the source template file (e.g. ``params_base.txt``).
         template_out : str or Path
-            Destination path for the rendered output file.
+            Destination path for the rendered file (e.g. ``run/params.txt``).
         replacement_dict : dict
-            Mapping of placeholder names to replacement values.  Keys not
-            present in the template are silently ignored; placeholders without
-            a matching key are left as-is.
+            Key-value pairs used to fill ``$key`` placeholders inside the template.
+            Unmapped placeholders are preserved as-is.
         """
         template_text = Path(template_in).read_text()
-
-        # substitute available keys, leave others as-is
         filled_text = Template(template_text).safe_substitute(replacement_dict)
-
         Path(template_out).write_text(filled_text)
 
     def create_folders(self):
         """
-        Create the standard XBeach folder structure under ``root_path``.
+        Create the full project folder structure.
 
-        Creates ``input/``, ``pros/``, ``run/``, and ``output/`` directories.
-        If ``run/`` already exists it is **deleted and re-created** to avoid
-        stale files from a previous attempt.  All other folders are left
-        untouched if they already exist.
+        **Step 1 – top-level directories**
+
+        Creates the four standard sub-directories under ``root_path``:
+        ``input/``, ``pros/``, ``run/``, and ``output/``.  On a re-run,
+        ``run/`` and ``output/`` are wiped with ``shutil.rmtree`` before being
+        recreated so that stale files from a previous execution do not pollute
+        the new case.  ``input/`` and ``pros/`` are always left untouched.
+
+        All directories are created with ``Path.mkdir(parents=True,
+        exist_ok=True)``, so missing intermediate paths are handled
+        automatically.
         """
-        print('\n*** Creating project structure ***\n')
+        print('\n\t*** Creating project folder structure ***\n')
+
         for folder_name in self.folder_names:
-            if not os.path.exists(self.dict_folders[folder_name]):
-                subprocess.call(['mkdir','-p',f'{self.dict_folders[folder_name]}'])
-            else:
-                if folder_name=='run':
-                    print (f'\n \t *** Cleaning existing run folder: {self.dict_folders[folder_name]} ***\n')
-                    shutil.rmtree(self.dict_folders[folder_name])
-                    subprocess.call(['mkdir','-p',f'{self.dict_folders[folder_name]}'])
+            folder_path = Path(self.dict_folders[folder_name])
+            if folder_name in ['output', 'run'] and folder_path.exists():
+                shutil.rmtree(folder_path)
+            folder_path.mkdir(parents=True, exist_ok=True)
 
     def replace_ini_data(self):
         """
@@ -115,11 +126,11 @@ class Initializer():
         self.script_dir = Path(__file__).resolve().parent
         self.data_dir = self.script_dir.parent.parent.parent / 'data'
 
-        for key,value in self.dict_ini_data.items():
-            if (type(value)==float) or (type(value)==int):
-                self.dict_ini_data[key]=str(value)
-            self.dict_ini_data[key]=str(value)
+        str_ini_data = {k: str(v) for k, v in self.dict_ini_data.items()}
+        merged = {**utils.defaults, **str_ini_data}
 
-        merged = {**utils.defaults, **self.dict_ini_data}
-        self._generate_baseline_XBeach(f'{self.data_dir}/model_config_templates/xbeach/params_base.txt', 
-                                             f'{self.dict_folders["run"]}params.txt',merged)
+        self._generate_baseline_XBeach(
+            f'{self.data_dir}/model_config_templates/xbeach/params_base.txt',
+            f'{self.dict_folders["run"]}params.txt',
+            merged
+        )
