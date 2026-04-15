@@ -52,8 +52,5 @@ case_bounds.fill_boundaries_section(bounds_dict)
 
 case_output = xbeachpy.execution.CaseRunner(init=case,dict_comp_data=comp_data_nonstat)
 case_output.write_output_file(filename='SoundBay2D.nc')
-case_output.write_output_points(filename='points_output.txt')
 case_output.fill_slurm_file(case_name='May2025_C1')
-case_output.select_global_vars(list_vars=['zs','hh','zb0','H','u','v'])
-case_output.select_point_vars(list_vars=['zs','hh','zb0','H','u','v'])
 case_output.fill_computation_section()

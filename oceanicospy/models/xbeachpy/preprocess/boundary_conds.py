@@ -8,16 +8,21 @@ from .... import utils
 
 class BoundaryConditions:
     """
-    Class representing the boundary conditions for a simulation.
-    Args:
-        input_filename (str): The name of the input file.
-        dict_bounds_params (dict): A dictionary containing the boundary parameters.
-        list_sides (list): A list of sides.
-    Attributes:
-        input_filename (str): The name of the input file.
-        dict_bounds_params (dict): A dictionary containing the boundary parameters.
-    Methods:
-        fill_boundaries_section(*args): Fill the boundaries section of the simulation.
+    Generate and register XBeach spectral boundary conditions from SWAN output.
+
+    Starting from a SWAN spectral output file (``SpecSWAN.out``), this class
+    converts the spectra to XBeach-compatible ``.sp2`` files, writes the
+    corresponding ``filelist_<n>.txt`` and ``loclist.txt`` files under
+    ``<run>/bounds_conds/``, and populates the boundary block of
+    ``params.txt`` via :meth:`fill_boundaries_section`.
+
+    Parameters
+    ----------
+    init : object
+        Case initialization object.  Must expose ``ini_date``, ``end_date``,
+        and ``dict_folders`` (a mapping with at least ``"input"`` and ``"run"``
+        keys pointing to the respective directories).
+
     """
     def __init__ (self,init):
         self.init = init
@@ -26,7 +31,11 @@ class BoundaryConditions:
 
     def purger(self):
         """
-        Purge the boundary conditions.
+        Remove any previously generated boundary-condition files.
+
+        Deletes the ``<run>/bounds_conds/`` directory and its entire contents
+        so that each run starts from a clean slate.  Called automatically by
+        :meth:`__init__`.
         """
         print('*** Cleaning Boundary Conditions ***')
         os.system(f'rm -rf {self.init.dict_folders["run"]}bounds_conds')
@@ -61,6 +70,9 @@ class BoundaryConditions:
         input_filename : str
             Name of the SWAN output file (without extension) located in
             ``self.init.dict_folders["input"]``.
+        point_indexes : array-like of int, optional
+            Indices of the sites within the SWAN output to use as boundary
+            locations.  When ``None``, all sites present in the file are used.
 
         Returns
         -------
@@ -149,8 +161,6 @@ class BoundaryConditions:
                 continue
             else:
                 fdest.write(line)
-
-
 
     def _write_sp2_spectrum(self, fdest, spec_matrix, time_str):
         """
@@ -256,31 +266,56 @@ class BoundaryConditions:
                     f"spec_time{idx_time}_point{site_idx}.sp2'\n"
                 )
 
-    def _write_loclist(self, offshore_points):
+    def _write_loclist(self):
         """
-        Write ``loclist.txt`` mapping each active boundary site to its filelist.
+        Write ``loclist.txt`` mapping each boundary site to its filelist.
 
-        Iterates over all sites with index >= 3 and writes one entry per site
-        to ``<run>/bounds_conds/loclist.txt``.  If ``offshore_points`` is
-        provided, only the listed site indices are included.
-
-        Parameters
-        ----------
-        offshore_points : list of int or None
-            Subset of site indices to include in the loclist.  When ``None``
-            all sites with index >= 3 are written.  Site positions are placed
-            at ``x = 0`` and ``y = -(site_idx) * 100``.
+        Iterates over all ``self.number_spectrum_locs`` sites and writes one
+        entry per site to ``<run>/bounds_conds/loclist.txt``.  Each entry
+        places the site at ``x = 0`` and ``y = -(site_idx) * 100`` and points
+        to the corresponding ``filelist_<site_idx>.txt``.
         """
         loclist_path = f"{self.init.dict_folders['run']}bounds_conds/loclist.txt"
         with open(loclist_path, "w") as floc:
             floc.write('LOCLIST\n')
             for idx_site in range(self.number_spectrum_locs):
-                if offshore_points is not None and idx_site not in offshore_points:
-                    continue
                 floc.write(f"0 {-(idx_site) * 100} 'bounds_conds/filelist_{idx_site}.txt'\n")
 
-    def spectra_from_swan(self, input_filename, point_indexes=None, offshore_points=None):
-        self.dataset = self._load_dataset(input_filename,point_indexes)
+
+    def spectra_from_swan(self, input_filename, point_indexes=None):
+        """
+        Convert a SWAN spectral output file into XBeach boundary condition files.
+
+        Orchestrates the full boundary-condition workflow:
+
+        1. Loads the SWAN spectral dataset via :meth:`_load_dataset` and slices
+           it to the simulation time window.
+        2. For each boundary site, creates a subdirectory under
+           ``<run>/bounds_conds/``, writes one ``.sp2`` file per time step, and
+           records all entries in ``filelist_<site_idx>.txt``.
+        3. Writes ``loclist.txt`` that maps every site to its filelist.
+        4. Populates :attr:`dict_boundaries` with the ``params.txt`` keys
+           required to activate spectral wave boundaries in XBeach
+           (``w_bc_version``, ``n_spectrum_loc``, ``bcfilepath``).
+
+        Parameters
+        ----------
+        input_filename : str
+            Name of the SWAN output file (without directory) located in
+            ``init.dict_folders["input"]``.  Must be readable by
+            :func:`wavespectra.read_swan`.
+        point_indexes : array-like of int, optional
+            Indices of the sites within the SWAN output to use as boundary
+            locations.  When ``None``, all sites present in the file are used.
+
+        Notes
+        -----
+        When only one boundary site is found, a warning is printed reminding
+        the user to remove the ``loclist`` section and ``nspectrumloc`` command
+        from ``params.txt``; :attr:`dict_boundaries` is not populated in that
+        case.
+        """
+        self.dataset = self._load_dataset(input_filename, point_indexes)
         self.data_spectra = self.dataset.efth
         self.number_spectrum_locs = len(self.dataset.site)
 
@@ -296,10 +331,19 @@ class BoundaryConditions:
         for idx_site in range(self.number_spectrum_locs):
             self._write_site_filelist(idx_site)
 
-        self._write_loclist(offshore_points)
+        self._write_loclist()
 
     def fill_boundaries_section(self):
         """
+        Write the boundary-condition parameters to ``params.txt``.
+
+        Converts every value in :attr:`dict_boundaries` to ``str`` (required
+        by the placeholder-substitution engine) and calls
+        :func:`utils.fill_files` to replace the corresponding ``$placeholder``
+        tokens in ``<run>/params.txt``.
+
+        Must be called after :meth:`spectra_from_swan` has populated
+        :attr:`dict_boundaries`.
         """
         for param in self.dict_boundaries:
             self.dict_boundaries[param]=str(self.dict_boundaries[param])

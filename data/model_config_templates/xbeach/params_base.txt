@@ -46,19 +46,19 @@ zs0file      = $sealevelfilepath
 %%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tstart       = 0
 CFL          = 0.7
-tstop        = tstop_value
-tint         = tint_value
-tintg        = tintg_value
+tstop        = $tstop_value
+tint         = $tint_value
+tintg        = $tintg_value
 
 %%% Output variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 outputformat = netcdf
-ncfilename = outputfilepath
+ncfilename = $outputfilepath
 
-nglobalvar   = len_global_vars
-global_vars
+nglobalvar   = $len_global_vars
+$global_vars
 
-npoints = len_points
-string_points
+npoints = $len_points
+$string_points
 
-npointvar    = len_point_vars
-point_vars
+npointvar    = $len_point_vars
+$point_vars
