@@ -39,13 +39,6 @@ class BathyMaker:
         Default name of the .dep file to be written in the run folder.
         Default is "bed.dep".
 
-    Attributes
-    ----------
-    init : object
-        Reference to the project initialization object.
-    filename : str
-        Default .dep filename (e.g. "bed.dep") used by methods
-        when no output name is explicitly provided.
     """
 
     # ------------------------------------------------------------------
@@ -54,6 +47,7 @@ class BathyMaker:
     def __init__(self, init, filename: str = "bed.dep"):
         self.init = init
         self.filename = filename
+        
     # ------------------------------------------------------------------
     # Generic XYZ reader
     # ------------------------------------------------------------------
@@ -389,23 +383,31 @@ class BathyMaker:
     # ------------------------------------------------------------------
     def xyz2asc(self):
         """
-        Converts bathymetry data from XYZ format to ESRI ASCII Grid format.
+        Convert a regular-grid topobathymetry CSV into an XBeach ``.dep`` file.
 
-        Notes
-        -----
-        - The input file is automatically searched in
-        ``init.dict_folders["input"]`` using the pattern ``TopoBathy*.csv``.
-        - The CSV file is assumed to represent a regular grid and must
-        contain three columns corresponding to X, Y, and Z.
-        - Missing values (NaN) are written as empty fields in the DEP file,
-        following the legacy format.
+        Reads the first ``TopoBathy*.csv`` file found in the case input
+        directory, pivots it into a 2D array ordered in XBeach convention
+        (y descending, x reversed), and writes it as a whitespace-delimited
+        ASCII depth file.
 
         Returns
         -------
         dict
-            Dictionary with metadata of the generated bathymetry:
-            - 'depfilepath' : str
-            - 'nelayerfilepath' : str
+            Metadata dictionary for use with :meth:`fill_bathy_section`:
+
+            - ``'depfilepath'`` — filename of the generated ``.dep`` file
+            - ``'nelayerfilepath'`` — filename placeholder for the non-erodible
+              layer file (``'ne_layer.dep'``)
+
+        Notes
+        -----
+        - The CSV must have three columns: ``X``, ``Y``, ``Z`` (header row
+          expected).  Duplicate rows are dropped before pivoting.
+        - The method assumes the input represents a **regular grid**; scattered
+          or irregular XYZ clouds will produce NaN-filled rows/columns in the
+          pivot table and a malformed ``.dep`` file.
+        - NaN cells (gaps in the grid) are written as empty fields, following
+          the legacy XBeach format convention.
         """
         bathy_xyz_path = glob.glob(f'{self.init.dict_folders["input"]}TopoBathy*.csv')[0]
         ascfile = f'{self.init.dict_folders["run"]}{self.filename}.dep'

@@ -1,13 +1,12 @@
 import xarray as xr
 import pandas as pd
-from pyproj import Proj, transform
 import glob as glob
 import numpy as np
 
 from .. import utils
 from ....retrievals import *
 
-class WindForcing():
+class WindForcing:
     def __init__ (self,init,input_filename=None,wind_info=None,use_link=None):
         self.init = init
         self.input_filename=input_filename

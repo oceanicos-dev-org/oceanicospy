@@ -1,37 +1,70 @@
 from wavespectra import read_swan
 import numpy as np
 import pandas as pd
-import xarray as xr
-import subprocess
 import re
 import os
 
 from .. import utils
 
-class BoundaryConditions():
+class BoundaryConditions:
     """
-    Class representing the boundary conditions for a simulation.
-    Args:
-        input_filename (str): The name of the input file.
-        dict_bounds_params (dict): A dictionary containing the boundary parameters.
-        list_sides (list): A list of sides.
-    Attributes:
-        input_filename (str): The name of the input file.
-        dict_bounds_params (dict): A dictionary containing the boundary parameters.
-    Methods:
-        fill_boundaries_section(*args): Fill the boundaries section of the simulation.
+    Generate XBeach wave boundary conditions from SWAN output.
+
+    Supports three boundary-condition workflows:
+
+    - **Spectral** (:meth:`spectra_from_swan`) — reads a ``SpecSWAN.out``
+      file, converts each site's time series to individual ``.sp2`` files,
+      and writes ``filelist_<n>.txt`` and ``loclist.txt`` under
+      ``<run>/bounds_conds/``.
+    - **JONSWAP parametric** (:meth:`jonswap_from_swan`) — reads bulk wave
+      parameters (Hs, Tp, Dir) from a SWAN table output and writes
+      per-point JONSWAP files with a ``loclist.txt``.
+    - **Stationary parameters** (:meth:`params_from_swan`) — extracts a
+      single set of bulk wave parameters for a stationary XBeach run.
+
+    Parameters
+    ----------
+    init : object
+        Case initialization object.  Must expose ``ini_date``, ``end_date``,
+        and ``dict_folders`` (mapping with ``'input'`` and ``'run'`` keys).
+    input_filename : str, optional
+        Default input file name used by methods that don't take an explicit
+        filename argument.
+    dict_bounds_params : dict, optional
+        Pre-built boundary parameter dictionary.  When provided, methods can
+        update it rather than creating a new one.
+
+    Attributes
+    ----------
+    dataset : xarray.Dataset
+        Spectral dataset loaded by :meth:`spectra_from_swan`.
+    data_spectra : xarray.DataArray
+        ``efth`` variable extracted from :attr:`dataset`.
+    number_spectrum_locs : int
+        Total number of sites found in the spectral dataset.
+    dict_boundaries : dict
+        Boundary parameter key–value pairs written to ``params.txt`` by
+        :meth:`fill_boundaries_section`.
     """
-    def __init__ (self,init,input_filename=None,dict_bounds_params=None):
+
+    def __init__(self, init, input_filename=None, dict_bounds_params=None):
         self.init = init
-        self.input_filename=input_filename
-        self.dict_bounds_params=dict_bounds_params
+        self.input_filename = input_filename
+        self.dict_bounds_params = dict_bounds_params
         print('*** Initializing Boundary Conditions ***')
 
     def create_filelist(self):
         """
-        Create a list of files.
-        Returns:
-            list: A list of files.
+        Build a ``filelist.txt`` from pre-existing ``.sp2`` files in the input folder.
+
+        Creates a one-entry-per-hour filelist pointing to ``spectra8_NNN.sp2``
+        files in the input directory, copies them to ``run/``, and returns the
+        boundary parameter dict with ``bcfilepath`` set.
+
+        Returns
+        -------
+        dict
+            ``{'bcfilepath': 'filelist.txt'}``
         """
         time_s = pd.date_range(self.ini_date,self.end_date, freq='1h')
 
@@ -44,11 +77,25 @@ class BoundaryConditions():
         dict_boundaries={'bcfilepath':'filelist.txt'}
         return dict_boundaries
 
-    def jonswap_from_swan(self,input_filename):
+    def jonswap_from_swan(self, input_filename):
         """
-        Get the wave parameters from SWAN.
-        Returns:
-            None
+        Build JONSWAP boundary files from a SWAN table output.
+
+        Reads bulk wave parameters (Hs, Tp, Dir) from a SWAN point-output
+        table, builds per-point JONSWAP text files for the active boundary
+        sites, writes a ``loclist.txt`` mapping each site to its file, and
+        returns the boundary parameter dict.
+
+        Parameters
+        ----------
+        input_filename : str
+            Name of the SWAN table output file (without ``.out`` extension)
+            located in ``init.dict_folders["input"]``.
+
+        Returns
+        -------
+        dict
+            ``{'bcfilepath': 'loclist.txt'}``
         """
         # Create the filelist
         points = pd.read_csv(f'{self.dict_folders["input"]}{input_filename}.out', skiprows=7, sep='     ', 

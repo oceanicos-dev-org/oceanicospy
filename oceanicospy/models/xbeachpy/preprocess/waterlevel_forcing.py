@@ -8,7 +8,7 @@ import os
 from .. import utils
 from ....retrievals import *
 
-class WaterLevelForcing():
+class WaterLevelForcing:
     def __init__ (self,init,wl_info=None,input_filename=None,use_link=None):
         self.init = init
         self.wl_info = wl_info

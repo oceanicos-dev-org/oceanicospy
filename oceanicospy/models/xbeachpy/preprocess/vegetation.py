@@ -2,9 +2,8 @@ import numpy as np
 import glob as glob
 from scipy.interpolate import griddata
 import os
-import shapefile
 
-from .. import utils
+from .... import utils
 
 class Vegetation():
 

@@ -9,13 +9,57 @@ from .. import utils
 
 class GridMaker():
     """
-    A class for creating a Xbeach computational grid from bathymetry data and filling grid information in a params file.
-    Args:
-        root_path (str): The root path of the project.
-        dx (float): The grid spacing in the x-direction.
-        dy (float): The grid spacing in the y-direction.
+    Build and register XBeach computational grids in 1D or 2D.
 
+    ``GridMaker`` supports three grid generation workflows:
+
+    - **1D profile** — builds a curvilinear along-shore profile from a CSV
+      file, with optional planar ``(start_xy, end_xy)`` coordinates.
+      Writes ``x_profile.grd`` and ``y_profile.grd``.
+    - **2D uniform** — derives the extent from a shapefile bounding box and
+      lays out a uniform mesh with ``dx = dy``.
+      Writes ``x.grd`` and ``y.grd``.
+    - **2D segmented** (``xvar=True``) — allows variable spacing in the
+      x-direction through piecewise segment definitions.
+
+    If pre-built ``.grd`` files already exist in the input folder,
+    :meth:`rectangular` detects them and skips grid construction entirely.
+
+    Parameters
+    ----------
+    init : object
+        Case initialization object.  Must expose ``dict_ini_data`` (with a
+        ``'dims'`` key) and ``dict_folders`` (with ``'input'`` and ``'run'``
+        keys).
+    dx : float or int or list or dict or callable
+        Grid spacing in the x-direction.  Interpretation depends on the value
+        type and the ``as_n_cells`` flag — see :meth:`_build_variable_dx_axis`
+        for details.
+    dy : float, optional
+        Grid spacing in the y-direction for 2D grids.  Defaults to ``dx``
+        when not provided.
+    end_x_point : float, optional
+        Nominal profile length [m] for 1D grids.  Inferred automatically from
+        ``start_xy``/``end_xy`` or from the profile CSV when not supplied.
+    start_xy : tuple of float, optional
+        Planar ``(X, Y)`` coordinate of the profile origin (same CRS as the
+        bathymetry), used for 1D grids with georeferencing.
+    end_xy : tuple of float, optional
+        Planar ``(X, Y)`` coordinate of the profile end point.
+    auto_extend : bool, optional
+        When ``True`` (default) the last grid interval is extended so its
+        length exactly equals the last ``dx`` used, which may push the final
+        coordinate slightly beyond ``end_x_point``.  When ``False`` the final
+        coordinate is forced to ``end_x_point``, producing a shorter last cell.
+    as_n_cells : bool, optional
+        When ``True`` and ``dx`` is a positive integer, ``dx`` is interpreted
+        as the number of cells rather than a spacing.  Default is ``False``.
+    profile_csv : str, optional
+        Name of a two-column ``(x, z)`` CSV file in the input folder used to
+        derive the 1D profile length when ``start_xy``/``end_xy`` are not
+        provided.
     """
+
     def __init__(
         self,
         init,
@@ -30,35 +74,6 @@ class GridMaker():
         *args,
         **kwargs
         ):
-        """
-        Parameters
-        ----------
-        init : object
-            Project initialization object with folder configuration.
-        dx : float | int | list | dict | callable
-            Nominal spacing definition for x-axis. By default interpreted as
-            a spacing. If `as_n_cells=True` and dx is an integer > 0, it is
-            interpreted as the number of cells.
-        dy : float, optional
-            Spacing in y-direction for 2D grids.
-        end_x_point : float, optional
-            Nominal profile length when working in 1D.
-        start_xy, end_xy : tuple(float, float), optional
-            Planar coordinates of the profile start and end points.
-        auto_extend : bool, optional
-            If True (default), the final coordinate of the profile is extended
-            so that the last cell length matches the last dx used in the grid
-            generation. If False, the final coordinate is forced to match the
-            nominal end_x_point.
-        as_n_cells : bool, optional
-            If True, and `dx` is an integer > 0, `dx` is interpreted as the
-            number of divisions of the profile. If False (default), `dx` is
-            interpreted as a spacing.
-
-        Notes
-        -----
-        - auto_extend and as_n_cells are passed into _build_variable_dx_axis().
-        """
 
         self.init = init
         self.dx = dx
@@ -1149,6 +1164,24 @@ class GridMaker():
     #     dict_asc={'grdfilepath':f'{filename_grd}.grd','model_origin':'delft3d'}
     #     return dict_asc
 
-    def fill_grid_section(self,grid_dict):
-        print ('\n*** Adding/Editing grid information in params file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt',grid_dict)
+    def fill_grid_section(self, grid_dict):
+        """
+        Write grid metadata to ``params.txt``.
+
+        Substitutes the ``$placeholder`` tokens related to the grid
+        (``xfilepath``, ``yfilepath``, ``meshes_x``, ``meshes_y``) in
+        ``<run>/params.txt`` with the values from ``grid_dict``.
+
+        Parameters
+        ----------
+        grid_dict : dict
+            Dictionary returned by :meth:`rectangular` or
+            :meth:`load_existing_grid`.  Expected keys:
+
+            - ``'xfilepath'`` — filename of the x-grid (e.g. ``'x.grd'``)
+            - ``'yfilepath'`` — filename of the y-grid (e.g. ``'y.grd'``)
+            - ``'meshes_x'`` — number of cells in the x-direction
+            - ``'meshes_y'`` — number of cells in the y-direction (``0`` for 1D)
+        """
+        print('\n*** Adding/Editing grid information in params file ***\n')
+        utils.fill_files(f'{self.init.dict_folders["run"]}params.txt', grid_dict)
