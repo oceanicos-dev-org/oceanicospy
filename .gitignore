@@ -6,9 +6,12 @@
 docs/_build/
 _build/
 
-# no trackin mac-specific files
+# no tracking DS_ files created by macOS
 .DS_Store
 **/.DS_Store
+
+# no tracking under-dev files
+under-dev/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -19,3 +22,7 @@ __pycache__/
 build/
 dist/
 *.egg-info/
+
+# no tracking personal vs settings
+.vscode/
+generate_requirements.py
