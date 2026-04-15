@@ -282,7 +282,7 @@ class AWAC:
         """
 
         relevant_columns = [column for column in df.columns if 'Pressure' in column or 'Velocity' in column or 'burst' in column]
-        df = df[relevant_columns]
+        df = df[relevant_columns].copy()
 
         renamed_columns = []
         for column in relevant_columns:

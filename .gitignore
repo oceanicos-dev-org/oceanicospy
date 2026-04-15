@@ -11,7 +11,7 @@ _build/
 **/.DS_Store
 
 # no tracking under-dev files
-under-dev/
+under_dev/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

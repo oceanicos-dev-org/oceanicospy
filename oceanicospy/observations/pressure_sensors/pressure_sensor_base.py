@@ -185,9 +185,15 @@ class BaseLogger(ABC):
         ValueError
             If the time format in 'sampling_data' is invalid.
         """
+
+        self.start_dt = self.sampling_data.get('start_time',None)
+        self.end_dt = self.sampling_data.get('end_time',None)
+
+        if self.start_dt is None and self.end_dt is None:
+            return df
         try:
-            start = pd.to_datetime(self.sampling_data['start_time'])
-            end = pd.to_datetime(self.sampling_data['end_time'])
+            start = pd.to_datetime(self.start_dt)
+            end = pd.to_datetime(self.end_dt)
         except KeyError as e:
             raise ValueError(f"Missing start or end time in 'sampling_data': {e}")
         except Exception as e:
