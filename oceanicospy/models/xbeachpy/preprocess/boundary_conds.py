@@ -27,18 +27,6 @@ class BoundaryConditions:
     dict_bounds_params : dict, optional
         Pre-built boundary parameter dictionary.  When provided, methods can
         update it rather than creating a new one.
-
-    Attributes
-    ----------
-    dataset : xarray.Dataset
-        Spectral dataset loaded by :meth:`spectra_from_swan`.
-    data_spectra : xarray.DataArray
-        ``efth`` variable extracted from :attr:`dataset`.
-    number_spectrum_locs : int
-        Total number of sites found in the spectral dataset.
-    dict_boundaries : dict
-        Boundary parameter key–value pairs written to ``params.txt`` by
-        :meth:`fill_boundaries_section`.
     """
 
     def __init__(self, init, input_filename=None, dict_bounds_params=None):

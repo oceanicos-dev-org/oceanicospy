@@ -55,40 +55,6 @@ class GridMaker:
 
     If pre-built ``.grd`` files already exist in the input folder,
     :meth:`rectangular` detects them and skips grid construction entirely.
-
-    Parameters
-    ----------
-    init : object
-        Case initialization object.  Must expose ``dict_ini_data`` (with a
-        ``'dims'`` key) and ``dict_folders`` (with ``'input'`` and ``'run'``
-        keys).
-    dx : float or int or list or dict or callable
-        Grid spacing in the x-direction.  Interpretation depends on the value
-        type and the ``as_n_cells`` flag — see :meth:`_build_variable_dx_axis`
-        for details.
-    dy : float, optional
-        Grid spacing in the y-direction for 2D grids.  Defaults to ``dx``
-        when not provided.
-    end_x_point : float, optional
-        Nominal profile length [m] for 1D grids.  Inferred automatically from
-        ``start_xy``/``end_xy`` or from the profile CSV when not supplied.
-    start_xy : tuple of float, optional
-        Planar ``(X, Y)`` coordinate of the profile origin (same CRS as the
-        bathymetry), used for 1D grids with georeferencing.
-    end_xy : tuple of float, optional
-        Planar ``(X, Y)`` coordinate of the profile end point.
-    auto_extend : bool, optional
-        When ``True`` (default) the last grid interval is extended so its
-        length exactly equals the last ``dx`` used, which may push the final
-        coordinate slightly beyond ``end_x_point``.  When ``False`` the final
-        coordinate is forced to ``end_x_point``, producing a shorter last cell.
-    as_n_cells : bool, optional
-        When ``True`` and ``dx`` is a positive integer, ``dx`` is interpreted
-        as the number of cells rather than a spacing.  Default is ``False``.
-    profile_csv : str, optional
-        Name of a two-column ``(x, z)`` CSV file in the input folder used to
-        derive the 1D profile length when ``start_xy``/``end_xy`` are not
-        provided.
     """
 
     def __init__(

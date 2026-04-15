@@ -2,7 +2,7 @@ Initializer
 ===========
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
 
 The Initializer module is responsible for setting up the project structure.
 It ensures that all required directories and files are created and that the base

@@ -5,7 +5,7 @@ The preprocessing module is responsible for preparing the grid, bathymetry,
 and all forcing input data required for XBeach simulations.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 4
    :caption: Contents:
 
    gridmaker
