@@ -7,9 +7,9 @@ from scipy.signal import detrend
 from pathlib import Path
 
 from .... import utils
-from ....retrievals import *
+from ....utils.waterlevel import download_uhslc_waterlevel, load_uhslc_waterlevel
 
-class WaterLevelForcing():
+class WaterLevelForcing:
     """
     WaterLevelForcing is a utility class for generating and managing the water level forcing information for
     SWAN.
@@ -38,23 +38,26 @@ class WaterLevelForcing():
         self.use_link = use_link
         print(f'\n*** Initializing water levels for domain {self.domain_number} ***\n')
 
-    def _download_UHSLC(self,station_id,filepath):
-        filepath = Path(filepath)
+    def _download_UHSLC(self, station_id, filepath):
+        """
+        Download UHSLC hourly sea-level data and return the cleaned DataFrame.
 
-        UHSLCDownloader_obj = UHSLCDownloader(
-                            station_id=station_id,
-                            output_path=filepath.parent,
-                            output_filename=filepath.name,
-                            start_datetime_local=self.init.ini_date.strftime('%Y-%m-%d %H:%M:%S'),
-                            end_datetime_local=self.init.end_date.strftime('%Y-%m-%d %H:%M:%S'),
-                            difference_from_UTC=-5
-                            )
-        UHSLCDownloader_obj.download()
-        df_clean = UHSLCDownloader_obj.clean_data(filepath)
+        Parameters
+        ----------
+        station_id : str
+            UHSLC station code (e.g. ``"057"``).
+        filepath : str
+            Full path where the raw CSV will be saved.
 
-        
-        print('\t UHSLC water level data was successfully downloaded')
-        return df_clean
+        Returns
+        -------
+        pandas.DataFrame
+            Cleaned water-level DataFrame with a datetime index and a
+            ``depth[m]`` column.
+        """
+        return download_uhslc_waterlevel(
+            station_id, self.init.ini_date, self.init.end_date, filepath
+        )
     
     def _load_bathymetry(self) -> np.ndarray:
         """
@@ -222,28 +225,19 @@ class WaterLevelForcing():
             if not file_exists:
                 df_waterlevel = self._download_UHSLC(station_id, filepath=filepath)
             else:
-                reader = UHSLCDownloader(station_id=station_id,
-                                        output_path=None,
-                                        output_filename=None)
-                df_waterlevel = reader.clean_data(filepath)
                 print("\t UHSLC water level data already exists, skipping download")
+                df_waterlevel = load_uhslc_waterlevel(station_id, filepath)
         else:
             if self.domain_number == 1:
                 if not file_exists:
                     df_waterlevel = self._download_UHSLC(station_id, filepath=filepath)
                 else:
-                    reader = UHSLCDownloader(station_id=station_id,
-                                            output_path=None,
-                                            output_filename=None)
-                    df_waterlevel = reader.clean_data(filepath)
                     print("\t UHSLC water level data already exists, skipping download")
+                    df_waterlevel = load_uhslc_waterlevel(station_id, filepath)
             else:
-                    filepath_domain1 = f"{self.init.dict_folders['input']}domain_01/h{station_id}.csv"
-                    reader = UHSLCDownloader(station_id=station_id,
-                                            output_path=None,
-                                            output_filename=None)
-                    df_waterlevel = reader.clean_data(filepath_domain1)
-                    print("\t UHSLC water level data already exists in domain 1, skipping download")
+                filepath_domain1 = f"{self.init.dict_folders['input']}domain_01/h{station_id}.csv"
+                print("\t UHSLC water level data already exists in domain 1, skipping download")
+                df_waterlevel = load_uhslc_waterlevel(station_id, filepath_domain1)
         return df_waterlevel
 
     def write_UHSLC_ascii(self,UHSLC_dataframe,ascii_filename):

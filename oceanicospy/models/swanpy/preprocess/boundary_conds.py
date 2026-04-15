@@ -7,7 +7,7 @@ from pathlib import Path
 from .... import utils
 from ....retrievals import *
 
-class BoundaryConditions():
+class BoundaryConditions:
     def __init__ (self,init,domain_number,dict_info=None,input_filename=None,use_link=None):
         self.init = init
         self.domain_number = domain_number
