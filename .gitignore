@@ -1,6 +1,8 @@
+/data/model_runs/*
+/data/nc_data/*
 /data/observations/*
 /data/temp/*
-/data/model_runs/*
+/data/model_config_templates/ww3
 
 # no tracking html files
 docs/_build/
