@@ -1,26 +1,105 @@
+"""
+io_xyz
+======
+Low-level I/O utilities for XYZ-format point files.
+
+An XYZ file is a plain-text table whose columns represent X (easting),
+Y (northing) and Z (elevation or depth) coordinates, one point per row.
+Columns may be separated by spaces, tabs, commas or semicolons, and the
+file may or may not carry a header row.
+
+This module is intentionally free of CRS logic. Reprojection and
+spatial operations belong in ``crs_tools`` and ``xyz_tile`` respectively.
+
+Public API
+----------
+XYZFormatSpec
+    Dataclass that describes the on-disk layout of an XYZ file.
+infer_xyz_format
+    Automatically detect the format of an XYZ file from a sample of lines.
+read_xyz
+    Read an XYZ file into a :class:`pandas.DataFrame`.
+write_xyz
+    Write a :class:`pandas.DataFrame` to an XYZ file.
+load_xyz_as_geodataframe
+    Read an XYZ file and return a :class:`geopandas.GeoDataFrame`.
+save_xyz_from_geodataframe
+    Write a :class:`geopandas.GeoDataFrame` to an XYZ file.
+
+Notes
+-----
+The private helper ``_normalize_epsg`` is also imported by ``crs_tools``
+to ensure consistent CRS string handling across the subpackage.
+"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, List, Union
+from pathlib import Path
+from typing import Dict, List, Optional, Union
 
 import pandas as pd
 
 try:
     import geopandas as gpd
-    from shapely.geometry import Point
+    from shapely.geometry import Point  # noqa: F401 – used implicitly by gpd
+    _HAS_GEO = True
 except ImportError:
-    gpd = None
-    Point = None
+    gpd = None  # type: ignore[assignment]
+    _HAS_GEO = False
 
+__all__ = [
+    "XYZFormatSpec",
+    "infer_xyz_format",
+    "read_xyz",
+    "write_xyz",
+    "load_xyz_as_geodataframe",
+    "save_xyz_from_geodataframe",
+]
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+#: Delimiters tried during format inference, in evaluation order.
+_CANDIDATE_DELIMITERS: List[str] = [",", ";", "\t", "|"]
+
+#: Prefix characters that identify comment lines (skipped during inference).
+_COMMENT_PREFIXES: tuple[str, ...] = ("#", "//")
+
+
+# ---------------------------------------------------------------------------
+# XYZFormatSpec
+# ---------------------------------------------------------------------------
 
 @dataclass
 class XYZFormatSpec:
     """
-    Specification of a simple XYZ file format.
+    Descriptor for the on-disk layout of an XYZ point file.
 
-    This class describes how XYZ data is stored on disk so that
-    reading and writing functions can be configured in a consistent way.
+    All reading and writing functions in this module accept an
+    ``XYZFormatSpec`` so that format details are declared once and
+    reused consistently across I/O calls.
+
+    Parameters
+    ----------
+    delimiter : str, optional
+        Column separator character.  Use ``" "`` for any whitespace
+        (the default), ``","`` for CSV, ``";"`` for semicolon-separated
+        files, or ``"\\t"`` for tab-separated files.
+    has_header : bool, optional
+        ``True`` if the first non-comment line contains column names.
+        ``False`` (the default) if the file starts directly with data.
+    x_column : str, optional
+        Name of the column that stores the X coordinate.
+    y_column : str, optional
+        Name of the column that stores the Y coordinate.
+    z_column : str, optional
+        Name of the column that stores the Z value (elevation or depth).
+    encoding : str, optional
+        File encoding passed to :func:`open` and :func:`pandas.read_csv`.
     """
+
     delimiter: str = " "
     has_header: bool = False
     x_column: str = "x"
@@ -30,29 +109,33 @@ class XYZFormatSpec:
 
     def column_order(self) -> List[str]:
         """
-        Return the expected column order for writing.
+        Return ``[x_column, y_column, z_column]`` in write order.
 
-        Notes
-        -----
-        This helper method is mainly intended for write_xyz, which
-        usually writes x, y, z in that specific order.
+        Returns
+        -------
+        list of str
+            The three coordinate column names in the canonical x→y→z order
+            used by :func:`write_xyz`.
         """
         return [self.x_column, self.y_column, self.z_column]
 
 
+# ---------------------------------------------------------------------------
+# Private helpers
+# ---------------------------------------------------------------------------
+
 def _is_float_token(token: str) -> bool:
     """
-    Check whether a string token can be interpreted as a float.
+    Return ``True`` if *token* can be interpreted as a floating-point number.
 
     Parameters
     ----------
     token : str
-        String token to test.
+        A single whitespace-stripped token from a line of text.
 
     Returns
     -------
     bool
-        True if token can be cast to float, False otherwise.
     """
     try:
         float(token)
@@ -61,82 +144,140 @@ def _is_float_token(token: str) -> bool:
         return False
 
 
-def infer_xyz_format(
-    file_path: str,
-    sample_size: int = 50
-) -> XYZFormatSpec:
+def _check_geodeps(func_name: str) -> None:
     """
-    Infer a basic XYZ file format from a sample of lines.
+    Raise :exc:`ImportError` when GeoPandas is not available.
 
     Parameters
     ----------
-    file_path : str
+    func_name : str
+        Name of the calling function, used in the error message.
+
+    Raises
+    ------
+    ImportError
+        If ``geopandas`` or ``shapely`` could not be imported at module load.
+    """
+    if not _HAS_GEO:
+        raise ImportError(
+            f"{func_name} requires 'geopandas' and 'shapely'. "
+            "Install them with:  pip install geopandas shapely"
+        )
+
+
+def _normalize_epsg(crs: Union[str, int]) -> str:
+    """
+    Normalize a CRS value to a canonical ``"EPSG:XXXX"`` string.
+
+    Accepts integer EPSG codes and string representations in any of the
+    forms ``4326``, ``"4326"``, ``"EPSG:4326"`` or ``"epsg:4326"``.
+    The returned string is always upper-case and accepted by both
+    GeoPandas and pyproj.
+
+    This helper is also imported by ``crs_tools`` so that CRS
+    normalization is handled in a single place across the subpackage.
+
+    Parameters
+    ----------
+    crs : str or int
+        EPSG code to normalize.
+
+    Returns
+    -------
+    str
+        Canonical ``"EPSG:XXXX"`` string.
+
+    Raises
+    ------
+    ValueError
+        If *crs* is a string that cannot be interpreted as an EPSG code.
+    """
+    if isinstance(crs, int):
+        return f"EPSG:{crs}"
+
+    cleaned = crs.strip().upper()
+    if cleaned.startswith("EPSG:"):
+        return cleaned
+
+    try:
+        return f"EPSG:{int(cleaned)}"
+    except ValueError:
+        raise ValueError(
+            f"Cannot interpret '{crs}' as an EPSG code. "
+            "Expected an integer or a string like '4326' or 'EPSG:4326'."
+        )
+
+
+# ---------------------------------------------------------------------------
+# Public functions
+# ---------------------------------------------------------------------------
+
+def infer_xyz_format(
+    file_path: Union[str, Path],
+    sample_size: int = 50,
+) -> XYZFormatSpec:
+    """
+    Automatically detect the format of an XYZ file from a sample of lines.
+
+    The function reads up to *sample_size* non-empty, non-comment lines
+    and attempts to detect:
+
+    * The column delimiter (comma, semicolon, tab, pipe, or whitespace).
+    * Whether the first data line is a header or numeric data.
+    * Column names when a header row is detected.
+
+    When the detection is inconclusive the function returns the default
+    :class:`XYZFormatSpec` (space-delimited, no header, columns ``x/y/z``).
+
+    Parameters
+    ----------
+    file_path : str or pathlib.Path
         Path to the XYZ-like text file.
     sample_size : int, optional
-        Maximum number of lines to inspect when guessing the format.
+        Maximum number of lines to read during detection.  The default
+        of 50 is sufficient for typical oceanographic point files.
 
     Returns
     -------
     XYZFormatSpec
-        A format specification with guessed delimiter, header usage
-        and column names.
+        Detected format specification.
 
     Notes
     -----
-    - This function is intentionally simple and conservative.
-    - It tries to detect:
-      * Delimiter (comma, semicolon, tab or whitespace).
-      * Whether the first non-empty line is header or data.
-      * Column names if a header row is detected.
-    - If the heuristic is inconclusive, defaults are used
-      (space delimiter, no header, columns x/y/z).
+    This function is intentionally conservative.  When in doubt it
+    returns safe defaults rather than an incorrect guess.  Pass an
+    explicit :class:`XYZFormatSpec` to :func:`read_xyz` whenever the
+    file format is known in advance.
     """
-    lines: List[str] = []
+    sample_lines: List[str] = []
 
-    # Read a limited number of non-empty, non-comment lines
-    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-        for line in f:
-            stripped = line.strip()
-            if not stripped:
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as fh:
+        for raw_line in fh:
+            stripped = raw_line.strip()
+            if not stripped or stripped.startswith(_COMMENT_PREFIXES):
                 continue
-            if stripped.startswith("#") or stripped.startswith("//"):
-                continue
-            lines.append(stripped)
-            if len(lines) >= sample_size:
+            sample_lines.append(stripped)
+            if len(sample_lines) >= sample_size:
                 break
 
-    # If file seems empty or only comments, return defaults
-    if not lines:
+    if not sample_lines:
         return XYZFormatSpec()
 
-    # Detect delimiter among comma, semicolon and tab.
-    # If none is clearly present, assume whitespace.
-    candidate_delims = [",", ";", "\t"]
-    delim_scores = {d: 0 for d in candidate_delims}
+    # --- delimiter detection ------------------------------------------------
+    delim_scores: Dict[str, int] = {d: 0 for d in _CANDIDATE_DELIMITERS}
+    for line in sample_lines:
+        for delim in _CANDIDATE_DELIMITERS:
+            delim_scores[delim] += line.count(delim)
 
-    for line in lines:
-        for d in candidate_delims:
-            delim_scores[d] += line.count(d)
+    best_delim = max(_CANDIDATE_DELIMITERS, key=lambda d: delim_scores[d])
+    delimiter = best_delim if delim_scores[best_delim] > 0 else " "
 
-    best_delim = max(candidate_delims, key=lambda d: delim_scores[d])
-    if delim_scores[best_delim] == 0:
-        # No clear comma/semicolon/tab detected → assume whitespace
-        delimiter = " "
-    else:
-        delimiter = best_delim
-
-    # Use the first non-empty line to detect header
-    first_line = lines[0]
-    if delimiter == " ":
-        tokens = first_line.split()
-    else:
-        tokens = first_line.split(delimiter)
-
-    # Decide header vs data: if any token is non-numeric, treat as header
+    # --- header detection ---------------------------------------------------
+    first_line = sample_lines[0]
+    tokens = first_line.split() if delimiter == " " else first_line.split(delimiter)
     has_header = any(not _is_float_token(tok) for tok in tokens)
 
     if has_header:
-        # Use tokens as column names (at least x, y, z)
         x_col = tokens[0] if len(tokens) > 0 else "x"
         y_col = tokens[1] if len(tokens) > 1 else "y"
         z_col = tokens[2] if len(tokens) > 2 else "z"
@@ -148,65 +289,49 @@ def infer_xyz_format(
             z_column=z_col,
         )
 
-    # If we reach this point, assume basic numeric data without header
-    return XYZFormatSpec(
-        delimiter=delimiter,
-        has_header=False,
-        x_column="x",
-        y_column="y",
-        z_column="z",
-    )
+    return XYZFormatSpec(delimiter=delimiter, has_header=False)
 
 
 def read_xyz(
-    file_path: str,
+    file_path: Union[str, Path],
     format_spec: Optional[XYZFormatSpec] = None,
-    dtype: Optional[dict] = None,
-    usecols: Optional[List[str]] = None
+    dtype: Optional[Dict[str, type]] = None,
+    usecols: Optional[List[str]] = None,
 ) -> pd.DataFrame:
     """
-    Read XYZ-like point data from a text file into a DataFrame.
+    Read an XYZ point file into a :class:`pandas.DataFrame`.
 
     Parameters
     ----------
-    file_path : str
+    file_path : str or pathlib.Path
         Path to the input XYZ file.
     format_spec : XYZFormatSpec, optional
-        Format specification describing delimiter, header and column
-        names. If None, `infer_xyz_format` will be called first.
-    dtype : dict, optional
-        Optional mapping of column names to expected dtypes to pass
-        to `pandas.read_csv`.
+        Layout descriptor.  When ``None``, the format is detected
+        automatically via :func:`infer_xyz_format`.
+    dtype : dict of {str: type}, optional
+        Column-to-dtype mapping forwarded to :func:`pandas.read_csv`.
+        Useful to enforce ``float32`` on large files.
     usecols : list of str, optional
-        Optional subset of columns to load.
+        Subset of column names to load.  All other columns are discarded.
 
     Returns
     -------
     pandas.DataFrame
-        DataFrame containing at least the x, y, z columns as defined
-        in the format specification.
+        DataFrame with at least the ``x``, ``y`` and ``z`` columns
+        defined in *format_spec* (or in the detected spec).
 
     Notes
     -----
-    - This function is the main entry point for loading XYZ files
-      within the gis subpackage.
-    - Higher-level classes (e.g. `XYZTile`) can wrap this function.
-    - No CRS handling is performed here; it is only raw numerical data.
+    This function performs no CRS handling; it loads raw numeric values.
+    To obtain a spatial object use :func:`load_xyz_as_geodataframe`.
     """
-    # If no format specification is provided, infer it from the file
     if format_spec is None:
         format_spec = infer_xyz_format(file_path)
 
-    # Configure header and column names according to the format spec
-    if format_spec.has_header:
-        header = 0
-        names = None
-    else:
-        header = None
-        names = format_spec.column_order()
+    header = 0 if format_spec.has_header else None
+    names = None if format_spec.has_header else format_spec.column_order()
 
-    # Use pandas.read_csv for flexible parsing
-    df = pd.read_csv(
+    return pd.read_csv(
         file_path,
         sep=format_spec.delimiter,
         header=header,
@@ -217,65 +342,57 @@ def read_xyz(
         engine="python",
     )
 
-    return df
-
 
 def write_xyz(
     df: pd.DataFrame,
-    file_path: str,
+    file_path: Union[str, Path],
     format_spec: Optional[XYZFormatSpec] = None,
     float_format: str = "%.3f",
-    include_header: Optional[bool] = None
+    include_header: Optional[bool] = None,
 ) -> None:
     """
-    Write a DataFrame with x, y, z columns to an XYZ text file.
+    Write a :class:`pandas.DataFrame` to an XYZ plain-text file.
 
     Parameters
     ----------
     df : pandas.DataFrame
-        Input DataFrame containing coordinate and elevation/depth
-        columns.
-    file_path : str
-        Output file path where the XYZ text file will be written.
+        Source data.  Must contain the columns declared in *format_spec*.
+    file_path : str or pathlib.Path
+        Destination file path.  The file is created or overwritten.
     format_spec : XYZFormatSpec, optional
-        Format specification describing delimiter, header and column
-        names. If None, a default `XYZFormatSpec` is used.
+        Layout descriptor.  Defaults to :class:`XYZFormatSpec` (space-
+        delimited, no header, columns ``x/y/z``).
     float_format : str, optional
-        Numeric format for floating-point values (e.g., '%.3f').
+        ``printf``-style format string applied to all floating-point
+        values (e.g. ``"%.3f"`` for three decimal places).
     include_header : bool, optional
-        Whether to include column names as a header line. If None,
-        the value is derived from `format_spec.has_header`.
+        Override whether a header row is written.  When ``None`` (the
+        default) the value is taken from ``format_spec.has_header``.
+
+    Raises
+    ------
+    ValueError
+        If any column declared in *format_spec* is absent from *df*.
 
     Notes
     -----
-    - This function assumes that df already contains the columns
-      specified in `format_spec.x_column`, `format_spec.y_column`,
-      and `format_spec.z_column`.
-    - It does not perform CRS or unit conversions; it simply writes
-      numeric values to disk.
+    This function writes exactly the three coordinate columns in
+    ``x → y → z`` order.  Additional columns present in *df* are ignored.
     """
-    # Use provided format specification or create a default one
     if format_spec is None:
         format_spec = XYZFormatSpec()
 
-    # Decide whether to include header based on the format spec
     if include_header is None:
         include_header = format_spec.has_header
 
-    # Ensure required columns exist in the DataFrame
-    missing_cols = [
-        col for col in format_spec.column_order() if col not in df.columns
-    ]
-    if missing_cols:
+    missing = [c for c in format_spec.column_order() if c not in df.columns]
+    if missing:
         raise ValueError(
-            f"Missing required columns in DataFrame for XYZ writing: {missing_cols}"
+            f"DataFrame is missing the following columns required by "
+            f"XYZFormatSpec: {missing}"
         )
 
-    # Select columns in the specified order
-    out_df = df[format_spec.column_order()]
-
-    # Write to disk using pandas.to_csv
-    out_df.to_csv(
+    df[format_spec.column_order()].to_csv(
         file_path,
         sep=format_spec.delimiter,
         header=include_header,
@@ -286,130 +403,121 @@ def write_xyz(
 
 
 def load_xyz_as_geodataframe(
-    file_path: str,
+    file_path: Union[str, Path],
     format_spec: Optional[XYZFormatSpec] = None,
-    crs: Optional[Union[str, int]] = None
+    crs: Optional[Union[str, int]] = None,
 ) -> "gpd.GeoDataFrame":
     """
-    Load an XYZ file into a GeoDataFrame with Point geometries.
+    Read an XYZ file and return a :class:`geopandas.GeoDataFrame`.
+
+    The X and Y columns are used to build :class:`shapely.geometry.Point`
+    geometries.  The Z column is retained as a regular attribute column.
+    No reprojection is performed; *crs* is assigned as metadata only.
 
     Parameters
     ----------
-    file_path : str
+    file_path : str or pathlib.Path
         Path to the input XYZ file.
     format_spec : XYZFormatSpec, optional
-        Format specification used by `read_xyz`. If None, the format
-        is inferred.
+        Layout descriptor.  When ``None``, the format is detected
+        automatically.
     crs : str or int, optional
-        Coordinate reference system to assign to the GeoDataFrame
-        (e.g., 'EPSG:3116' or 3116). This does not reproject data;
-        it only sets the CRS metadata.
+        CRS to assign to the GeoDataFrame, e.g. ``"EPSG:4326"`` or
+        ``4326``.  Both string and integer EPSG codes are accepted.
+        When ``None`` the GeoDataFrame is created without a CRS.
 
     Returns
     -------
     geopandas.GeoDataFrame
-        GeoDataFrame with geometry column (Point) created from x, y.
+        Point GeoDataFrame with the geometry column built from X and Y.
 
     Raises
     ------
     ImportError
-        If `geopandas` or `shapely` are not available.
+        If ``geopandas`` or ``shapely`` are not installed.
 
     Notes
     -----
-    - This function is a light wrapper around `read_xyz` plus
-      `GeoDataFrame` construction.
-    - Reprojection should be done outside this module (e.g. using
-      functions from `crs.py`).
+    To reproject the data after loading, use
+    :meth:`geopandas.GeoDataFrame.to_crs` or the helpers in
+    ``crs_tools``.
     """
-    if gpd is None or Point is None:
-        raise ImportError(
-            "geopandas and shapely are required to use load_xyz_as_geodataframe."
-        )
+    _check_geodeps("load_xyz_as_geodataframe")
 
-    # Ensure we have a format specification for the XYZ file
     if format_spec is None:
         format_spec = infer_xyz_format(file_path)
 
-    # Load raw data as DataFrame
     df = read_xyz(file_path, format_spec=format_spec)
 
-    # Build geometry from x and y columns
-    geometry = gpd.points_from_xy(
-        df[format_spec.x_column],
-        df[format_spec.y_column],
+    crs_value = _normalize_epsg(crs) if crs is not None else None
+
+    return gpd.GeoDataFrame(
+        df,
+        geometry=gpd.points_from_xy(df[format_spec.x_column], df[format_spec.y_column]),
+        crs=crs_value,
     )
-
-    # Normalize CRS input: allow int EPSG or string
-    crs_meta = crs
-    if isinstance(crs, int):
-        crs_meta = f"EPSG:{crs}"
-
-    # Create GeoDataFrame with assigned CRS (no reprojection)
-    gdf = gpd.GeoDataFrame(df, geometry=geometry, crs=crs_meta)
-
-    return gdf
 
 
 def save_xyz_from_geodataframe(
     gdf: "gpd.GeoDataFrame",
-    file_path: str,
+    file_path: Union[str, Path],
     format_spec: Optional[XYZFormatSpec] = None,
     z_column: str = "z",
     float_format: str = "%.3f",
-    include_header: Optional[bool] = None
+    include_header: Optional[bool] = None,
 ) -> None:
     """
-    Save a GeoDataFrame with Point geometries to an XYZ file.
+    Write a :class:`geopandas.GeoDataFrame` to an XYZ plain-text file.
+
+    Coordinates are extracted from the ``geometry`` column (X and Y) and
+    from *z_column* (Z).  This function is the symmetric counterpart of
+    :func:`load_xyz_as_geodataframe`.
 
     Parameters
     ----------
     gdf : geopandas.GeoDataFrame
-        GeoDataFrame containing point geometries and a scalar z column.
-    file_path : str
-        Output file path where the XYZ text file will be written.
+        Source GeoDataFrame.  Must contain Point geometries and the
+        column named *z_column*.
+    file_path : str or pathlib.Path
+        Destination file path.  The file is created or overwritten.
     format_spec : XYZFormatSpec, optional
-        Format specification describing delimiter, header and column
-        names. If None, a default `XYZFormatSpec` is used.
+        Layout descriptor.  Defaults to :class:`XYZFormatSpec` (space-
+        delimited, no header, columns ``x/y/z``).
     z_column : str, optional
-        Name of the column containing elevation/depth values.
+        Name of the attribute column that holds elevation or depth values.
     float_format : str, optional
-        Numeric format for floating-point values.
+        ``printf``-style format string for floating-point values.
     include_header : bool, optional
-        Whether to include a header row. If None, it will follow
-        `format_spec.has_header`.
+        Override whether a header row is written.  When ``None`` the
+        value is taken from ``format_spec.has_header``.
 
-    Notes
-    -----
-    - This function is symmetric to `load_xyz_as_geodataframe`, but
-      it writes data back to an XYZ-style file.
-    - It assumes planar coordinates (x, y) are stored in the geometry.
+    Raises
+    ------
+    ImportError
+        If ``geopandas`` or ``shapely`` are not installed.
+    ValueError
+        If *z_column* is not present in *gdf*.
     """
-    if gpd is None or Point is None:
-        raise ImportError(
-            "geopandas and shapely are required to use save_xyz_from_geodataframe."
-        )
+    _check_geodeps("save_xyz_from_geodataframe")
 
     if format_spec is None:
         format_spec = XYZFormatSpec()
 
-    # Ensure the z column exists
     if z_column not in gdf.columns:
         raise ValueError(
-            f"GeoDataFrame does not contain the requested z column: '{z_column}'"
+            f"Column '{z_column}' not found in GeoDataFrame. "
+            f"Available columns: {list(gdf.columns)}"
         )
 
-    # Build a plain DataFrame with x, y, z from geometry and attribute
     df = pd.DataFrame({
         format_spec.x_column: gdf.geometry.x,
         format_spec.y_column: gdf.geometry.y,
-        format_spec.z_column: gdf[z_column].values,
+        format_spec.z_column: gdf[z_column].to_numpy(),
     })
 
-    # Delegate actual writing to write_xyz
     write_xyz(
-        df=df,
-        file_path=file_path,
+        df,
+        file_path,
         format_spec=format_spec,
         float_format=float_format,
         include_header=include_header,
