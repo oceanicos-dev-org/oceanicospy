@@ -75,7 +75,6 @@ nest-asyncio==1.6.0
 netCDF4==1.7.4
 numcodecs==0.13.1
 numpy==2.2.6
--e git+ssh://git@github.com/oceanicos/oceanicospy.git@8336f01cd457fbd0cadcaf6ecfe0d329183284bb#egg=oceanicospy
 openpyxl==3.1.5
 packaging==26.0
 pandas==2.3.3
