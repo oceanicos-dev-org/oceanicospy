@@ -6,7 +6,7 @@ This is a python library used to centralize and re-use all the code that has bee
 - to obtain typical but useful quick plots of certain variables.
 - to retrieve automatically data from different data sources such as reanalysis, real-time data, etc.
 
-This is a purely collaborative work as it is intended to facilitate a lot of processes in our everyday research activities
+This is a collaborative work as it is intended to facilitate a lot of processes in our everyday research activities in oceanography and coastal engineering.
 
 "There was once a dream that was Rome"
 

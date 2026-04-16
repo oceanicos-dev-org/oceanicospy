@@ -1,6 +1,19 @@
-/data/observations/AQ
-/data/observations/RBR
-/data/observations/AWAC
+/data/model_runs/*
+/data/nc_data/*
+/data/observations/*
+/data/temp/*
+/data/model_config_templates/ww3
+
+# no tracking html files
+docs/_build/
+_build/
+
+# no tracking DS_ files created by macOS
+.DS_Store
+**/.DS_Store
+
+# no tracking under-dev files
+under_dev/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -12,3 +25,6 @@ build/
 dist/
 *.egg-info/
 
+# no tracking personal vs settings
+.vscode/
+generate_requirements.py

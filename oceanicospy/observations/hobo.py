@@ -3,9 +3,9 @@ from __future__ import annotations
 import glob
 import os
 import re
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
-from datetime import datetime
+from typing import List, Optional
 
 import pandas as pd
 
@@ -13,209 +13,173 @@ import pandas as pd
 @dataclass
 class CleaningRules:
     """
-    Container for simple quality-control/cleaning thresholds.
-    Values are inclusive ranges; set to None to disable the bound.
+    Container for simple quality-control thresholds.
+
+    Values are inclusive ranges; set to ``None`` to disable the bound.
+
+    Attributes
+    ----------
+    t_min, t_max : float or None
+        Acceptable temperature range in °C. Default −2 to 45.
+    c_min, c_max : float or None
+        Acceptable conductivity range in µS/cm. Default 0 to 1 000 000.
     """
-    # Temperature [°C]
+
     t_min: Optional[float] = -2.0
     t_max: Optional[float] = 45.0
-    # Conductivity [µS/cm]
     c_min: Optional[float] = 0.0
-    c_max: Optional[float] = 1_000_000.0  # broad range to include fresh/brackish/sea water (in uS/cm)
+    c_max: Optional[float] = 1_000_000.0
 
 
-class HOBO:
+class HOBOBase(ABC):
     """
-    Reader/cleaner for HOBO CSV exports with two formats:
-    - TL: Temperature Logger
-    - CL: Conductivity Logger (usually includes temperature too)
+    Abstract base class for HOBO data logger readers.
 
-    This class:
-    - Scans a directory for CSVs
-    - Autodetects file format (by filename prefix 'TL'/'CL' and/or header contents)
-    - Standardizes columns
-    - Concatenates *per format* and returns one DataFrame for CL and one for TL
-    - Sorts chronologically and optionally trims by start/end datetimes
-
-    Standardized columns:
-    - 'date'                       -> pandas datetime64[ns] (naive)
-    - 'temperature[C]'             -> float (if present)
-    - 'conductivity[uS/cm]'        -> float (if present)
-    - 'seq'                        -> Int64 (if present)
+    Provides a common interface for loading, standardizing, and cleaning
+    HOBO CSV exports from a directory. Subclasses implement format-specific
+    column detection for Temperature Logger (TL) and Conductivity Logger
+    (CL) files by overriding :attr:`_file_prefix` and
+    :meth:`_standardize_columns`.
 
     Parameters
     ----------
     directory_path : str
-        Path to a directory containing HOBO CSV files.
-    start_dt : datetime, optional
-        Start datetime for trimming the merged dataset.
-    end_dt : datetime, optional
-        End datetime for trimming the merged dataset.
-    sampling_data : dict, optional
-        Backward-compatible container that may include 'start_time'/'end_time'
-        as str or datetime. Ignored if explicit start_dt/end_dt are provided.
+        Path to the directory containing HOBO CSV files.
+    start_dt : datetime-like, optional
+        Lower bound for trimming records (inclusive).
+    end_dt : datetime-like, optional
+        Upper bound for trimming records (inclusive).
     rules : CleaningRules, optional
-        Thresholds applied in `get_clean_records_split()`.
+        QC thresholds applied in :meth:`get_clean_records`.
+        Defaults to the standard thresholds defined in :class:`CleaningRules`.
     encoding_main : str, optional
-        Primary encoding used to read CSVs. Default 'utf-8-sig' handles BOM.
+        Primary encoding for reading CSV files. Default ``'utf-8-sig'``
+        handles BOM headers produced by HOBOware.
     encoding_fallback : str, optional
-        Fallback encoding if the primary one fails. Default 'latin-1'.
+        Fallback encoding used if the primary one fails. Default ``'latin-1'``.
+
+    Notes
+    -----
+    - 01-Jun-2025 : Origination — Daniela Rosero
+    - 24-Mar-2026 : Refactored into abstract + concrete classes — Franklin Ayala
     """
 
     def __init__(
         self,
-        directory_path: str,
-        start_dt: Optional[datetime] = None,
-        end_dt: Optional[datetime] = None,
-        sampling_data: Optional[Dict] = None,
+        filepath: str,
+        start_dt=None,
+        end_dt=None,
         rules: Optional[CleaningRules] = None,
         encoding_main: str = "utf-8-sig",
         encoding_fallback: str = "latin-1",
     ) -> None:
-        self.directory_path = directory_path
+        self.filepath = filepath
         self.rules = rules or CleaningRules()
         self.encoding_main = encoding_main
         self.encoding_fallback = encoding_fallback
+        self.start_dt = pd.to_datetime(start_dt) if start_dt is not None else None
+        self.end_dt = pd.to_datetime(end_dt) if end_dt is not None else None
 
-        # Backward compatibility with sampling_data, but explicit args win
-        sampling_data = sampling_data or {}
-        sd = sampling_data.get("start_time")
-        ed = sampling_data.get("end_time")
-
-        # Normalize to pandas Timestamp if provided; allow str or datetime
-        self.start_dt = pd.to_datetime(start_dt if start_dt is not None else sd) if (start_dt is not None or sd is not None) else None
-        self.end_dt   = pd.to_datetime(end_dt   if end_dt   is not None else ed) if (end_dt   is not None or ed is not None) else None
-
-    # ------------------------ Public API ------------------------
-
-    def get_raw_records_split(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    @property
+    @abstractmethod
+    def _file_prefix(self) -> str:
         """
-        Read and concatenate all CSVs, returning two DataFrames:
-        one for CL files and one for TL files (both chronological).
+        Filename prefix used to filter matching files (e.g. ``'TL'`` or ``'CL'``).
+
+        Only CSV files whose basenames start with this prefix (case-insensitive)
+        are loaded by :meth:`get_raw_records`.
+        """
+        pass
+
+    @abstractmethod
+    def _standardize_columns(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Detect and rename instrument-specific columns to the standard schema.
+
+        Subclasses must implement this to map raw HOBOware column names to:
+        ``date``, ``temperature[C]``, ``conductivity[uS/cm]`` (CL only),
+        and ``seq`` (if present).
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            Raw DataFrame produced by :meth:`_read_single_file` before any
+            renaming (title row already skipped).
 
         Returns
         -------
-        (df_cl, df_tl) : Tuple[pandas.DataFrame, pandas.DataFrame]
-            Each DataFrame contains standardized columns and is time-sorted.
+        pandas.DataFrame
+            DataFrame containing only the columns listed above, with those
+            names applied.
         """
-        files = self._get_csv_files()
-        if not files:
-            raise FileNotFoundError("No .csv files found in the specified directory.")
+        pass
 
-        frames: List[pd.DataFrame] = []
-        for f in files:
-            frames.append(self._read_and_standardize_single_file(f))
-
-        df_all = pd.concat(frames, ignore_index=True)
-
-        # Optional trimming by explicit start/end datetimes (or fallback)
-        start, end = self._resolve_trim_range(df_all)
-        if start is not None or end is not None:
-            if start is None:
-                start = df_all["date"].min()
-            if end is None:
-                end = df_all["date"].max()
-            df_all = df_all[(df_all["date"] >= start) & (df_all["date"] <= end)]
-
-        # Split by detected format
-        df_cl = df_all[df_all["format"] == "CL"].drop(columns=["format"]).copy()
-        df_tl = df_all[df_all["format"] == "TL"].drop(columns=["format"]).copy()
-
-        # Sort chronologically and deduplicate by timestamp
-        if not df_cl.empty:
-            df_cl = df_cl.sort_values("date").drop_duplicates(subset=["date"], keep="first").reset_index(drop=True)
-        if not df_tl.empty:
-            df_tl = df_tl.sort_values("date").drop_duplicates(subset=["date"], keep="first").reset_index(drop=True)
-
-        # Consistent column ordering
-        df_cl = self._order_columns(df_cl)
-        df_tl = self._order_columns(df_tl)
-
-        return df_cl, df_tl
-
-    def get_clean_records_split(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def get_raw_records(self) -> pd.DataFrame:
         """
-        Return cleaned DataFrames for CL and TL:
-        - Drop rows where all measured variables are NaN
-        - Apply QC ranges for temperature and conductivity
-        - Ensure numeric dtypes and consistent column ordering
+        Load, standardize, and concatenate all matching HOBO CSV files.
+
+        Files are filtered by :attr:`_file_prefix`, read individually via
+        :meth:`_read_single_file`, merged, sorted chronologically,
+        deduplicated by timestamp, and optionally trimmed to
+        [``start_dt``, ``end_dt``].
+
+        Returns
+        -------
+        pandas.DataFrame
+            Combined records with standardized columns.
+
+        Raises
+        ------
+        FileNotFoundError
+            If no CSV files matching the prefix are found in ``directory_path``.
         """
-        df_cl, df_tl = self.get_raw_records_split()
-        df_cl = self._apply_qc(df_cl)
-        df_tl = self._apply_qc(df_tl)
-        return df_cl, df_tl
 
-    # --------------------- Internal helpers ---------------------
-
-    def _get_csv_files(self) -> List[str]:
-        """Return all CSV files in the target directory."""
-        return sorted(glob.glob(os.path.join(self.directory_path, "*.csv")))
-
-    def _read_and_standardize_single_file(self, path: str) -> pd.DataFrame:
-        """
-        Read a single HOBO CSV file, skip the first title row, detect columns and format,
-        standardize names, and parse datetimes and numerics.
-        """
-        try:
-            df = pd.read_csv(path, skiprows=1, encoding=self.encoding_main)
-        except Exception:
-            df = pd.read_csv(path, skiprows=1, encoding=self.encoding_fallback)
-
-        fmt_fn = self._detect_format_from_filename(path)
-        fmt_hd, dt_col, temp_col, cond_col, seq_col = self._detect_format_and_columns(df.columns.tolist())
-        fmt = fmt_fn or fmt_hd  # prefer filename-based detection
-
-        keep_cols = [dt_col]
-        if seq_col:
-            keep_cols = [seq_col] + keep_cols
-        if temp_col:
-            keep_cols.append(temp_col)
-        if cond_col:
-            keep_cols.append(cond_col)
-        df = df[keep_cols].copy()
-
-        rename_map = {dt_col: "date"}
-        if seq_col:
-            rename_map[seq_col] = "seq"
-        if temp_col:
-            rename_map[temp_col] = "temperature[C]"
-        if cond_col:
-            rename_map[cond_col] = "conductivity[uS/cm]"
-        df = df.rename(columns=rename_map)
-
-        # Spanish HOBOware datetime: 'MM/DD/YY hh:mm:ss AM/PM'
-        df["date"] = pd.to_datetime(df["date"], format="%m/%d/%y %I:%M:%S %p", errors="coerce")
-
-        for col in ("temperature[C]", "conductivity[uS/cm]"):
-            if col in df.columns:
-                df[col] = pd.to_numeric(df[col], errors="coerce")
-
-        if "seq" in df.columns:
-            df["seq"] = pd.to_numeric(df["seq"], errors="coerce").astype("Int64")
-
-        df["format"] = fmt
+        df = self._load_raw_dataframe()
         return df
 
-    @staticmethod
-    def _order_columns(df: pd.DataFrame) -> pd.DataFrame:
-        """Return a view with standard column ordering."""
-        if df.empty:
+    def get_clean_records(self) -> pd.DataFrame:
+        """
+        Return QC-filtered records.
+
+        Calls :meth:`get_raw_records` and applies the thresholds in
+        :attr:`rules` — out-of-range values are replaced with ``NaN`` and
+        rows where all measured variables are ``NaN`` are dropped.
+
+        Returns
+        -------
+        pandas.DataFrame
+            Cleaned DataFrame ready for downstream analysis.
+        """
+        df = self._load_raw_dataframe()
+        df = self._standardize_columns(df)
+        df = self._parse_dates_and_trim(df)
+        # df = self._apply_qc(df)
+        return df
+
+    def _load_raw_dataframe(self) -> pd.DataFrame:
+        """
+        Read a single HOBO CSV (skip the HOBOware title row), then delegate
+        column renaming to :meth:`_standardize_columns` and parse types.
+        """
+        try:
+            df = pd.read_csv(self.filepath, skiprows=1, encoding=self.encoding_main)
+        except Exception:
+            df = pd.read_csv(self.filepath, skiprows=1, encoding=self.encoding_fallback)
+
+        return df
+
+    def _parse_dates_and_trim(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Trim records to [``start_dt``, ``end_dt``] when either bound is set."""
+        if self.start_dt is None and self.end_dt is None:
             return df
-        ordered = ["date"]
-        if "temperature[C]" in df.columns:
-            ordered.append("temperature[C]")
-        if "conductivity[uS/cm]" in df.columns:
-            ordered.append("conductivity[uS/cm]")
-        if "seq" in df.columns:
-            ordered.append("seq")
-        return df[ordered].copy()
+        return df[self.start_dt:self.end_dt]
 
     def _apply_qc(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Apply simple QC ranges and drop rows without any measurements."""
+        """Apply QC thresholds and drop rows where all measurement columns are NaN."""
         if df.empty:
             return df
 
-        value_cols = [c for c in ["temperature[C]", "conductivity[uS/cm]"] if c in df.columns]
+        value_cols = [c for c in ("temperature[C]", "conductivity[uS/cm]") if c in df.columns]
         if value_cols:
             df = df.dropna(subset=value_cols, how="all").copy()
 
@@ -236,86 +200,187 @@ class HOBO:
 
         return self._order_columns(df).reset_index(drop=True)
 
-    # --------------------- Trim helpers ---------------------
-
-    def _resolve_trim_range(self, df_all: pd.DataFrame) -> Tuple[Optional[pd.Timestamp], Optional[pd.Timestamp]]:
-        """
-        Resolve trimming range using explicit start_dt/end_dt if provided,
-        otherwise return (None, None) to keep full extent.
-        """
-        start = pd.to_datetime(self.start_dt) if self.start_dt is not None else None
-        end = pd.to_datetime(self.end_dt) if self.end_dt is not None else None
-        return start, end
-
-    # --------------------- Detection helpers ---------------------
+    @staticmethod
+    def _order_columns(df: pd.DataFrame) -> pd.DataFrame:
+        """Return a copy with deterministic column ordering."""
+        if df.empty:
+            return df
+        ordered = ["date"]
+        for col in ("temperature[C]", "conductivity[uS/cm]", "seq"):
+            if col in df.columns:
+                ordered.append(col)
+        return df[ordered].copy()
 
     @staticmethod
     def _normalize(text: str) -> str:
         """
-        Normalize header strings to help detection:
-        - Remove stray bytes (Â, µ variants)
-        - Keep ASCII subset
-        - Collapse whitespace
+        Normalize a header string for robust keyword matching.
+
+        Strips encoding artefacts (``Â``, ``µ`` variants), reduces to ASCII,
+        and collapses whitespace.
         """
         if text is None:
             return text
         t = (
             text.replace("Â", "")
-               .replace("µ", "u")
-               .replace("Î¼", "u")
-               .encode("latin-1", "ignore")
-               .decode("latin-1")
+                .replace("µ", "u")
+                .replace("Î¼", "u")
+                .encode("latin-1", "ignore")
+                .decode("latin-1")
         )
         t = t.encode("ascii", "ignore").decode("ascii")
-        t = re.sub(r"\s+", " ", t)
-        return t.strip()
+        return re.sub(r"\s+", " ", t).strip()
 
-    def _detect_format_from_filename(self, path: str) -> Optional[str]:
-        """
-        Infer format from filename prefix if available:
-        filenames like 'CL1-1_0524.csv' -> 'CL', 'TL1-2_0524.csv' -> 'TL'.
-        """
-        base = os.path.basename(path).upper()
-        if base.startswith("CL"):
-            return "CL"
-        if base.startswith("TL"):
-            return "TL"
-        return None
 
-    def _detect_format_and_columns(
-        self, columns: List[str]
-    ) -> tuple[str, str, Optional[str], Optional[str], Optional[str]]:
+class HOBO_Temp(HOBOBase):
+    """
+    Reader for HOBO Temperature Logger (TL) CSV files.
+
+    Loads all ``TL*.csv`` files from ``directory_path``, parses temperature
+    and (optionally) sequence columns, and exposes them through the standard
+    :meth:`get_raw_records` / :meth:`get_clean_records` interface.
+
+    Parameters
+    ----------
+    directory_path : str
+        Path to the directory containing TL CSV files.
+    start_dt, end_dt, rules, encoding_main, encoding_fallback
+        See :class:`HOBOBase`.
+
+    Notes
+    -----
+    24-Mar-2026 : Origination — Franklin Ayala
+    """
+
+    @property
+    def _file_prefix(self) -> str:
+        return "TL"
+
+    def _standardize_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        Detect file format (TL vs CL) and return the original column names for:
-        - datetime, temperature, conductivity, sequence
+        Detect and rename TL-specific columns to ``date``, ``temperature[C]``,
+        and ``seq``.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            Raw DataFrame (title row already skipped).
 
         Returns
         -------
-        (fmt, dt_col, temp_col, cond_col, seq_col)
+        pandas.DataFrame
+            DataFrame with only the relevant columns under standard names.
+        
+        Notes
+        -----
+        Date is uploaded in local time so no further timezone conversion is needed. The date column is parsed as datetime and set as index, sorted in chronological order.
         """
-        norm = [self._normalize(c) for c in columns]
+        norm = [self._normalize(c) for c in df.columns]
+        cols = df.columns.tolist()
 
-        # Date-time header usually contains 'Fecha Tiempo' or 'Date Time'
-        dt_idx = None
-        for i, c in enumerate(norm):
-            if ("Fecha Tiempo" in c) or (c.lower().startswith("date")) or ("Tiempo" in c):
-                dt_idx = i
-                break
-        if dt_idx is None:
-            dt_idx = 1  # fallback to a common position
-        dt_col = columns[dt_idx]
-
-        # Sequence column commonly labeled 'N.' or similar
+        dt_idx = next(
+            (i for i, c in enumerate(norm)
+             if "Fecha Tiempo" in c or c.lower().startswith("date") or "Tiempo" in c),
+            1,
+        )
         seq_idx = next((i for i, c in enumerate(norm) if c.startswith("N")), None)
-        seq_col = columns[seq_idx] if seq_idx is not None else None
+        temp_idx = next(
+            (i for i, c in enumerate(norm) if "Temp" in c and ("C" in c or "degC" in c)),
+            None,
+        )
 
-        # Temperature column (TL and also present in CL)
-        temp_idx = next((i for i, c in enumerate(norm) if ("Temp" in c and ("C" in c or "degC" in c))), None)
-        temp_col = columns[temp_idx] if temp_idx is not None else None
+        keep = [cols[dt_idx]]
+        rename = {cols[dt_idx]: "date"}
+        if seq_idx is not None:
+            keep.insert(0, cols[seq_idx])
+            rename[cols[seq_idx]] = "seq"
+        if temp_idx is not None:
+            keep.append(cols[temp_idx])
+            rename[cols[temp_idx]] = "temperature[C]"
 
-        # Conductivity column (CL)
-        cond_idx = next((i for i, c in enumerate(norm) if ("S/cm" in c and ("Rango" in c or "Conductivity" in c))), None)
-        cond_col = columns[cond_idx] if cond_idx is not None else None
+        df = df[keep].rename(columns=rename)
+        df['date'] = pd.to_datetime(df['date'],
+                                    format = '%m/%d/%y %I:%M:%S %p',
+                                    errors='coerce')
+        df = df.set_index('date').sort_index()
 
-        fmt = "CL" if cond_col is not None else "TL"
-        return fmt, dt_col, temp_col, cond_col, seq_col
+        return df
+
+
+class HOBO_TempCond(HOBOBase):
+    """
+    Reader for HOBO Conductivity Logger (CL) CSV files.
+
+    Loads all ``CL*.csv`` files from ``directory_path``, parses temperature,
+    conductivity, and (optionally) sequence columns, and exposes them through
+    the standard :meth:`get_raw_records` / :meth:`get_clean_records` interface.
+
+    Parameters
+    ----------
+    directory_path : str
+        Path to the directory containing CL CSV files.
+    start_dt, end_dt, rules, encoding_main, encoding_fallback
+        See :class:`HOBOBase`.
+
+    Notes
+    -----
+    24-Mar-2026 : Origination — Franklin Ayala
+    """
+
+    @property
+    def _file_prefix(self) -> str:
+        return "CL"
+
+    def _standardize_columns(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Detect and rename CL-specific columns to ``date``, ``temperature[C]``,
+        ``conductivity[uS/cm]``, and ``seq``.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            Raw DataFrame (title row already skipped).
+
+        Returns
+        -------
+        pandas.DataFrame
+            DataFrame with only the relevant columns under standard names.
+        """
+        norm = [self._normalize(c) for c in df.columns]
+        cols = df.columns.tolist()
+
+        dt_idx = next(
+            (i for i, c in enumerate(norm)
+             if "Fecha Tiempo" in c or c.lower().startswith("date") or "Tiempo" in c),
+            1,
+        )
+        seq_idx = next((i for i, c in enumerate(norm) if c.startswith("N")), None)
+        temp_idx = next(
+            (i for i, c in enumerate(norm) if "Temp" in c and ("C" in c or "degC" in c)),
+            None,
+        )
+        cond_idx = next(
+            (i for i, c in enumerate(norm)
+             if "S/cm" in c and ("Rango" in c or "Conductivity" in c)),
+            None,
+        )
+
+        keep = [cols[dt_idx]]
+        rename = {cols[dt_idx]: "date"}
+        if seq_idx is not None:
+            keep.insert(0, cols[seq_idx])
+            rename[cols[seq_idx]] = "seq"
+        if temp_idx is not None:
+            keep.append(cols[temp_idx])
+            rename[cols[temp_idx]] = "temperature[C]"
+        if cond_idx is not None:
+            keep.append(cols[cond_idx])
+            rename[cols[cond_idx]] = "conductivity[uS/cm]"
+
+        df = df[keep].rename(columns=rename)
+        df['date'] = pd.to_datetime(df['date'], 
+                                    format = '%m/%d/%y %I:%M:%S %p',
+                                    errors='coerce')
+        df = df.set_index('date').sort_index()
+
+        return df

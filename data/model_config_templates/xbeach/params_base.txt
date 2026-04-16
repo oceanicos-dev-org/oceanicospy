@@ -17,11 +17,11 @@ wind = $act_wnd
 
 %%% Grid parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-xfile     = xfilepath
-yfile     = yfilepath
-depfile   = depfilepath
-nx        = meshes_x
-ny        = meshes_y
+xfile     = $xfilepath
+yfile     = $yfilepath
+depfile   = $depfilepath
+nx        = $meshes_x
+ny        = $meshes_y
 vardx     = 1
 thetamin  = 0
 thetamax  = 190
@@ -32,33 +32,33 @@ alfa      = 180
 %%% Wave boundary condition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 wbctype    = swan
-bcfile     = bcfilepath
-wbcversion = w_bc_version
-nspectrumloc = n_spectrum_loc
+bcfile     = $bcfilepath
+wbcversion = $w_bc_version
+nspectrumloc = $n_spectrum_loc
 
 %%% Wind %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-windfile     = windfilepath
+windfile     = $windfilepath
 
 %%% Tide %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tideloc      = 1
-zs0file      = sealevelfilepath
+zs0file      = $sealevelfilepath
 
 %%% Model time %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tstart       = 0
 CFL          = 0.7
-tstop        = tstop_value
-tint         = tint_value
-tintg        = tintg_value
+tstop        = $tstop_value
+tint         = $tint_value
+tintg        = $tintg_value
 
 %%% Output variables %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 outputformat = netcdf
-ncfilename = outputfilepath
+ncfilename = $outputfilepath
 
-nglobalvar   = len_global_vars
-global_vars
+nglobalvar   = $len_global_vars
+$global_vars
 
-npoints = len_points
-string_points
+npoints = $len_points
+$string_points
 
-npointvar    = len_point_vars
-point_vars
+npointvar    = $len_point_vars
+$point_vars

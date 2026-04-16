@@ -16,11 +16,11 @@ Add your content using ``reStructuredText`` syntax. See the
 documentation for details.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
-   observations/index
+   installing
    analysis/index
-   models/index
+   observations/index
    retrievals/index
-   plots
+   models/index

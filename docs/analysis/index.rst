@@ -9,9 +9,11 @@ but also for other types of waves like infragravity waves (IG).
 This section also includes tools for spectral analysis like filtering, windowing and spectral density estimation. 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    conditioning
    spectral
+   spectral_analysis.ipynb
    temporal
+   temporal_analysis.ipynb
