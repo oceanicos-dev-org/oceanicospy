@@ -1,22 +1,53 @@
-import os
 from datetime import datetime, timedelta
-from typing import List, Optional
-
 import numpy as np
+from pathlib import Path
 import xarray as xr
 import copernicusmarine
 
-
 class CMDSDownloader:
     """
-    Copernicus Marine Data Store (CMDS) downloader mirroring ERA5 input style.
-    Includes an ERA5-like post-processing method to rewrite the NetCDF in LOCAL time (shift + crop).
+    Downloader for oceanographic data from the Copernicus Marine Data Store (CMDS).
+
+    Submits a spatial/temporal subset request via the ``copernicusmarine`` toolbox
+    and optionally rewrites the resulting NetCDF in local time.
+
+    Parameters
+    ----------
+    dataset_id : str
+        CMDS dataset identifier (case-sensitive, as listed in the CMDS catalog).
+    variables : list of str
+        Variable names to request (dataset-specific names).
+    lon_min : float
+        Western boundary of the bounding box in degrees (EPSG:4326).
+    lon_max : float
+        Eastern boundary of the bounding box in degrees (EPSG:4326).
+    lat_min : float
+        Southern boundary of the bounding box in degrees (EPSG:4326).
+    lat_max : float
+        Northern boundary of the bounding box in degrees (EPSG:4326).
+    start_datetime_local : datetime
+        Start of the desired time window expressed in local time.
+    end_datetime_local : datetime
+        End of the desired time window expressed in local time.
+    difference_to_UTC : float
+        Local-time offset from UTC in hours (local minus UTC).
+        For example, UTC-5 should be passed as ``-5``.
+    output_path : str or Path
+        Directory where the output file will be written.  Created automatically
+        if it does not exist.
+    output_filename : str, optional
+        Name of the file to write inside ``output_path``
+        (e.g. ``"winds_CMDS.nc"``).  When ``None`` the CMDS toolbox chooses
+        a default name based on the dataset and request parameters.
+    file_format : str, optional
+        Output format accepted by the CMDS toolbox: ``"netcdf"`` (default)
+        or ``"zarr"``.  :meth:`format_to_localtime` only supports ``"netcdf"``.
     """
 
     def __init__(
         self,
         dataset_id: str,
-        variables: List[str],
+        variables: list[str],
         lon_min: float,
         lon_max: float,
         lat_min: float,
@@ -24,29 +55,10 @@ class CMDSDownloader:
         start_datetime_local: datetime,
         end_datetime_local: datetime,
         difference_to_UTC: float,
-        output_path: str,
+        output_path: str | Path,
+        output_filename: str | None = None,
         file_format: str = "netcdf",
-    ):
-        """
-        Parameters
-        ----------
-        dataset_id : str
-            CMDS dataset identifier (case-sensitive, as listed in the CMDS catalog).
-        variables : List[str]
-            Variables to request (dataset-specific names).
-        lon_min, lon_max, lat_min, lat_max : float
-            Bounding box in degrees (EPSG:4326).
-        start_datetime_local, end_datetime_local : datetime
-            Local-time window of interest.
-        difference_to_UTC : float
-            Local minus UTC (hours). Example: UTC-5 -> -5.
-        output_path : str
-            Directory where the output will be written.
-        file_format : str
-            "netcdf" or "zarr". The post-process method supports only "netcdf".
-        output_filename : Optional[str]
-            File name to write inside output_path (e.g., "winds_CMDS.nc").
-        """
+    ) -> None:
         self.dataset_id = dataset_id
         self.variables = variables
         self.lon_min = lon_min
@@ -56,31 +68,39 @@ class CMDSDownloader:
         self.start_datetime_local = start_datetime_local
         self.end_datetime_local = end_datetime_local
         self.difference_to_UTC = difference_to_UTC
-        self.output_path = output_path
+        self.output_path = Path(output_path)
+        self.output_filename = output_filename
         self.file_format = file_format
 
-        # Convert local datetimes to UTC (request window must be UTC for CMDS)
-        if self.difference_to_UTC >= 0:
-            self.start_datetime_utc = self.start_datetime_local - timedelta(hours=self.difference_to_UTC)
-            self.end_datetime_utc = self.end_datetime_local - timedelta(hours=self.difference_to_UTC)
-        else:
-            self.start_datetime_utc = self.start_datetime_local + timedelta(hours=abs(self.difference_to_UTC))
-            self.end_datetime_utc = self.end_datetime_local + timedelta(hours=abs(self.difference_to_UTC))
+        # Convert local datetimes to UTC; CMDS subset requests must use UTC.
+        self.start_datetime_utc = start_datetime_local + timedelta(hours=difference_to_UTC)
+        self.end_datetime_utc = end_datetime_local + timedelta(hours=difference_to_UTC)
 
-        # Will hold the absolute path returned or resolved after download
-        self.last_result_path: Optional[str] = None
+        # Populated by download(); consumed by _resolve_target_nc and format_to_localtime.
+        self.last_result_path: Path | None = None
 
-    def download(self) -> str:
+    def download(self) -> Path:
         """
-        Execute CMDS subset request. Returns absolute path to the created resource.
-        """
-        # Ensure output directory exists; always write inside self.output_path
-        output_directory = os.path.dirname(self.output_path)
-        os.makedirs(os.path.abspath(output_directory), exist_ok=True)
-        filename = os.path.basename(self.output_path)
-        self.output_filename = filename
+        Submit the CMDS subset request and write the result to ``output_path``.
 
-        # Build request arguments for CMDS Toolbox API
+        Creates the output directory if it does not exist, then calls
+        ``copernicusmarine.subset`` with the spatial/temporal window
+        configured at construction time.
+
+        Returns
+        -------
+        Path
+            Absolute path of the file (or directory) created by the CMDS toolbox.
+
+        Raises
+        ------
+        copernicusmarine.exceptions.CopernicusMarineError
+            If the toolbox rejects the request (invalid dataset, credentials, etc.).
+        OSError
+            If the output directory cannot be created.
+        """
+        self.output_path.mkdir(parents=True, exist_ok=True)
+
         subset_kwargs = dict(
             dataset_id=self.dataset_id,
             variables=self.variables,
@@ -90,83 +110,113 @@ class CMDSDownloader:
             maximum_latitude=self.lat_max,
             start_datetime=self.start_datetime_utc.isoformat(),
             end_datetime=self.end_datetime_utc.isoformat(),
-            output_directory=output_directory,
+            output_directory=str(self.output_path),
             file_format=self.file_format,
         )
-        # If a custom filename is requested, pass it to the API
         if self.output_filename is not None:
             subset_kwargs["output_filename"] = self.output_filename
 
-        # Perform the subset/download
-        result_path = copernicusmarine.subset(**subset_kwargs)
+        copernicusmarine.subset(**subset_kwargs)
 
-        # Resolve absolute path to the file or directory created
         if self.output_filename is not None:
-            abs_path = os.path.abspath(os.path.join(output_directory, self.output_filename))
+            abs_path = (self.output_path / self.output_filename).resolve()
         else:
-            abs_path = os.path.abspath(result_path if isinstance(result_path, str) else output_directory)
+            abs_path = self.output_path.resolve()
 
         self.last_result_path = abs_path
+
+        label = self.output_filename or self.output_path.name
+        print(f"Downloaded {label} to {abs_path}.")
         return abs_path
 
-    def _resolve_target_nc(self) -> str:
+    def _resolve_target_nc(self) -> Path:
         """
-        Resolve the NetCDF file path to be opened for post-processing.
-        Preference order:
-          1) last_result_path if it is a .nc file.
-          2) If last_result_path is a directory, find a single .nc inside it.
-             - If multiple, prefer output_filename; otherwise, newest by mtime.
-          3) Fallback to output_path/output_filename if it exists.
-        """
-        candidate = self.last_result_path or ""
+        Resolve the NetCDF file that :meth:`format_to_localtime` should open.
 
-        # Case 1: already a file path to .nc
-        if candidate and os.path.isfile(candidate) and candidate.lower().endswith(".nc"):
+        Resolution order:
+
+        1. ``last_result_path`` if it points directly to a ``*.nc`` file.
+        2. If ``last_result_path`` is a directory, search for ``*.nc`` files
+           inside it.  When multiple candidates exist, prefer the one whose
+           name matches ``output_path.name``; otherwise return the most
+           recently modified file.
+        3. Fall back to ``output_path`` if it exists and ends with ``.nc``.
+
+        Returns
+        -------
+        Path
+            Resolved absolute path to a NetCDF file.
+
+        Raises
+        ------
+        FileNotFoundError
+            If no suitable NetCDF file can be located.
+        """
+        candidate = self.last_result_path
+
+        # Case 1: last_result_path is already a .nc file.
+        if candidate and candidate.is_file() and candidate.suffix.lower() == ".nc":
             return candidate
 
-        # Case 2: directory containing one or more .nc files
-        if candidate and os.path.isdir(candidate):
-            nc_files = [
-                os.path.join(candidate, f)
-                for f in os.listdir(candidate)
-                if f.lower().endswith(".nc")
-            ]
+        # Case 2: last_result_path is a directory containing .nc files.
+        if candidate and candidate.is_dir():
+            nc_files = sorted(candidate.glob("*.nc"), key=lambda p: p.stat().st_mtime, reverse=True)
             if len(nc_files) == 1:
                 return nc_files[0]
             if len(nc_files) > 1:
                 if self.output_filename:
-                    wanted = os.path.join(candidate, self.output_filename)
-                    if os.path.isfile(wanted):
+                    wanted = candidate / self.output_filename
+                    if wanted.is_file():
                         return wanted
-                nc_files.sort(key=os.path.getmtime, reverse=True)
                 return nc_files[0]
 
-        # Case 3: fallback to output_path + output_filename
+        # Case 3: fall back to output_path / output_filename.
         if self.output_filename:
-            fallback = os.path.join(self.output_path, self.output_filename)
-            if os.path.isfile(fallback):
-                return os.path.abspath(fallback)
+            fallback = (self.output_path / self.output_filename).resolve()
+            if fallback.is_file() and fallback.suffix.lower() == ".nc":
+                return fallback
 
         raise FileNotFoundError(
             "Could not resolve a NetCDF file to post-process. "
-            "Ensure `download()` ran successfully and `output_filename` has a .nc extension."
+            "Ensure download() ran successfully and output_path has a .nc extension."
         )
 
     def format_to_localtime(self) -> None:
         """
+        Shift the time coordinate from UTC to local time and crop to the
+        requested local-time window, overwriting the file in place.
+
+        Reads the NetCDF produced by :meth:`download`, adds
+        ``difference_to_UTC`` hours to every timestamp (converting UTC to
+        local time), trims the dataset to
+        ``[start_datetime_local, end_datetime_local]``, and saves the result
+        back to the same path.
+
+        Raises
+        ------
+        ValueError
+            If ``file_format`` is not ``"netcdf"``.
+        KeyError
+            If the dataset contains neither a ``"time"`` nor a
+            ``"valid_time"`` coordinate.
+        FileNotFoundError
+            If :meth:`_resolve_target_nc` cannot locate the output file.
+
         Notes
         -----
-        - Only supports NetCDF outputs. For Zarr, implement a separate workflow.
+        - Zarr outputs are not supported; use ``file_format="netcdf"`` or
+          implement a separate workflow for Zarr.
+        - The original file is overwritten in NETCDF4 format.
         """
         if self.file_format.lower() != "netcdf":
-            raise ValueError("format_to_localtime only supports NetCDF outputs. Use file_format='netcdf'.")
+            raise ValueError(
+                "format_to_localtime only supports NetCDF outputs. "
+                "Use file_format='netcdf'."
+            )
 
         target_nc = self._resolve_target_nc()
-
-        # Open dataset; specify engine to avoid guessing errors on some systems
         ds = xr.load_dataset(target_nc, engine="netcdf4")
 
-        # Detect time coordinate name
         if "valid_time" in ds.variables:
             tcoord = "valid_time"
         elif "time" in ds.variables:
@@ -174,19 +224,13 @@ class CMDSDownloader:
         else:
             raise KeyError("No time coordinate found in dataset ('valid_time' or 'time').")
 
-        # Shift UTC -> local: local = UTC + difference_to_UTC (e.g., -5 -> subtract 5 hours)
-        shift_hours = int(self.difference_to_UTC)
-        ds[tcoord] = ds[tcoord] + np.timedelta64(shift_hours, "h")
+        ds[tcoord] = ds[tcoord] + np.timedelta64(int(self.difference_to_UTC), "h")
 
-        # Crop to the local-time window using the same time coordinate
         t0_local = np.datetime64(self.start_datetime_local)
         t1_local = np.datetime64(self.end_datetime_local)
         ds_cropped = ds.sel({tcoord: slice(t0_local, t1_local)})
 
-        # Overwrite the same NetCDF file
         ds_cropped.to_netcdf(target_nc, mode="w", format="NETCDF4")
-
-    # ---------------- Convenience constructors ----------------
 
     @classmethod
     def for_waves(
@@ -198,23 +242,59 @@ class CMDSDownloader:
         start_datetime_local: datetime,
         end_datetime_local: datetime,
         difference_to_UTC: float,
-        output_path: str,
+        output_path: str | Path,
+        output_filename: str | None = None,
         file_format: str = "netcdf",
     ) -> "CMDSDownloader":
-        default_dataset_id = "cmems_mod_glo_wav_anfc_0.083deg_PT3H-i"
-        default_variables = ["VHM0", "VMDR", "VTPK"]
+        """
+        Create a :class:`CMDSDownloader` pre-configured for wave forecasts.
+
+        Uses the CMEMS global wave analysis and forecast dataset
+        ``cmems_mod_glo_wav_anfc_0.083deg_PT3H-i`` with variables
+        ``VHM0`` (significant wave height), ``VMDR`` (mean wave direction),
+        and ``VTPK`` (peak period).
+
+        Parameters
+        ----------
+        lon_min : float
+            Western boundary of the bounding box in degrees (EPSG:4326).
+        lon_max : float
+            Eastern boundary of the bounding box in degrees (EPSG:4326).
+        lat_min : float
+            Southern boundary of the bounding box in degrees (EPSG:4326).
+        lat_max : float
+            Northern boundary of the bounding box in degrees (EPSG:4326).
+        start_datetime_local : datetime
+            Start of the desired time window in local time.
+        end_datetime_local : datetime
+            End of the desired time window in local time.
+        difference_to_UTC : float
+            Local-time offset from UTC in hours (local minus UTC).
+        output_path : str or Path
+            Full destination path for the output file, including filename.
+        output_filename : str, optional
+            Name of the output file (e.g. ``"waves_CMDS.nc"``).
+        file_format : str, optional
+            ``"netcdf"`` (default) or ``"zarr"``.
+
+        Returns
+        -------
+        CMDSDownloader
+            Instance configured for wave data.
+        """
         return cls(
-            default_dataset_id,
-            default_variables,
-            lon_min,
-            lon_max,
-            lat_min,
-            lat_max,
-            start_datetime_local,
-            end_datetime_local,
-            difference_to_UTC,
-            output_path,
-            file_format,
+            dataset_id="cmems_mod_glo_wav_anfc_0.083deg_PT3H-i",
+            variables=["VHM0", "VMDR", "VTPK"],
+            lon_min=lon_min,
+            lon_max=lon_max,
+            lat_min=lat_min,
+            lat_max=lat_max,
+            start_datetime_local=start_datetime_local,
+            end_datetime_local=end_datetime_local,
+            difference_to_UTC=difference_to_UTC,
+            output_path=output_path,
+            output_filename=output_filename,
+            file_format=file_format,
         )
 
     @classmethod
@@ -227,21 +307,56 @@ class CMDSDownloader:
         start_datetime_local: datetime,
         end_datetime_local: datetime,
         difference_to_UTC: float,
-        output_path: str,
+        output_path: str | Path,
+        output_filename: str | None = None,
         file_format: str = "netcdf",
     ) -> "CMDSDownloader":
-        default_dataset_id = "cmems_obs-wind_glo_phy_nrt_l4_0.125deg_PT1H"
-        default_variables = ["eastward_wind", "northward_wind"]
+        """
+        Create a :class:`CMDSDownloader` pre-configured for surface wind analysis.
+
+        Uses the CMEMS global near-real-time L4 wind dataset
+        ``cmems_obs-wind_glo_phy_nrt_l4_0.125deg_PT1H`` with variables
+        ``eastward_wind`` and ``northward_wind``.
+
+        Parameters
+        ----------
+        lon_min : float
+            Western boundary of the bounding box in degrees (EPSG:4326).
+        lon_max : float
+            Eastern boundary of the bounding box in degrees (EPSG:4326).
+        lat_min : float
+            Southern boundary of the bounding box in degrees (EPSG:4326).
+        lat_max : float
+            Northern boundary of the bounding box in degrees (EPSG:4326).
+        start_datetime_local : datetime
+            Start of the desired time window in local time.
+        end_datetime_local : datetime
+            End of the desired time window in local time.
+        difference_to_UTC : float
+            Local-time offset from UTC in hours (local minus UTC).
+        output_path : str or Path
+            Full destination path for the output file, including filename.
+        output_filename : str, optional
+            Name of the output file (e.g. ``"winds_CMDS.nc"``).
+        file_format : str, optional
+            ``"netcdf"`` (default) or ``"zarr"``.
+
+        Returns
+        -------
+        CMDSDownloader
+            Instance configured for wind data.
+        """
         return cls(
-            default_dataset_id,
-            default_variables,
-            lon_min,
-            lon_max,
-            lat_min,
-            lat_max,
-            start_datetime_local,
-            end_datetime_local,
-            difference_to_UTC,
-            output_path,
-            file_format,
+            dataset_id="cmems_obs-wind_glo_phy_nrt_l4_0.125deg_PT1H",
+            variables=["eastward_wind", "northward_wind"],
+            lon_min=lon_min,
+            lon_max=lon_max,
+            lat_min=lat_min,
+            lat_max=lat_max,
+            start_datetime_local=start_datetime_local,
+            end_datetime_local=end_datetime_local,
+            difference_to_UTC=difference_to_UTC,
+            output_path=output_path,
+            output_filename=output_filename,
+            file_format=file_format,
         )

@@ -1,1 +1,0 @@
--e git+ssh://git@github.com/ffayalac/oceanicospy.git@bbee125713fbcfda44a0a699d0e2ae1f810e5216#egg=oceanicospy

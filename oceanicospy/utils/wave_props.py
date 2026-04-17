@@ -75,11 +75,11 @@ def direction(vn,ve):
 
 def angulo_norte(x,y):
     if x > 0 and y > 0:
-        theta = 90 - (np.arctan(abs(y/x))*(180/np.pi))
+        theta = 90 - (np.arctan2(abs(y),abs(x))*(180/np.pi))
     elif x < 0 and y > 0:
-        theta = 270 + (np.arctan(abs(y/x))*(180/np.pi))
+        theta = 270 + (np.arctan2(abs(y),abs(x))*(180/np.pi))
     elif x < 0 and y < 0:
-        theta = 270 - (np.arctan(abs(y/x))*(180/np.pi))
+        theta = 270 - (np.arctan2(abs(y),abs(x))*(180/np.pi))
     else:
-        theta = 90 + (np.arctan(abs(y/x))*(180/np.pi))
+        theta = 90 + (np.arctan2(abs(y),abs(x))*(180/np.pi))
     return theta
