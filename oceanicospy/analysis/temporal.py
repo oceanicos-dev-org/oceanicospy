@@ -9,7 +9,7 @@ from scipy.signal import resample,detrend
 from ..utils import wave_props
 
 class WaveTemporalAnalyzer:
-    def __init__(self,measured_signal,sampling_data,surface_level_column='eta[m]'): 
+    def __init__(self,measured_signal,sampling_data,surface_level_column='eta[m]',trend=True): 
         """
         Initializes the analysis object with measurement signal and sampling data.
 
@@ -25,6 +25,8 @@ class WaveTemporalAnalyzer:
                 - ``burst_length_s`` (float): Duration of each burst in seconds.
         surface_level_column : str, optional
             The name of the column in measured_signal that contains surface level data (default is ``eta[m]``).
+        trend: Boolean
+            Indicate if the measured signal has tendency that needs to be removed or it has been removed earlier by user (default is ``True``)
 
         Notes
         -----
@@ -36,6 +38,7 @@ class WaveTemporalAnalyzer:
         self.measured_signal = measured_signal
         self.sampling_data = sampling_data
         self.surface_level_column = surface_level_column
+        self.trend = trend
 
     def apply_zero_upcrossing_burst(self, burst_signal, anchoring_depth, sensor_height):
         """
@@ -84,8 +87,7 @@ class WaveTemporalAnalyzer:
         T = np.array(T)
 
         # Determine the wavenumber based on the dispersion relation
-        # TODO: the total or anchoring depth has to be used.
-        L = np.array([wave_props.wavelength(t, anchoring_depth) for t in T], dtype=np.float64) 
+        L = np.array([wave_props.wavelength(t, anchoring_depth+sensor_height) for t in T], dtype=np.float64) 
         k = 2.*np.pi/L
 
         # Computing non-adaptive transference factor Kp
@@ -124,9 +126,12 @@ class WaveTemporalAnalyzer:
         for i in self.measured_signal['burstId'].unique():
             burst_signal = self.measured_signal[self.measured_signal['burstId'] == i]
 
-            # TODO: validate this step, detrend option is already given in the observations. What if the data is coming from another source?
-            burst_signal_detrended = burst_signal.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
-            burst_signal_detrended[self.measured_signal.columns[-1]] = burst_signal.iloc[:, -1]
+            if self.trend:
+                burst_signal_detrended = burst_signal.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
+                burst_signal_detrended[self.measured_signal.columns[-1]] = burst_signal.iloc[:, -1]
+
+            else:
+                burst_signal_detrended=burst_signal
 
             H_top_third, Hmax, Tmean, Lmean = self.apply_zero_upcrossing_burst(burst_signal_detrended['pressure[bar]'],
                                     self.sampling_data['anchoring_depth'], self.sampling_data['sensor_height'])
