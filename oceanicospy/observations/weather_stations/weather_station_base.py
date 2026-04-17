@@ -40,18 +40,20 @@ class WeatherStationBase(ABC):
         """
         Load and return cleaned records with standardized column names.
 
-        Retrieves raw records via ``get_raw_records`` and applies
-        column standardization.
+        Retrieves raw records via ``get_raw_records``, applies
+        column standardization and applies wind direction conversion where required.
 
         Returns
         -------
         pandas.DataFrame
-            A DataFrame with standardized column names and formats,
+            A DataFrame indexed by ``date`` (``datetime64[ns]``) with
+            standardized column names following the ``variable[unit]``
+            convention (e.g. ``air_temp[C]``, ``wind_speed[m/s]``),
             ready for downstream analysis.
         """
         df = self.get_raw_records()
         df = self._standardize_columns(df)
-
+        df = self._compute_direction_degrees(df)
         return df
 
     @abstractmethod
