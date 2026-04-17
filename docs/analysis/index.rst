@@ -12,8 +12,5 @@ This section also includes tools for spectral analysis like filtering, windowing
    :maxdepth: 2
    :caption: Contents:
 
-   conditioning
-   spectral
-   spectral_analysis.ipynb
-   temporal
-   temporal_analysis.ipynb
+   spectral/index
+   temporal/index
