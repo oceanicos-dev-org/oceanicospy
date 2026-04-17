@@ -66,8 +66,11 @@ class DavisVantagePro(WeatherStationBase):
         Returns
         -------
         pandas.DataFrame
-            Cleaned DataFrame indexed by ``date`` (``datetime64[ns]``),
-            with all-NaN columns removed and ``Speed`` cast to ``float``.
+            Cleaned DataFrame indexed by ``date`` (``datetime64[ns]``) with
+            standardized column names following the ``variable[unit]``
+            convention. Only the following columns are retained (when present):
+            ``rain[mm]``, ``air_temp[C]``, ``air_humidity[%]``,
+            ``pressure[hPa]``, ``wind_speed[m/s]``, ``wind_direction[°]``.
 
         Notes
         -----
@@ -75,53 +78,63 @@ class DavisVantagePro(WeatherStationBase):
         matches the Davis Vantage Pro 12-hour clock export (e.g.
         ``'01/15/24 02:30 PM'``). Files with a different clock format will
         raise a ``ValueError`` at the ``pd.to_datetime`` call.
+        Wind direction is retained as cardinal strings at this stage and
+        converted to decimal degrees by ``_compute_direction_degrees``.
         """
-        df.replace('---', np.nan, inplace=True)
-        df.dropna(axis=1, how='all', inplace=True)
+        rename_map = {
+            'Rain':  'rain[mm]',
+            'Temp4':   'air_temp[C]',
+            'Hum':   'air_humidity[%]',
+            'Bar':   'pressure[hPa]',
+            'Speed': 'wind_speed[m/s]',
+            'Dir1':  'wind_direction[°]',
+        }
 
-        for col in df.columns[3:]:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-        
-        df['date'] = pd.to_datetime(df['Date'] + ' ' + df['time'] + ' ' + df['AM/PM'], 
-                               format='%m/%d/%y %I:%M %p')
-        df = df.drop(['Date', 'time', 'AM/PM'], axis=1)
+        df.replace('---', np.nan, inplace=True)
+
+        df['date'] = pd.to_datetime(
+            df['Date'] + ' ' + df['time'] + ' ' + df['AM/PM'],
+            format='%m/%d/%y %I:%M %p'
+        )
+        df = df.drop(columns=['Date', 'time', 'AM/PM'])
         df = df.set_index('date')
-        dtypes = {'Speed': float}
-        df = df.astype(dtypes)
+
+        df = df.rename(columns=rename_map)
+        keep = [c for c in rename_map.values() if c in df.columns]
+        df = df[keep]
+
+        numeric_cols = [c for c in keep if c != 'wind_direction[°]']
+        df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors='coerce')
+
         return df
 
     def _compute_direction_degrees(self, df):
         """
         Convert cardinal wind direction labels to decimal degrees.
 
-        Maps the string values in the ``Dir1`` column to their corresponding
-        compass bearings using an 8-point rose (N, NE, E, SE, S, SW, W, NW).
-        The result is stored in a new ``Direction`` column. Any ``Dir1`` value
-        not present in the mapping (including ``NaN``) will produce ``NaN`` in
-        the output column.
+        Maps the string values in the ``wind_direction[°]`` column to their
+        corresponding compass bearings using an 8-point rose.
+        Any value not present in the mapping (including ``NaN``) produces
+        ``NaN`` in the output.
 
         Parameters
         ----------
         df : pandas.DataFrame
-            DataFrame containing a ``Dir1`` column with cardinal direction
-            strings (e.g. ``'N'``, ``'SW'``).
+            DataFrame containing a ``wind_direction[°]`` column with cardinal
+            direction strings (e.g. ``'N'``, ``'SW'``).
 
         Returns
         -------
         pandas.DataFrame
-            The input DataFrame with an additional ``Direction`` column
-            (``float64``) holding wind direction in decimal degrees (0–360),
-            where 0° = North, increasing clockwise.
+            The input DataFrame with ``wind_direction[°]`` converted to
+            decimal degrees (``float64``), where 0° = North, increasing
+            clockwise.
         """
         direction_mapping = {
-            'N': 0,
-            'NE': 45,
-            'E': 90,
-            'SE': 135,
-            'S': 180,
-            'SW': 225,
-            'W': 270,
-            'NW': 315
+            'N': 0, 'NNE': 22.5, 'NE': 45, 'ENE': 67.5,
+            'E': 90, 'ESE': 112.5, 'SE': 135, 'SSE': 157.5,
+            'S': 180, 'SSW': 202.5, 'SW': 225, 'WSW': 247.5,
+            'W': 270, 'WNW': 292.5, 'NW': 315, 'NNW': 337.5
         }
-        df['Direction'] = df['Dir1'].map(direction_mapping)
+        df['wind_direction[°]'] = df['wind_direction[°]'].map(direction_mapping)
         return df
