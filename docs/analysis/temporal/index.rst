@@ -7,5 +7,5 @@ time series, including wave-by-wave analysis and statistical characterization in
 .. toctree::
    :maxdepth: 3
 
-   temporal
+   wave_temporal_analyzer
    temporal_analysis

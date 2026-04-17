@@ -1,8 +1,5 @@
 import numpy as np
 import pandas as pd
-# from PyEMD.EMD import EMD
-# from PyEMD.EEMD import EEMD
-# from PyEMD.CEEMDAN import CEEMDAN
 from PyEMD import EMD, EEMD, CEEMDAN
 from scipy.signal import resample,detrend
 
@@ -219,7 +216,7 @@ class WaveTemporalAnalyzer:
 
         Notes
         -----
-        This function is based on the decomposition methods implemented in the PyEMD library [1].
+        This function is based on the decomposition methods implemented in the PyEMD library [1]_.
 
         .. [1] Huang, N. E., et al. (1998). The empirical mode decomposition and the Hilbert spectrum for nonlinear
             and non-stationary time series analysis. Proceedings of the Royal Society of London. Series A, 454(1971), 903-995.

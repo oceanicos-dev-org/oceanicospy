@@ -1,5 +1,5 @@
-Temporal Class
-==============
+Wave Temporal Analyzer
+======================
 
 .. toctree::
    :maxdepth: 3
