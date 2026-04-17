@@ -1,12 +1,12 @@
-Spectral Analysis
-=================
+Spectral
+========
 
 This section covers the tools and methods available for spectral analysis of oceanographic
 time series, including signal conditioning, spectral density estimation, and wave spectrum analysis.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    conditioning
-   spectral
+   wave_spectral_analyzer
    spectral_analysis

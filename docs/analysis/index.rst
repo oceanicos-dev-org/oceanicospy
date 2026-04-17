@@ -1,5 +1,5 @@
 Analysis
-============
+========
 
 Most of the time series recorded with the available devices need to be analyzed using signal processing techniques.
 This section provides a set of tools to perform different types of methods such as Fourier analysis,
@@ -14,4 +14,4 @@ This section also includes tools for spectral analysis like filtering, windowing
 
    spectral/index
    temporal/index
-   harmonic_decomposition
+   tidal/index
