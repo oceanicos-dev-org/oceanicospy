@@ -17,6 +17,8 @@ class UHSLCDownloader:
         ``h<station_id>.csv`` as published on the UHSLC server.
     output_path : str or Path
         Directory where the downloaded file will be saved.
+    output_filename : str or Path
+        Name of the output CSV file (e.g. ``"station_057.csv"``). The full path will be ``output_path / output_filename``.
     start_datetime_local : str, optional
         Start of the date range to keep after cleaning (e.g. ``"2010-01-01"``).
         Passed to ``pandas.to_datetime``; if ``None`` the series is not trimmed
@@ -33,7 +35,7 @@ class UHSLCDownloader:
 
     BASE_URL = "https://uhslc.soest.hawaii.edu/data/csv/fast/hourly/"
 
-    def __init__(self, station_id: str, output_path: str | Path, output_filename: str,
+    def __init__(self, station_id: str, output_path: str | Path, output_filename: str | Path,
                  start_datetime_local: str | None = None, 
                  end_datetime_local: str | None = None,
                  difference_from_UTC: float = 5) -> None:
@@ -69,6 +71,11 @@ class UHSLCDownloader:
         response = requests.get(file_url)
         response.raise_for_status()
 
+        if isinstance(self.output_path, str):
+            self.output_path = Path(self.output_path)
+        if isinstance(self.output_filename, str):
+            self.output_filename = Path(self.output_filename)
+            
         self.output_path.mkdir(parents=True, exist_ok=True)
         dest = self.output_path / self.output_filename
         dest.write_bytes(response.content)

@@ -66,26 +66,46 @@ class WaveSpectralAnalyzer():
 
         Returns
         -------
-        None
-            If the burst has the expected number of samples.
+        bool
+            True if the burst has the expected number of samples, False otherwise.
 
         Raises
         ------
         ValueError
             If the burst is missing timestamps.
         """
-        burst_start_time = burst_series.index[0]
-        burst_end_time = burst_series.index[-1]
-        expected_times = pd.date_range(start=burst_start_time, end=burst_end_time, 
-                                       freq=pd.Timedelta(seconds=1/self.sampling_data['sampling_freq']))
-
-        # Find which expected times are missing in the burst
-        missing_times = expected_times.difference(burst_series.index)
-        if not missing_times.empty:
-            raise ValueError(f"Missing timestamps in burst {burst_series}: {missing_times}")
+        expected_samples = int(self.burst_length_s)
+        if len(burst_series) != expected_samples:
+            return False
         else:
-            return None
+            return True
+        
+    def _verify_bursts_in_signal(self,measured_signal):
+        """
+        Verify that each burst in the measured signal has the expected number of samples. If not, remove the burst and log a warning.
 
+        Parameters
+        ----------
+        measured_signal : pandas.DataFrame
+            The input measurement signal containing a 'burstId' column.
+        
+        Returns
+        -------
+        pandas.DataFrame
+            The measurement signal with bursts of incorrect length removed.
+        """
+        burst_to_delete = []
+        for burst_id in measured_signal["burstId"].unique():
+            burst_series = measured_signal[measured_signal["burstId"] == burst_id]
+            if self._check_burst_length(burst_series) == False:
+                burst_to_delete.append(int(burst_id))
+        
+        if burst_to_delete:
+            if self.logger:
+                self.logger.warning(f"The following bursts have been removed due to incorrect length: {burst_to_delete}")
+            measured_signal = measured_signal[~measured_signal["burstId"].isin(burst_to_delete)]
+        return measured_signal       
+        
     def _compute_spectrum_for_burst(self, burst_signal, method, kp_correction, window_type, window_length, smoothing_bins):
         """Calculate the spectrum for the burst using the specified method and applying Kp correction if needed.
         
@@ -116,7 +136,7 @@ class WaveSpectralAnalyzer():
         ValueError
             If the specified method is not recognized.
          """
-        if not self._check_burst_length(burst_signal):
+        if self._check_burst_length(burst_signal):
             burst_signal = burst_signal.values
             if method == 'fft':
                 result = self.compute_spectrum_from_direct_fft(burst_signal, kp_correction)
@@ -320,27 +340,28 @@ class WaveSpectralAnalyzer():
 
         """
 
-        step = int(window_length * (1 - overlap))
-        if len(burst_signal)==window_length:
-            n_segments =1
-        else:
-            n_segments = (len(burst_signal) - window_length) // step + 1
-        window = np.hanning(window_length)
+        if self._check_burst_length(burst_signal):
+            step = int(window_length * (1 - overlap))
+            if len(burst_signal)==window_length:
+                n_segments =1
+            else:
+                n_segments = (len(burst_signal) - window_length) // step + 1
+            window = np.hanning(window_length)
 
-        stitched = np.zeros((len(scales), len(burst_signal)))
-        weight = np.zeros(len(burst_signal))
+            stitched = np.zeros((len(scales), len(burst_signal)))
+            weight = np.zeros(len(burst_signal))
 
-        for idx_seg in range(n_segments):
-            start = idx_seg * step
-            end = start + window_length
-            segment = burst_signal[start:end]
-            coef, freqs = pywt.cwt(segment, scales, mother_wavelet, sampling_period=1/self.sampling_freq)
-            coef_mag = np.abs(coef) * window  # Apply window to smooth overlap
-            stitched[:, start:end] += coef_mag
-            weight[start:end] += window
+            for idx_seg in range(n_segments):
+                start = idx_seg * step
+                end = start + window_length
+                segment = burst_signal[start:end]
+                coef, freqs = pywt.cwt(segment, scales, mother_wavelet, sampling_period=1/self.sampling_freq)
+                coef_mag = np.abs(coef) * window  # Apply window to smooth overlap
+                stitched[:, start:end] += coef_mag
+                weight[start:end] += window
 
-        stitched /= np.maximum(weight, 1e-8)
-        return stitched,freqs
+            stitched /= np.maximum(weight, 1e-8)
+            return stitched,freqs
 
     def get_wave_params_from_spectrum(self,PSD,freqs):
         """
@@ -521,7 +542,9 @@ class WaveSpectralAnalyzer():
         if 'burstId' not in self.measured_signal.columns:
             raise ValueError("Measurement signal must contain 'burstId' column.")
 
+        self.measured_signal = self._verify_bursts_in_signal(self.measured_signal)
         hourly_timeindex = self.measured_signal.index.floor('h').unique().sort_values()
+
         wave_param_names = ["Hm0", "Hrms", "Hmean", "Tp", "Tm01", "Tm02"]
         
         wave_params_data = {param: np.zeros(len(hourly_timeindex)) for param in wave_param_names}
@@ -531,11 +554,9 @@ class WaveSpectralAnalyzer():
         for idx, burst_id in enumerate(self.measured_signal["burstId"].unique()):
             burst_series = self.measured_signal[self.measured_signal["burstId"] == burst_id]
             burst_signal = burst_series[self.surface_level_column]
-
             freqs, spectrum = self._compute_spectrum_for_burst(burst_signal, method, 
-                                                               kp_correction, window_type, 
-                                                               window_length, smoothing_bins)
-
+                                                            kp_correction, window_type, 
+                                                            window_length, smoothing_bins)
             wave_spectra_data["S"].append(spectrum)
 
             # Compute wave parameters
@@ -609,6 +630,7 @@ class WaveSpectralAnalyzer():
             return coeffs_mag,freqs
         
         # burst mode
+        self.measured_signal = self._verify_bursts_in_signal(self.measured_signal)
         hourly_timeindex = self.measured_signal.index.floor('h').unique().sort_values()
 
         # scale = np.arange(self.sampling_freq*0.5,maximum_scale,20*int(self.sampling_freq))
