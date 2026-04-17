@@ -51,8 +51,8 @@ class UHSLCDownloader:
         Download the hourly sea-level CSV for the configured station.
 
         Sends a GET request to the UHSLC Fast-Delivery server and writes
-        the response content to ``output_path / h<station_id>.csv``.
-
+        the response content to ``output_path / output_filename``.
+        
         Returns
         -------
         Path
@@ -80,7 +80,7 @@ class UHSLCDownloader:
         dest = self.output_path / self.output_filename
         dest.write_bytes(response.content)
 
-        print(f"Downloaded {filename} to {dest}.")
+        print(f"Downloaded {self.output_filename} to {dest}.")
         return dest
     
     def clean_data(self, filepath: str | Path) -> pd.DataFrame:
