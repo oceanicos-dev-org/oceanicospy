@@ -29,9 +29,9 @@ class CMDSDownloader:
         Start of the desired time window expressed in local time.
     end_datetime_local : datetime
         End of the desired time window expressed in local time.
-    difference_to_UTC : float
-        Local-time offset from UTC in hours (local minus UTC).
-        For example, UTC-5 should be passed as ``-5``.
+    utc_offset_hours : float
+        Local-time offset from UTC in hours, following the convention
+        ``local - UTC``. For example, UTC-5 (Colombia) is ``-5``.
     output_path : str or Path
         Directory where the output file will be written.  Created automatically
         if it does not exist.
@@ -54,7 +54,7 @@ class CMDSDownloader:
         lat_max: float,
         start_datetime_local: datetime,
         end_datetime_local: datetime,
-        difference_to_UTC: float,
+        utc_offset_hours: float,
         output_path: str | Path,
         output_filename: str | None = None,
         file_format: str = "netcdf",
@@ -67,14 +67,14 @@ class CMDSDownloader:
         self.lat_max = lat_max
         self.start_datetime_local = start_datetime_local
         self.end_datetime_local = end_datetime_local
-        self.difference_to_UTC = difference_to_UTC
+        self.utc_offset_hours = utc_offset_hours
         self.output_path = Path(output_path)
         self.output_filename = output_filename
         self.file_format = file_format
 
         # Convert local datetimes to UTC; CMDS subset requests must use UTC.
-        self.start_datetime_utc = start_datetime_local + timedelta(hours=difference_to_UTC)
-        self.end_datetime_utc = end_datetime_local + timedelta(hours=difference_to_UTC)
+        self.start_datetime_utc = start_datetime_local - timedelta(hours=utc_offset_hours)
+        self.end_datetime_utc = end_datetime_local - timedelta(hours=utc_offset_hours)
 
         # Populated by download(); consumed by _resolve_target_nc and format_to_localtime.
         self.last_result_path: Path | None = None
@@ -90,7 +90,7 @@ class CMDSDownloader:
         Returns
         -------
         Path
-            Absolute path of the file (or directory) created by the CMDS toolbox.
+            Absolute path of the NetCDF file created by the CMDS toolbox.
 
         Raises
         ------
@@ -187,7 +187,7 @@ class CMDSDownloader:
         requested local-time window, overwriting the file in place.
 
         Reads the NetCDF produced by :meth:`download`, adds
-        ``difference_to_UTC`` hours to every timestamp (converting UTC to
+        ``utc_offset_hours`` hours to every timestamp (converting UTC to
         local time), trims the dataset to
         ``[start_datetime_local, end_datetime_local]``, and saves the result
         back to the same path.
@@ -224,7 +224,7 @@ class CMDSDownloader:
         else:
             raise KeyError("No time coordinate found in dataset ('valid_time' or 'time').")
 
-        ds[tcoord] = ds[tcoord] + np.timedelta64(int(self.difference_to_UTC), "h")
+        ds[tcoord] = ds[tcoord] + np.timedelta64(int(self.utc_offset_hours), "h")
 
         t0_local = np.datetime64(self.start_datetime_local)
         t1_local = np.datetime64(self.end_datetime_local)
@@ -241,7 +241,7 @@ class CMDSDownloader:
         lat_max: float,
         start_datetime_local: datetime,
         end_datetime_local: datetime,
-        difference_to_UTC: float,
+        utc_offset_hours: float,
         output_path: str | Path,
         output_filename: str | None = None,
         file_format: str = "netcdf",
@@ -268,8 +268,9 @@ class CMDSDownloader:
             Start of the desired time window in local time.
         end_datetime_local : datetime
             End of the desired time window in local time.
-        difference_to_UTC : float
-            Local-time offset from UTC in hours (local minus UTC).
+        utc_offset_hours : float
+            Local-time offset from UTC in hours, following the convention
+            ``local - UTC``. For example, UTC-5 (Colombia) is ``-5``.
         output_path : str or Path
             Full destination path for the output file, including filename.
         output_filename : str, optional
@@ -291,7 +292,7 @@ class CMDSDownloader:
             lat_max=lat_max,
             start_datetime_local=start_datetime_local,
             end_datetime_local=end_datetime_local,
-            difference_to_UTC=difference_to_UTC,
+            utc_offset_hours=utc_offset_hours,
             output_path=output_path,
             output_filename=output_filename,
             file_format=file_format,
@@ -306,7 +307,7 @@ class CMDSDownloader:
         lat_max: float,
         start_datetime_local: datetime,
         end_datetime_local: datetime,
-        difference_to_UTC: float,
+        utc_offset_hours: float,
         output_path: str | Path,
         output_filename: str | None = None,
         file_format: str = "netcdf",
@@ -332,8 +333,9 @@ class CMDSDownloader:
             Start of the desired time window in local time.
         end_datetime_local : datetime
             End of the desired time window in local time.
-        difference_to_UTC : float
-            Local-time offset from UTC in hours (local minus UTC).
+        utc_offset_hours : float
+            Local-time offset from UTC in hours, following the convention
+            ``local - UTC``. For example, UTC-5 (Colombia) is ``-5``.
         output_path : str or Path
             Full destination path for the output file, including filename.
         output_filename : str, optional
@@ -355,7 +357,7 @@ class CMDSDownloader:
             lat_max=lat_max,
             start_datetime_local=start_datetime_local,
             end_datetime_local=end_datetime_local,
-            difference_to_UTC=difference_to_UTC,
+            utc_offset_hours=utc_offset_hours,
             output_path=output_path,
             output_filename=output_filename,
             file_format=file_format,
