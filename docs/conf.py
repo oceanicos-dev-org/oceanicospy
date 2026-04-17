@@ -24,7 +24,7 @@ os.environ['SKIP_DATA_DOWNLOAD'] = '1'
 project = 'oceanicospy'
 copyright = '2025, OCEANICOS research group'
 author = 'OCEANICOS research group'
-release = '0.1.0b1'
+release = '0.1.0b2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -33,6 +33,7 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 suppress_warnings = ["myst.header"]  # (si usas MyST)
+autodoc_mock_imports = ["utide"]
 
 extensions = [
     'sphinx.ext.autodoc',

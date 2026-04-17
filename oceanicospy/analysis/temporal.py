@@ -1,8 +1,5 @@
 import numpy as np
 import pandas as pd
-# from PyEMD.EMD import EMD
-# from PyEMD.EEMD import EEMD
-# from PyEMD.CEEMDAN import CEEMDAN
 from PyEMD import EMD, EEMD, CEEMDAN
 from scipy.signal import resample,detrend
 
@@ -35,7 +32,57 @@ class WaveTemporalAnalyzer:
 
         self.measured_signal = measured_signal
         self.sampling_data = sampling_data
+        self.burst_length_s = self.sampling_data['burst_length_s']
         self.surface_level_column = surface_level_column
+
+    def _check_burst_length(self,burst_series):
+        """Verify that the burst has the expected number of samples based on the sampling frequency and burst length.
+        
+        Parameters
+        ----------
+        burst_series : pandas.Series
+            The burst data as a pandas Series.
+
+        Returns
+        -------
+        bool
+            True if the burst has the expected number of samples, False otherwise.
+
+        Raises
+        ------
+        ValueError
+            If the burst is missing timestamps.
+        """
+        expected_samples = int(self.burst_length_s)
+        if len(burst_series) != expected_samples:
+            return False
+        else:
+            return True
+
+    def _verify_bursts_in_signal(self,measured_signal):
+        """
+        Verify that each burst in the measured signal has the expected number of samples. If not, remove the burst and print a warning.
+
+        Parameters
+        ----------
+        measured_signal : pandas.DataFrame
+            The input measurement signal containing a 'burstId' column.
+        
+        Returns
+        -------
+        pandas.DataFrame
+            The measurement signal with bursts of incorrect length removed.
+        """
+        burst_to_delete = []
+        for burst_id in measured_signal["burstId"].unique():
+            burst_series = measured_signal[measured_signal["burstId"] == burst_id]
+            if self._check_burst_length(burst_series) == False:
+                burst_to_delete.append(int(burst_id))
+        
+        if burst_to_delete:
+            print(f"The following bursts have been removed due to incorrect length: {burst_to_delete}")
+            measured_signal = measured_signal[~measured_signal["burstId"].isin(burst_to_delete)]
+        return measured_signal       
 
     def apply_zero_upcrossing_burst(self, burst_signal, anchoring_depth, sensor_height):
         """
@@ -121,6 +168,8 @@ class WaveTemporalAnalyzer:
         wave_params = ["time","H1/3","Tmean"]
         wave_params_data = {param:[] for param in wave_params}
 
+        self.measured_signal = self._verify_bursts_in_signal(self.measured_signal)
+
         for i in self.measured_signal['burstId'].unique():
             burst_signal = self.measured_signal[self.measured_signal['burstId'] == i]
 
@@ -128,7 +177,7 @@ class WaveTemporalAnalyzer:
             burst_signal_detrended = burst_signal.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
             burst_signal_detrended[self.measured_signal.columns[-1]] = burst_signal.iloc[:, -1]
 
-            H_top_third, Hmax, Tmean, Lmean = self.apply_zero_upcrossing_burst(burst_signal_detrended['pressure[bar]'],
+            H_top_third, Hmax, Tmean, Lmean = self.apply_zero_upcrossing_burst(burst_signal_detrended[self.surface_level_column].values,
                                     self.sampling_data['anchoring_depth'], self.sampling_data['sensor_height'])
 
             wave_params_data['time'].append(burst_signal_detrended.index[0])
@@ -167,7 +216,7 @@ class WaveTemporalAnalyzer:
 
         Notes
         -----
-        This function is based on the decomposition methods implemented in the PyEMD library [1].
+        This function is based on the decomposition methods implemented in the PyEMD library [1]_.
 
         .. [1] Huang, N. E., et al. (1998). The empirical mode decomposition and the Hilbert spectrum for nonlinear
             and non-stationary time series analysis. Proceedings of the Royal Society of London. Series A, 454(1971), 903-995.
@@ -194,6 +243,7 @@ class WaveTemporalAnalyzer:
                     f"'number_ensembles' and 'amplitude_noise_std' are required for {EMD_type}."
                 )
 
+        self.measured_signal = self._verify_bursts_in_signal(self.measured_signal)
         burst_ids = self.measured_signal['burstId'].unique()
         n_bursts = len(burst_ids)
         time_seconds = np.arange(0,self.sampling_data['burst_length_s'],1)

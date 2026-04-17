@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 
 def compute_annual_cycle(data, time, freq='Monthly', method='mean'):

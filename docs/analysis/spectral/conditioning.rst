@@ -2,7 +2,7 @@ Signal conditioning
 ===================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
 Most of the time series recorded by different devices need to be conditioned before
 using them in spectral analysis. Different key concepts will be explained in this section
@@ -28,7 +28,7 @@ must be increased.
 At the end, there is a linear relationship between the sampling frequency and the
 maximum frequency that can be processed. Usually a sampling rate of 1Hz is enough for wind-wave analysis.
 
-.. figure:: ../images/nyquist_example.png
+.. figure:: ../../images/nyquist_example.png
     :alt: Example of Nyquist frequency
     :align: center
     :width: 90%
@@ -46,7 +46,7 @@ the highest frequency present in the signal (the Nyquist frequency).
 
 Let's have a look at the following example:
 
-.. figure:: ../images/aliased_signal_example.png
+.. figure:: ../../images/aliased_signal_example.png
     :alt: Aliased
     :align: center
     :width: 90%
@@ -55,7 +55,7 @@ Let's have a look at the following example:
 
 The sampling frequency is clearly below the Nyquist frequency. The PSD of the aliased signal is also computed. 
 
-.. figure:: ../images/psd_aliased_signal_example.png
+.. figure:: ../../images/psd_aliased_signal_example.png
     :alt: PSD
     :align: center
     :width: 90%
@@ -78,7 +78,7 @@ we apply a windowing function to the time-domain signal before performing the FF
 
 Assuming that we have the following non fully perodic time series:
 
-.. figure:: ../images/non_full_periodic_signal.png
+.. figure:: ../../images/non_full_periodic_signal.png
     :alt: Non fully periodic signal
     :align: center
     :width: 90%
@@ -91,7 +91,7 @@ INSERT EQUATION HERE
 
 A quick way to visualize this effect is then plotted in the following figure:
 
-.. figure:: ../images/psd_non_periodic_signal.png
+.. figure:: ../../images/psd_non_periodic_signal.png
     :alt: PSD for non fully periodic signal
     :align: center
     :width: 90%
@@ -116,7 +116,7 @@ We can define a window function \( w[n] \), such as the hamming window, that is 
 This gives us set of weights the same length as our signal. Other windowing functions can be used, such as Hanning, Blackman, etc.
 Each has its own characteristics and is chosen based on the specific requirements of the analysis.:
 
-.. figure:: ../images/window_types.png
+.. figure:: ../../images/window_types.png
     :alt: Types of windowing functions
     :align: center
     :width: 90%
@@ -129,7 +129,7 @@ If we apply this hanning window to our signal, we get a new signal in the time d
 
 This tapers the signal so that it smoothly goes to zero at the edges, reducing the sudden jumps that cause spectral leakage.
 
-.. figure:: ../images/windowed_signals.png
+.. figure:: ../../images/windowed_signals.png
     :alt: Windowed signals under different windowing functions
     :align: center
     :width: 90%
@@ -137,7 +137,7 @@ This tapers the signal so that it smoothly goes to zero at the edges, reducing t
 Now, when we compute the FFT of this windowed signal, we'll get a cleaner frequency spectrum with less spectral leakage. It 
 has to be mentioned that the windowing functions does change the spectral peak and, ultimately, the energy content of the signal.
 
-.. figure:: ../images/psd_windowed_signal.png
+.. figure:: ../../images/psd_windowed_signal.png
     :alt: PSD for windowed signal
     :align: center
     :width: 90%
@@ -151,14 +151,14 @@ Oceanographic time series, particularly pressure or surface level series, are no
 
 Each window is certain percentage overlapped with the next one as is shown:
 
-.. figure:: ../images/non_stationary_signal.png
+.. figure:: ../../images/non_stationary_signal.png
     :alt: Sliding window example
     :align: center
     :width: 90%
 
 If we directly compute the PSD of the whole signal,...
 
-.. figure:: ../images/psd_non_stationary_signal.png
+.. figure:: ../../images/psd_non_stationary_signal.png
     :alt: PSD for non stationary signal
     :align: center
     :width: 90%
@@ -170,7 +170,7 @@ we can assume local stationarity — that the signal is approximately stationary
 The PSD can be computed for each overlapping segment. The purpose of the overlapping is having a lower variance 
 in the final PSD estimate because the amount of segments is higher than not overlapping. 
 
-.. figure:: ../images/psd_segments_mean.png
+.. figure:: ../../images/psd_segments_mean.png
     :alt: PSD for each segment and their mean
     :align: center
     :width: 90%
@@ -197,7 +197,7 @@ Where:
 
 The PSD estimate is the average of all the individual PSD computed for each segments
 
-.. figure:: ../images/welch_and_fft.png
+.. figure:: ../../images/welch_and_fft.png
     :alt: Comparison of Welch method and the direct FFT
     :align: center
     :width: 90%

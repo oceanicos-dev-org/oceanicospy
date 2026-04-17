@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 import utide
 
@@ -61,6 +60,9 @@ def tide_harmonic_decomposition(data, time, lat, trend=False, method='ols', conf
     The residual signal (observed - tide) captures non-tidal contributions
     such as storm surges, seiches, and long-term sea level trends.
     Constituents with SNR < 2 should be interpreted with caution.
+
+    - 01-Apr-2026 : Juan Diego Toro
+
 
     Examples
     --------
