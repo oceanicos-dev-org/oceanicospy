@@ -84,7 +84,7 @@ class DavisVantagePro(WeatherStationBase):
         rename_map = {
             'Rain':  'rain[mm]',
             'Temp4':   'air_temp[C]',
-            'Hum':   'air_humidity[%]',
+            'Hum2':   'air_humidity[%]',
             'Bar':   'pressure[hPa]',
             'Speed': 'wind_speed[m/s]',
             'Dir1':  'wind_direction[°]',
