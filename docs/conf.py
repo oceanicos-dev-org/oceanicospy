@@ -33,6 +33,7 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 suppress_warnings = ["myst.header"]  # (si usas MyST)
+autodoc_mock_imports = ["utide"]
 
 extensions = [
     'sphinx.ext.autodoc',
