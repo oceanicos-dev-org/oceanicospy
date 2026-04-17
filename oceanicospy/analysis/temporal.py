@@ -9,7 +9,7 @@ from scipy.signal import resample,detrend
 from ..utils import wave_props
 
 class WaveTemporalAnalyzer:
-    def __init__(self,measured_signal,sampling_data,surface_level_column='eta[m]',trend=True): 
+    def __init__(self,measured_signal,sampling_data,surface_level_column='eta[m]',zero_centered=False): 
         """
         Initializes the analysis object with measurement signal and sampling data.
 
@@ -25,8 +25,8 @@ class WaveTemporalAnalyzer:
                 - ``burst_length_s`` (float): Duration of each burst in seconds.
         surface_level_column : str, optional
             The name of the column in measured_signal that contains surface level data (default is ``eta[m]``).
-        trend: Boolean
-            Indicate if the measured signal has tendency that needs to be removed or it has been removed earlier by user (default is ``True``)
+        zero_centered: Boolean
+            Indicate if the measured signal is centered in zero, if not, measured signal is centered at zero (default is ``False``).
 
         Notes
         -----
@@ -38,7 +38,7 @@ class WaveTemporalAnalyzer:
         self.measured_signal = measured_signal
         self.sampling_data = sampling_data
         self.surface_level_column = surface_level_column
-        self.trend = trend
+        self.zero_centered = zero_centered
 
     def apply_zero_upcrossing_burst(self, burst_signal, anchoring_depth, sensor_height):
         """
@@ -126,12 +126,11 @@ class WaveTemporalAnalyzer:
         for i in self.measured_signal['burstId'].unique():
             burst_signal = self.measured_signal[self.measured_signal['burstId'] == i]
 
-            if self.trend:
-                burst_signal_detrended = burst_signal.iloc[:,:-1].apply(lambda x: detrend(x,type='constant'), axis=0)
-                burst_signal_detrended[self.measured_signal.columns[-1]] = burst_signal.iloc[:, -1]
-
+            if self.zero_centered:
+                burst_signal_detrended = burst_signal.copy()
             else:
-                burst_signal_detrended=burst_signal
+                burst_signal_detrended = burst_signal.iloc[:,:-1].apply(lambda x: detrend(x, type='constant'), axis=0)
+                burst_signal_detrended[self.measured_signal.columns[-1]] = burst_signal.iloc[:, -1]
 
             H_top_third, Hmax, Tmean, Lmean = self.apply_zero_upcrossing_burst(burst_signal_detrended['pressure[bar]'],
                                     self.sampling_data['anchoring_depth'], self.sampling_data['sensor_height'])
