@@ -19,10 +19,10 @@ class BathyMaker:
         If True, creates symbolic links for bathymetry files instead of copying them. Defaults to True.
     """
 
-    def __init__(self, init, domain_number, dict_info = None, use_link = None):
+    def __init__(self, init, domain_number, bathy_info = None, use_link = None):
         self.init = init
         self.domain_number = domain_number
-        self.dict_info = dict_info
+        self.bathy_info = bathy_info
         self.use_link = use_link
         print(f'\n*** Initializing bathymaker for domain {self.domain_number} ***\n')
 
@@ -37,7 +37,7 @@ class BathyMaker:
         Returns
         -------
         dict or None
-            The updated ``dict_info`` dictionary if it was provided at initialisation,
+            The updated ``bathy_info`` dictionary if it was provided at initialisation,
             otherwise ``None``.
 
         Raises
@@ -56,9 +56,9 @@ class BathyMaker:
 
         utils.deploy_input_file(bathy_filename, f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/', run_domain_dir, self.use_link)
         
-        if self.dict_info!=None:
-            self.dict_info.update({"bathy_file":f"../../input/domain_0{self.domain_number}/{bathy_filename}"})
-            return self.dict_info
+        if self.bathy_info!=None:
+            self.bathy_info.update({"bathy_file":f"../../input/domain_0{self.domain_number}/{bathy_filename}"})
+            return self.bathy_info
         else:
             raise ValueError('No bathymetry information provided at initialization. ' \
             'Bathymetry file has been linked/copied to run directory, but no metadata dictionary to return.')
@@ -139,8 +139,8 @@ class BathyMaker:
             If no bathymetry information was provided at initialization.
         """
 
-        if self.dict_info == None:
+        if self.bathy_info == None:
             raise ValueError('No bathymetry information provided at initialization. Cannot fill bathymetry section in configuration file.')
 
         print (f'\n \t*** Adding/Editing bathymetry information for domain {self.domain_number} in configuration file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_info)
+        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.bathy_info)

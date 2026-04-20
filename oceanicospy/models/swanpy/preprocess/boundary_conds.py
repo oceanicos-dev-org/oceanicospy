@@ -8,10 +8,10 @@ from .... import utils
 from ....downloads import *
 
 class BoundaryConditions:
-    def __init__ (self,init,domain_number,dict_info=None,input_filename=None,use_link=None):
+    def __init__ (self,init,domain_number,bound_info=None,input_filename=None,use_link=None):
         self.init = init
         self.domain_number = domain_number
-        self.dict_info = dict_info
+        self.bound_info = bound_info
         self.input_filename = input_filename
         self.use_link = use_link 
 
@@ -237,7 +237,7 @@ class BoundaryConditions:
             Cardinal direction of the boundary side.  Must be one of
             ``'N'``, ``'S'``, ``'E'``, ``'O'``.
         wave_params : dict or None
-            Wave parameters required when ``dict_info['variable_bound']``
+            Wave parameters required when ``bound_info['variable_bound']``
             is ``'constant'``.  Expected keys:
 
             * ``'hs'``     — significant wave height (m)
@@ -267,7 +267,7 @@ class BoundaryConditions:
                 f"Valid options are: {sorted(self._VALID_SIDES)}."
             )
 
-        if self.dict_info['variable_bound']:
+        if self.bound_info['variable_bound']:
             if wave_params is None:
                 raise ValueError(
                     "wave_params must be provided when variable_bound is 'constant'."
@@ -316,7 +316,7 @@ class BoundaryConditions:
             accepted by :meth:`_build_side_boundary_line`.
         wave_params : dict or None, optional
             Wave parameters forwarded to :meth:`_build_side_boundary_line`
-            when ``dict_info['variable_bound']`` is ``'constant'``.
+            when ``bound_info['variable_bound']`` is ``'constant'``.
             Ignored for variable (file-driven) boundaries.
 
         Returns
@@ -326,22 +326,22 @@ class BoundaryConditions:
         Raises
         ------
         ValueError
-            If :attr:`dict_info` is ``None`` (boundary type not configured).
+            If :attr:`bound_info` is ``None`` (boundary type not configured).
         NotImplementedError
-            If ``dict_info['bound_type']`` is not ``'side'``.
+            If ``bound_info['bound_type']`` is not ``'side'``.
         ValueError
             If any entry in *list_sides* is not a valid boundary side.
         """
-        if self.dict_info is None:
+        if self.bound_info is None:
             raise ValueError(
                 "Boundary type information is missing. "
-                "Please ensure 'dict_info' is provided at initialisation."
+                "Please ensure 'bound_info' is provided at initialisation."
             )
 
         if not self.isnested:
-            if self.dict_info['bound_type'] != 'side':
+            if self.bound_info['bound_type'] != 'side':
                 raise NotImplementedError(
-                    f"Boundary type '{self.dict_info['bound_type']}' is not supported. "
+                    f"Boundary type '{self.bound_info['bound_type']}' is not supported. "
                     "Only 'side' boundaries are currently implemented."
                 )
             self.list_sides = list_sides or []

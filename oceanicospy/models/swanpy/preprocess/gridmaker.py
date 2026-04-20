@@ -12,9 +12,9 @@ class GridMaker:
         An initialization object containing configuration data and folder paths.
     domain_number : int
         Identifier for the domain being processed.
-    dict_info : dict or None, optional
+    grid_info : dict or None, optional
         User-provided grid information dictionary.
-        If the dict_info dictionary is passed it should contain the following keys: 
+        If the grid_info dictionary is passed it should contain the following keys: 
         ``lon_ll_corner``: longitude of the lower-left corner of the grid
         ``lat_ll_corner``: latitude of the lower-left corner of the grid
         ``x_extent``: total extent of the grid in the x-direction (longitude)
@@ -31,10 +31,10 @@ class GridMaker:
     This class is used to generate and manage grid information for SWAN simulations.
     """
 
-    def __init__(self, init, domain_number, dict_info = None, dx = None, dy = None):
+    def __init__(self, init, domain_number, grid_info = None, dx = None, dy = None):
         self.init = init
         self.domain_number = domain_number
-        self.dict_info = dict_info
+        self.grid_info = grid_info
         self.dx = dx
         self.dy = dy     
         print(f'\n*** Initializing gridmaker for domain {self.domain_number} ***\n')
@@ -92,11 +92,11 @@ class GridMaker:
 
         """
 
-        if self.dict_info == None:
+        if self.grid_info == None:
             raise ValueError(f'Grid information is not provided for domain {self.domain_number}. \
-                             Please provide dict_info or ensure that get_info_from_bathy() is called to extract grid information from the bathymetry file.')
+                             Please provide grid_info or ensure that get_info_from_bathy() is called to extract grid information from the bathymetry file.')
 
-        self.dict_info["domain_number"] = self.domain_number
+        self.grid_info["domain_number"] = self.domain_number
 
         print (f'\n \t*** Adding/Editing grid information for domain {self.domain_number} in configuration file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_info)
+        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.grid_info)
