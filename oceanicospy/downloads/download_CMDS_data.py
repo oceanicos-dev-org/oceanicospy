@@ -3,6 +3,8 @@ import numpy as np
 from pathlib import Path
 import xarray as xr
 import copernicusmarine
+import shutil
+
 
 class CMDSDownloader:
     """
@@ -164,23 +166,32 @@ class CMDSDownloader:
             )
 
         target_nc = (self.output_path / self.output_filename).resolve()
-        ds = xr.load_dataset(target_nc, engine="netcdf4")
 
-        if "valid_time" in ds.variables:
-            tcoord = "valid_time"
-        elif "time" in ds.variables:
-            tcoord = "time"
-        else:
-            raise KeyError("No time coordinate found in dataset ('valid_time' or 'time').")
+        with xr.open_dataset(target_nc, engine="netcdf4") as ds:
+            if "valid_time" in ds.variables:
+                tcoord = "valid_time"
+            elif "time" in ds.variables:
+                tcoord = "time"
+            else:
+                raise KeyError(
+                    "No time coordinate found in dataset ('valid_time' or 'time')."
+                )
 
-        ds[tcoord] = ds[tcoord] + np.timedelta64(int(self.utc_offset_hours), "h")
+            ds[tcoord] = ds[tcoord] + np.timedelta64(int(self.utc_offset_hours), "h")
 
-        t0_local = np.datetime64(self.start_datetime_local)
-        t1_local = np.datetime64(self.end_datetime_local)
-        ds_cropped = ds.sel({tcoord: slice(t0_local, t1_local)})
+            t0_local = np.datetime64(self.start_datetime_local)
+            t1_local = np.datetime64(self.end_datetime_local)
 
-        target_nc.unlink(missing_ok=True)
-        ds_cropped.to_netcdf(target_nc, mode="w", format="NETCDF4")
+            ds_cropped = ds.sel({tcoord: slice(t0_local, t1_local)}).load()
+
+        # Write to a temp file in the same directory, then atomically replace
+        tmp_path = target_nc.with_suffix(".tmp.nc")
+        try:
+            ds_cropped.to_netcdf(tmp_path, mode="w", format="NETCDF4")
+            shutil.move(str(tmp_path), str(target_nc))
+        except Exception:
+            tmp_path.unlink(missing_ok=True)  # clean up temp file on failure
+            raise
 
     @classmethod
     def for_waves(
