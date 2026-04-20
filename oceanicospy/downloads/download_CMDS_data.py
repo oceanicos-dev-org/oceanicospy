@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 import numpy as np
 from pathlib import Path
 import xarray as xr
@@ -184,11 +185,12 @@ class CMDSDownloader:
 
             ds_cropped = ds.sel({tcoord: slice(t0_local, t1_local)}).load()
 
+        ds_cropped.close()
         # Write to a temp file in the same directory, then atomically replace
         tmp_path = target_nc.with_suffix(".tmp.nc")
         try:
             ds_cropped.to_netcdf(tmp_path, mode="w", format="NETCDF4")
-            shutil.move(str(tmp_path), str(target_nc))
+            os.replace(str(tmp_path), str(target_nc))
         except Exception:
             tmp_path.unlink(missing_ok=True)  # clean up temp file on failure
             raise
