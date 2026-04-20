@@ -48,8 +48,9 @@ class ERA5Downloader:
         Path to a ``.cdsapirc`` credentials file.  When provided, the file is
         used instead of the default ``~/.cdsapirc`` for the duration of the
         download call only; it is never logged or exposed publicly.  If
-        ``None``, ``cdsapi`` falls back to its normal credential resolution
-        (``CDSAPI_RC`` environment variable, then ``~/.cdsapirc``).
+        ``None``, credentials are resolved from the ``$CDSAPI_RC`` environment
+        variable or ``~/.cdsapirc``; a :py:exc:`FileNotFoundError` is raised
+        if neither is found.
     """
 
     def __init__(
@@ -88,30 +89,47 @@ class ERA5Downloader:
     @contextlib.contextmanager
     def _cdsapi_credentials(self) -> Generator[None, None, None]:
         """
-        Context manager that temporarily points ``CDSAPI_RC`` at the
-        credentials file supplied at construction time.
+        Context manager that resolves and temporarily activates CDS API credentials.
 
-        If no custom ``cdsapi_rc`` was provided the environment is left
-        unchanged.  The original value of ``CDSAPI_RC`` (or its absence) is
-        always restored on exit, even if an exception is raised.
+        If a custom ``cdsapi_rc`` path was provided at construction time, it is
+        validated and set as ``CDSAPI_RC`` for the duration of the block, then
+        restored on exit.  If no custom path was given, the default resolution
+        order is validated (``$CDSAPI_RC`` env var, then ``~/.cdsapirc``); a
+        :py:exc:`FileNotFoundError` is raised if neither exists.
 
         Yields
         ------
         None
+
+        Raises
+        ------
+        FileNotFoundError
+            If ``cdsapi_rc`` was provided but does not exist, or if no
+            credentials are found at the default locations.
         """
-        if self._cdsapi_rc is None:
-            yield
+        if self._cdsapi_rc is not None:
+            if not self._cdsapi_rc.is_file():
+                raise FileNotFoundError(
+                    f"Credentials file not found: {self._cdsapi_rc}"
+                )
+            previous = os.environ.get("CDSAPI_RC")
+            os.environ["CDSAPI_RC"] = str(self._cdsapi_rc)
+            try:
+                yield
+            finally:
+                if previous is None:
+                    os.environ.pop("CDSAPI_RC", None)
+                else:
+                    os.environ["CDSAPI_RC"] = previous
             return
 
-        previous = os.environ.get("CDSAPI_RC")
-        os.environ["CDSAPI_RC"] = str(self._cdsapi_rc)
-        try:
-            yield
-        finally:
-            if previous is None:
-                os.environ.pop("CDSAPI_RC", None)
-            else:
-                os.environ["CDSAPI_RC"] = previous
+        default_rc = Path.home() / ".cdsapirc"
+        if os.environ.get("CDSAPI_RC") is None and not default_rc.is_file():
+            raise FileNotFoundError(
+                f"No CDS API credentials found: $CDSAPI_RC is not set in the "
+                f"environment and {default_rc} does not exist."
+            )
+        yield
 
     def _prepare_datetime_data(self) -> tuple[list[str], list[str], list[str]]:
         """
@@ -160,7 +178,7 @@ class ERA5Downloader:
         ValueError
             If ``output_filename`` is ``None``.
         FileNotFoundError
-            If a custom ``cdsapi_rc`` path was provided but does not exist.
+            If credentials cannot be resolved (see :meth:`_cdsapi_credentials`).
         cdsapi.api.AmbiguousParameter
             If a variable name is not recognised by the CDS catalog.
         OSError
@@ -170,11 +188,6 @@ class ERA5Downloader:
             raise ValueError(
                 "output_filename must be set before calling download(). "
                 "Pass a filename such as 'winds_ERA5.nc' to the constructor."
-            )
-
-        if self._cdsapi_rc is not None and not self._cdsapi_rc.is_file():
-            raise FileNotFoundError(
-                f"Credentials file not found: {self._cdsapi_rc}"
             )
 
         self.output_path.mkdir(parents=True, exist_ok=True)
@@ -202,7 +215,7 @@ class ERA5Downloader:
 
         self.last_result_path = dest.resolve()
 
-        print(f"Downloaded {self.output_filename} to {self.last_result_path}.")
+        print(f"Downloaded {self.output_filename} to {self.output_path / self.output_filename}.")
         return self.last_result_path
 
     def format_to_localtime(self) -> None:
@@ -251,4 +264,5 @@ class ERA5Downloader:
         t1_local = np.datetime64(self.end_datetime_local)
         ds_cropped = ds.sel({tcoord: slice(t0_local, t1_local)})
 
+        target_nc.unlink(missing_ok=True)  # Remove original file before writing new one
         ds_cropped.to_netcdf(target_nc, mode="w", format="NETCDF4")

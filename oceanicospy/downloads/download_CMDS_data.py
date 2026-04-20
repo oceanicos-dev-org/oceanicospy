@@ -76,7 +76,7 @@ class CMDSDownloader:
         self.start_datetime_utc = start_datetime_local - timedelta(hours=utc_offset_hours)
         self.end_datetime_utc = end_datetime_local - timedelta(hours=utc_offset_hours)
 
-        # Populated by download(); consumed by _resolve_target_nc and format_to_localtime.
+        # Populated by download(); consumed by format_to_localtime.
         self.last_result_path: Path | None = None
 
     def download(self) -> Path:
@@ -112,6 +112,7 @@ class CMDSDownloader:
             end_datetime=self.end_datetime_utc.isoformat(),
             output_directory=str(self.output_path),
             file_format=self.file_format,
+            overwrite=True
         )
         if self.output_filename is not None:
             subset_kwargs["output_filename"] = self.output_filename
@@ -126,60 +127,8 @@ class CMDSDownloader:
         self.last_result_path = abs_path
 
         label = self.output_filename or self.output_path.name
-        print(f"Downloaded {label} to {abs_path}.")
+        print(f"Downloaded {label} to {self.output_path / self.output_filename}.")
         return abs_path
-
-    def _resolve_target_nc(self) -> Path:
-        """
-        Resolve the NetCDF file that :meth:`format_to_localtime` should open.
-
-        Resolution order:
-
-        1. ``last_result_path`` if it points directly to a ``*.nc`` file.
-        2. If ``last_result_path`` is a directory, search for ``*.nc`` files
-           inside it.  When multiple candidates exist, prefer the one whose
-           name matches ``output_path.name``; otherwise return the most
-           recently modified file.
-        3. Fall back to ``output_path`` if it exists and ends with ``.nc``.
-
-        Returns
-        -------
-        Path
-            Resolved absolute path to a NetCDF file.
-
-        Raises
-        ------
-        FileNotFoundError
-            If no suitable NetCDF file can be located.
-        """
-        candidate = self.last_result_path
-
-        # Case 1: last_result_path is already a .nc file.
-        if candidate and candidate.is_file() and candidate.suffix.lower() == ".nc":
-            return candidate
-
-        # Case 2: last_result_path is a directory containing .nc files.
-        if candidate and candidate.is_dir():
-            nc_files = sorted(candidate.glob("*.nc"), key=lambda p: p.stat().st_mtime, reverse=True)
-            if len(nc_files) == 1:
-                return nc_files[0]
-            if len(nc_files) > 1:
-                if self.output_filename:
-                    wanted = candidate / self.output_filename
-                    if wanted.is_file():
-                        return wanted
-                return nc_files[0]
-
-        # Case 3: fall back to output_path / output_filename.
-        if self.output_filename:
-            fallback = (self.output_path / self.output_filename).resolve()
-            if fallback.is_file() and fallback.suffix.lower() == ".nc":
-                return fallback
-
-        raise FileNotFoundError(
-            "Could not resolve a NetCDF file to post-process. "
-            "Ensure download() ran successfully and output_path has a .nc extension."
-        )
 
     def format_to_localtime(self) -> None:
         """
@@ -200,7 +149,7 @@ class CMDSDownloader:
             If the dataset contains neither a ``"time"`` nor a
             ``"valid_time"`` coordinate.
         FileNotFoundError
-            If :meth:`_resolve_target_nc` cannot locate the output file.
+            If the output file cannot be located.
 
         Notes
         -----
@@ -210,11 +159,11 @@ class CMDSDownloader:
         """
         if self.file_format.lower() != "netcdf":
             raise ValueError(
-                "format_to_localtime only supports NetCDF outputs. "
+                "format_to_localtime only supports NetCDF files. "
                 "Use file_format='netcdf'."
             )
 
-        target_nc = self._resolve_target_nc()
+        target_nc = (self.output_path / self.output_filename).resolve()
         ds = xr.load_dataset(target_nc, engine="netcdf4")
 
         if "valid_time" in ds.variables:
@@ -230,6 +179,7 @@ class CMDSDownloader:
         t1_local = np.datetime64(self.end_datetime_local)
         ds_cropped = ds.sel({tcoord: slice(t0_local, t1_local)})
 
+        target_nc.unlink(missing_ok=True)
         ds_cropped.to_netcdf(target_nc, mode="w", format="NETCDF4")
 
     @classmethod
@@ -272,7 +222,7 @@ class CMDSDownloader:
             Local-time offset from UTC in hours, following the convention
             ``local - UTC``. For example, UTC-5 (Colombia) is ``-5``.
         output_path : str or Path
-            Full destination path for the output file, including filename.
+            Directory where the output file will be written.
         output_filename : str, optional
             Name of the output file (e.g. ``"waves_CMDS.nc"``).
         file_format : str, optional
@@ -337,7 +287,7 @@ class CMDSDownloader:
             Local-time offset from UTC in hours, following the convention
             ``local - UTC``. For example, UTC-5 (Colombia) is ``-5``.
         output_path : str or Path
-            Full destination path for the output file, including filename.
+            Directory where the output file will be written.
         output_filename : str, optional
             Name of the output file (e.g. ``"winds_CMDS.nc"``).
         file_format : str, optional

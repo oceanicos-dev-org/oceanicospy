@@ -31,9 +31,8 @@ class UHSLCDownloader:
         Local-time offset from UTC in hours, following the convention
         ``local - UTC``. Used to convert the raw UHSLC timestamps (published
         in UTC) to local time in the cleaned DataFrame. For example, UTC-5
-        (Colombia) is ``-5``. The default ``-5``
-        assumes the package's primary Colombian audience; users in other
-        time zones must set this explicitly.
+        (Colombia) is ``-5``. The default assumes the package's primary
+        Colombian audience; users in other time zones must set this explicitly.
     """
 
     BASE_URL = "https://uhslc.soest.hawaii.edu/data/csv/fast/hourly/"
@@ -48,6 +47,7 @@ class UHSLCDownloader:
         self.end_datetime_local = end_datetime_local
         self.utc_offset_hours = utc_offset_hours
         self.last_result_path: Path | None = None
+        
     def download(self) -> Path:
         """
         Download the hourly sea-level CSV for the configured station.
@@ -102,7 +102,6 @@ class UHSLCDownloader:
             If ``start_datetime_local`` or ``end_datetime_local`` were set on the instance, the
             returned series is trimmed accordingly; otherwise the full record
             is returned.
-
         """
         df = pd.read_csv(
             self.last_result_path,
