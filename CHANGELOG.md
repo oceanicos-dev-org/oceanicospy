@@ -44,7 +44,7 @@ Initial scaffolding release.
 - `swanpy` subpackage for SWAN wave model case preparation
   - `Initializer`, `preprocess` (GridMaker, BathyMaker, BoundaryConditions,
     WindForcing, WaterLevelForcing, BottomFriction), `execution.CaseRunner`
-- `retrievals` subpackage — ERA5, Copernicus Marine, UHSLC downloaders
+- `downloads` subpackage — ERA5, Copernicus Marine, UHSLC downloaders
 - `analysis` subpackage — spectral analysis, wave statistics, EMD/wavelet tools
 - `observations` subpackage — readers for AWAC, CTD, RBR, pressure sensors,
   weather stations, and buoy data
