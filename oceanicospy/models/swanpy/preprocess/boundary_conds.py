@@ -26,14 +26,14 @@ class BoundaryConditions:
         self.boundary_line = None
         print(f'\n*** Initializing boundary conditions for domain {self.domain_number} ***\n')
 
-    def _download_ERA5(self,difference_to_UTC, filepath=None,wind_info=None):
+    def _download_ERA5(self,utc_offset_hours, filepath=None,wind_info=None):
         """
         Downloads ERA5 wave data for the specified region and time period.
         This method initializes an ERA5Downloader object with the required wave variables and region boundaries,
         downloads the data, and formats it to local time.
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             The time difference to UTC in hours for local time conversion.
         filepath : str or None, optional
             The file path where the downloaded ERA5 data will be saved. If None, a default path is used.
@@ -49,7 +49,7 @@ class BoundaryConditions:
                         lat_max = wind_info['lat_ll_corner_wind'] + (wind_info['ny_wind'] * wind_info['dy_wind']),
                         start_datetime_local = self.init.ini_date,
                         end_datetime_local = self.init.end_date,
-                        difference_to_UTC = difference_to_UTC,
+                        utc_offset_hours = utc_offset_hours,
                         output_path = filepath.parent,
                         output_filename = filepath.name
                         )
@@ -57,14 +57,14 @@ class BoundaryConditions:
         ERA5download_obj.format_to_localtime()
         print("\t ERA5 wind data downloaded successfully")
 
-    def _download_CMDS(self,difference_to_UTC, filepath=None,wind_info=None):
+    def _download_CMDS(self,utc_offset_hours, filepath=None,wind_info=None):
         """
         Downloads CDMS wind data for the specified region and time period.
         This method initializes an CDMSDownloader object with the required wind variables and region boundaries,
         downloads the data, and formats it to local time.
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             The time difference to UTC in hours for local time conversion.
         filepath : str or None, optional
             The file path where the downloaded ERA5 data will be saved. If None, a default path is used.
@@ -77,7 +77,7 @@ class BoundaryConditions:
                         lat_max = wind_info['lat_ll_corner_wind'] + (wind_info['ny_wind'] * wind_info['dy_wind']),
                         start_datetime_local = self.init.ini_date,
                         end_datetime_local = self.init.end_date,
-                        difference_to_UTC = difference_to_UTC,
+                        utc_offset_hours = utc_offset_hours,
                         output_path = filepath.parent,
                         output_filename = filepath.name
                         )
@@ -155,7 +155,7 @@ class BoundaryConditions:
         for bnd_file in bnd_files:
             utils.deploy_input_file(bnd_file, origin_domain_dir, run_domain_dir, self.use_link)
 
-    def get_waves_from_ERA5(self,difference_to_UTC,wind_info_dict,filename='waves_era5.nc',override=False):
+    def get_waves_from_ERA5(self,utc_offset_hours,wind_info_dict,filename='waves_era5.nc',override=False):
         """
         Downloads or verifies the existence of ERA5 wave data for the specified domain.
         This method checks if the ERA5 wave data NetCDF file exists in the input directory for the current domain.
@@ -167,11 +167,11 @@ class BoundaryConditions:
             filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
             file_exists = utils.verify_file(filepath)
             if not file_exists or override:
-                self._download_ERA5(difference_to_UTC,wind_info=wind_info_dict,filepath=filepath)
+                self._download_ERA5(utc_offset_hours,wind_info=wind_info_dict,filepath=filepath)
             else:
                 print("\t ERA5 wave data already exists, skipping download")
 
-    def get_waves_from_CMDS(self,difference_to_UTC,wind_info_dict,filename='waves_cmds.nc',override=False):
+    def get_waves_from_CMDS(self,utc_offset_hours,wind_info_dict,filename='waves_cmds.nc',override=False):
         """
         Downloads or verifies the existence of CMDS wave data for the specified domain.
         This method checks if the CMDS wave data NetCDF file exists in the input directory for the current domain.
@@ -183,7 +183,7 @@ class BoundaryConditions:
             filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
             file_exists = utils.verify_file(filepath)
             if not file_exists or override:
-                self._download_CMDS(difference_to_UTC,wind_info=wind_info_dict,filepath=filepath)
+                self._download_CMDS(utc_offset_hours,wind_info=wind_info_dict,filepath=filepath)
             else:
                 print("\t CMDS wave data already exists, skipping download")
 

@@ -33,31 +33,31 @@ class WindForcing:
         self.use_link = use_link
         print(f'\n*** Initializing winds for domain {self.domain_number} ***\n')
 
-    def _download_ERA5(self, difference_to_UTC, filepath=None):
+    def _download_ERA5(self, utc_offset_hours, filepath=None):
         """
         Download ERA5 wind data for the specified region and time period.
 
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             Time difference to UTC in hours for local time conversion.
         filepath : str or None, optional
             Full path where the downloaded ERA5 file will be saved.
         """
-        download_era5_winds(self.dict_info, self.init.ini_date, self.init.end_date, difference_to_UTC, filepath)
+        download_era5_winds(self.dict_info, self.init.ini_date, self.init.end_date, utc_offset_hours, filepath)
 
-    def _download_CMDS(self, difference_to_UTC, filepath=None):
+    def _download_CMDS(self, utc_offset_hours, filepath=None):
         """
         Download CMDS wind data for the specified region and time period.
 
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             Time difference to UTC in hours for local time conversion.
         filepath : str or None, optional
             Full path where the downloaded CMDS file will be saved.
         """
-        download_cmds_winds(self.dict_info, self.init.ini_date, self.init.end_date, difference_to_UTC, filepath)
+        download_cmds_winds(self.dict_info, self.init.ini_date, self.init.end_date, utc_offset_hours, filepath)
 
     def _ERA5_nc_to_ascii(self,era5_filename,ascii_filename):
         """
@@ -117,7 +117,7 @@ class WindForcing:
             file.write(pd.DataFrame(v10_to_write).to_csv(index=False, header=False, na_rep=0, float_format='%7.3f').replace(',', ' '))
         file.close()
 
-    def get_winds_from_ERA5(self,difference_to_UTC,filename='winds_era5.nc',override=False):
+    def get_winds_from_ERA5(self,utc_offset_hours,filename='winds_era5.nc',override=False):
         """
         Download ERA5 wind data for the current domain, or skip if already present.
 
@@ -127,7 +127,7 @@ class WindForcing:
 
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             Time difference to UTC in hours for local time conversion.
         filename : str, optional
             Name of the ERA5 NetCDF output file. Defaults to ``'winds_era5.nc'``.
@@ -139,19 +139,19 @@ class WindForcing:
 
         if not self.share_winds:
             if not file_exists or override:
-                self._download_ERA5(difference_to_UTC, filepath=filepath)
+                self._download_ERA5(utc_offset_hours, filepath=filepath)
             else:
                 print("\t ERA5 wind data already exists, skipping download")
         else:
             if self.domain_number == 1:
                 if not file_exists or override:
-                    self._download_ERA5(difference_to_UTC, filepath=filepath)
+                    self._download_ERA5(utc_offset_hours, filepath=filepath)
                 else:
                     print("\t ERA5 wind data already exists, skipping download")
             else:
                     print("\t ERA5 wind data already exists in domain 1, skipping download")
 
-    def get_winds_from_CMDS(self,difference_to_UTC,filename='winds_cmds.nc',override=False):
+    def get_winds_from_CMDS(self,utc_offset_hours,filename='winds_cmds.nc',override=False):
         """
         Download CMDS wind data for the current domain, or skip if already present.
 
@@ -161,7 +161,7 @@ class WindForcing:
 
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             Time difference to UTC in hours for local time conversion.
         filename : str, optional
             Name of the CMDS NetCDF output file. Defaults to ``'winds_cmds.nc'``.
@@ -173,13 +173,13 @@ class WindForcing:
 
         if not self.share_winds:
             if not file_exists or override:
-                self._download_CMDS(difference_to_UTC, filepath=filepath)
+                self._download_CMDS(utc_offset_hours, filepath=filepath)
             else:
                 print("\t CMDS wind data already exists, skipping download")
         else:
             if self.domain_number == 1:
                 if not file_exists or override:
-                    self._download_CMDS(difference_to_UTC, filepath=filepath)
+                    self._download_CMDS(utc_offset_hours, filepath=filepath)
                 else:
                     print("\t CMDS wind data already exists, skipping download")
             else:

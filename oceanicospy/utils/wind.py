@@ -40,7 +40,7 @@ def download_era5_winds(wind_info, ini_date, end_date, difference_to_UTC, filepa
         lat_max=wind_info['lat_ll_corner_wind'] + (wind_info['ny_wind'] * wind_info['dy_wind']),
         start_datetime_local=ini_date,
         end_datetime_local=end_date,
-        difference_to_UTC=difference_to_UTC,
+        utc_offset_hours=difference_to_UTC,
         output_path=filepath.parent,
         output_filename=filepath.name,
     )
@@ -85,7 +85,7 @@ def download_cmds_winds(wind_info, ini_date, end_date, difference_to_UTC, filepa
         lat_max=wind_info['lat_ll_corner_wind'] + (wind_info['ny_wind'] * wind_info['dy_wind']),
         start_datetime_local=ini_date,
         end_datetime_local=end_date,
-        difference_to_UTC=difference_to_UTC,
+        utc_offset_hours=difference_to_UTC,
         output_path=filepath.parent,
         output_filename=filepath.name,
     )
