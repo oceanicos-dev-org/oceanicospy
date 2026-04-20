@@ -4,5 +4,5 @@ CMDSDownloader
 .. toctree::
    :maxdepth: 2
 
-.. autoclass:: oceanicospy.retrievals.CMDSDownloader
+.. autoclass:: oceanicospy.downloads.CMDSDownloader
    :members:
