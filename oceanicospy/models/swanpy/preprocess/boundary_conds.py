@@ -235,15 +235,15 @@ class BoundaryConditions:
         ----------
         side : str
             Cardinal direction of the boundary side.  Must be one of
-            ``'N'``, ``'S'``, ``'E'``, ``'O'``.
+            ``'N'``, ``'S'``, ``'E'``, ``'W'``.
         wave_params : dict or None
             Wave parameters required when ``bound_info['variable_bound']``
-            is ``'constant'``.  Expected keys:
+            is ``False`` ('constant').  Expected keys:
 
             * ``'hs'``     — significant wave height (m)
             * ``'tp'``     — peak period (s)
-            * ``'dir'``    — mean wave direction (deg)
-            * ``'spread'`` — directional spreading
+            * ``'dir'``    — peak wave direction (deg)
+            * ``'spr'``    — wave spread (power of cosine function)
 
             Must be ``None`` or omitted for variable (file-driven) boundaries.
 
@@ -257,7 +257,7 @@ class BoundaryConditions:
         Raises
         ------
         ValueError
-            If *side* is not in ``{'N', 'S', 'E', 'O'}``.
+            If *side* is not in ``{'N', 'S', 'E', 'W'}``.
         ValueError
             If ``variable_bound`` is ``'constant'`` but *wave_params* is ``None``.
         """
@@ -267,12 +267,12 @@ class BoundaryConditions:
                 f"Valid options are: {sorted(self._VALID_SIDES)}."
             )
 
-        if self.bound_info['variable_bound']:
+        if not self.bound_info['variable_bound']:
             if wave_params is None:
                 raise ValueError(
-                    "wave_params must be provided when variable_bound is 'constant'."
+                    "wave_params must be provided when variable_bound is False ('constant')."
                 )
-            lines_per_side = f"BOUN SIDE {side} CLOCKW CON PAR {wave_params['hs']} {wave_params['tp']} {wave_params['dir']} {wave_params['spread']}"
+            lines_per_side = f"BOUN SIDE {side} CLOCKW CON PAR {wave_params['hs']} {wave_params['tp']} {wave_params['dir']} {wave_params['spr']}"
         else:
             self.input_path = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/'
             bnd_files = [f for f in os.listdir(self.input_path) if f.endswith('.bnd') and f'{side}' in f]
