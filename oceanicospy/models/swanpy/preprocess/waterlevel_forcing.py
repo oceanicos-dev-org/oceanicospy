@@ -20,7 +20,7 @@ class WaterLevelForcing:
         An initialization object containing configuration data and folder paths.
     domain_number : int
         Identifier for the domain being processed.
-    dict_info : dict or None, optional
+    wl_info : dict or None, optional
         Dictionary containing water level information. If None, water level data must be provided via `get_waterlevel_from_UHSLC()`.
     filename : str or None, optional
         Name of the water level ASCII file to create or link in the domain input directory. Defaults to None.
@@ -29,10 +29,10 @@ class WaterLevelForcing:
     use_link: bool, optional
         If True, creates symbolic links for water level files instead of copying them. Defaults to True
     """
-    def __init__ (self,init,domain_number,dict_info=None,filename=None,share_wl=True,use_link=None):
+    def __init__ (self,init,domain_number,wl_info=None,filename=None,share_wl=True,use_link=None):
         self.init = init
         self.domain_number = domain_number
-        self.dict_info = dict_info
+        self.wl_info = wl_info
         self.filename = filename
         self.share_wl = share_wl
         self.use_link = use_link
@@ -274,12 +274,12 @@ class WaterLevelForcing:
         # validation of file creation and deployment to run directory
         utils.deploy_input_file(ascii_filename, origin_domain_dir, run_domain_dir, self.use_link)
 
-        if self.dict_info!=None:
+        if self.wl_info!=None:
             if not self.share_wl:
-                self.dict_info.update({"wl_file":f"../../input/domain_0{self.domain_number}/{ascii_filename}"})
+                self.wl_info.update({"wl_file":f"../../input/domain_0{self.domain_number}/{ascii_filename}"})
             else:
-                self.dict_info.update({"wl_file":f"../../input/domain_01/{ascii_filename}"})
-            return self.dict_info
+                self.wl_info.update({"wl_file":f"../../input/domain_01/{ascii_filename}"})
+            return self.wl_info
         return None
 
     def fill_wl_section(self):
@@ -287,8 +287,8 @@ class WaterLevelForcing:
         Replaces and updates the .swn file with the water level configuration for a specific domain.
         """
 
-        if self.dict_info == None:
+        if self.wl_info == None:
             raise ValueError(f'Water level information is not provided for domain {self.domain_number}.')
 
         print (f'\n \t*** Adding/Editing water level information for domain {self.domain_number} in configuration file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_info)
+        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.wl_info)
