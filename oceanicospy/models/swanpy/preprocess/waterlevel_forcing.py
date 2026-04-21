@@ -240,7 +240,7 @@ class WaterLevelForcing:
                 df_waterlevel = load_uhslc_waterlevel(station_id, filepath_domain1)
         return df_waterlevel
 
-    def write_UHSLC_ascii(self,UHSLC_dataframe,ascii_filename):
+    def write_UHSLC_ascii(self,UHSLC_dataframe,ascii_filename,detrend_wl=True):
         """
         Write the cleaned UHSLC water level data to a SWAN ASCII file, handling file management and optional sharing across domains.
 
@@ -250,7 +250,9 @@ class WaterLevelForcing:
             The cleaned UHSLC water level data as a pandas DataFrame.
         ascii_filename : str
             Name of the SWAN water-level ASCII output file to create in the same input directory (e.g. ``"water_levels.wl"``).
-
+        detrend_wl : bool, optional
+            If ``True``, apply linear detrending to the water level data before writing. Default is ``True``.
+            
         Notes
         -----
         If *share_wl* is ``True``, the ASCII file is created in domain 1 and linked to other domains. If ``False``, each domain 
@@ -261,11 +263,11 @@ class WaterLevelForcing:
 
         # verification of file existence and conversion to ascii format if needed 
         if not self.share_wl:
-            self._UHSLC_csv_to_ascii(UHSLC_dataframe, ascii_filename)
+            self._UHSLC_csv_to_ascii(UHSLC_dataframe, ascii_filename,detrend_wl)
             print('\t UHSLC water level data converted to ASCII format and saved as', ascii_filename)
         else:
             if self.domain_number == 1:
-                self._UHSLC_csv_to_ascii(UHSLC_dataframe, ascii_filename)
+                self._UHSLC_csv_to_ascii(UHSLC_dataframe, ascii_filename,detrend_wl)
                 print('\t UHSLC water level data converted to ASCII format and saved as', ascii_filename)
             else:
                 origin_domain_dir = f'{self.init.dict_folders["input"]}domain_01/'
