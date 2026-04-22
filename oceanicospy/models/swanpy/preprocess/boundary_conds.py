@@ -13,7 +13,8 @@ class BoundaryConditions:
         self.domain_number = domain_number
         self.bound_info = bound_info
         self.input_filename = input_filename
-        self.use_link = use_link 
+        self.use_link = use_link
+        self.filepath_localtime = None
 
         if "parent_domains" in self.init.dict_ini_data:
             if self.init.dict_ini_data["parent_domains"][domain_number] != None:
@@ -26,7 +27,7 @@ class BoundaryConditions:
         self.boundary_line = None
         print(f'\n*** Initializing boundary conditions for domain {self.domain_number} ***\n')
 
-    def _download_ERA5(self,utc_offset_hours, filepath=None,wind_info=None):
+    def _download_ERA5(self,utc_offset_hours, filepath=None,wind_info=None,format_localtime=False):
         """
         Downloads ERA5 wave data for the specified region and time period.
         This method initializes an ERA5Downloader object with the required wave variables and region boundaries,
@@ -53,11 +54,16 @@ class BoundaryConditions:
                         output_path = filepath.parent,
                         output_filename = filepath.name
                         )
-        ERA5download_obj.download()
-        ERA5download_obj.format_to_localtime()
+
+        self.filepath_utc = ERA5download_obj.download()
         print("\t ERA5 wind data downloaded successfully")
 
-    def _download_CMDS(self,utc_offset_hours, filepath=None,wind_info=None):
+        if format_localtime:
+            self.filepath_localtime = ERA5download_obj.format_to_localtime()
+            return self.filepath_localtime
+        return self.filepath_utc 
+
+    def _download_CMDS(self,utc_offset_hours, filepath=None,wind_info=None,format_localtime=False):
         """
         Downloads CDMS wind data for the specified region and time period.
         This method initializes an CDMSDownloader object with the required wind variables and region boundaries,
@@ -81,12 +87,22 @@ class BoundaryConditions:
                         output_path = filepath.parent,
                         output_filename = filepath.name
                         )
-        CMDSdownload_obj.download()
-        CMDSdownload_obj.format_to_localtime()
+        self.filepath_utc = CMDSdownload_obj.download()
         print("\t CMDS wind data downloaded successfully")
+        if format_localtime:
+            self.filepath_localtime = CMDSdownload_obj.format_to_localtime()
+            return self.filepath_localtime
+        return self.filepath_utc
 
     def _single_tpar_from_ERA5(self,tpar_filename,lati,long,wave_filename='waves_era5.nc'):
-        ds = xr.open_dataset(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{wave_filename}')
+        filepath = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{wave_filename}'
+
+        if Path(filepath).with_name(Path(filepath).stem + '_localtime.nc').exists():
+            filepath_localtime = Path(filepath).with_name(Path(filepath).stem + '_localtime.nc')
+            ds = xr.open_dataset(filepath_localtime)
+        else:
+            ds = xr.open_dataset(filepath)
+
         time = ds.valid_time.values
         strtime = [pd.to_datetime(t).strftime("%Y%m%d.%H%M") for t in time]
         lat_idx = np.argmin(np.abs(ds.latitude.values - lati))
@@ -108,7 +124,14 @@ class BoundaryConditions:
         return df_tpar
 
     def _single_tpar_from_CMDS(self,tpar_filename,lati,long,wave_filename='waves_cmds.nc'):
-        ds = xr.open_dataset(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{wave_filename}')
+        filepath = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{wave_filename}'
+
+        if Path(filepath).with_name(Path(filepath).stem + '_localtime.nc').exists():
+            filepath_localtime = Path(filepath).with_name(Path(filepath).stem + '_localtime.nc')
+            ds = xr.open_dataset(filepath_localtime)
+        else:
+            ds = xr.open_dataset(filepath)
+
         time = ds.time.values
         strtime = [pd.to_datetime(t).strftime("%Y%m%d.%H%M") for t in time]
         lat_idx = np.argmin(np.abs(ds.latitude.values - lati))
@@ -155,7 +178,7 @@ class BoundaryConditions:
         for bnd_file in bnd_files:
             utils.deploy_input_file(bnd_file, origin_domain_dir, run_domain_dir, self.use_link)
 
-    def get_waves_from_ERA5(self,utc_offset_hours,wind_info_dict,filename='waves_era5.nc',override=False):
+    def get_waves_from_ERA5(self,utc_offset_hours,wind_info_dict,filename='waves_era5.nc',override=False,format_localtime=False):
         """
         Downloads or verifies the existence of ERA5 wave data for the specified domain.
         This method checks if the ERA5 wave data NetCDF file exists in the input directory for the current domain.
@@ -167,11 +190,11 @@ class BoundaryConditions:
             filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
             file_exists = utils.verify_file(filepath)
             if not file_exists or override:
-                self._download_ERA5(utc_offset_hours,wind_info=wind_info_dict,filepath=filepath)
+                self._download_ERA5(utc_offset_hours,wind_info=wind_info_dict,filepath=filepath,format_localtime=format_localtime)
             else:
                 print("\t ERA5 wave data already exists, skipping download")
 
-    def get_waves_from_CMDS(self,utc_offset_hours,wind_info_dict,filename='waves_cmds.nc',override=False):
+    def get_waves_from_CMDS(self,utc_offset_hours,wind_info_dict,filename='waves_cmds.nc',override=False,format_localtime=False):
         """
         Downloads or verifies the existence of CMDS wave data for the specified domain.
         This method checks if the CMDS wave data NetCDF file exists in the input directory for the current domain.
@@ -183,7 +206,7 @@ class BoundaryConditions:
             filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
             file_exists = utils.verify_file(filepath)
             if not file_exists or override:
-                self._download_CMDS(utc_offset_hours,wind_info=wind_info_dict,filepath=filepath)
+                self._download_CMDS(utc_offset_hours,wind_info=wind_info_dict,filepath=filepath,format_localtime=format_localtime)
             else:
                 print("\t CMDS wave data already exists, skipping download")
 
@@ -278,6 +301,9 @@ class BoundaryConditions:
             bnd_files = [f for f in os.listdir(self.input_path) if f.endswith('.bnd') and f'{side}' in f]
             sorted_bnd_files = sorted(bnd_files, key=lambda x: int(''.join(filter(str.isdigit, x))))
 
+            if side in ['S', 'E']:
+                sorted_bnd_files = sorted_bnd_files[::-1]
+
             lines_per_side = ""
             for idx, bnd_file in enumerate(sorted_bnd_files):
                 if side in ['N', 'S']:
@@ -287,14 +313,12 @@ class BoundaryConditions:
                 round_difference = round(difference, 2)
 
                 if idx == 0:
-                    lines_per_side += f"BOUN SIDE {side} CLOCKW VAR FILE {round_difference} '{self.input_path}{bnd_file}' 1 & \n"
+                    lines_per_side += f"BOUN SIDE {side} CLOCKW VAR FILE {round_difference} '../../input/domain_0{self.domain_number}/{bnd_file}' 1 & \n"
                 else:
                     is_last = idx == len(sorted_bnd_files) - 1
                     newline = '' if is_last else ' \n'
-                    lines_per_side += f"{round_difference} '{self.input_path}{bnd_file}' 1 &{newline}"
+                    lines_per_side += f"{round_difference} '../../input/domain_0{self.domain_number}/{bnd_file}' 1 &{newline}"
             
-            print(lines_per_side)
-
         return lines_per_side
 
     def create_boundary_line(self, list_sides: list[str] | None = None,

@@ -177,7 +177,6 @@ class WaterLevelForcing:
         """
         domain_dir = Path(self.init.dict_folders["input"]) / f"domain_0{self.domain_number}"
 
-
         UHSLC_dataframe.loc[UHSLC_dataframe["depth[m]"] < -30.0, "depth[m]"] = np.nan
 
         # --- Optional linear detrending (NaN-safe) ---
@@ -261,26 +260,14 @@ class WaterLevelForcing:
         run_domain_dir = f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/'
         origin_domain_dir = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/'
 
-        # verification of file existence and conversion to ascii format if needed 
-        if not self.share_wl:
-            self._UHSLC_csv_to_ascii(UHSLC_dataframe, ascii_filename,detrend_wl)
-            print('\t UHSLC water level data converted to ASCII format and saved as', ascii_filename)
-        else:
-            if self.domain_number == 1:
-                self._UHSLC_csv_to_ascii(UHSLC_dataframe, ascii_filename,detrend_wl)
-                print('\t UHSLC water level data converted to ASCII format and saved as', ascii_filename)
-            else:
-                origin_domain_dir = f'{self.init.dict_folders["input"]}domain_01/'
-                print(f"\t UHSLC water level data converted to ASCII format and saved as {ascii_filename} in domain 01, linking to domain {self.domain_number}")
+        self._UHSLC_csv_to_ascii(UHSLC_dataframe, ascii_filename,detrend_wl)
+        print('\t UHSLC water level data converted to ASCII format and saved as', ascii_filename)
         
         # validation of file creation and deployment to run directory
         utils.deploy_input_file(ascii_filename, origin_domain_dir, run_domain_dir, self.use_link)
 
         if self.wl_info!=None:
-            if not self.share_wl:
-                self.wl_info.update({"wl_file":f"../../input/domain_0{self.domain_number}/{ascii_filename}"})
-            else:
-                self.wl_info.update({"wl_file":f"../../input/domain_01/{ascii_filename}"})
+            self.wl_info.update({"wl_file":f"../../input/domain_0{self.domain_number}/{ascii_filename}"})
             return self.wl_info
         return None
 
