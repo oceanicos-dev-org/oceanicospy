@@ -8,12 +8,13 @@ from .... import utils
 from ....downloads import *
 
 class BoundaryConditions:
-    def __init__ (self,init,domain_number,dict_info=None,input_filename=None,use_link=None):
+    def __init__ (self,init,domain_number,bound_info=None,input_filename=None,use_link=None):
         self.init = init
         self.domain_number = domain_number
-        self.dict_info = dict_info
+        self.bound_info = bound_info
         self.input_filename = input_filename
-        self.use_link = use_link 
+        self.use_link = use_link
+        self.filepath_localtime = None
 
         if "parent_domains" in self.init.dict_ini_data:
             if self.init.dict_ini_data["parent_domains"][domain_number] != None:
@@ -26,14 +27,14 @@ class BoundaryConditions:
         self.boundary_line = None
         print(f'\n*** Initializing boundary conditions for domain {self.domain_number} ***\n')
 
-    def _download_ERA5(self,difference_to_UTC, filepath=None,wind_info=None):
+    def _download_ERA5(self,utc_offset_hours, filepath=None,wind_info=None,format_localtime=False):
         """
         Downloads ERA5 wave data for the specified region and time period.
         This method initializes an ERA5Downloader object with the required wave variables and region boundaries,
         downloads the data, and formats it to local time.
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             The time difference to UTC in hours for local time conversion.
         filepath : str or None, optional
             The file path where the downloaded ERA5 data will be saved. If None, a default path is used.
@@ -49,22 +50,27 @@ class BoundaryConditions:
                         lat_max = wind_info['lat_ll_corner_wind'] + (wind_info['ny_wind'] * wind_info['dy_wind']),
                         start_datetime_local = self.init.ini_date,
                         end_datetime_local = self.init.end_date,
-                        difference_to_UTC = difference_to_UTC,
+                        utc_offset_hours = utc_offset_hours,
                         output_path = filepath.parent,
                         output_filename = filepath.name
                         )
-        ERA5download_obj.download()
-        ERA5download_obj.format_to_localtime()
+
+        self.filepath_utc = ERA5download_obj.download()
         print("\t ERA5 wind data downloaded successfully")
 
-    def _download_CMDS(self,difference_to_UTC, filepath=None,wind_info=None):
+        if format_localtime:
+            self.filepath_localtime = ERA5download_obj.format_to_localtime()
+            return self.filepath_localtime
+        return self.filepath_utc 
+
+    def _download_CMDS(self,utc_offset_hours, filepath=None,wind_info=None,format_localtime=False):
         """
         Downloads CDMS wind data for the specified region and time period.
         This method initializes an CDMSDownloader object with the required wind variables and region boundaries,
         downloads the data, and formats it to local time.
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             The time difference to UTC in hours for local time conversion.
         filepath : str or None, optional
             The file path where the downloaded ERA5 data will be saved. If None, a default path is used.
@@ -77,16 +83,26 @@ class BoundaryConditions:
                         lat_max = wind_info['lat_ll_corner_wind'] + (wind_info['ny_wind'] * wind_info['dy_wind']),
                         start_datetime_local = self.init.ini_date,
                         end_datetime_local = self.init.end_date,
-                        difference_to_UTC = difference_to_UTC,
+                        utc_offset_hours = utc_offset_hours,
                         output_path = filepath.parent,
                         output_filename = filepath.name
                         )
-        CMDSdownload_obj.download()
-        CMDSdownload_obj.format_to_localtime()
+        self.filepath_utc = CMDSdownload_obj.download()
         print("\t CMDS wind data downloaded successfully")
+        if format_localtime:
+            self.filepath_localtime = CMDSdownload_obj.format_to_localtime()
+            return self.filepath_localtime
+        return self.filepath_utc
 
     def _single_tpar_from_ERA5(self,tpar_filename,lati,long,wave_filename='waves_era5.nc'):
-        ds = xr.open_dataset(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{wave_filename}')
+        filepath = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{wave_filename}'
+
+        if Path(filepath).with_name(Path(filepath).stem + '_localtime.nc').exists():
+            filepath_localtime = Path(filepath).with_name(Path(filepath).stem + '_localtime.nc')
+            ds = xr.open_dataset(filepath_localtime)
+        else:
+            ds = xr.open_dataset(filepath)
+
         time = ds.valid_time.values
         strtime = [pd.to_datetime(t).strftime("%Y%m%d.%H%M") for t in time]
         lat_idx = np.argmin(np.abs(ds.latitude.values - lati))
@@ -108,7 +124,14 @@ class BoundaryConditions:
         return df_tpar
 
     def _single_tpar_from_CMDS(self,tpar_filename,lati,long,wave_filename='waves_cmds.nc'):
-        ds = xr.open_dataset(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{wave_filename}')
+        filepath = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{wave_filename}'
+
+        if Path(filepath).with_name(Path(filepath).stem + '_localtime.nc').exists():
+            filepath_localtime = Path(filepath).with_name(Path(filepath).stem + '_localtime.nc')
+            ds = xr.open_dataset(filepath_localtime)
+        else:
+            ds = xr.open_dataset(filepath)
+
         time = ds.time.values
         strtime = [pd.to_datetime(t).strftime("%Y%m%d.%H%M") for t in time]
         lat_idx = np.argmin(np.abs(ds.latitude.values - lati))
@@ -155,7 +178,7 @@ class BoundaryConditions:
         for bnd_file in bnd_files:
             utils.deploy_input_file(bnd_file, origin_domain_dir, run_domain_dir, self.use_link)
 
-    def get_waves_from_ERA5(self,difference_to_UTC,wind_info_dict,filename='waves_era5.nc',override=False):
+    def get_waves_from_ERA5(self,utc_offset_hours,wind_info_dict,filename='waves_era5.nc',override=False,format_localtime=False):
         """
         Downloads or verifies the existence of ERA5 wave data for the specified domain.
         This method checks if the ERA5 wave data NetCDF file exists in the input directory for the current domain.
@@ -167,11 +190,11 @@ class BoundaryConditions:
             filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
             file_exists = utils.verify_file(filepath)
             if not file_exists or override:
-                self._download_ERA5(difference_to_UTC,wind_info=wind_info_dict,filepath=filepath)
+                self._download_ERA5(utc_offset_hours,wind_info=wind_info_dict,filepath=filepath,format_localtime=format_localtime)
             else:
                 print("\t ERA5 wave data already exists, skipping download")
 
-    def get_waves_from_CMDS(self,difference_to_UTC,wind_info_dict,filename='waves_cmds.nc',override=False):
+    def get_waves_from_CMDS(self,utc_offset_hours,wind_info_dict,filename='waves_cmds.nc',override=False,format_localtime=False):
         """
         Downloads or verifies the existence of CMDS wave data for the specified domain.
         This method checks if the CMDS wave data NetCDF file exists in the input directory for the current domain.
@@ -183,7 +206,7 @@ class BoundaryConditions:
             filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
             file_exists = utils.verify_file(filepath)
             if not file_exists or override:
-                self._download_CMDS(difference_to_UTC,wind_info=wind_info_dict,filepath=filepath)
+                self._download_CMDS(utc_offset_hours,wind_info=wind_info_dict,filepath=filepath,format_localtime=format_localtime)
             else:
                 print("\t CMDS wave data already exists, skipping download")
 
@@ -235,15 +258,15 @@ class BoundaryConditions:
         ----------
         side : str
             Cardinal direction of the boundary side.  Must be one of
-            ``'N'``, ``'S'``, ``'E'``, ``'O'``.
+            ``'N'``, ``'S'``, ``'E'``, ``'W'``.
         wave_params : dict or None
-            Wave parameters required when ``dict_info['variable_bound']``
-            is ``'constant'``.  Expected keys:
+            Wave parameters required when ``bound_info['variable_bound']``
+            is ``False`` ('constant').  Expected keys:
 
             * ``'hs'``     — significant wave height (m)
             * ``'tp'``     — peak period (s)
-            * ``'dir'``    — mean wave direction (deg)
-            * ``'spread'`` — directional spreading
+            * ``'dir'``    — peak wave direction (deg)
+            * ``'spr'``    — wave spread (power of cosine function)
 
             Must be ``None`` or omitted for variable (file-driven) boundaries.
 
@@ -257,7 +280,7 @@ class BoundaryConditions:
         Raises
         ------
         ValueError
-            If *side* is not in ``{'N', 'S', 'E', 'O'}``.
+            If *side* is not in ``{'N', 'S', 'E', 'W'}``.
         ValueError
             If ``variable_bound`` is ``'constant'`` but *wave_params* is ``None``.
         """
@@ -267,16 +290,19 @@ class BoundaryConditions:
                 f"Valid options are: {sorted(self._VALID_SIDES)}."
             )
 
-        if self.dict_info['variable_bound']:
+        if not self.bound_info['variable_bound']:
             if wave_params is None:
                 raise ValueError(
-                    "wave_params must be provided when variable_bound is 'constant'."
+                    "wave_params must be provided when variable_bound is False ('constant')."
                 )
-            lines_per_side = f"BOUN SIDE {side} CLOCKW CON PAR {wave_params['hs']} {wave_params['tp']} {wave_params['dir']} {wave_params['spread']}"
+            lines_per_side = f"BOUN SIDE {side} CLOCKW CON PAR {wave_params['hs']} {wave_params['tp']} {wave_params['dir']} {wave_params['spr']}"
         else:
             self.input_path = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/'
             bnd_files = [f for f in os.listdir(self.input_path) if f.endswith('.bnd') and f'{side}' in f]
             sorted_bnd_files = sorted(bnd_files, key=lambda x: int(''.join(filter(str.isdigit, x))))
+
+            if side in ['S', 'E']:
+                sorted_bnd_files = sorted_bnd_files[::-1]
 
             lines_per_side = ""
             for idx, bnd_file in enumerate(sorted_bnd_files):
@@ -287,14 +313,12 @@ class BoundaryConditions:
                 round_difference = round(difference, 2)
 
                 if idx == 0:
-                    lines_per_side += f"BOUN SIDE {side} CLOCKW VAR FILE {round_difference} '{self.input_path}{bnd_file}' 1 & \n"
+                    lines_per_side += f"BOUN SIDE {side} CLOCKW VAR FILE {round_difference} '../../input/domain_0{self.domain_number}/{bnd_file}' 1 & \n"
                 else:
                     is_last = idx == len(sorted_bnd_files) - 1
                     newline = '' if is_last else ' \n'
-                    lines_per_side += f"{round_difference} '{self.input_path}{bnd_file}' 1 &{newline}"
+                    lines_per_side += f"{round_difference} '../../input/domain_0{self.domain_number}/{bnd_file}' 1 &{newline}"
             
-            print(lines_per_side)
-
         return lines_per_side
 
     def create_boundary_line(self, list_sides: list[str] | None = None,
@@ -316,7 +340,7 @@ class BoundaryConditions:
             accepted by :meth:`_build_side_boundary_line`.
         wave_params : dict or None, optional
             Wave parameters forwarded to :meth:`_build_side_boundary_line`
-            when ``dict_info['variable_bound']`` is ``'constant'``.
+            when ``bound_info['variable_bound']`` is ``'constant'``.
             Ignored for variable (file-driven) boundaries.
 
         Returns
@@ -326,22 +350,22 @@ class BoundaryConditions:
         Raises
         ------
         ValueError
-            If :attr:`dict_info` is ``None`` (boundary type not configured).
+            If :attr:`bound_info` is ``None`` (boundary type not configured).
         NotImplementedError
-            If ``dict_info['bound_type']`` is not ``'side'``.
+            If ``bound_info['bound_type']`` is not ``'side'``.
         ValueError
             If any entry in *list_sides* is not a valid boundary side.
         """
-        if self.dict_info is None:
+        if self.bound_info is None:
             raise ValueError(
                 "Boundary type information is missing. "
-                "Please ensure 'dict_info' is provided at initialisation."
+                "Please ensure 'bound_info' is provided at initialisation."
             )
 
         if not self.isnested:
-            if self.dict_info['bound_type'] != 'side':
+            if self.bound_info['bound_type'] != 'side':
                 raise NotImplementedError(
-                    f"Boundary type '{self.dict_info['bound_type']}' is not supported. "
+                    f"Boundary type '{self.bound_info['bound_type']}' is not supported. "
                     "Only 'side' boundaries are currently implemented."
                 )
             self.list_sides = list_sides or []
