@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0b3][0.1.0b3] - 2026-04-21
+
+### Added
+
+- `downloads` subpackage promoted to beta — ERA5, Copernicus Marine (CMDS), and UHSLC
+  downloaders are considered feature-complete and undergoing stabilization before the
+  final 0.1.0 release
+- `WaveTemporalAnalyzer` — `zero_centered` boolean parameter to indicate whether the
+  measured pressure signal is already zero-centered; controls trend removal before
+  zero-upcrossing wave statistics (default `False`)
+- `WaveTemporalAnalyzer` — total sensor depth (`anchoring_depth + sensor_height`) now
+  used for wavelength calculation in dispersion relation
+
+### Fixed
+
+- `CMDSDownloader` — file-update logic no longer raises on Windows when converting
+  timestamps to local time format
+- `CMDSDownloader` — NetCDF writing now works correctly across Linux, macOS, and Windows
+- `CMDSDownloader` — `.cdsapi` credentials validator corrected; explicit overwrite flag
+  added to prevent silent data loss
+- UTC offset API unified across all downloader modules; sign-convention bugs corrected
+
+### Changed
+
+- Renamed `trend` parameter to `zero_centered` throughout `temporal.py` for clarity
+
 ## [0.1.0b2][0.1.0b2] - 2026-04-17
 
 ### Added
@@ -44,7 +70,7 @@ Initial scaffolding release.
 - `swanpy` subpackage for SWAN wave model case preparation
   - `Initializer`, `preprocess` (GridMaker, BathyMaker, BoundaryConditions,
     WindForcing, WaterLevelForcing, BottomFriction), `execution.CaseRunner`
-- `retrievals` subpackage — ERA5, Copernicus Marine, UHSLC downloaders
+- `downloads` subpackage — ERA5, Copernicus Marine, UHSLC downloaders
 - `analysis` subpackage — spectral analysis, wave statistics, EMD/wavelet tools
 - `observations` subpackage — readers for AWAC, CTD, RBR, pressure sensors,
   weather stations, and buoy data
@@ -57,3 +83,4 @@ Initial scaffolding release.
 [Unreleased]: https://github.com/oceanicos/oceanicospy/compare/0.1.0...HEAD
 [0.1.0b1]: https://github.com/oceanicos/oceanicospy/compare/0.1.0a1...0.1.0b1
 [0.1.0b2]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b1...0.1.0b2
+[0.1.0b3]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b2...0.1.0b3

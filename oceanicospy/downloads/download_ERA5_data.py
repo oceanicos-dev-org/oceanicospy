@@ -34,9 +34,9 @@ class ERA5Downloader:
         Start of the desired time window expressed in local time.
     end_datetime_local : datetime
         End of the desired time window expressed in local time.
-    difference_to_UTC : float
-        Local-time offset from UTC in hours (local minus UTC).
-        For example, UTC-5 should be passed as ``-5``.
+    utc_offset_hours : float
+        Local-time offset from UTC in hours, following the convention
+        ``local - UTC``. For example, UTC-5 (Colombia) is ``-5``.
     output_path : str or Path
         Directory where the output file will be written.  Created automatically
         if it does not exist.
@@ -48,8 +48,9 @@ class ERA5Downloader:
         Path to a ``.cdsapirc`` credentials file.  When provided, the file is
         used instead of the default ``~/.cdsapirc`` for the duration of the
         download call only; it is never logged or exposed publicly.  If
-        ``None``, ``cdsapi`` falls back to its normal credential resolution
-        (``CDSAPI_RC`` environment variable, then ``~/.cdsapirc``).
+        ``None``, credentials are resolved from the ``$CDSAPI_RC`` environment
+        variable or ``~/.cdsapirc``; a :py:exc:`FileNotFoundError` is raised
+        if neither is found.
     """
 
     def __init__(
@@ -61,7 +62,7 @@ class ERA5Downloader:
         lat_max: float,
         start_datetime_local: datetime,
         end_datetime_local: datetime,
-        difference_to_UTC: float,
+        utc_offset_hours: float,
         output_path: str | Path,
         output_filename: str | None = None,
         cdsapi_rc: str | Path | None = None,
@@ -73,42 +74,62 @@ class ERA5Downloader:
         self.lat_max = lat_max
         self.start_datetime_local = start_datetime_local
         self.end_datetime_local = end_datetime_local
-        self.difference_to_UTC = difference_to_UTC
+        self.utc_offset_hours = utc_offset_hours
         self.output_path = Path(output_path)
         self.output_filename = output_filename
         self._cdsapi_rc = Path(cdsapi_rc) if cdsapi_rc is not None else None
 
         # Convert local datetimes to UTC; CDS API requests must use UTC.
-        self.start_datetime_utc = start_datetime_local - timedelta(hours=difference_to_UTC)
-        self.end_datetime_utc = end_datetime_local - timedelta(hours=difference_to_UTC)
+        self.start_datetime_utc = start_datetime_local - timedelta(hours=utc_offset_hours)
+        self.end_datetime_utc = end_datetime_local - timedelta(hours=utc_offset_hours)
 
+        # Populated by download(); consumed by format_to_localtime.
+        self.last_result_path: Path | None = None
+        
     @contextlib.contextmanager
     def _cdsapi_credentials(self) -> Generator[None, None, None]:
         """
-        Context manager that temporarily points ``CDSAPI_RC`` at the
-        credentials file supplied at construction time.
+        Context manager that resolves and temporarily activates CDS API credentials.
 
-        If no custom ``cdsapi_rc`` was provided the environment is left
-        unchanged.  The original value of ``CDSAPI_RC`` (or its absence) is
-        always restored on exit, even if an exception is raised.
+        If a custom ``cdsapi_rc`` path was provided at construction time, it is
+        validated and set as ``CDSAPI_RC`` for the duration of the block, then
+        restored on exit.  If no custom path was given, the default resolution
+        order is validated (``$CDSAPI_RC`` env var, then ``~/.cdsapirc``); a
+        :py:exc:`FileNotFoundError` is raised if neither exists.
 
         Yields
         ------
         None
+
+        Raises
+        ------
+        FileNotFoundError
+            If ``cdsapi_rc`` was provided but does not exist, or if no
+            credentials are found at the default locations.
         """
-        if self._cdsapi_rc is None:
-            yield
+        if self._cdsapi_rc is not None:
+            if not self._cdsapi_rc.is_file():
+                raise FileNotFoundError(
+                    f"Credentials file not found: {self._cdsapi_rc}"
+                )
+            previous = os.environ.get("CDSAPI_RC")
+            os.environ["CDSAPI_RC"] = str(self._cdsapi_rc)
+            try:
+                yield
+            finally:
+                if previous is None:
+                    os.environ.pop("CDSAPI_RC", None)
+                else:
+                    os.environ["CDSAPI_RC"] = previous
             return
 
-        previous = os.environ.get("CDSAPI_RC")
-        os.environ["CDSAPI_RC"] = str(self._cdsapi_rc)
-        try:
-            yield
-        finally:
-            if previous is None:
-                os.environ.pop("CDSAPI_RC", None)
-            else:
-                os.environ["CDSAPI_RC"] = previous
+        default_rc = Path.home() / ".cdsapirc"
+        if os.environ.get("CDSAPI_RC") is None and not default_rc.is_file():
+            raise FileNotFoundError(
+                f"No CDS API credentials found: $CDSAPI_RC is not set in the "
+                f"environment and {default_rc} does not exist."
+            )
+        yield
 
     def _prepare_datetime_data(self) -> tuple[list[str], list[str], list[str]]:
         """
@@ -157,7 +178,7 @@ class ERA5Downloader:
         ValueError
             If ``output_filename`` is ``None``.
         FileNotFoundError
-            If a custom ``cdsapi_rc`` path was provided but does not exist.
+            If credentials cannot be resolved (see :meth:`_cdsapi_credentials`).
         cdsapi.api.AmbiguousParameter
             If a variable name is not recognised by the CDS catalog.
         OSError
@@ -167,11 +188,6 @@ class ERA5Downloader:
             raise ValueError(
                 "output_filename must be set before calling download(). "
                 "Pass a filename such as 'winds_ERA5.nc' to the constructor."
-            )
-
-        if self._cdsapi_rc is not None and not self._cdsapi_rc.is_file():
-            raise FileNotFoundError(
-                f"Credentials file not found: {self._cdsapi_rc}"
             )
 
         self.output_path.mkdir(parents=True, exist_ok=True)
@@ -197,19 +213,26 @@ class ERA5Downloader:
                 str(dest),
             )
 
-        print(f"Downloaded {self.output_filename} to {dest.resolve()}.")
-        return dest.resolve()
+        self.last_result_path = dest.resolve()
 
-    def format_to_localtime(self) -> None:
+        print(f"Downloaded {self.output_filename} to {self.output_path / self.output_filename}.")
+        return self.last_result_path
+
+    def format_to_localtime(self) -> Path:
         """
-        Shift the time coordinate from UTC to local time and crop to the
-        requested local-time window, overwriting the file in place.
+        Shift the time coordinate from UTC to local time and write a new file.
 
         Reads the NetCDF produced by :meth:`download`, adds
-        ``difference_to_UTC`` hours to every timestamp (converting UTC to
+        ``utc_offset_hours`` hours to every timestamp (converting UTC to
         local time), trims the dataset to
         ``[start_datetime_local, end_datetime_local]``, and saves the result
-        back to the same path in NETCDF4 format.
+        to a new file whose name is the original stem suffixed with
+        ``_localtime`` (e.g. ``winds_ERA5_localtime.nc``).
+
+        Returns
+        -------
+        Path
+            Absolute path of the newly written local-time NetCDF file.
 
         Raises
         ------
@@ -219,31 +242,51 @@ class ERA5Downloader:
             If the dataset contains neither a ``"time"`` nor a
             ``"valid_time"`` coordinate.
         FileNotFoundError
-            If the expected output file does not exist.
+            If the output file written by :meth:`download` cannot be located.
 
         Notes
         -----
-        - The original file is overwritten in NETCDF4 format.
+        Zarr outputs are not supported; use ``file_format="netcdf"`` or
+        implement a separate workflow for Zarr.
         """
         if self.output_filename is None:
             raise ValueError(
                 "output_filename must be set before calling format_to_localtime()."
             )
-
         target_nc = (self.output_path / self.output_filename).resolve()
-        ds = xr.load_dataset(target_nc, engine="netcdf4")
+            
+        localtime_path = target_nc.with_name(target_nc.stem + "_localtime" + target_nc.suffix)
+        ds_cropped = self._load_and_process(target_nc)
+        ds_cropped.to_netcdf(localtime_path, mode="w", format="NETCDF4")
+        return localtime_path
 
-        if "valid_time" in ds.variables:
-            tcoord = "valid_time"
-        elif "time" in ds.variables:
-            tcoord = "time"
-        else:
-            raise KeyError("No time coordinate found in dataset ('valid_time' or 'time').")
+    def _load_and_process(self, path: Path) -> xr.Dataset:
+        """Read a NetCDF file, shift its time coordinate to local time, and crop.
 
-        ds[tcoord] = ds[tcoord] + np.timedelta64(int(self.difference_to_UTC), "h")
+        Parameters
+        ----------
+        path : Path
+            Path to the NetCDF file produced by :meth:`download`.
 
-        t0_local = np.datetime64(self.start_datetime_local)
-        t1_local = np.datetime64(self.end_datetime_local)
-        ds_cropped = ds.sel({tcoord: slice(t0_local, t1_local)})
+        Returns
+        -------
+        xr.Dataset
+            In-memory dataset with timestamps expressed in local time and
+            sliced to ``[start_datetime_local, end_datetime_local]``.
+        """
+        with xr.open_dataset(path, engine="netcdf4") as ds:
+            if "valid_time" in ds.variables:
+                tcoord = "valid_time"
+            elif "time" in ds.variables:
+                tcoord = "time"
+            else:
+                raise KeyError(
+                    "No time coordinate found in dataset ('valid_time' or 'time')."
+                )
 
-        ds_cropped.to_netcdf(target_nc, mode="w", format="NETCDF4")
+            ds[tcoord] = ds[tcoord] + np.timedelta64(int(self.utc_offset_hours), "h")
+            t0_local = np.datetime64(self.start_datetime_local)
+            t1_local = np.datetime64(self.end_datetime_local)
+            ds_cropped = ds.sel({tcoord: slice(t0_local, t1_local)}).load()
+
+        return ds_cropped

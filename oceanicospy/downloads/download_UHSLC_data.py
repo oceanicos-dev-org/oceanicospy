@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-
+from datetime import datetime
 from pathlib import Path
 
 class UHSLCDownloader:
@@ -19,40 +19,42 @@ class UHSLCDownloader:
         Directory where the downloaded file will be saved.
     output_filename : str or Path
         Name of the output CSV file (e.g. ``"station_057.csv"``). The full path will be ``output_path / output_filename``.
-    start_datetime_local : str, optional
-        Start of the date range to keep after cleaning (e.g. ``"2010-01-01"``).
-        Passed to ``pandas.to_datetime``; if ``None`` the series is not trimmed
+    start_datetime_local : datetime, optional
+        Start of the time range to keep after cleaning
+        (e.g. ``datetime(2010, 1, 1)``). If ``None`` the series is not trimmed
         at the start.
-    end_datetime_local : str, optional
-        End of the date range to keep after cleaning (e.g. ``"2020-12-31"``).
-        Passed to ``pandas.to_datetime``; if ``None`` the series is not trimmed
+    end_datetime_local : datetime, optional
+        End of the time range to keep after cleaning
+        (e.g. ``datetime(2020, 12, 31)``). If ``None`` the series is not trimmed
         at the end.
-    difference_from_UTC : float, optional
-        Local-time offset from UTC in hours (local minus UTC). Used to convert
-        the raw UHSLC timestamps to local time in the cleaned DataFrame. For
-        example, UTC-5 should be passed as ``-5``.
+    utc_offset_hours : float, default -5
+        Local-time offset from UTC in hours, following the convention
+        ``local - UTC``. Used to convert the raw UHSLC timestamps (published
+        in UTC) to local time in the cleaned DataFrame. For example, UTC-5
+        (Colombia) is ``-5``. The default assumes the package's primary
+        Colombian audience; users in other time zones must set this explicitly.
     """
 
     BASE_URL = "https://uhslc.soest.hawaii.edu/data/csv/fast/hourly/"
-
     def __init__(self, station_id: str, output_path: str | Path, output_filename: str | Path,
-                 start_datetime_local: str | None = None, 
-                 end_datetime_local: str | None = None,
-                 difference_from_UTC: float = 5) -> None:
+                 start_datetime_local: datetime | None = None,
+                 end_datetime_local: datetime | None = None,
+                 utc_offset_hours: float = -5) -> None:
         self.station_id = station_id
-        self.output_path = output_path
-        self.output_filename = output_filename
+        self.output_path = Path(output_path)
+        self.output_filename = Path(output_filename)
         self.start_datetime_local = start_datetime_local
         self.end_datetime_local = end_datetime_local
-        self.difference_from_UTC = difference_from_UTC
-
+        self.utc_offset_hours = utc_offset_hours
+        self.last_result_path: Path | None = None
+        
     def download(self) -> Path:
         """
         Download the hourly sea-level CSV for the configured station.
 
         Sends a GET request to the UHSLC Fast-Delivery server and writes
-        the response content to ``output_path / h<station_id>.csv``.
-
+        the response content to ``output_path / output_filename``.
+        
         Returns
         -------
         Path
@@ -60,6 +62,10 @@ class UHSLCDownloader:
 
         Raises
         ------
+        requests.exceptions.ConnectionError
+            If the UHSLC server is unreachable.
+        requests.exceptions.Timeout
+            If the request exceeds the 60-second timeout.
         requests.HTTPError
             If the server returns a non-200 status code.
         OSError
@@ -68,22 +74,19 @@ class UHSLCDownloader:
         filename = f"h{self.station_id}.csv"
         file_url = self.BASE_URL + filename
 
-        response = requests.get(file_url)
+        response = requests.get(file_url, timeout=60)
         response.raise_for_status()
 
-        if isinstance(self.output_path, str):
-            self.output_path = Path(self.output_path)
-        if isinstance(self.output_filename, str):
-            self.output_filename = Path(self.output_filename)
-            
         self.output_path.mkdir(parents=True, exist_ok=True)
         dest = self.output_path / self.output_filename
         dest.write_bytes(response.content)
 
-        print(f"Downloaded {filename} to {dest}.")
+        self.last_result_path = dest
+
+        print(f"Downloaded {self.output_filename} to {dest}.")
         return dest
     
-    def clean_data(self, filepath: str | Path) -> pd.DataFrame:
+    def clean_data(self) -> pd.DataFrame:
         """
         Load and clean a downloaded UHSLC CSV file.
 
@@ -91,35 +94,29 @@ class UHSLCDownloader:
         converts depth to metres, and optionally trims the time series to the
         ``[start_datetime_local, end_datetime_local]`` window provided at construction time.
 
-        Parameters
-        ----------
-        filepath : str or Path
-            Path to the downloaded UHSLC CSV file.
-
         Returns
         -------
         pandas.DataFrame
             DataFrame indexed by datetime with a single column ``depth[m]``. 
-            Timestamps are in local time (UTC shifted by ``difference_from_UTC`` hours).
+            Timestamps are in local time (UTC shifted by ``utc_offset_hours`` hours).
             If ``start_datetime_local`` or ``end_datetime_local`` were set on the instance, the
             returned series is trimmed accordingly; otherwise the full record
             is returned.
-
         """
         df = pd.read_csv(
-            filepath,
+            self.last_result_path,
             header=None,
             names=["year", "month", "day", "hour", "depth[mm]"],
             sep=",",
         )
 
         df.index = pd.to_datetime(df[["year", "month", "day", "hour"]])
-        df.index = df.index - pd.to_timedelta(self.difference_from_UTC, unit="h")
+        df.index = df.index + pd.to_timedelta(self.utc_offset_hours, unit="h")
         df["depth[m]"] = df["depth[mm]"] / 1000.0
         df = df.drop(columns=["year", "month", "day", "hour", "depth[mm]"])
 
         if self.start_datetime_local is not None:
-            df = df.loc[pd.to_datetime(self.start_datetime_local):]
+            df = df.loc[self.start_datetime_local:]
         if self.end_datetime_local is not None:
-            df = df.loc[:pd.to_datetime(self.end_datetime_local)]
+            df = df.loc[:self.end_datetime_local]
         return df
