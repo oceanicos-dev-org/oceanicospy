@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 from .... import utils
-from ....retrievals import *
+from ....downloads import *
 
 class BoundaryConditions:
     def __init__ (self,init,domain_number,dict_info=None,input_filename=None,use_link=None):

@@ -2,14 +2,14 @@ from pathlib import Path
 
 import pandas as pd
 
-from ..retrievals import UHSLCDownloader
+from ..downloads import UHSLCDownloader
 
 
 def download_uhslc_waterlevel(station_id, ini_date, end_date, filepath, difference_from_UTC=-5):
     """
     Download UHSLC hourly sea-level data and return the cleaned DataFrame.
 
-    Instantiates a :class:`~oceanicospy.retrievals.UHSLCDownloader`, fetches
+    Instantiates a :class:`~oceanicospy.downloads.UHSLCDownloader`, fetches
     the CSV from the UHSLC server, writes it to *filepath*, and returns the
     cleaned series.
 

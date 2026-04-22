@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from ..retrievals import ERA5Downloader, CMDSDownloader
+from ..downloads import ERA5Downloader, CMDSDownloader
 
 
 def download_era5_winds(wind_info, ini_date, end_date, difference_to_UTC, filepath):

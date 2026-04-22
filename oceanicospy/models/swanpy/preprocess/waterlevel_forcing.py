@@ -140,7 +140,7 @@ class WaterLevelForcing:
         Processing steps applied to the raw data:
 
         1. Delegate CSV parsing, UTC→local (UTC−5) conversion, and mm→m
-           conversion to :meth:`~oceanicospy.retrievals.UHSLCDownloader.clean_data`.
+           conversion to :meth:`~oceanicospy.downloads.UHSLCDownloader.clean_data`.
         2. Flag UHSLC fill values (``depth[m] < -30.0``) as ``NaN``.
         3. Apply a station datum correction of ``-2.0 m`` for the local-time
            period 1997-01-01 00:00 – 2018-12-31 18:00 (≡ 1997-01-01 05:00 –
