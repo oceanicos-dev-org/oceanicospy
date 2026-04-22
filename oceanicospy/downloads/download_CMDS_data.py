@@ -5,6 +5,9 @@ from pathlib import Path
 import xarray as xr
 import copernicusmarine
 import shutil
+import gc
+import time
+import psutil
 
 
 class CMDSDownloader:
@@ -165,10 +168,19 @@ class CMDSDownloader:
                 "format_to_localtime only supports NetCDF files. "
                 "Use file_format='netcdf'."
             )
-
         target_nc = (self.output_path / self.output_filename).resolve()
+            
+        localtime_path = target_nc.with_name(target_nc.stem + "_localtime" + target_nc.suffix)
+        ds_cropped = self._load_and_process(target_nc)
+        ds_cropped.to_netcdf(localtime_path, mode="w", format="NETCDF4")
+        return localtime_path
 
-        with xr.open_dataset(target_nc, engine="netcdf4") as ds:
+    def _load_and_process(self, path) -> xr.Dataset:
+        """
+        Opens a NetCDF file with xarray, processes time coordinate,
+        loads everything into memory and ensures file handle is released.
+        """
+        with xr.open_dataset(path, engine="netcdf4") as ds:
             if "valid_time" in ds.variables:
                 tcoord = "valid_time"
             elif "time" in ds.variables:
@@ -179,21 +191,11 @@ class CMDSDownloader:
                 )
 
             ds[tcoord] = ds[tcoord] + np.timedelta64(int(self.utc_offset_hours), "h")
-
             t0_local = np.datetime64(self.start_datetime_local)
             t1_local = np.datetime64(self.end_datetime_local)
-
             ds_cropped = ds.sel({tcoord: slice(t0_local, t1_local)}).load()
 
-        ds_cropped.close()
-        # Write to a temp file in the same directory, then atomically replace
-        tmp_path = target_nc.with_suffix(".tmp.nc")
-        try:
-            ds_cropped.to_netcdf(tmp_path, mode="w", format="NETCDF4")
-            os.replace(str(tmp_path), str(target_nc))
-        except Exception:
-            tmp_path.unlink(missing_ok=True)  # clean up temp file on failure
-            raise
+        return ds_cropped
 
     @classmethod
     def for_waves(
