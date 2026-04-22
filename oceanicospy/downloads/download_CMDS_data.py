@@ -136,16 +136,21 @@ class CMDSDownloader:
         print(f"Downloaded {label} to {self.output_path / self.output_filename}.")
         return abs_path
 
-    def format_to_localtime(self) -> None:
+    def format_to_localtime(self) -> Path:
         """
-        Shift the time coordinate from UTC to local time and crop to the
-        requested local-time window, overwriting the file in place.
+        Shift the time coordinate from UTC to local time and write a new file.
 
         Reads the NetCDF produced by :meth:`download`, adds
         ``utc_offset_hours`` hours to every timestamp (converting UTC to
         local time), trims the dataset to
         ``[start_datetime_local, end_datetime_local]``, and saves the result
-        back to the same path.
+        to a new file whose name is the original stem suffixed with
+        ``_localtime`` (e.g. ``winds_CMDS_localtime.nc``).
+
+        Returns
+        -------
+        Path
+            Absolute path of the newly written local-time NetCDF file.
 
         Raises
         ------
@@ -155,13 +160,12 @@ class CMDSDownloader:
             If the dataset contains neither a ``"time"`` nor a
             ``"valid_time"`` coordinate.
         FileNotFoundError
-            If the output file cannot be located.
+            If the output file written by :meth:`download` cannot be located.
 
         Notes
         -----
-        - Zarr outputs are not supported; use ``file_format="netcdf"`` or
-          implement a separate workflow for Zarr.
-        - The original file is overwritten in NETCDF4 format.
+        Zarr outputs are not supported; use ``file_format="netcdf"`` or
+        implement a separate workflow for Zarr.
         """
         if self.file_format.lower() != "netcdf":
             raise ValueError(
@@ -175,10 +179,19 @@ class CMDSDownloader:
         ds_cropped.to_netcdf(localtime_path, mode="w", format="NETCDF4")
         return localtime_path
 
-    def _load_and_process(self, path) -> xr.Dataset:
-        """
-        Opens a NetCDF file with xarray, processes time coordinate,
-        loads everything into memory and ensures file handle is released.
+    def _load_and_process(self, path: Path) -> xr.Dataset:
+        """Read a NetCDF file, shift its time coordinate to local time, and crop.
+
+        Parameters
+        ----------
+        path : Path
+            Path to the NetCDF file produced by :meth:`download`.
+
+        Returns
+        -------
+        xr.Dataset
+            In-memory dataset with timestamps expressed in local time and
+            sliced to ``[start_datetime_local, end_datetime_local]``.
         """
         with xr.open_dataset(path, engine="netcdf4") as ds:
             if "valid_time" in ds.variables:
