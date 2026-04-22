@@ -1,8 +1,14 @@
 from datetime import datetime, timedelta
+import os
 import numpy as np
 from pathlib import Path
 import xarray as xr
 import copernicusmarine
+import shutil
+import gc
+import time
+import psutil
+
 
 class CMDSDownloader:
     """
@@ -130,16 +136,21 @@ class CMDSDownloader:
         print(f"Downloaded {label} to {self.output_path / self.output_filename}.")
         return abs_path
 
-    def format_to_localtime(self) -> None:
+    def format_to_localtime(self) -> Path:
         """
-        Shift the time coordinate from UTC to local time and crop to the
-        requested local-time window, overwriting the file in place.
+        Shift the time coordinate from UTC to local time and write a new file.
 
         Reads the NetCDF produced by :meth:`download`, adds
         ``utc_offset_hours`` hours to every timestamp (converting UTC to
         local time), trims the dataset to
         ``[start_datetime_local, end_datetime_local]``, and saves the result
-        back to the same path.
+        to a new file whose name is the original stem suffixed with
+        ``_localtime`` (e.g. ``winds_CMDS_localtime.nc``).
+
+        Returns
+        -------
+        Path
+            Absolute path of the newly written local-time NetCDF file.
 
         Raises
         ------
@@ -149,38 +160,55 @@ class CMDSDownloader:
             If the dataset contains neither a ``"time"`` nor a
             ``"valid_time"`` coordinate.
         FileNotFoundError
-            If the output file cannot be located.
+            If the output file written by :meth:`download` cannot be located.
 
         Notes
         -----
-        - Zarr outputs are not supported; use ``file_format="netcdf"`` or
-          implement a separate workflow for Zarr.
-        - The original file is overwritten in NETCDF4 format.
+        Zarr outputs are not supported; use ``file_format="netcdf"`` or
+        implement a separate workflow for Zarr.
         """
         if self.file_format.lower() != "netcdf":
             raise ValueError(
                 "format_to_localtime only supports NetCDF files. "
                 "Use file_format='netcdf'."
             )
-
         target_nc = (self.output_path / self.output_filename).resolve()
-        ds = xr.load_dataset(target_nc, engine="netcdf4")
+            
+        localtime_path = target_nc.with_name(target_nc.stem + "_localtime" + target_nc.suffix)
+        ds_cropped = self._load_and_process(target_nc)
+        ds_cropped.to_netcdf(localtime_path, mode="w", format="NETCDF4")
+        return localtime_path
 
-        if "valid_time" in ds.variables:
-            tcoord = "valid_time"
-        elif "time" in ds.variables:
-            tcoord = "time"
-        else:
-            raise KeyError("No time coordinate found in dataset ('valid_time' or 'time').")
+    def _load_and_process(self, path: Path) -> xr.Dataset:
+        """Read a NetCDF file, shift its time coordinate to local time, and crop.
 
-        ds[tcoord] = ds[tcoord] + np.timedelta64(int(self.utc_offset_hours), "h")
+        Parameters
+        ----------
+        path : Path
+            Path to the NetCDF file produced by :meth:`download`.
 
-        t0_local = np.datetime64(self.start_datetime_local)
-        t1_local = np.datetime64(self.end_datetime_local)
-        ds_cropped = ds.sel({tcoord: slice(t0_local, t1_local)})
+        Returns
+        -------
+        xr.Dataset
+            In-memory dataset with timestamps expressed in local time and
+            sliced to ``[start_datetime_local, end_datetime_local]``.
+        """
+        with xr.open_dataset(path, engine="netcdf4") as ds:
+            if "valid_time" in ds.variables:
+                tcoord = "valid_time"
+            elif "time" in ds.variables:
+                tcoord = "time"
+            else:
+                raise KeyError(
+                    "No time coordinate found in dataset ('valid_time' or 'time')."
+                )
 
-        target_nc.unlink(missing_ok=True)
-        ds_cropped.to_netcdf(target_nc, mode="w", format="NETCDF4")
+            ds[tcoord] = ds[tcoord] + np.timedelta64(int(self.utc_offset_hours), "h")
+            t0_local = np.datetime64(self.start_datetime_local)
+            t1_local = np.datetime64(self.end_datetime_local)
+            ds_cropped = ds.sel({tcoord: slice(t0_local, t1_local)}).load()
+
+        return ds_cropped
 
     @classmethod
     def for_waves(
