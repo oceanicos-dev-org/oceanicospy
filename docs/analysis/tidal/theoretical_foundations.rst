@@ -1,5 +1,8 @@
-Harmonic Tidal Decomposition — Theoretical Foundations
-=======================================================
+Theoretical Foundations
+=======================
+
+.. toctree::
+   :maxdepth: 3
 
 Introduction
 ------------
@@ -297,8 +300,3 @@ Pacific Marine Science Report 77-10. Institute of Ocean Sciences, Patricia Bay.
 Pawlowicz, R., Beardsley, B., & Lentz, S. (2002). Classical tidal harmonic
 analysis including error estimates in MATLAB using T_TIDE. *Computers &
 Geosciences*, 28(8), 929–937. https://doi.org/10.1016/S0098-3004(02)00013-4
-
-.. function:: oceanicospy.analysis.harmonic_tides.tide_harmonic_decomposition
-   :members:
-   :undoc-members:
-   :show-inheritance:

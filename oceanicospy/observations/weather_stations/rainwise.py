@@ -5,21 +5,14 @@ class Rainwise(WeatherStationBase):
     """
     A sensor-specific reader for Rainwise weather station files.
 
-    Inherits from :class:`BaseWeatherStation` and implements file parsing methods
+    Inherits from :class:`WeatherStationBase` and implements file parsing methods
     specific to the Rainwise comma-separated text format, including column
-    renaming, unit conversion, and timestamp parsing.
+    renaming and timestamp parsing.
 
     Parameters
     ----------
     filepath : str
         Path to the ``.csv`` file exported by the Rainwise station software.
-
-    Notes
-    -----
-    This class is a stub implementation. The methods ``_load_raw_dataframe``,
-    ``_standardize_columns``, and ``_compute_direction_degrees`` contain
-    placeholder logic and must be completed once the Rainwise CSV schema
-    is available.
     """
 
     def _load_raw_dataframe(self):
@@ -40,13 +33,8 @@ class Rainwise(WeatherStationBase):
         return df
 
     def _standardize_columns(self, df):
-        """"
-        Rename columns and standardize the DataFrame for analysis.
-
-        Intended to map Rainwise-specific column headers to the project-wide
-        English schema shared with other station models, parse the timestamp
-        column into a ``datetime64[ns]`` index, and cast numeric measurement
-        columns to ``float64``.
+        """
+        Rename columns, parse timestamps, and cast numerics to float.
 
         Parameters
         ----------
@@ -58,15 +46,50 @@ class Rainwise(WeatherStationBase):
         -------
         pandas.DataFrame
             Cleaned DataFrame indexed by ``date`` (``datetime64[ns]``) with
-            standardized column names and numeric dtypes.
+            standardized column names following the ``variable[unit]``
+            convention. Only the following columns are retained (when present):
+            ``rain[mm]``, ``air_temp[C]``, ``air_humidity[%]``,
+            ``pressure[hPa]``, ``wind_speed[m/s]``, ``wind_direction[°]``,
+            ``solar_radiation[W/m2]``.
         """
-        df['date'] = pd.to_datetime(df['Time'])
-        df.drop(columns=['Time'], inplace=True)
+        rename_map = {
+            'Interval Precip':      'rain[mm]',
+            'Temp Avg':             'air_temp[C]',
+            'Hum Avg':              'air_humidity[%]',
+            'Baro Avg':             'pressure[hPa]',
+            'Windspeed':            'wind_speed[m/s]',
+            'Wind Direction':       'wind_direction[°]',
+            'Solar Radiation Avg':  'solar_radiation[W/m2]',
+        }
+
+        df['date'] = pd.to_datetime(df['Time'], errors='coerce')
+        df = df.drop(columns=['Time'])
         df = df.set_index('date')
+
+        df = df.rename(columns=rename_map)
+        keep = [c for c in rename_map.values() if c in df.columns]
+        df = df[keep]
+
+        df[keep] = df[keep].apply(pd.to_numeric, errors='coerce')
+
         return df
     
     def _compute_direction_degrees(self, df):
         """
-        Compute wind direction in degrees from raw directional data.
+        Pass through the DataFrame unchanged.
+
+        Rainwise exports ``wind_direction[°]`` already in decimal degrees
+        (0–360), so no conversion is required.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            DataFrame containing a ``wind_direction[°]`` column with wind
+            direction values already in decimal degrees.
+
+        Returns
+        -------
+        pandas.DataFrame
+            The input DataFrame, unmodified.
         """
         return df

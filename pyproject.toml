@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "oceanicospy"
-version = "0.1.0b1"
+version = "0.1.0b2"
 description = "A Python library for oceanographic data analysis, numerical model preprocessing, and data retrieval"
 readme = "README.md"
 authors = [
