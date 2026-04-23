@@ -2,6 +2,7 @@ import glob as glob
 from scipy.interpolate import griddata
 from pathlib import Path
 from .... import utils
+from ....gis import read_xyz,XYZFormatSpec
 
 class BathyMaker:
     """
@@ -64,27 +65,24 @@ class BathyMaker:
             'Bathymetry file has been linked/copied to run directory, but no metadata dictionary to return.')
         
     # TODO: this can be more like a call to gis module to obtain a standardized bathymetry info.
-    # def convert_xyz2asc(self,nodata_value):
-    #     """
-    #     Converts bathymetry data from XYZ format to ESRI ASCII Grid format.
+    def convert_xyz2asc(self,xyz_filepath,nodata_value):
+        """
+        Converts bathymetry data from XYZ format to ESRI ASCII Grid format.
 
-    #     Reads a space-delimited `.dat` file, interpolates the scattered data onto a
-    #     regular grid using linear interpolation, and writes the result as an ESRI
-    #     ASCII Grid (`.bot`) file.
+        Reads a space-delimited `.dat` file, interpolates the scattered data onto a
+        regular grid using linear interpolation, and writes the result as an ESRI
+        ASCII Grid (`.bot`) file.
 
-    #     Parameters
-    #     ----------
-    #     nodata_value : float
-    #         Value used to fill cells where interpolation produced NaN.
+        Parameters
+        ----------
+        nodata_value : float
+            Value used to fill cells where interpolation produced NaN.
 
-    #     Returns
-    #     -------
-    #     dict
-    #         Dictionary with string-valued bathymetry metadata: ``lon_ll_bat_corner``,
-    #         ``lat_ll_bat_corner``, ``x_bot``, ``y_bot``, ``spacing_x``, and ``spacing_y``.
-    #     """
-    #     bathy_xyz_path = glob.glob(f'{self.dict_folders["input"]}*.dat')[0]
-    #     ascfile = f'{self.dict_folders["run"]}{self.filename}.bot'
+        """
+        bathy_xyz_path =  f'{self.dict_folders["input"]}/domain_0{self.domain_number}/{xyz_filepath}'
+        bathy_xyz_df = read_xyz(bathy_xyz_path)
+
+    #     ascfile = f'{self.dict_folders["run"]}/domain_0{self.domain_number}/{self.filename}.bot'
     #     np.set_printoptions(formatter={'float_kind':'{:f}'.format})
 
     #     # Read bathymetry file
