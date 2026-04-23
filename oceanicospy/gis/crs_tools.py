@@ -1,316 +1,296 @@
+"""
+crs_tools
+=========
+Coordinate reference system (CRS) utilities for point file reprojection.
+
+This module provides tools to load point data from vector files (.shp,
+.geojson, .gpkg) or XYZ text files, reproject coordinates to a target
+CRS, and export the result as an XYZ file.
+
+CRS normalization is delegated to ``io_xyz._normalize_epsg`` to ensure
+consistent behaviour across the subpackage.
+
+Public API
+----------
+PointFileReprojector
+    Load, reproject and export point data from vector or XYZ files.
+reproject_xyz_file
+    Convenience function to reproject an XYZ file in a single call.
+"""
+
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Optional, Union
 
 import geopandas as gpd
 
 from .io_xyz import (
     XYZFormatSpec,
+    _normalize_epsg,
     load_xyz_as_geodataframe,
     save_xyz_from_geodataframe,
 )
 
+__all__ = [
+    "PointFileReprojector",
+    "reproject_xyz_file",
+]
 
-class ShapefileReprojector:
+#: Vector file extensions handled directly by GeoPandas.
+_VECTOR_EXTENSIONS: tuple[str, ...] = (".shp", ".geojson", ".gpkg")
+
+
+# ---------------------------------------------------------------------------
+# PointFileReprojector
+# ---------------------------------------------------------------------------
+
+class PointFileReprojector:
     """
-    Utility class to load point data (shapefile or XYZ-like text file),
-    reproject coordinates to a target CRS, and optionally export as XYZ.
+    Load point data from a vector or XYZ file, reproject it, and export
+    the result as an XYZ plain-text file.
 
-    This class assumes point-like input data with X, Y and Z information.
+    Supported input formats
+    -----------------------
+    - Vector files (``.shp``, ``.geojson``, ``.gpkg``): CRS is read from
+      file metadata when available.  Pass *source_epsg* only when the
+      file lacks a CRS definition.
+    - XYZ text files (``.xyz``, ``.txt``): *source_epsg* is required
+      because plain-text files carry no CRS metadata.
 
-    Supported inputs
-    ----------------
-    - .shp (and other vector formats supported by GeoPandas):
-        Point layer; CRS taken from file metadata when available.
-    - .txt/.xyz:
-        Space- or delimiter-separated table with x, y, z columns,
-        parsed through the io_xyz module.
+    Parameters
+    ----------
+    input_path : str or pathlib.Path
+        Path to the input file.
+    z_column : str, optional
+        Name of the attribute column that holds elevation or depth values.
+        For XYZ files this must match the column name in *format_spec*.
+    source_epsg : str or int, optional
+        CRS of the input data (e.g. ``4326`` or ``"EPSG:4326"``).  Required
+        for XYZ files.  For vector files it overrides the file metadata
+        only when no CRS is embedded.
+    format_spec : XYZFormatSpec, optional
+        Layout descriptor used for both reading XYZ input files and writing
+        XYZ output files.  When ``None`` a default :class:`~io_xyz.XYZFormatSpec`
+        is used.  Ignored for vector input formats.
 
-    Typical usage
-    -------------
-    reprojector = ShapefileReprojector(
-        input_path="points.shp",
-        z_column="Z",
-        source_epsg=None,  # if None, read CRS from file
-    )
-    reprojector.reproject_to_epsg(3116)
-    reprojector.to_xyz("output.xyz")
+    Attributes
+    ----------
+    gdf : geopandas.GeoDataFrame
+        Internal GeoDataFrame populated after loading.  Use this attribute
+        to inspect or further process the data before exporting.
     """
 
     def __init__(
         self,
-        input_path: str,
-        x_column: str = "x",
-        y_column: str = "y",
+        input_path: Union[str, Path],
         z_column: str = "z",
-        source_epsg: Optional[Union[int, str]] = None,
-        xyz_format_spec: Optional[XYZFormatSpec] = None,
+        source_epsg: Optional[Union[str, int]] = None,
+        format_spec: Optional[XYZFormatSpec] = None,
     ) -> None:
-        """
-        Initialize by loading input data into a GeoDataFrame.
-
-        Parameters
-        ----------
-        input_path : str
-            Path to input shapefile (.shp) or text file (.txt/.xyz).
-        x_column, y_column, z_column : str
-            Column names representing X, Y, Z when reading XYZ files.
-            These names are used to build or map the XYZFormatSpec.
-        source_epsg : int or str or None
-            EPSG code of the source CRS for XYZ files or shapefiles
-            without CRS metadata. If None and the file has a CRS,
-            the file's CRS is used.
-        xyz_format_spec : XYZFormatSpec or None
-            Optional format specification to read XYZ files. If None,
-            a simple specification based on x_column, y_column and
-            z_column will be used.
-        """
-        self.input_path = input_path
-        self.x_column = x_column
-        self.y_column = y_column
+        self.input_path = Path(input_path)
         self.z_column = z_column
         self.source_epsg = source_epsg
-        self.xyz_format_spec = xyz_format_spec
-        self.gdf = self._load_input()
+        self.format_spec = format_spec or XYZFormatSpec()
+        self.gdf: gpd.GeoDataFrame = self._load()
+
+    # ------------------------------------------------------------------
+    # Properties
+    # ------------------------------------------------------------------
 
     @property
     def crs(self):
         """
-        Return the CRS of the internal GeoDataFrame.
+        CRS of the internal GeoDataFrame.
 
         Returns
         -------
-        Any
-            CRS object managed by GeoPandas (usually pyproj CRS).
+        pyproj.CRS or None
+            The current CRS as managed by GeoPandas.
         """
         return self.gdf.crs
 
-    def _load_input(self) -> gpd.GeoDataFrame:
+    # ------------------------------------------------------------------
+    # Private methods
+    # ------------------------------------------------------------------
+
+    def _load(self) -> gpd.GeoDataFrame:
         """
-        Load input file and return a GeoDataFrame with geometry.
+        Load the input file into a GeoDataFrame.
 
         Returns
         -------
         geopandas.GeoDataFrame
-            Point GeoDataFrame with a valid CRS.
+
+        Raises
+        ------
+        ValueError
+            If the file has no embedded CRS and *source_epsg* was not
+            provided, or if *z_column* is absent from a vector file.
+        ValueError
+            If *source_epsg* is required but was not provided for an
+            XYZ file.
         """
-        path_lower = self.input_path.lower()
+        if self.input_path.suffix.lower() in _VECTOR_EXTENSIONS:
+            return self._load_vector()
+        return self._load_xyz()
 
-        # Case 1: vector data handled directly by GeoPandas
-        if path_lower.endswith(".shp") or path_lower.endswith(".geojson") or path_lower.endswith(".gpkg"):
-            gdf = gpd.read_file(self.input_path)
+    def _load_vector(self) -> gpd.GeoDataFrame:
+        """Load a vector file (.shp, .geojson, .gpkg) via GeoPandas."""
+        gdf = gpd.read_file(self.input_path)
 
-            # If no CRS is present and a source EPSG is provided, assign it
-            if gdf.crs is None and self.source_epsg is not None:
-                gdf = gdf.set_crs(self._normalize_crs(self.source_epsg))
-
-            # If no CRS is present and no source EPSG was provided, this is a risk
-            if gdf.crs is None:
+        if gdf.crs is None:
+            if self.source_epsg is None:
                 raise ValueError(
-                    "Input vector file has no CRS and no source_epsg was provided. "
-                    "Please specify source_epsg so that coordinates can be interpreted correctly."
+                    f"'{self.input_path.name}' has no embedded CRS. "
+                    "Provide source_epsg so coordinates can be interpreted correctly."
                 )
+            gdf = gdf.set_crs(_normalize_epsg(self.source_epsg))
 
-            # Ensure the requested z_column exists for later XYZ export
-            if self.z_column not in gdf.columns:
-                raise ValueError(
-                    f"Requested z_column '{self.z_column}' not found in the input file."
-                )
-
-            return gdf
-
-        # Case 2: assume XYZ-like text file, use io_xyz module
-        # Build a simple XYZFormatSpec if none is provided
-        if self.xyz_format_spec is None:
-            xyz_spec = XYZFormatSpec(
-                x_column=self.x_column,
-                y_column=self.y_column,
-                z_column=self.z_column,
+        if self.z_column not in gdf.columns:
+            raise ValueError(
+                f"Column '{self.z_column}' not found in '{self.input_path.name}'. "
+                f"Available columns: {list(gdf.columns)}"
             )
-        else:
-            xyz_spec = self.xyz_format_spec
 
+        return gdf
+
+    def _load_xyz(self) -> gpd.GeoDataFrame:
+        """Load an XYZ text file via io_xyz."""
         if self.source_epsg is None:
             raise ValueError(
-                "source_epsg must be provided for XYZ text files "
-                "so that the CRS can be correctly assigned."
+                "source_epsg is required for XYZ text files because they "
+                "carry no CRS metadata."
             )
 
-        # Load XYZ as GeoDataFrame with assigned CRS (no reprojection yet)
-        gdf_xyz = load_xyz_as_geodataframe(
+        return load_xyz_as_geodataframe(
             file_path=self.input_path,
-            format_spec=xyz_spec,
-            crs=self._normalize_crs(self.source_epsg),
+            format_spec=self.format_spec,
+            crs=self.source_epsg,
         )
 
-        return gdf_xyz
+    # ------------------------------------------------------------------
+    # Public methods
+    # ------------------------------------------------------------------
 
-    @staticmethod
-    def _normalize_crs(crs: Union[int, str]) -> Union[int, str]:
+    def reproject_to_epsg(self, target_epsg: Union[str, int]) -> None:
         """
-        Normalize CRS representation to a form accepted by GeoPandas.
+        Reproject the internal GeoDataFrame to a target CRS in place.
 
         Parameters
         ----------
-        crs : int or str
-            EPSG code as integer or full CRS string.
+        target_epsg : str or int
+            Target EPSG code (e.g. ``9377`` or ``"EPSG:9377"``).
 
-        Returns
-        -------
-        int or str
-            Normalized CRS representation.
-        """
-        # GeoPandas can handle both "EPSG:XXXX" and integer EPSG codes.
-        # Here we keep the value as provided, only converting strings
-        # that look like integers into integer EPSG codes.
-        if isinstance(crs, str):
-            # Try to convert plain numeric strings to int
-            stripped = crs.strip().upper().replace("EPSG:", "")
-            try:
-                epsg_int = int(stripped)
-                return epsg_int
-            except ValueError:
-                # Non-numeric string, return as is (e.g. PROJ4 or WKT)
-                return crs
-        return crs
-
-    def reproject_to_epsg(self, target_epsg: int) -> None:
-        """
-        Reproject internal GeoDataFrame to a target EPSG code.
-
-        Parameters
-        ----------
-        target_epsg : int
-            Target EPSG code (e.g. 3116, 32617).
+        Raises
+        ------
+        ValueError
+            If the internal GeoDataFrame has no CRS defined.
         """
         if self.gdf.crs is None:
             raise ValueError(
-                "Source CRS is not defined. It must be set before reprojecting."
+                "Source CRS is not defined. "
+                "Assign source_epsg before reprojecting."
             )
-        self.gdf = self.gdf.to_crs(epsg=target_epsg)
+        self.gdf = self.gdf.to_crs(_normalize_epsg(target_epsg))
 
     def to_xyz(
         self,
-        output_path: str,
+        output_path: Union[str, Path],
         format_spec: Optional[XYZFormatSpec] = None,
         float_format: str = "%.3f",
         include_header: Optional[bool] = None,
     ) -> None:
         """
-        Export current GeoDataFrame to a simple XYZ text file.
+        Export the current GeoDataFrame to an XYZ plain-text file.
 
         Parameters
         ----------
-        output_path : str
-            Path to the output .xyz file.
+        output_path : str or pathlib.Path
+            Destination file path.
         format_spec : XYZFormatSpec, optional
-            Format specification describing delimiter, header and
-            column names. If None, a simple default is created using
-            self.x_column, self.y_column and self.z_column.
+            Layout descriptor for the output file.  When ``None`` the
+            instance's *format_spec* (set at construction) is reused,
+            so input and output share the same layout by default.
         float_format : str, optional
-            Numeric format for floating-point values (e.g., '%.3f').
+            ``printf``-style format string for floating-point values.
         include_header : bool, optional
-            Whether to include a header row. If None, it follows
-            `format_spec.has_header`.
+            Override whether a header row is written.  When ``None`` the
+            value is taken from the effective *format_spec*.
+
+        Raises
+        ------
+        ValueError
+            If *z_column* is not present in the internal GeoDataFrame.
         """
-        # Use provided format specification or build a simple one
-        if format_spec is None:
-            format_spec = XYZFormatSpec(
-                x_column=self.x_column,
-                y_column=self.y_column,
-                z_column=self.z_column,
-            )
+        effective_spec = format_spec or self.format_spec
 
-        # Ensure z_column exists in the GeoDataFrame before export
-        if self.z_column not in self.gdf.columns:
-            raise ValueError(
-                f"GeoDataFrame does not contain the requested z column: '{self.z_column}'"
-            )
-
-        # Delegate XYZ writing to io_xyz helper
         save_xyz_from_geodataframe(
             gdf=self.gdf,
             file_path=output_path,
-            format_spec=format_spec,
+            format_spec=effective_spec,
             z_column=self.z_column,
             float_format=float_format,
             include_header=include_header,
         )
 
 
+# ---------------------------------------------------------------------------
+# Convenience function
+# ---------------------------------------------------------------------------
+
 def reproject_xyz_file(
-    input_path: str,
-    output_path: str,
-    source_epsg: Union[int, str],
-    target_epsg: Union[int, str],
+    input_path: Union[str, Path],
+    output_path: Union[str, Path],
+    source_epsg: Union[str, int],
+    target_epsg: Union[str, int],
     z_column: str = "z",
-    xyz_format_spec: Optional[XYZFormatSpec] = None,
+    format_spec: Optional[XYZFormatSpec] = None,
     float_format: str = "%.3f",
     include_header: Optional[bool] = None,
 ) -> None:
     """
-    Convenience function to reproject an XYZ file from one CRS to another.
+    Reproject an XYZ file from one CRS to another in a single call.
+
+    This is a thin convenience wrapper around :class:`PointFileReprojector`.
+    It is equivalent to instantiating the class, calling
+    :meth:`~PointFileReprojector.reproject_to_epsg` and then
+    :meth:`~PointFileReprojector.to_xyz`.
 
     Parameters
     ----------
-    input_path : str
+    input_path : str or pathlib.Path
         Path to the input XYZ file.
-    output_path : str
+    output_path : str or pathlib.Path
         Path to the output XYZ file.
-    source_epsg : int or str
-        EPSG code of the source CRS (e.g. 4326, "EPSG:4326").
-    target_epsg : int or str
-        EPSG code of the target CRS (e.g. 3116, "EPSG:3116").
+    source_epsg : str or int
+        CRS of the input file (e.g. ``32617`` or ``"EPSG:32617"``).
+    target_epsg : str or int
+        Target CRS (e.g. ``9377`` or ``"EPSG:9377"``).
     z_column : str, optional
-        Name of the column containing elevation/depth values.
-    xyz_format_spec : XYZFormatSpec, optional
-        Format specification for reading/writing the XYZ file.
-        If None, a default XYZFormatSpec is used.
+        Name of the column containing elevation or depth values.
+    format_spec : XYZFormatSpec, optional
+        Layout descriptor used for both reading and writing.  When
+        ``None`` a default :class:`~io_xyz.XYZFormatSpec` is used.
     float_format : str, optional
-        Numeric format for floating-point values in the output file.
+        ``printf``-style format string for floating-point values.
     include_header : bool, optional
-        Whether to include a header row in the output file. If None,
-        it follows `xyz_format_spec.has_header`.
+        Override whether a header row is written in the output file.
 
     Notes
     -----
-    - This function is useful when you just want to transform an
-      XYZ file between CRSs without manually handling GeoDataFrames.
+    Use :class:`PointFileReprojector` directly when you need to inspect
+    or modify the data between loading and exporting.
     """
-    # Normalize CRS representation
-    def _normalize(crs_val: Union[int, str]) -> Union[int, str]:
-        if isinstance(crs_val, str):
-            stripped = crs_val.strip().upper().replace("EPSG:", "")
-            try:
-                epsg_int = int(stripped)
-                return epsg_int
-            except ValueError:
-                return crs_val
-        return crs_val
-
-    src_crs = _normalize(source_epsg)
-    tgt_crs = _normalize(target_epsg)
-
-    # Use provided format spec or a default one
-    if xyz_format_spec is None:
-        xyz_format_spec = XYZFormatSpec(z_column=z_column)
-
-    # Load XYZ as GeoDataFrame, assigning the source CRS
-    gdf = load_xyz_as_geodataframe(
-        file_path=input_path,
-        format_spec=xyz_format_spec,
-        crs=src_crs,
-    )
-
-    # Reproject to target CRS
-    gdf_reprojected = gdf.to_crs(tgt_crs)
-
-    # Save back to XYZ using the same format specification
-    save_xyz_from_geodataframe(
-        gdf=gdf_reprojected,
-        file_path=output_path,
-        format_spec=xyz_format_spec,
+    reprojector = PointFileReprojector(
+        input_path=input_path,
         z_column=z_column,
+        source_epsg=source_epsg,
+        format_spec=format_spec,
+    )
+    reprojector.reproject_to_epsg(target_epsg)
+    reprojector.to_xyz(
+        output_path=output_path,
         float_format=float_format,
         include_header=include_header,
     )

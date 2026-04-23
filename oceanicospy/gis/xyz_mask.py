@@ -1,122 +1,170 @@
-from dataclasses import dataclass
-from typing import Iterable, List, Tuple, Dict
+"""
+xyz_mask
+========
+Rectangular masking utilities for XYZ point data.
 
+This module provides tools to retain or discard points from an XYZ
+dataset based on axis-aligned rectangular regions defined in the same
+coordinate space as the data.
+
+Public API
+----------
+AxisAlignedRectangle
+    Immutable axis-aligned rectangle defined by two opposite corners.
+XYZRectangleMask
+    Apply one or more rectangles to filter an XYZ DataFrame.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any, Dict, List, Tuple
+
+import numpy as np
 import pandas as pd
 
+__all__ = [
+    "AxisAlignedRectangle",
+    "XYZRectangleMask",
+]
+
+
+# ---------------------------------------------------------------------------
+# AxisAlignedRectangle
+# ---------------------------------------------------------------------------
 
 @dataclass(frozen=True)
 class AxisAlignedRectangle:
     """
-    Axis-aligned rectangle defined by two opposite corners (p1, p2).
+    Immutable axis-aligned rectangle defined by two opposite corners.
 
-    Notes
-    -----
-    - The order of p1 and p2 is irrelevant; min/max are computed internally.
-    - This geometry operates purely in the XY plane and does not involve CRS logic.
+    The order of *p1* and *p2* is irrelevant; minimum and maximum bounds
+    are computed internally.  This geometry operates purely in the XY
+    plane and carries no CRS information.
+
+    Parameters
+    ----------
+    p1 : tuple of (float, float)
+        First corner as ``(x, y)``.
+    p2 : tuple of (float, float)
+        Opposite corner as ``(x, y)``.
     """
+
     p1: Tuple[float, float]
     p2: Tuple[float, float]
 
-    def contains(self, x: float, y: float) -> bool:
-        """Return True if (x, y) lies inside or on the rectangle boundary."""
-        min_x = min(self.p1[0], self.p2[0])
-        max_x = max(self.p1[0], self.p2[0])
-        min_y = min(self.p1[1], self.p2[1])
-        max_y = max(self.p1[1], self.p2[1])
-        return (min_x <= x <= max_x) and (min_y <= y <= max_y)
+    @property
+    def x_min(self) -> float:
+        """Minimum X bound."""
+        return min(self.p1[0], self.p2[0])
 
+    @property
+    def x_max(self) -> float:
+        """Maximum X bound."""
+        return max(self.p1[0], self.p2[0])
+
+    @property
+    def y_min(self) -> float:
+        """Minimum Y bound."""
+        return min(self.p1[1], self.p2[1])
+
+    @property
+    def y_max(self) -> float:
+        """Maximum Y bound."""
+        return max(self.p1[1], self.p2[1])
+
+    def contains(self, x: float, y: float) -> bool:
+        """
+        Return ``True`` if ``(x, y)`` lies inside or on the boundary.
+
+        Parameters
+        ----------
+        x : float
+            X coordinate to test.
+        y : float
+            Y coordinate to test.
+
+        Returns
+        -------
+        bool
+        """
+        return (self.x_min <= x <= self.x_max) and (self.y_min <= y <= self.y_max)
+
+
+# ---------------------------------------------------------------------------
+# XYZRectangleMask
+# ---------------------------------------------------------------------------
 
 class XYZRectangleMask:
     """
-    Apply axis-aligned rectangular masks to XYZ data.
+    Apply axis-aligned rectangular masks to an XYZ point DataFrame.
 
-    This class supports two modes:
-    - mode="keep"    → keep points INSIDE rectangles (default)
-    - mode="exclude" → remove points INSIDE rectangles
+    Two modes are supported:
+
+    - ``"keep"`` — retain only points that fall **inside** at least one
+      rectangle (default).
+    - ``"exclude"`` — remove points that fall **inside** any rectangle.
+
+    Parameters
+    ----------
+    rectangles : list of AxisAlignedRectangle
+        One or more rectangles defining the inclusion or exclusion zones.
+    mode : {"keep", "exclude"}, optional
+        Filtering mode.  Defaults to ``"keep"``.
+
+    Raises
+    ------
+    ValueError
+        If *mode* is not ``"keep"`` or ``"exclude"``.
     """
 
-    def __init__(self, rectangles: List[AxisAlignedRectangle], mode: str = "keep"):
-        """
-        Parameters
-        ----------
-        rectangles : list of AxisAlignedRectangle
-            Rectangles representing inclusion/exclusion zones.
-
-        mode : {"keep", "exclude"}, optional
-            Determines how rectangles are applied:
-            * "keep"    → retain only points inside rectangles.
-            * "exclude" → remove points inside rectangles.
-        """
+    def __init__(
+        self,
+        rectangles: List[AxisAlignedRectangle],
+        mode: str = "keep",
+    ) -> None:
         if mode not in ("keep", "exclude"):
-            raise ValueError("mode must be either 'keep' or 'exclude'")
-
+            raise ValueError(
+                f"Invalid mode '{mode}'. Expected 'keep' or 'exclude'."
+            )
         self.rectangles = rectangles
         self.mode = mode
 
-    @classmethod
-    def from_dict(cls, rectangles_dict: Dict, mode: str = "keep") -> "XYZRectangleMask":
-        """
-        Build a mask from a dictionary specification.
-
-        Expected format
-        ---------------
-        {
-            "count": N,
-            "rectangles": [
-                {"p1": [x1, y1], "p2": [x2, y2]},
-                ...
-            ]
-        }
-        """
-        rect_list = rectangles_dict.get("rectangles", [])
-
-        if not isinstance(rect_list, Iterable):
-            raise ValueError("'rectangles' must be an iterable.")
-
-        if rectangles_dict.get("count", len(rect_list)) != len(rect_list):
-            raise ValueError("'count' does not match the number of provided rectangles.")
-
-        rectangles: List[AxisAlignedRectangle] = []
-        for item in rect_list:
-            p1 = item["p1"]
-            p2 = item["p2"]
-            rect = AxisAlignedRectangle(
-                p1=(float(p1[0]), float(p1[1])),
-                p2=(float(p2[0]), float(p2[1]))
-            )
-            rectangles.append(rect)
-
-        return cls(rectangles, mode=mode)
-
     def filter_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        Filter points according to the selected mode.
-
-        mode="keep":
-            Keep only points INSIDE any rectangle.
-        
-        mode="exclude":
-            Remove points INSIDE any rectangle.
+        Filter *df* according to the rectangles and the selected mode.
 
         Parameters
         ----------
         df : pandas.DataFrame
-            Must contain at least ['x', 'y', 'z'].
+            Input point data.  Must contain at least the columns
+            ``"x"`` and ``"y"``.
 
         Returns
         -------
         pandas.DataFrame
-            Filtered DataFrame.
+            Filtered copy of *df* with the index reset.
+
+        Raises
+        ------
+        ValueError
+            If ``"x"`` or ``"y"`` columns are absent from *df*.
         """
-        mask = []
+        missing = [c for c in ("x", "y") if c not in df.columns]
+        if missing:
+            raise ValueError(
+                f"DataFrame is missing required columns: {missing}"
+            )
 
-        for _, row in df.iterrows():
-            x, y = row["x"], row["y"]
-            inside_any = any(rect.contains(x, y) for rect in self.rectangles)
+        x = df["x"].to_numpy()
+        y = df["y"].to_numpy()
 
-            if self.mode == "keep":
-                mask.append(inside_any)       # Keep inside, drop outside
-            else:  # mode == "exclude"
-                mask.append(not inside_any)   # Keep outside, drop inside
+        inside_any = np.zeros(len(df), dtype=bool)
+        for rect in self.rectangles:
+            inside_any |= (
+                (x >= rect.x_min) & (x <= rect.x_max) &
+                (y >= rect.y_min) & (y <= rect.y_max)
+            )
 
+        mask = inside_any if self.mode == "keep" else ~inside_any
         return df.loc[mask].reset_index(drop=True)
