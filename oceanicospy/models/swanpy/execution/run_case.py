@@ -50,9 +50,9 @@ class CaseRunner():
 
         Parameters
         ----------
-        filename : str, optional
+        filename : str
             Name of the CSV file located in the domain input folder. Must
-            contain at least ``X`` and ``Y`` columns. Defaults to ``'points.csv'``.
+            contain at least ``X`` and ``Y`` columns.
         """
 
         ds = pd.read_csv(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{filename}',delimiter=',')

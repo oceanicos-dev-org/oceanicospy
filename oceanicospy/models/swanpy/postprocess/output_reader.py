@@ -23,11 +23,18 @@ class SwanOutputReader:
         Number of output points written to ``PointSWAN.out``.
         Used only for non-stationary files where rows are interleaved.
     
+    Notes
+    -----
+    * The reader automatically detects whether the run was stationary or
+      non-stationary based on the presence of time values in the data rows of
+      ``PointSWAN.out`` and the presence of date-suffixed keys in
+      ``wave_field.mat``.
+    * For non-stationary runs the ``point`` column in the returned DataFrame
+      is 1-indexed to match SWAN's output point numbering.
     
     """
 
     def __init__(self, n_points: int = 1):
-
         self.n_points = int(n_points)
 
     def read_point_output(
@@ -109,8 +116,8 @@ class SwanOutputReader:
         filepath = Path(output_dir) / filename
         return read_swan(str(filepath), as_site=as_site)
 
-    # Matches keys of the form  <VariableName>_<6–14 digits>
-    # e.g. Hsig_20230507, TPsmoo_202305071200, Dir_20230507120000
+    # Matches keys of the form  <VariableName>_<8digits>_<6digits>
+    # e.g. Hsig_20230507_120000, TPsmoo_202305_071200, Dir_20230507_120000
     _SPATIAL_DATE_RE = re.compile(r"^(.+)_(\d{8})_(\d{6})$")
 
     def read_spatial_output(
@@ -123,7 +130,7 @@ class SwanOutputReader:
 
         SWAN writes one 2-D array (``ny × nx``) per variable per timestep.
         Time-varying snapshots are identified by a date suffix in the key name
-        (e.g. ``Hsig_20230507``, ``Hsig_202305071200``).  Snapshots for the
+        (e.g. ``Hsig_20230507_120000``).  Snapshots for the
         same base variable are stacked in chronological order along a leading
         ``time`` dimension.  Keys without a date suffix are treated as
         stationary.
@@ -214,15 +221,22 @@ class SwanOutputReader:
         }
         return xr.Dataset(data_vars, coords=coords)
 
-    # ------------------------------------------------------------------
-    # Private helpers
-    # ------------------------------------------------------------------
-
     def _read_header_cols(self, filepath: Path) -> list:
         """Return column names from the header comment block of a SWAN table file.
 
         The column-names line is identified as the comment line immediately
-        followed by the units line (the one that contains ``[``).
+        followed by the units line (the one that contains ``[``)
+        
+        Parameters
+        ----------
+        filepath : Path
+            Path to the SWAN output file (e.g. ``PointSWAN.out``).
+
+        Returns
+        -------
+        list of str
+            Column names extracted from the header, in order.
+            Returns an empty list if no header could be identified.
         """
         with open(filepath) as fh:
             comment_lines = []
@@ -243,6 +257,17 @@ class SwanOutputReader:
         In a stationary SWAN table the Time column is declared in the header
         but the corresponding field in each data row is left empty (pure
         leading whitespace), so the line starts with a space character.
+
+        Parameters
+        ----------
+        filepath : Path
+            Path to the SWAN output file (e.g. ``PointSWAN.out``).
+
+        Returns
+        -------
+        bool
+            ``True`` if the Time field in the first data row is blank
+            (stationary run); ``False`` otherwise.
         """
         with open(filepath) as fh:
             for line in fh:
@@ -255,6 +280,21 @@ class SwanOutputReader:
 
         Tries common SWAN date formats from most to least specific and returns
         the first one that parses without error.
+
+        Parameters
+        ----------
+        date_strings : list of str
+            List of date strings extracted from the keys of ``wave_field.mat``.
+
+        Returns
+        -------
+        pandas.DatetimeIndex
+            Parsed datetime index in chronological order.
+
+        Raises
+        ------
+        ValueError
+            If none of the attempted SWAN date formats can parse *date_strings*.
         """
         for fmt in ("%Y%m%d%H%M%S", "%Y%m%d%H%M", "%Y%m%d%H", "%Y%m%d", "%y%m%d"):
             try:
@@ -266,6 +306,23 @@ class SwanOutputReader:
         )
 
     def _parse_nonstat_points(self, raw: pd.DataFrame, cols: list) -> pd.DataFrame:
+        """Parse the interleaved rows of a non-stationary ``PointSWAN.out``.
+
+        The Time column is parsed into a DatetimeIndex, and a new ``point`` column is 
+        created by repeating the sequence 1 … n_points until it matches the length of the data.
+
+        Parameters
+        ----------
+        raw : pd.DataFrame
+            The raw DataFrame read from the file, with all columns as strings.
+        cols : list of str
+            The column names extracted from the header (including "Time").
+        
+        Returns
+        -------
+        pd.DataFrame
+            The parsed multi-index DataFrame with Time as a DatetimeIndex and ``point`` as a MultiIndex level.
+        """
         raw.columns = cols
 
         for col in cols:

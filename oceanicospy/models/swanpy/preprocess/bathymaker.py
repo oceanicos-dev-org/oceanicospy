@@ -13,10 +13,10 @@ class BathyMaker:
         An initialization object containing configuration data and folder paths.
     domain_number : int
         Identifier for the domain being processed.
-    grid_info : dict or None, optional
+    bathy_info : dict or None, optional
         Dictionary containing bathymetric information. If None, spatial info for bathymetry must be provided via `get_info_from_bathy()`.
     use_link: bool, optional
-        If True, creates symbolic links for bathymetry files instead of copying them. Defaults to True.
+        If True, creates symbolic links for the bathymetry file instead of copying it. Defaults to True.
     """
 
     def __init__(self, init, domain_number, bathy_info = None, use_link = None):

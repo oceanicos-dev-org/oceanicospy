@@ -172,8 +172,8 @@ class WaterLevelForcing:
         Raises
         ------
         FileNotFoundError
-            If *UHSLC_filename* or the domain ``*.bot`` file cannot be
-            found.
+            If *UHSLC_dataframe* is empty or the domain ``*.bot`` file cannot
+            be found.
         """
         domain_dir = Path(self.init.dict_folders["input"]) / f"domain_0{self.domain_number}"
 
@@ -215,7 +215,7 @@ class WaterLevelForcing:
         Returns
         -------
         pd.DataFrame
-            A DataFrame containing the cleanedwater level data for the specified station.
+            A DataFrame containing the cleaned water level data for the specified station.
         """
         filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/h{station_id}.csv"
         file_exists = utils.verify_file(filepath)
@@ -254,8 +254,10 @@ class WaterLevelForcing:
             
         Notes
         -----
-        If *share_wl* is ``True``, the ASCII file is created in domain 1 and linked to other domains. If ``False``, each domain 
-        gets its own ASCII file created from the UHSLC data. In either case, the method updates the domain's water level
+        If *share_wl* is ``True``, the ASCII file is created in domain 1 and
+        linked to other domains.  If ``False``, each domain gets its own ASCII
+        file created from the UHSLC data.  In either case, ``wl_info`` is
+        updated with the path to the written file and returned.
         """
         run_domain_dir = f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/'
         origin_domain_dir = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/'
