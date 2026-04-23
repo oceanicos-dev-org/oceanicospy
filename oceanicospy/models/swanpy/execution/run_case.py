@@ -1,6 +1,6 @@
-import shutil
 import pandas as pd
 from pathlib import Path
+from datetime import datetime
 import re
 
 from .... import utils
@@ -124,11 +124,17 @@ class CaseRunner():
 
         else:
             self.stat_comp_label = 'NONSTAT'
-            self.string_comp = f'COMP {self.stat_comp_label} {self.dict_comp_data["ini_comp_date"]} {self.dict_comp_data["dt_min"]} MIN {self.dict_comp_data["end_comp_date"]}'
+            ini = self.dict_comp_data["ini_comp_date"].strftime("%Y%m%d.%H%M%S")
+            end = self.dict_comp_data["end_comp_date"].strftime("%Y%m%d.%H%M%S")
+            dt_min = self.dict_comp_data["dt_min"]
+            self.string_comp = f'COMP {self.stat_comp_label} {ini} {dt_min} MIN {end}'
 
         self.dict_comp_data['string_comp'] = self.string_comp
         for param in self.dict_comp_data:
-            self.dict_comp_data[param] = str(self.dict_comp_data[param])
+            if isinstance(self.dict_comp_data[param], datetime):
+                self.dict_comp_data[param] = self.dict_comp_data[param].strftime('%Y%m%d.%H%M%S')
+            else:
+                self.dict_comp_data[param] = str(self.dict_comp_data[param])
 
         print (f'\n \t*** Adding/Editing compilation information for domain {self.domain_number} in configuration file ***\n')
         utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_comp_data)
