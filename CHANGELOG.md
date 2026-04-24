@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0b4][0.1.0b4] - 2026-04-23
+
+### Added
+
+- `swanpy` subpackage promoted to beta — SWAN case preparation and post-processing tools
+  are considered feature-complete and undergoing stabilization before the final 0.1.0 release
+- Updated stationary and non-stationary example notebooks to reflect the refactored API
+
+### Changed
+
+- `BoundaryConditions` — boundary file construction extracted from inline logic into
+  `_build_side_boundary_line`; `_process_boundary_points` now delegates to a callable
+  `single_tpar_fn` so ERA5 and CMDS code paths share one loop
+- `WindForcing` — download helpers (`_download_ERA5` / `_download_CMDS`) delegated to
+  `utils.wind.download_era5_winds` / `download_cmds_winds`; `share_winds` flag controls
+  whether non-primary domains skip download and reuse domain-01 ASCII files
+
 ## [0.1.0b3][0.1.0b3] - 2026-04-21
 
 ### Added
@@ -84,3 +101,4 @@ Initial scaffolding release.
 [0.1.0b1]: https://github.com/oceanicos/oceanicospy/compare/0.1.0a1...0.1.0b1
 [0.1.0b2]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b1...0.1.0b2
 [0.1.0b3]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b2...0.1.0b3
+[0.1.0b4]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b3...0.1.0b4
