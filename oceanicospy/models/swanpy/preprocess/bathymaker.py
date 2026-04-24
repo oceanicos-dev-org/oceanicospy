@@ -104,6 +104,11 @@ class BathyMaker:
             - 'dx_bot': grid spacing in the x-direction
             - 'dy_bot': grid spacing in the y-direction
             - 'bathy_file': relative path to the generated ASCII bathymetry file
+        
+        Notes
+        -----
+        This method only supports cartesian coordinates for the input XYZ file. The output ASCII grid will be in the same coordinate system as the input XYZ data.
+        The coordinates of the grid corners are rounded to the nearest 100 to avoid issues with interpolation at the edges of the grid. 
         """
         bathy_xyz_path =  f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{xyz_filepath}'
         bathy_xyz_path = Path(bathy_xyz_path)
@@ -124,16 +129,17 @@ class BathyMaker:
         min_longitude,max_longitude = longitude.min(), longitude.max()
         min_latitude, max_latitude = latitude.min(), latitude.max()
 
-    #     min_longitude = int(np.ceil(min_longitude / 100) * 100)
-    #     max_longitude = int(np.floor(max_longitude / 100) * 100)
-    #     min_latitude = int(np.ceil(min_latitude / 100) * 100)
-    #     max_latitude = int(np.floor(max_latitude / 100) * 100)
+        # ensuring the grid corners are rounded to the nearest 100 to avoid issues with interpolation at the edges of the grid
+        min_longitude = int(np.ceil(min_longitude / 100) * 100)
+        max_longitude = int(np.floor(max_longitude / 100) * 100)
+        min_latitude = int(np.ceil(min_latitude / 100) * 100)
+        max_latitude = int(np.floor(max_latitude / 100) * 100)
 
         nx_bathy = int((max_longitude - min_longitude)/dx)
         ny_bathy = int((max_latitude - min_latitude)/dy)
 
         # Generate grid with data
-        xi, yi = np.meshgrid(np.linspace(min_longitude, max_longitude, nx_bathy), np.linspace(min_latitude, max_latitude, ny_bathy))
+        xi, yi = np.meshgrid(np.arange(min_longitude, max_longitude + dx, dx), np.arange(min_latitude, max_latitude + dy, dy))
         # yi = np.flip(yi, axis=0)  # Flip the y-axis to match map-like orientation
 
         # Interpolate bathymetry. Method can be 'linear', 'nearest' or 'cubic'
