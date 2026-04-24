@@ -3,7 +3,7 @@ from pathlib import Path
 from ..downloads import ERA5Downloader, CMDSDownloader
 
 
-def download_era5_winds(wind_info, ini_date, end_date, difference_to_UTC, filepath):
+def download_era5_winds(wind_info, ini_date, end_date, difference_to_UTC, filepath, format_localtime):
     """
     Download ERA5 wind data for the specified region and time period.
 
@@ -30,6 +30,8 @@ def download_era5_winds(wind_info, ini_date, end_date, difference_to_UTC, filepa
         Time difference to UTC in hours for local time conversion.
     filepath : str or Path
         Full path (including filename) where the downloaded file will be saved.
+    format_localtime : bool
+        If True, formats the time in local time. Defaults to False.
     """
     filepath = Path(filepath)
     ERA5download_obj = ERA5Downloader(
@@ -40,16 +42,19 @@ def download_era5_winds(wind_info, ini_date, end_date, difference_to_UTC, filepa
         lat_max=wind_info['lat_ll_corner_wind'] + (wind_info['ny_wind'] * wind_info['dy_wind']),
         start_datetime_local=ini_date,
         end_datetime_local=end_date,
-        difference_to_UTC=difference_to_UTC,
+        utc_offset_hours=difference_to_UTC,
         output_path=filepath.parent,
         output_filename=filepath.name,
     )
-    ERA5download_obj.download()
-    ERA5download_obj.format_to_localtime()
+    filepath_utc = ERA5download_obj.download()
     print("\t ERA5 wind data downloaded successfully")
 
+    if format_localtime:
+        filepath_localtime = ERA5download_obj.format_to_localtime()
+        return filepath_localtime
+    return filepath_utc
 
-def download_cmds_winds(wind_info, ini_date, end_date, difference_to_UTC, filepath):
+def download_cmds_winds(wind_info, ini_date, end_date, difference_to_UTC, filepath, format_localtime):
     """
     Download CMDS wind data for the specified region and time period.
 
@@ -76,6 +81,8 @@ def download_cmds_winds(wind_info, ini_date, end_date, difference_to_UTC, filepa
         Time difference to UTC in hours for local time conversion.
     filepath : str or Path
         Full path (including filename) where the downloaded file will be saved.
+    format_localtime : bool
+        If True, formats the time in local time. Defaults to False.
     """
     filepath = Path(filepath)
     CMDSdownload_obj = CMDSDownloader.for_winds(
@@ -85,10 +92,13 @@ def download_cmds_winds(wind_info, ini_date, end_date, difference_to_UTC, filepa
         lat_max=wind_info['lat_ll_corner_wind'] + (wind_info['ny_wind'] * wind_info['dy_wind']),
         start_datetime_local=ini_date,
         end_datetime_local=end_date,
-        difference_to_UTC=difference_to_UTC,
+        utc_offset_hours=difference_to_UTC,
         output_path=filepath.parent,
         output_filename=filepath.name,
     )
-    CMDSdownload_obj.download()
-    CMDSdownload_obj.format_to_localtime()
+    filepath_utc = CMDSdownload_obj.download()
     print("\t CMDS wind data downloaded successfully")
+    if format_localtime:
+        filepath_localtime = CMDSdownload_obj.format_to_localtime()
+        return filepath_localtime
+    return filepath_utc

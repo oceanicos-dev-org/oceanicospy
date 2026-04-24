@@ -1,5 +1,4 @@
 import glob as glob
-import os
 from pathlib import Path
 
 from .... import utils
@@ -14,16 +13,16 @@ class BottomFrictionProcessor:
         An initialization object containing configuration data and folder paths.
     domain_number : int
         Identifier for the domain being processed.
-    dict_info : dict or None, optional
+    bottom_fric_info : dict or None, optional
         Dictionary containing bottom friction information. If None, friction must be provided via `filename`.
     use_link: bool, optional
-        If True, creates symbolic links for bathymetry files instead of copying them. Defaults to True.
+        If True, creates symbolic links for the friction file instead of copying it. Defaults to True.
     """
 
-    def __init__(self,init,domain_number,dict_info=None,use_link=None):
+    def __init__(self,init,domain_number,bottom_fric_info=None,use_link=None):
         self.init = init
         self.domain_number = domain_number
-        self.dict_info = dict_info
+        self.bottom_fric_info = bottom_fric_info
         self.use_link = use_link
         print(f'\n*** Initializing BottomFrictionProcessor for domain {self.domain_number} ***\n')
 
@@ -33,9 +32,15 @@ class BottomFrictionProcessor:
         This method searches for a `.fric` bottom friction file in the input directory for the specified domain.
 
         Returns
-        --------
-        dict or None: 
-            The updated `friction_info` dictionary if it exists, otherwise None.
+        -------
+        dict or None
+            The updated ``bottom_fric_info`` dictionary if it was provided at
+            initialisation, otherwise ``None``.
+
+        Raises
+        ------
+        FileNotFoundError
+            If no ``.fric`` file is found in the expected input directory.
         """
     
         friction_filepaths = glob.glob(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/*.fric')
@@ -48,9 +53,9 @@ class BottomFrictionProcessor:
 
         utils.deploy_input_file(friction_filename, f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/', run_domain_dir, self.use_link)
 
-        if self.dict_info != None:
-            self.dict_info.update({"friction_file":f"../../input/domain_0{self.domain_number}/{friction_filename}"})
-            return self.dict_info
+        if self.bottom_fric_info != None:
+            self.bottom_fric_info.update({"friction_file":f"../../input/domain_0{self.domain_number}/{friction_filename}"})
+            return self.bottom_fric_info
 
     def fill_friction_section(self):
         """
@@ -62,8 +67,8 @@ class BottomFrictionProcessor:
             If no friction information was provided at initialization.
         """
 
-        if self.dict_info == None:
+        if self.bottom_fric_info == None:
             raise ValueError(f'Friction information is not provided for domain {self.domain_number}.')
 
         print (f'\n \t*** Adding/Editing friction information for domain {self.domain_number} in configuration file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_info)
+        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.bottom_fric_info)

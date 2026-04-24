@@ -5,7 +5,7 @@ import pandas as pd
 from ..downloads import UHSLCDownloader
 
 
-def download_uhslc_waterlevel(station_id, ini_date, end_date, filepath, difference_from_UTC=-5):
+def download_uhslc_waterlevel(station_id, ini_date, end_date, filepath, utc_offset_hours=-5):
     """
     Download UHSLC hourly sea-level data and return the cleaned DataFrame.
 
@@ -23,7 +23,7 @@ def download_uhslc_waterlevel(station_id, ini_date, end_date, filepath, differen
         Simulation end date in local time.
     filepath : str or Path
         Full path (including filename) where the raw CSV will be saved.
-    difference_from_UTC : float, optional
+    utc_offset_hours : float, optional
         Local-time offset from UTC in hours (local minus UTC).
         Defaults to ``-5``.
 
@@ -38,12 +38,12 @@ def download_uhslc_waterlevel(station_id, ini_date, end_date, filepath, differen
         station_id=station_id,
         output_path=filepath.parent,
         output_filename=filepath.name,
-        start_datetime_local=ini_date.strftime('%Y-%m-%d %H:%M:%S'),
-        end_datetime_local=end_date.strftime('%Y-%m-%d %H:%M:%S'),
-        difference_from_UTC=difference_from_UTC,
+        start_datetime_local=ini_date,
+        end_datetime_local=end_date,
+        utc_offset_hours=utc_offset_hours,
     )
     downloader.download()
-    df_clean = downloader.clean_data(filepath)
+    df_clean = downloader.clean_data()
     print('\t UHSLC water level data was successfully downloaded')
     return df_clean
 
@@ -65,9 +65,11 @@ def load_uhslc_waterlevel(station_id, filepath):
         Cleaned water-level DataFrame with a datetime index and a
         ``depth[m]`` column.
     """
+    filepath = Path(filepath)
     reader = UHSLCDownloader(
         station_id=station_id,
-        output_path=None,
-        output_filename=None,
+        output_path=filepath.parent,
+        output_filename=filepath.name,
     )
-    return reader.clean_data(filepath)
+    reader.last_result_path = filepath
+    return reader.clean_data()

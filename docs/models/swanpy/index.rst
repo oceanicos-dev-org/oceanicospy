@@ -11,6 +11,7 @@ is based on a typical worflow for numerical wave modeling.
    initializer
    preprocess/index
    execution/index
+   postprocess/index
 
 .. toctree::
    :maxdepth: 2
