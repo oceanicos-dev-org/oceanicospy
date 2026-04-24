@@ -1,8 +1,5 @@
-import numpy as np
 import glob as glob
 from .... import utils
-from ....gis import read_xyz, XYZFormatSpec
-from pathlib import Path
 
 class GridMaker:
     """

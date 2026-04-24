@@ -1,8 +1,13 @@
+import numpy as np
 import glob as glob
+
 from scipy.interpolate import griddata
 from pathlib import Path
+from typing import Optional
+
 from .... import utils
-from ....gis import read_xyz,XYZFormatSpec
+from ....gis import PointFileIO, XYZFormatSpec
+
 
 class BathyMaker:
     """
@@ -64,8 +69,9 @@ class BathyMaker:
             raise ValueError('No bathymetry information provided at initialization. ' \
             'Bathymetry file has been linked/copied to run directory, but no metadata dictionary to return.')
         
-    # TODO: this can be more like a call to gis module to obtain a standardized bathymetry info.
-    def convert_xyz2asc(self,xyz_filepath,nodata_value):
+    def convert_xyz2asc(self,xyz_filepath: str, dx: float, dy: float, nodata_value: float = -9999,
+                        xyz_format:  Optional[XYZFormatSpec] = None,  
+                         ):
         """
         Converts bathymetry data from XYZ format to ESRI ASCII Grid format.
 
@@ -75,57 +81,83 @@ class BathyMaker:
 
         Parameters
         ----------
-        nodata_value : float
-            Value used to fill cells where interpolation produced NaN.
+        xyz_filepath : str
+            The filename of the input XYZ bathymetry file located in the input directory for the current domain.
+        dx : float
+            Grid spacing in the x-direction (longitude) for the output ASCII grid.
+        dy : float
+            Grid spacing in the y-direction (latitude) for the output ASCII grid.
+        nodata_value : float, optional
+            The value to use for grid cells where no data is available after interpolation. Default is -9999.
+        xyz_format : XYZFormatSpec, optional
+            An optional XYZFormatSpec object specifying the format of the input XYZ file. If not provided,
+            the method will assume a default format of space-delimited with no header.
 
+        Returns
+        -------
+        dict
+            A dictionary containing the bathymetry information extracted and calculated from the XYZ file, including:
+            - 'lon_ll_corner_bot': longitude of the lower-left corner of the grid
+            - 'lat_ll_corner_bot': latitude of the lower-left corner of the grid
+            - 'nx_bot': number of grid cells in the x-direction
+            - 'ny_bot': number of grid cells in the y-direction
+            - 'dx_bot': grid spacing in the x-direction
+            - 'dy_bot': grid spacing in the y-direction
+            - 'bathy_file': relative path to the generated ASCII bathymetry file
         """
-        bathy_xyz_path =  f'{self.dict_folders["input"]}/domain_0{self.domain_number}/{xyz_filepath}'
-        bathy_xyz_df = read_xyz(bathy_xyz_path)
+        bathy_xyz_path =  f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{xyz_filepath}'
+        bathy_xyz_path = Path(bathy_xyz_path)
+        ascii_file_path = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{bathy_xyz_path.stem}.bot'
+        ascii_file_path = Path(ascii_file_path)
 
-    #     ascfile = f'{self.dict_folders["run"]}/domain_0{self.domain_number}/{self.filename}.bot'
-    #     np.set_printoptions(formatter={'float_kind':'{:f}'.format})
+        point_io_handler = PointFileIO(bathy_xyz_path, xyz_format)
+        bathy_xyz_df = point_io_handler.read()
 
-    #     # Read bathymetry file
-    #     longitude,latitude,z = np.loadtxt(bathy_xyz_path, delimiter=' ', unpack=True)
+        x_column = point_io_handler.format_spec.x_column
+        y_column = point_io_handler.format_spec.y_column
+        z_column = point_io_handler.format_spec.z_column
 
-    #     min_longitude = np.min(longitude)
-    #     min_latitude = np.min(latitude)
+        longitude = bathy_xyz_df[x_column]
+        latitude = bathy_xyz_df[y_column]
+        z = bathy_xyz_df[z_column]
 
-    #     max_longitude = np.max(longitude)
-    #     max_latitude = np.max(latitude)
+        min_longitude,max_longitude = longitude.min(), longitude.max()
+        min_latitude, max_latitude = latitude.min(), latitude.max()
 
     #     min_longitude = int(np.ceil(min_longitude / 100) * 100)
     #     max_longitude = int(np.floor(max_longitude / 100) * 100)
     #     min_latitude = int(np.ceil(min_latitude / 100) * 100)
     #     max_latitude = int(np.floor(max_latitude / 100) * 100)
 
-    #     xmax=max_longitude
-    #     xmin=min_longitude
-    #     ymax=max_latitude
-    #     ymin=min_latitude
+        nx_bathy = int((max_longitude - min_longitude)/dx)
+        ny_bathy = int((max_latitude - min_latitude)/dy)
 
-    #     nx_bathy = int((xmax - xmin)/self.dx_bat)
-    #     ny_bathy = int((ymax - ymin)/self.dx_bat)
-    #     # Generate grid with data
-    #     xi, yi = np.mgrid[xmin:xmax:(nx_bathy+1)*1j, ymin:ymax:(ny_bathy+1)*1j]
+        # Generate grid with data
+        xi, yi = np.meshgrid(np.linspace(min_longitude, max_longitude, nx_bathy), np.linspace(min_latitude, max_latitude, ny_bathy))
+        # yi = np.flip(yi, axis=0)  # Flip the y-axis to match map-like orientation
 
-    #     # Interpolate bathymetry. Method can be 'linear', 'nearest' or 'cubic'
-    #     zi = griddata((longitude,latitude), z, (xi, yi), method='linear')
-    #     # Change Nans for values
-    #     zi[np.isnan(zi)] = nodata_value
-    #     # Flip array in the left/right direction
-    #     zi = np.fliplr(zi)
-    #     # Transpose it
-    #     zi = zi.T
-    #     # Write ESRI ASCII Grid file
-    #     zi_str = np.where(zi == nodata_value, str(nodata_value), np.round(zi, 3))
-    #     np.savetxt(ascfile, zi_str, fmt='%8s', delimiter=' ')
-    #     print('File %s saved successfuly.' % ascfile)
+        # Interpolate bathymetry. Method can be 'linear', 'nearest' or 'cubic'
+        zi = griddata((longitude,latitude), z, (xi, yi), method='linear')
+        zi[np.isnan(zi)] = nodata_value
 
-    #     self.grid_info={'lon_ll_bat_corner':min_longitude,'lat_ll_bat_corner':min_latitude,'x_bot':nx_bathy,'y_bot':ny_bathy,'spacing_x':self.dx_bat,'spacing_y':self.dx_bat}
-    #     for key,value in self.grid_info.items():
-    #         self.grid_info[key] = str(value)
-    #     return self.grid_info
+        # Write ESRI ASCII Grid file
+        zi_str = np.where(zi == nodata_value, str(nodata_value), np.round(zi, 3))
+        np.savetxt(ascii_file_path, zi_str, fmt='%8s', delimiter=' ')
+        print('File %s saved successfuly.' % ascii_file_path)
+
+        utils.deploy_input_file(ascii_file_path.name, ascii_file_path.parent, f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/', self.use_link)
+
+        self.bathy_info={'lon_ll_corner_bot':min_longitude,
+                        'lat_ll_corner_bot':min_latitude,
+                        'nx_bot':nx_bathy,
+                        'ny_bot':ny_bathy,
+                        'dx_bot':dx,
+                        'dy_bot':dy,
+                        'bathy_file':f"../../input/domain_0{self.domain_number}/{ascii_file_path.name}"}
+        
+        for key,value in self.bathy_info.items():
+            self.bathy_info[key] = str(value)
+        return self.bathy_info
     
     def fill_bathy_section(self):
         """
