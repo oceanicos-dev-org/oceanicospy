@@ -1,5 +1,4 @@
 import glob as glob
-import os
 from pathlib import Path
 
 from .... import utils
@@ -17,7 +16,7 @@ class BottomFrictionProcessor:
     bottom_fric_info : dict or None, optional
         Dictionary containing bottom friction information. If None, friction must be provided via `filename`.
     use_link: bool, optional
-        If True, creates symbolic links for bathymetry files instead of copying them. Defaults to True.
+        If True, creates symbolic links for the friction file instead of copying it. Defaults to True.
     """
 
     def __init__(self,init,domain_number,bottom_fric_info=None,use_link=None):
@@ -33,9 +32,15 @@ class BottomFrictionProcessor:
         This method searches for a `.fric` bottom friction file in the input directory for the specified domain.
 
         Returns
-        --------
-        dict or None: 
-            The updated `friction_info` dictionary if it exists, otherwise None.
+        -------
+        dict or None
+            The updated ``bottom_fric_info`` dictionary if it was provided at
+            initialisation, otherwise ``None``.
+
+        Raises
+        ------
+        FileNotFoundError
+            If no ``.fric`` file is found in the expected input directory.
         """
     
         friction_filepaths = glob.glob(f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/*.fric')

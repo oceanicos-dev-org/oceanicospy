@@ -7,6 +7,8 @@ from ....utils.wind import download_era5_winds, download_cmds_winds
 
 class WindForcing:
     """
+    Utility class for generating and managing wind forcing files for SWAN.
+
     Parameters
     ----------
     init : object

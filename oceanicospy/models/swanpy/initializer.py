@@ -157,9 +157,6 @@ class Initializer:
             f'run_base_{self.stat_label.lower()}.swn'
         )
 
-        swaninit_file_path = f'{self.data_dir}/model_config_templates/swan/swaninit'
-
         for domain in range(1, self.dict_ini_data['number_domains'] + 1):
             output_path = f'{self.dict_folders["run"]}domain_0{domain}/run.swn'
-            shutil.copy(swaninit_file_path, f'{self.dict_folders["run"]}domain_0{domain}/swaninit')
             self._generate_baseline_SWAN(template_path, output_path, self.dict_ini_data)

@@ -8,6 +8,34 @@ from .... import utils
 from ....downloads import *
 
 class BoundaryConditions:
+    """
+    Utility class for configuring and writing SWAN boundary condition files.
+
+    Supports constant and variable (file-driven) side-boundary conditions, as
+    well as nested-grid boundary conditions generated from parent-domain output.
+    Wave data can be sourced from ERA5 or CMDS reanalysis products and written
+    as SWAN-compatible TPAR or boundary files.
+
+    Parameters
+    ----------
+    init : object
+        Initialization object containing configuration data and folder paths.
+    domain_number : int
+        Identifier for the domain being processed.
+    bound_info : dict or None, optional
+        Dictionary describing the boundary type and whether boundaries are
+        variable (file-driven) or constant.  Expected keys:
+
+        * ``'bound_type'`` (*str*) – boundary specification type (e.g. ``'side'``).
+        * ``'variable_bound'`` (*bool*) – ``True`` for file-driven boundaries,
+          ``False`` for constant parametric boundaries.
+    input_filename : str or None, optional
+        Name of the input file to use as boundary data. Defaults to ``None``.
+    use_link : bool or None, optional
+        If ``True``, creates symbolic links for boundary files instead of
+        copying them.  If ``False``, copies the files.  If ``None``, no file
+        placement is performed.
+    """
     def __init__ (self,init,domain_number,bound_info=None,input_filename=None,use_link=None):
         self.init = init
         self.domain_number = domain_number
@@ -29,15 +57,31 @@ class BoundaryConditions:
 
     def _download_ERA5(self,utc_offset_hours, filepath=None,wind_info=None,format_localtime=False):
         """
-        Downloads ERA5 wave data for the specified region and time period.
-        This method initializes an ERA5Downloader object with the required wave variables and region boundaries,
-        downloads the data, and formats it to local time.
+        Download ERA5 wave data for the specified region and time period.
+
+        Initializes an :class:`ERA5Downloader` with the required wave variables
+        and spatial bounds derived from *wind_info*, then downloads the data and
+        optionally reformats timestamps to local time.
+
         Parameters
         ----------
         utc_offset_hours : int
-            The time difference to UTC in hours for local time conversion.
+            Time difference to UTC in hours for local-time conversion.
         filepath : str or None, optional
-            The file path where the downloaded ERA5 data will be saved. If None, a default path is used.
+            Destination path for the downloaded ERA5 NetCDF file.
+            If ``None``, a default path is used.
+        wind_info : dict or None, optional
+            Spatial extent dictionary (same format as :class:`WindForcing`).
+            Expected keys: ``lon_ll_corner_wind``, ``lat_ll_corner_wind``,
+            ``nx_wind``, ``ny_wind``, ``dx_wind``, ``dy_wind``.
+        format_localtime : bool, optional
+            If ``True``, converts timestamps to local time after download.
+            Defaults to ``False``.
+
+        Returns
+        -------
+        str
+            Path to the downloaded (or local-time-formatted) NetCDF file.
         """
         filepath = Path(filepath)
         ERA5download_obj = ERA5Downloader(
@@ -65,15 +109,31 @@ class BoundaryConditions:
 
     def _download_CMDS(self,utc_offset_hours, filepath=None,wind_info=None,format_localtime=False):
         """
-        Downloads CDMS wind data for the specified region and time period.
-        This method initializes an CDMSDownloader object with the required wind variables and region boundaries,
-        downloads the data, and formats it to local time.
+        Download CMDS wave data for the specified region and time period.
+
+        Initializes a :class:`CMDSDownloader` configured for wave variables
+        and spatial bounds derived from *wind_info*, then downloads the data
+        and optionally reformats timestamps to local time.
+
         Parameters
         ----------
         utc_offset_hours : int
-            The time difference to UTC in hours for local time conversion.
+            Time difference to UTC in hours for local-time conversion.
         filepath : str or None, optional
-            The file path where the downloaded ERA5 data will be saved. If None, a default path is used.
+            Destination path for the downloaded CMDS NetCDF file.
+            If ``None``, a default path is used.
+        wind_info : dict or None, optional
+            Spatial extent dictionary.  Expected keys: ``lon_ll_corner_wind``,
+            ``lat_ll_corner_wind``, ``nx_wind``, ``ny_wind``, ``dx_wind``,
+            ``dy_wind``.
+        format_localtime : bool, optional
+            If ``True``, converts timestamps to local time after download.
+            Defaults to ``False``.
+
+        Returns
+        -------
+        str
+            Path to the downloaded (or local-time-formatted) NetCDF file.
         """
         filepath = Path(filepath)
         CMDSdownload_obj = CMDSDownloader.for_waves(
@@ -95,6 +155,32 @@ class BoundaryConditions:
         return self.filepath_utc
 
     def _single_tpar_from_ERA5(self,tpar_filename,lati,long,wave_filename='waves_era5.nc'):
+        """
+        Write a TPAR boundary file for a single point from ERA5 wave data.
+
+        Reads the ERA5 wave NetCDF file (local-time version if available),
+        extracts significant wave height, peak period, and mean wave direction
+        at the grid cell nearest to (*lati*, *long*), and writes a
+        SWAN-compatible TPAR file.
+
+        Parameters
+        ----------
+        tpar_filename : str
+            Base output path (without ``.bnd`` extension) for the TPAR file.
+        lati : float
+            Target latitude of the boundary point.
+        long : float
+            Target longitude of the boundary point.
+        wave_filename : str, optional
+            Name of the ERA5 wave NetCDF file in the domain input directory.
+            Defaults to ``'waves_era5.nc'``.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with columns ``Tiempo``, ``Altura``, ``Periodo``,
+            ``Direccion``, and ``dd`` for the selected point.
+        """
         filepath = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{wave_filename}'
 
         if Path(filepath).with_name(Path(filepath).stem + '_localtime.nc').exists():
@@ -124,6 +210,32 @@ class BoundaryConditions:
         return df_tpar
 
     def _single_tpar_from_CMDS(self,tpar_filename,lati,long,wave_filename='waves_cmds.nc'):
+        """
+        Write a TPAR boundary file for a single point from CMDS wave data.
+
+        Reads the CMDS wave NetCDF file (local-time version if available),
+        extracts significant wave height (``VHM0``), peak period (``VTPK``),
+        and mean wave direction (``VMDR``) at the grid cell nearest to
+        (*lati*, *long*), and writes a SWAN-compatible TPAR file.
+
+        Parameters
+        ----------
+        tpar_filename : str
+            Base output path (without ``.bnd`` extension) for the TPAR file.
+        lati : float
+            Target latitude of the boundary point.
+        long : float
+            Target longitude of the boundary point.
+        wave_filename : str, optional
+            Name of the CMDS wave NetCDF file in the domain input directory.
+            Defaults to ``'waves_cmds.nc'``.
+
+        Returns
+        -------
+        pd.DataFrame
+            DataFrame with columns ``Tiempo``, ``Altura``, ``Periodo``,
+            ``Direccion``, and ``dd`` for the selected point.
+        """
         filepath = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/{wave_filename}'
 
         if Path(filepath).with_name(Path(filepath).stem + '_localtime.nc').exists():
@@ -153,6 +265,25 @@ class BoundaryConditions:
         return df_tpar
 
     def _process_boundary_points(self,points_lat,points_lon,single_tpar_fn):
+        """
+        Generate TPAR files for all four boundary sides and deploy them.
+
+        For non-nested domains, iterates over *points_lon* and *points_lat* to
+        write TPAR files for the north, south, east, and west boundaries using
+        *single_tpar_fn*.  Nested domains are silently skipped.  After all
+        files are written, calls :meth:`_copy_or_link_bnd_files` to place them
+        in the run directory.
+
+        Parameters
+        ----------
+        points_lat : list or array-like
+            Latitude values of the boundary points.
+        points_lon : list or array-like
+            Longitude values of the boundary points.
+        single_tpar_fn : callable
+            Function with signature ``(tpar_filename, lati, long)`` used to
+            write individual TPAR files (e.g. :meth:`_single_tpar_from_ERA5`).
+        """
         if self.isnested:
             return
         self.input_path = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/'
@@ -168,6 +299,14 @@ class BoundaryConditions:
         print(f'\t*** Finished processing boundary files for domain {self.domain_number} ***\n')
 
     def _copy_or_link_bnd_files(self):
+        """
+        Copy or symlink all ``.bnd`` files from the input to the run directory.
+
+        Scans the domain input directory for files ending in ``.bnd`` and
+        deploys each one to the run directory via
+        :func:`~oceanicospy.utils.deploy_input_file`.  If ``use_link`` is
+        ``None`` no action is taken.
+        """
         if self.use_link is None:
             return
         run_domain_dir = f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/'
@@ -180,11 +319,27 @@ class BoundaryConditions:
 
     def get_waves_from_ERA5(self,utc_offset_hours,wind_info_dict,filename='waves_era5.nc',override=False,format_localtime=False):
         """
-        Downloads or verifies the existence of ERA5 wave data for the specified domain.
-        This method checks if the ERA5 wave data NetCDF file exists in the input directory for the current domain.
-        If the file does not exist, it downloads the wave data using the parameters specified in `self.wind_info`
-        and saves it to the appropriate location. If the file already exists, the download is skipped.
+        Download ERA5 wave data for the current domain, or skip if already present.
 
+        Checks whether the ERA5 wave NetCDF file already exists in the domain
+        input directory.  If it does not exist (or *override* is ``True``),
+        the data are downloaded via :meth:`_download_ERA5`.
+
+        Parameters
+        ----------
+        utc_offset_hours : int
+            Time difference to UTC in hours for local-time conversion.
+        wind_info_dict : dict
+            Spatial extent dictionary forwarded to :meth:`_download_ERA5`.
+        filename : str, optional
+            Name of the ERA5 wave NetCDF output file.
+            Defaults to ``'waves_era5.nc'``.
+        override : bool, optional
+            If ``True``, re-downloads the file even if it already exists.
+            Defaults to ``False``.
+        format_localtime : bool, optional
+            If ``True``, converts timestamps to local time after download.
+            Defaults to ``False``.
         """
         if self.isnested == False:
             filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
@@ -196,11 +351,27 @@ class BoundaryConditions:
 
     def get_waves_from_CMDS(self,utc_offset_hours,wind_info_dict,filename='waves_cmds.nc',override=False,format_localtime=False):
         """
-        Downloads or verifies the existence of CMDS wave data for the specified domain.
-        This method checks if the CMDS wave data NetCDF file exists in the input directory for the current domain.
-        If the file does not exist, it downloads the wave data using the parameters specified in `self.wind_info`
-        and saves it to the appropriate location. If the file already exists, the download is skipped.
+        Download CMDS wave data for the current domain, or skip if already present.
 
+        Checks whether the CMDS wave NetCDF file already exists in the domain
+        input directory.  If it does not exist (or *override* is ``True``),
+        the data are downloaded via :meth:`_download_CMDS`.
+
+        Parameters
+        ----------
+        utc_offset_hours : int
+            Time difference to UTC in hours for local-time conversion.
+        wind_info_dict : dict
+            Spatial extent dictionary forwarded to :meth:`_download_CMDS`.
+        filename : str, optional
+            Name of the CMDS wave NetCDF output file.
+            Defaults to ``'waves_cmds.nc'``.
+        override : bool, optional
+            If ``True``, re-downloads the file even if it already exists.
+            Defaults to ``False``.
+        format_localtime : bool, optional
+            If ``True``, converts timestamps to local time after download.
+            Defaults to ``False``.
         """
         if self.isnested == False:
             filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/{filename}"
@@ -269,20 +440,26 @@ class BoundaryConditions:
             * ``'spr'``    — wave spread (power of cosine function)
 
             Must be ``None`` or omitted for variable (file-driven) boundaries.
+        points_lon : list of float
+            Longitude values of the boundary points along this side.
+            Used to compute relative offsets for ``VAR FILE`` boundary commands.
+        points_lat : list of float
+            Latitude values of the boundary points along this side.
+            Used to compute relative offsets for ``VAR FILE`` boundary commands.
 
         Returns
         -------
         str
             A single SWAN boundary command, e.g.
             ``"BOUN SIDE N CLOCKW CON PAR 1.5 10.0 270 4"`` or
-            ``"BOUN SIDE N CLOCKW CON VAR FILE"``.
+            ``"BOUN SIDE N CLOCKW VAR FILE …"``.
 
         Raises
         ------
         ValueError
             If *side* is not in ``{'N', 'S', 'E', 'W'}``.
         ValueError
-            If ``variable_bound`` is ``'constant'`` but *wave_params* is ``None``.
+            If ``variable_bound`` is ``False`` but *wave_params* is ``None``.
         """
         if side not in self._VALID_SIDES:
             raise ValueError(
@@ -336,12 +513,18 @@ class BoundaryConditions:
         ----------
         list_sides : list of str, optional
             Ordered list of boundary sides to configure, e.g.
-            ``['N', 'S', 'E', 'O']``.  Each entry must be a valid side
+            ``['N', 'S', 'E', 'W']``.  Each entry must be a valid side
             accepted by :meth:`_build_side_boundary_line`.
         wave_params : dict or None, optional
             Wave parameters forwarded to :meth:`_build_side_boundary_line`
-            when ``bound_info['variable_bound']`` is ``'constant'``.
+            when ``bound_info['variable_bound']`` is ``False`` (constant).
             Ignored for variable (file-driven) boundaries.
+        points_lon : list of float or None, optional
+            Longitude values of the boundary points.  Required for variable
+            (file-driven) boundaries to compute offsets per side.
+        points_lat : list of float or None, optional
+            Latitude values of the boundary points.  Required for variable
+            (file-driven) boundaries to compute offsets per side.
 
         Returns
         -------
