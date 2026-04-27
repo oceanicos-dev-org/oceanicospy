@@ -4,6 +4,7 @@ from .crs import PointFileReprojector, reproject_points
 from .xyz_merger import XYZMerger
 from .xyz_mask import AxisAlignedRectangle, XYZRectangleMask
 from .profile_axis import ProfileAxis
+from .profile_interpolator import ProfileInterpolator
 
 __all__ = [
     # IO
@@ -21,4 +22,5 @@ __all__ = [
     "XYZRectangleMask",
     # Profile
     "ProfileAxis",
+    "ProfileInterpolator",
 ]
