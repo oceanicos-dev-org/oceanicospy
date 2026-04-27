@@ -32,6 +32,7 @@ _COMMENT_PREFIXES: tuple[str, ...] = ("#", "//")
 #: Vector file extensions handled directly by GeoPandas.
 _VECTOR_EXTENSIONS: tuple[str, ...] = (".shp", ".geojson", ".gpkg")
 
+
 # ---------------------------------------------------------------------------
 # Private helpers
 # ---------------------------------------------------------------------------
@@ -55,6 +56,7 @@ def _is_float_token(token: str) -> bool:
     except ValueError:
         return False
 
+
 def _check_geodeps(func_name: str) -> None:
     """
     Raise :exc:`ImportError` when GeoPandas is not available.
@@ -74,6 +76,7 @@ def _check_geodeps(func_name: str) -> None:
             f"{func_name} requires 'geopandas' and 'shapely'. "
             "Install them with:  pip install geopandas shapely"
         )
+
 
 def _normalize_epsg(crs: Union[str, int]) -> str:
     """
@@ -116,6 +119,7 @@ def _normalize_epsg(crs: Union[str, int]) -> str:
             f"Cannot interpret '{crs}' as an EPSG code. "
             "Expected an integer or a string like '4326' or 'EPSG:4326'."
         )
+
 
 def _infer_format(
     file_path: Union[str, Path],
@@ -195,6 +199,11 @@ def _infer_format(
 
     return XYZFormatSpec(delimiter=delimiter, has_header=False)
 
+
+# ---------------------------------------------------------------------------
+# XYZFormatSpec
+# ---------------------------------------------------------------------------
+
 @dataclass
 class XYZFormatSpec:
     """
@@ -240,6 +249,11 @@ class XYZFormatSpec:
             The three coordinate column names in the canonical x→y→z order.
         """
         return [self.x_column, self.y_column, self.z_column]
+
+
+# ---------------------------------------------------------------------------
+# PointFileIO
+# ---------------------------------------------------------------------------
 
 class PointFileIO:
     """
@@ -287,7 +301,7 @@ class PointFileIO:
         # Infer format only for XYZ files; vector files do not need it
         if format_spec is not None:
             self.format_spec = format_spec
-        elif self.path.suffix.lower() not in _VECTOR_EXTENSIONS:
+        elif self.path.suffix.lower() not in _VECTOR_EXTENSIONS and self.path.exists():
             self.format_spec = _infer_format(self.path)
         else:
             self.format_spec = XYZFormatSpec()
@@ -366,7 +380,6 @@ class PointFileIO:
 
     def write(
         self,
-        output_path: Union[str, Path],
         df: pd.DataFrame,
         float_format: str = "%.3f",
         include_header: Optional[bool] = None,
@@ -374,10 +387,10 @@ class PointFileIO:
         """
         Write a :class:`pandas.DataFrame` to an XYZ plain-text file.
 
+        The output path is taken from :attr:`path` set at construction.
+
         Parameters
         ----------
-        output_path : str or pathlib.Path
-            Destination file path.
         df : pandas.DataFrame
             Source data.  Must contain the columns declared in
             :attr:`format_spec`.
@@ -405,7 +418,7 @@ class PointFileIO:
             )
 
         df[self.format_spec.column_order()].to_csv(
-            output_path,
+            self.path,
             sep=self.format_spec.delimiter,
             header=include_header,
             index=False,
@@ -415,7 +428,6 @@ class PointFileIO:
 
     def write_from_geodataframe(
         self,
-        output_path: Union[str, Path],
         gdf: "gpd.GeoDataFrame",
         z_column: str = "z",
         float_format: str = "%.3f",
@@ -425,12 +437,11 @@ class PointFileIO:
         Write a :class:`geopandas.GeoDataFrame` to an XYZ plain-text file.
 
         Coordinates are extracted from the geometry column (X and Y) and
-        from *z_column* (Z).
+        from *z_column* (Z).  The output path is taken from :attr:`path`
+        set at construction.
 
         Parameters
         ----------
-        output_path : str or pathlib.Path
-            Destination file path.
         gdf : geopandas.GeoDataFrame
             Source GeoDataFrame with Point geometries.
         z_column : str, optional
@@ -462,8 +473,7 @@ class PointFileIO:
             self.format_spec.z_column: gdf[z_column].to_numpy(),
         })
 
-        self.write(output_path, df, float_format=float_format,
-                   include_header=include_header)
+        self.write(df, float_format=float_format, include_header=include_header)
 
     # ------------------------------------------------------------------
     # Private helpers

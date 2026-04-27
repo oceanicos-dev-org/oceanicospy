@@ -1,24 +1,7 @@
-"""
-xyz_mask
-========
-Rectangular masking utilities for XYZ point data.
-
-This module provides tools to retain or discard points from an XYZ
-dataset based on axis-aligned rectangular regions defined in the same
-coordinate space as the data.
-
-Public API
-----------
-AxisAlignedRectangle
-    Immutable axis-aligned rectangle defined by two opposite corners.
-XYZRectangleMask
-    Apply one or more rectangles to filter an XYZ DataFrame.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
