@@ -8,7 +8,6 @@ import pandas as pd
 
 __all__ = ["Grid"]
 
-
 class Grid:
     """
     2D spatial grid for numerical model domains.
