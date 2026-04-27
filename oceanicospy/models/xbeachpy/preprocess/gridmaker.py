@@ -179,7 +179,7 @@ class GridMaker:
 
         return grid_dict
 
-    def profile_1d(self):
+    def build_profile(self):
         pass
 
     def build_rectangular_grid(
