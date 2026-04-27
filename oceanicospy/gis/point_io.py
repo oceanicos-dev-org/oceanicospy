@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+import pandas as pd
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Union
-
-import pandas as pd
 
 try:
     import geopandas as gpd
@@ -19,9 +19,7 @@ __all__ = [
     "PointFileIO",
 ]
 
-# ---------------------------------------------------------------------------
 # Constants
-# ---------------------------------------------------------------------------
 
 #: Delimiters tried during format inference, in evaluation order.
 _CANDIDATE_DELIMITERS: List[str] = [",", ";", "\t", "|"]
@@ -32,10 +30,6 @@ _COMMENT_PREFIXES: tuple[str, ...] = ("#", "//")
 #: Vector file extensions handled directly by GeoPandas.
 _VECTOR_EXTENSIONS: tuple[str, ...] = (".shp", ".geojson", ".gpkg")
 
-
-# ---------------------------------------------------------------------------
-# Private helpers
-# ---------------------------------------------------------------------------
 
 def _is_float_token(token: str) -> bool:
     """
@@ -56,7 +50,6 @@ def _is_float_token(token: str) -> bool:
     except ValueError:
         return False
 
-
 def _check_geodeps(func_name: str) -> None:
     """
     Raise :exc:`ImportError` when GeoPandas is not available.
@@ -76,7 +69,6 @@ def _check_geodeps(func_name: str) -> None:
             f"{func_name} requires 'geopandas' and 'shapely'. "
             "Install them with:  pip install geopandas shapely"
         )
-
 
 def _normalize_epsg(crs: Union[str, int]) -> str:
     """
@@ -119,7 +111,6 @@ def _normalize_epsg(crs: Union[str, int]) -> str:
             f"Cannot interpret '{crs}' as an EPSG code. "
             "Expected an integer or a string like '4326' or 'EPSG:4326'."
         )
-
 
 def _infer_format(
     file_path: Union[str, Path],
@@ -199,11 +190,6 @@ def _infer_format(
 
     return XYZFormatSpec(delimiter=delimiter, has_header=False)
 
-
-# ---------------------------------------------------------------------------
-# XYZFormatSpec
-# ---------------------------------------------------------------------------
-
 @dataclass
 class XYZFormatSpec:
     """
@@ -249,11 +235,6 @@ class XYZFormatSpec:
             The three coordinate column names in the canonical x→y→z order.
         """
         return [self.x_column, self.y_column, self.z_column]
-
-
-# ---------------------------------------------------------------------------
-# PointFileIO
-# ---------------------------------------------------------------------------
 
 class PointFileIO:
     """
@@ -305,10 +286,6 @@ class PointFileIO:
             self.format_spec = _infer_format(self.path)
         else:
             self.format_spec = XYZFormatSpec()
-
-    # ------------------------------------------------------------------
-    # Public methods — reading
-    # ------------------------------------------------------------------
 
     def read(self) -> pd.DataFrame:
         """
@@ -373,10 +350,6 @@ class PointFileIO:
             ),
             crs=self.crs,
         )
-
-    # ------------------------------------------------------------------
-    # Public methods — writing
-    # ------------------------------------------------------------------
 
     def write(
         self,
@@ -474,10 +447,6 @@ class PointFileIO:
         })
 
         self.write(df, float_format=float_format, include_header=include_header)
-
-    # ------------------------------------------------------------------
-    # Private helpers
-    # ------------------------------------------------------------------
 
     def _read_xyz(self) -> pd.DataFrame:
         """Read an XYZ text file using :attr:`format_spec`."""

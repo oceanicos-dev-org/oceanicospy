@@ -11,11 +11,6 @@ __all__ = [
     "XYZRectangleMask",
 ]
 
-
-# ---------------------------------------------------------------------------
-# AxisAlignedRectangle
-# ---------------------------------------------------------------------------
-
 @dataclass(frozen=True)
 class AxisAlignedRectangle:
     """
@@ -72,11 +67,6 @@ class AxisAlignedRectangle:
         bool
         """
         return (self.x_min <= x <= self.x_max) and (self.y_min <= y <= self.y_max)
-
-
-# ---------------------------------------------------------------------------
-# XYZRectangleMask
-# ---------------------------------------------------------------------------
 
 class XYZRectangleMask:
     """

@@ -1,21 +1,19 @@
 from __future__ import annotations
 
-from pathlib import Path
-from typing import List, Optional, Union
-
 import numpy as np
 import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point
 from shapely.ops import unary_union
 
+from pathlib import Path
+from typing import List, Optional, Union
+
 from .point_io import XYZFormatSpec, PointFileIO, _normalize_epsg
 
 __all__ = ["XYZMerger"]
 
-# ---------------------------------------------------------------------------
-# Algorithm constants  (not exposed in the public API)
-# ---------------------------------------------------------------------------
+# Constants for internal use only. These are not part of the public API.
 
 #: Decimal places used when snapping XY coordinates to the coverage grid.
 _XY_ROUND_DECIMALS: int = 6
@@ -72,10 +70,6 @@ class _XYZTile:
         self._buffer_factor = buffer_factor
         self._closing_factor = closing_factor
         self.coverage_polygon: gpd.GeoDataFrame = self._compute_coverage_polygon()
-
-    # ------------------------------------------------------------------
-    # Private helpers
-    # ------------------------------------------------------------------
 
     def _estimate_spacing(self) -> float:
         """
@@ -155,6 +149,7 @@ class _XYZTile:
         polygon = unary_union(geoms).buffer(close_r).buffer(-close_r)
 
         return gpd.GeoDataFrame({"geometry": [polygon]}, crs=self.crs)
+    
 class XYZMerger:
     """
     Merge a collection of XYZ tiles into a single point dataset.
@@ -218,10 +213,6 @@ class XYZMerger:
         self._tiles: List[_XYZTile] = []
         self._file_paths: List[Path] = []
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
-
     def run_merge(self, output_path: Union[str, Path]) -> pd.DataFrame:
         """
         Run the full merge pipeline and export the result.
@@ -257,10 +248,6 @@ class XYZMerger:
         merged_df = self._merge()
         self._export(merged_df, output_path)
         return merged_df
-
-    # ------------------------------------------------------------------
-    # Private pipeline stages
-    # ------------------------------------------------------------------
 
     def _discover_tiles(self) -> None:
         """

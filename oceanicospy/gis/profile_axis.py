@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
-
 import numpy as np
 import pandas as pd
+
+from typing import Dict, Optional, Tuple, Union
 
 __all__ = ["ProfileAxis"]
 
@@ -170,10 +169,6 @@ class ProfileAxis:
 
         return obj
 
-    # ------------------------------------------------------------------
-    # Properties — public outputs
-    # ------------------------------------------------------------------
-
     @property
     def distance_axis(self) -> pd.DataFrame:
         """
@@ -255,10 +250,6 @@ class ProfileAxis:
             "x_adjusted": float(end_point[0]),
             "y_adjusted": float(end_point[1]),
         }
-
-    # ------------------------------------------------------------------
-    # Private axis builders
-    # ------------------------------------------------------------------
 
     def _build_axis(
         self,

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Optional, Union
-
 import numpy as np
 import pandas as pd
+
+from pathlib import Path
+from typing import Optional, Union
 
 __all__ = ["Grid"]
 
@@ -47,10 +47,6 @@ class Grid:
         self.y_1d: Optional[np.ndarray] = None
         self.x_2d: Optional[np.ndarray] = None
         self.y_2d: Optional[np.ndarray] = None
-
-    # ------------------------------------------------------------------
-    # Class-method constructors
-    # ------------------------------------------------------------------
 
     @classmethod
     def from_coordinates(
@@ -192,10 +188,6 @@ class Grid:
         obj._build_from_shapefile(Path(shapefile_path), dx, dy, xvar)
         return obj
 
-    # ------------------------------------------------------------------
-    # Properties — public outputs
-    # ------------------------------------------------------------------
-
     @property
     def nx(self) -> int:
         """Number of grid points in the x direction."""
@@ -242,10 +234,6 @@ class Grid:
         if self.y_start is None:
             raise ValueError("y_start must be set to compute absolute coordinates.")
         return pd.DataFrame(self.y_2d)
-
-    # ------------------------------------------------------------------
-    # Private builders
-    # ------------------------------------------------------------------
 
     def _build_uniform(
         self,
@@ -294,7 +282,7 @@ class Grid:
         if not xvar:
             self._build_uniform(min_easting, max_easting, min_northing, max_northing, dx, dy)
         else:
-            # TODO: implement xvar=True behaviour with or without segment dicts
+            #TODO: implement xvar=True behaviour with or without segment dicts
             pass
 
     def export_to_grd_file(self, output_folder: Union[str, Path]) -> None:

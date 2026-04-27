@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import warnings
-from typing import Optional
-
 import numpy as np
 import pandas as pd
 
@@ -17,7 +15,6 @@ _DEFAULT_K_NEIGHBORS: int = 1
 
 #: Default half-width of the spatial corridor filter in CRS units (metres).
 _DEFAULT_CORRIDOR_WIDTH: float = 500.0
-
 
 class ProfileInterpolator:
     """
@@ -56,15 +53,6 @@ class ProfileInterpolator:
         Larger values increase robustness in sparse datasets; smaller
         values reduce computational cost.  Defaults to ``500.0``.
 
-    Attributes
-    ----------
-    axis : ProfileAxis
-        The profile axis used for interpolation.
-    k_neighbors : int
-        Number of nearest neighbours used for Z interpolation.
-    corridor_width : float
-        Half-width of the spatial corridor filter.
-
     Raises
     ------
     ValueError
@@ -93,10 +81,6 @@ class ProfileInterpolator:
 
         xyz_filtered = self._filter_corridor(xyz)
         self._z_interpolated: np.ndarray = self._interpolate(xyz_filtered)
-
-    # ------------------------------------------------------------------
-    # Properties — public outputs
-    # ------------------------------------------------------------------
 
     @property
     def profile_sz(self) -> pd.DataFrame:
@@ -141,10 +125,6 @@ class ProfileInterpolator:
             "y": coords["y"].to_numpy(),
             "z": self._z_interpolated,
         })
-
-    # ------------------------------------------------------------------
-    # Private validation helpers
-    # ------------------------------------------------------------------
 
     def _validate_axis(self) -> None:
         """
@@ -252,10 +232,6 @@ class ProfileInterpolator:
                     "Check that the profile coordinates and the XYZ "
                     "dataset are in the same CRS and overlap spatially."
                 )
-
-    # ------------------------------------------------------------------
-    # Private interpolation helpers
-    # ------------------------------------------------------------------
 
     def _filter_corridor(self, xyz: pd.DataFrame) -> pd.DataFrame:
         """

@@ -1,9 +1,9 @@
 from __future__ import annotations
  
+import geopandas as gpd
+
 from pathlib import Path
 from typing import Optional, Union
- 
-import geopandas as gpd
  
 from .point_io import (
     XYZFormatSpec,
@@ -15,12 +15,7 @@ __all__ = [
     "PointFileReprojector",
     "reproject_points",
 ]
- 
- 
-# ---------------------------------------------------------------------------
-# PointFileReprojector
-# ---------------------------------------------------------------------------
- 
+  
 class PointFileReprojector:
     """
     Load point data from a vector or XYZ file, reproject it, and export
@@ -79,11 +74,7 @@ class PointFileReprojector:
         self.source_epsg = source_epsg
         self.format_spec = format_spec or XYZFormatSpec()
         self.gdf: gpd.GeoDataFrame = self._load()
- 
-    # ------------------------------------------------------------------
-    # Properties
-    # ------------------------------------------------------------------
- 
+  
     @property
     def crs(self):
         """
@@ -95,11 +86,7 @@ class PointFileReprojector:
             The current CRS as managed by GeoPandas.
         """
         return self.gdf.crs
- 
-    # ------------------------------------------------------------------
-    # Private methods
-    # ------------------------------------------------------------------
- 
+  
     def _load(self) -> gpd.GeoDataFrame:
         """
         Load the input file into a GeoDataFrame via
@@ -128,11 +115,7 @@ class PointFileReprojector:
             )
  
         return gdf
- 
-    # ------------------------------------------------------------------
-    # Public methods
-    # ------------------------------------------------------------------
- 
+  
     def reproject_to_epsg(self, target_epsg: Union[str, int]) -> None:
         """
         Reproject the internal GeoDataFrame to a target CRS in place.
