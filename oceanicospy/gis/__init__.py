@@ -1,4 +1,5 @@
 from .point_io import XYZFormatSpec, PointFileIO
+from .grid import Grid
 
 # from .io_xyz import (
 #     XYZFormatSpec,
