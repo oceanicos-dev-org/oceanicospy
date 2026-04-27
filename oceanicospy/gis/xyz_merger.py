@@ -1,29 +1,3 @@
-"""
-xyz_merger
-==========
-Merge multiple XYZ point tiles into a single dataset, resolving overlaps
-by spatial priority.
-
-Each tile is assigned a priority rank by the caller.  Points from
-lower-priority tiles that fall within the coverage footprint of any
-higher-priority tile are discarded.  The resulting dataset contains no
-duplicate coverage and preserves the highest-quality data in every area.
-
-This module is self-contained: the internal ``_XYZTile`` helper class is
-not part of the public API and is not exported.
-
-Public API
-----------
-XYZMerger
-    Load, prioritize, merge and export a collection of XYZ tiles.
-
-Notes
------
-All input tiles must share the same CRS and the same on-disk format
-before being passed to :class:`XYZMerger`.  Use ``io_xyz`` and
-``crs_tools`` to standardize files beforehand if needed.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -35,7 +9,7 @@ import geopandas as gpd
 from shapely.geometry import Point
 from shapely.ops import unary_union
 
-from .io_xyz import XYZFormatSpec, _normalize_epsg, read_xyz, write_xyz
+from .point_io import XYZFormatSpec, PointFileIO, _normalize_epsg
 
 __all__ = ["XYZMerger"]
 
@@ -57,11 +31,6 @@ _BUFFER_FACTOR: float = 0.75
 
 #: Default morphological closing factor applied after the buffer union.
 _CLOSING_FACTOR: float = 1.0
-
-
-# ---------------------------------------------------------------------------
-# _XYZTile — internal data container
-# ---------------------------------------------------------------------------
 
 class _XYZTile:
     """
@@ -186,12 +155,6 @@ class _XYZTile:
         polygon = unary_union(geoms).buffer(close_r).buffer(-close_r)
 
         return gpd.GeoDataFrame({"geometry": [polygon]}, crs=self.crs)
-
-
-# ---------------------------------------------------------------------------
-# XYZMerger — public API
-# ---------------------------------------------------------------------------
-
 class XYZMerger:
     """
     Merge a collection of XYZ tiles into a single point dataset.
@@ -202,27 +165,27 @@ class XYZMerger:
     order explicitly via the *priority* parameter.
 
     All input tiles must share the same CRS and on-disk format.  Use
-    :mod:`io_xyz` and :mod:`crs_tools` to standardize files beforehand.
+    :mod:`point_io` and :mod:`crs` to standardize files beforehand.
 
     Parameters
     ----------
     input_dir : str or pathlib.Path
         Directory containing the ``.xyz`` files to merge.
     priority : list of str
-        Filenames (or full paths) ordered from highest to lowest priority.
-        Every ``.xyz`` file found in *input_dir* must appear in this list.
+        Filenames ordered from highest to lowest priority.  Only the
+        files listed here will be loaded; other ``.xyz`` files present
+        in *input_dir* are ignored.
     crs : str or int
         Common CRS of all input tiles (e.g. ``9377`` or ``"EPSG:9377"``).
     format_spec : XYZFormatSpec, optional
         On-disk layout shared by all input tiles.  Defaults to
-        :class:`~io_xyz.XYZFormatSpec` (space-delimited, no header,
+        :class:`~point_io.XYZFormatSpec` (space-delimited, no header,
         columns ``x/y/z``).
     buffer_factor : float, optional
         Buffer radius used when building coverage polygons, expressed as a
         multiple of the estimated point spacing.  Increase this value if
         lower-priority points leak into high-priority areas; decrease it
-        if too many valid points are discarded.  Defaults to
-        ``0.75``.
+        if too many valid points are discarded.  Defaults to ``0.75``.
     closing_factor : float, optional
         Morphological closing factor applied after the buffer union.
         Controls how aggressively small gaps inside a coverage polygon are
@@ -231,8 +194,7 @@ class XYZMerger:
     Raises
     ------
     FileNotFoundError
-        If any file declared in *priority* is not found in *input_dir*,
-        or if *input_dir* contains no .xyz files matching the priority list.
+        If any file declared in *priority* is not found in *input_dir*.
     ValueError
         If any tile is missing the required ``x``, ``y``, ``z`` columns.
     """
@@ -266,7 +228,7 @@ class XYZMerger:
 
         The pipeline executes five stages in order:
 
-        1. Discover all ``.xyz`` files in *input_dir*.
+        1. Discover files declared in *priority* within *input_dir*.
         2. Load each file into an internal ``_XYZTile``.
         3. Assign priority ranks from the *priority* list.
         4. Merge tiles, discarding lower-priority points in overlap zones.
@@ -285,9 +247,9 @@ class XYZMerger:
         Raises
         ------
         FileNotFoundError
-            If no ``.xyz`` files are found in *input_dir*.
+            If any file declared in *priority* is not found in *input_dir*.
         ValueError
-            If any file in *input_dir* is absent from *priority*.
+            If any file is missing the required ``x``, ``y``, ``z`` columns.
         """
         self._discover_tiles()
         self._load_tiles()
@@ -318,7 +280,7 @@ class XYZMerger:
                 missing_files.append(ref)
             else:
                 self._file_paths.append(path)
-        
+
         if missing_files:
             raise FileNotFoundError(
                 f"The following files declared in priority were not found "
@@ -327,7 +289,8 @@ class XYZMerger:
 
     def _load_tiles(self) -> None:
         """
-        Load each ``.xyz`` file and build an ``_XYZTile`` instance.
+        Load each ``.xyz`` file via :class:`~point_io.PointFileIO` and
+        build an ``_XYZTile`` instance.
 
         Raises
         ------
@@ -336,7 +299,7 @@ class XYZMerger:
         """
         self._tiles = []
         for path in self._file_paths:
-            df = read_xyz(path, format_spec=self.format_spec)
+            df = PointFileIO(path, format_spec=self.format_spec).read()
 
             missing = [c for c in ("x", "y", "z") if c not in df.columns]
             if missing:
@@ -413,7 +376,8 @@ class XYZMerger:
 
     def _export(self, df: pd.DataFrame, output_path: Union[str, Path]) -> None:
         """
-        Write the merged DataFrame to an XYZ file via :func:`~io_xyz.write_xyz`.
+        Write the merged DataFrame to an XYZ file via
+        :class:`~point_io.PointFileIO`.
 
         Parameters
         ----------
@@ -422,4 +386,7 @@ class XYZMerger:
         output_path : str or pathlib.Path
             Destination file path.
         """
-        write_xyz(df, output_path, format_spec=self.format_spec, float_format="%.6f")
+        PointFileIO(
+            path=output_path,
+            format_spec=self.format_spec,
+        ).write(df, float_format="%.6f")
