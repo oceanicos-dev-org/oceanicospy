@@ -3,6 +3,7 @@ from .grid import Grid
 from .crs import PointFileReprojector, reproject_points
 from .xyz_merger import XYZMerger
 from .xyz_mask import AxisAlignedRectangle, XYZRectangleMask
+from .profile_axis import ProfileAxis
 
 __all__ = [
     # IO
@@ -18,4 +19,6 @@ __all__ = [
     # Mask
     "AxisAlignedRectangle",
     "XYZRectangleMask",
+    # Profile
+    "ProfileAxis",
 ]
