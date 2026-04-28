@@ -22,15 +22,7 @@ class PointFileReprojector:
     the result as an XYZ plain-text file.
  
     All file I/O is delegated to :class:`~point_io.PointFileIO`.
- 
-    Supported input formats
-    -----------------------
-    - Vector files (``.shp``, ``.geojson``, ``.gpkg``): CRS is read from
-      file metadata when available.  Pass *source_epsg* only when the
-      file lacks a CRS definition.
-    - XYZ text files (``.xyz``, ``.txt``): *source_epsg* is required
-      because plain-text files carry no CRS metadata.
- 
+  
     Parameters
     ----------
     input_path : str or pathlib.Path
@@ -47,19 +39,23 @@ class PointFileReprojector:
         XYZ output files.  When ``None`` a default
         :class:`~point_io.XYZFormatSpec` is used.  Ignored for vector
         input formats.
- 
-    Attributes
-    ----------
-    gdf : geopandas.GeoDataFrame
-        Internal GeoDataFrame populated after loading.  Use this attribute
-        to inspect or further process the data before exporting.
- 
+  
     Raises
     ------
     ValueError
         If *source_epsg* is not provided for an XYZ input file.
     ValueError
         If *z_column* is not found in the loaded data.
+    
+    Notes
+    -----
+    The supported input formats
+    
+    - Vector files (``.shp``, ``.geojson``, ``.gpkg``): CRS is read from
+      file metadata when available.  Pass *source_epsg* only when the
+      file lacks a CRS definition.
+    - XYZ text files (``.xyz``, ``.txt``): *source_epsg* is required
+      because plain-text files carry no CRS metadata.
     """
  
     def __init__(

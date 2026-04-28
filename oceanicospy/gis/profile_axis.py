@@ -29,7 +29,7 @@ class ProfileAxis:
         the last spacing value.
     """
     def __init__(self) -> None:
-        """Not for direct use.  Call from_coordinates or from_length."""
+        # Not for direct use.  Call from_coordinates or from_length.
         self._s_axis: np.ndarray = np.array([])
         self._start: Optional[np.ndarray] = None
         self._direction: Optional[np.ndarray] = None

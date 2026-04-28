@@ -30,7 +30,7 @@ class Grid:
     """
 
     def __init__(self) -> None:
-        """Not for direct use.  Call from_coordinates or from_shapefile."""
+        # Not for direct use.  Call from_coordinates or from_shapefile.
         self.dx: float = 0.0
         self.dy: float = 0.0
         self.xvar: bool = False
@@ -190,36 +190,108 @@ class Grid:
 
     @property
     def nx(self) -> int:
-        """Number of grid points in the x direction."""
+        """
+        Number of grid points in the x direction.
+
+        Returns
+        -------
+        int
+            Length of the 1-D x coordinate array.
+
+        Raises
+        ------
+        ValueError
+            If the grid has not been built yet.
+        """
         if self.x_1d is None:
             raise ValueError("x-component grid array is not available.")
         return len(self.x_1d)
 
     @property
     def ny(self) -> int:
-        """Number of grid points in the y direction."""
+        """
+        Number of grid points in the y direction.
+
+        Returns
+        -------
+        int
+            Length of the 1-D y coordinate array.
+
+        Raises
+        ------
+        ValueError
+            If the grid has not been built yet.
+        """
         if self.y_1d is None:
             raise ValueError("y-component grid array is not available.")
         return len(self.y_1d)
 
     @property
     def relative_x_coordinates(self) -> pd.DataFrame:
-        """Get the relative x coordinates of the grid points as a DataFrame."""
+        """
+        X coordinates of every grid point relative to the domain origin.
+
+        Each value is the distance in the x direction from *x_start* to
+        the corresponding grid point, so the first column always starts
+        at ``0.0``.
+
+        Returns
+        -------
+        pandas.DataFrame
+            Shape ``(ny, nx)``.  Column labels are integer indices.
+
+        Raises
+        ------
+        ValueError
+            If the grid has not been built yet.
+        """
         if self.x_2d is None:
             raise ValueError("x-component grid array is not available.")
-        
         return pd.DataFrame(self.x_2d - self.x_start)
 
     @property
     def relative_y_coordinates(self) -> pd.DataFrame:
-        """Get the relative y coordinates of the grid points as a DataFrame."""
+        """
+        Y coordinates of every grid point relative to the domain origin.
+
+        Each value is the distance in the y direction from *y_start* to
+        the corresponding grid point, so the first row always starts
+        at ``0.0``.
+
+        Returns
+        -------
+        pandas.DataFrame
+            Shape ``(ny, nx)``.  Column labels are integer indices.
+
+        Raises
+        ------
+        ValueError
+            If the grid has not been built yet.
+        """
         if self.y_2d is None:
             raise ValueError("y-component grid array is not available.")
         return pd.DataFrame(self.y_2d - self.y_start)
-    
+
     @property
     def absolute_x_coordinates(self) -> pd.DataFrame:
-        """Get the absolute x coordinates of the grid points as a DataFrame."""
+        """
+        Absolute x coordinates of every grid point in the original CRS.
+
+        For grids built from a shapefile the values are in the same
+        projected units as the shapefile (typically metres).  For grids
+        built from explicit coordinates they match the values passed to
+        :meth:`from_coordinates`.
+
+        Returns
+        -------
+        pandas.DataFrame
+            Shape ``(ny, nx)``.  Column labels are integer indices.
+
+        Raises
+        ------
+        ValueError
+            If the grid has not been built yet.
+        """
         if self.x_2d is None:
             raise ValueError("x-component grid array is not available.")
         if self.x_start is None:
@@ -228,7 +300,24 @@ class Grid:
 
     @property
     def absolute_y_coordinates(self) -> pd.DataFrame:
-        """Get the absolute y coordinates of the grid points as a DataFrame."""
+        """
+        Absolute y coordinates of every grid point in the original CRS.
+
+        For grids built from a shapefile the values are in the same
+        projected units as the shapefile (typically metres).  For grids
+        built from explicit coordinates they match the values passed to
+        :meth:`from_coordinates`.
+
+        Returns
+        -------
+        pandas.DataFrame
+            Shape ``(ny, nx)``.  Column labels are integer indices.
+
+        Raises
+        ------
+        ValueError
+            If the grid has not been built yet.
+        """
         if self.y_2d is None:
             raise ValueError("y-component grid array is not available.")
         if self.y_start is None:

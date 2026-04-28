@@ -19,16 +19,12 @@ class AxisAlignedRectangle:
     The order of *p1* and *p2* is irrelevant; minimum and maximum bounds
     are computed internally.  This geometry operates purely in the XY
     plane and carries no CRS information.
-
-    Parameters
-    ----------
-    p1 : tuple of (float, float)
-        First corner as ``(x, y)``.
-    p2 : tuple of (float, float)
-        Opposite corner as ``(x, y)``.
     """
 
+    #: First corner as (x, y).
     p1: Tuple[float, float]
+
+    #: Opposite corner as (x, y).
     p2: Tuple[float, float]
 
     @property
