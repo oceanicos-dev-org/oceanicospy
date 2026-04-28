@@ -1,24 +1,7 @@
-"""
-xyz_mask
-========
-Rectangular masking utilities for XYZ point data.
-
-This module provides tools to retain or discard points from an XYZ
-dataset based on axis-aligned rectangular regions defined in the same
-coordinate space as the data.
-
-Public API
-----------
-AxisAlignedRectangle
-    Immutable axis-aligned rectangle defined by two opposite corners.
-XYZRectangleMask
-    Apply one or more rectangles to filter an XYZ DataFrame.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -28,11 +11,6 @@ __all__ = [
     "XYZRectangleMask",
 ]
 
-
-# ---------------------------------------------------------------------------
-# AxisAlignedRectangle
-# ---------------------------------------------------------------------------
-
 @dataclass(frozen=True)
 class AxisAlignedRectangle:
     """
@@ -41,16 +19,12 @@ class AxisAlignedRectangle:
     The order of *p1* and *p2* is irrelevant; minimum and maximum bounds
     are computed internally.  This geometry operates purely in the XY
     plane and carries no CRS information.
-
-    Parameters
-    ----------
-    p1 : tuple of (float, float)
-        First corner as ``(x, y)``.
-    p2 : tuple of (float, float)
-        Opposite corner as ``(x, y)``.
     """
 
+    #: First corner as (x, y).
     p1: Tuple[float, float]
+
+    #: Opposite corner as (x, y).
     p2: Tuple[float, float]
 
     @property
@@ -89,11 +63,6 @@ class AxisAlignedRectangle:
         bool
         """
         return (self.x_min <= x <= self.x_max) and (self.y_min <= y <= self.y_max)
-
-
-# ---------------------------------------------------------------------------
-# XYZRectangleMask
-# ---------------------------------------------------------------------------
 
 class XYZRectangleMask:
     """

@@ -1,11 +1,8 @@
 import numpy as np
-import os
-import glob
 import shutil
 from pathlib import Path
-import pandas as pd
-from itertools import zip_longest
 from .... import utils
+from ....gis import Grid
 
 class GridMaker:
     """
@@ -182,113 +179,24 @@ class GridMaker:
 
         return grid_dict
 
-    def rectangular(
+    def build_profile(self):
+        pass
+
+    def build_rectangular_grid(
             self,
             source_file=None,
-            xvar=False,
-            start_segments=None,
-            dist_segments=None,
-            delta_segments=None
+            xvar=False
         ):
-        """
-
-        This method generates a rectangular grid for XBeach based on the specified parameters 
-        and the bounding box of a shapefile (for 2D grids). It also handles the case where 
-        pre-existing grid files are found in the input folder, in which case it standardizes 
-        their names and copies them to the run folder without generating a new grid.
-
-        Parameters
-        ----------
-        source_file : str, optional
-            Name of an input file used to derive the grid extent.
-            - If dims == 1 and source_file is None:
-                A 1-D profile is created using `self.end_x_point` and `self.dx`
-                (or using planar coordinates `self.start_xy` / `self.end_xy`
-                if provided).
-            - If dims == 2 and the filename ends with '.shp':
-                The first shape in the shapefile located at
-                self.init.dict_folders['input'] / source_file is read and its
-                bounding box (min_lon, min_lat, max_lon, max_lat) is used to
-                construct a 2-D rectangular grid.
-
-        xvar : bool, optional
-            For 2-D grids only.
-            - If False (default), builds a uniform grid in both x and y directions.
-
-        start_segments : dict, optional
-            Segment starting positions for x-direction when xvar=True.
-
-        dist_segments : dict, optional
-            Segment lengths for each segment when xvar=True. If the values are
-            dict-like with keys {'x','y'}.
-
-        delta_segments : dict, optional
-            Grid spacings for each segment when xvar=True. If the values are
-            dict-like with keys {'x','y'}.
-
-                    
-        Notes
-        -----
-        Step 0:
-            Checking if there are user-provided '.grd' filesin the input folder, if so 
-            the method standardizes their names to 'x.grd' and 'y.grd' in run folders 
-            and returns immediately. If not found, the method proceeds to Step 1 or 
-            Step 2 depending on the value of `dims` in the initializer.
-
-        Step 1 (dims == 1):
-            - If planar coordinates (start_xy and end_xy) are available, a 1-D
-            profile is created along the straight line between these points.
-            x_profile.grd stores the local coordinate s = [0, dx, 2dx, ...];
-            y_profile.grd stores zeros. The actual planar end point reached
-            after applying dx and auto_extend/as_n_cells is stored in
-            self.final_end_xy.
-            - Otherwise, a 1-D profile in x-only is created from 0 to end_x_point.
-
-        Step 2 (dims == 2):
-            - If dy is None, it is set to dx.
-            - A shapefile is required and its bounding box is used to define the
-            grid extent.
-            - If xvar=False, a uniform grid is created.
-
-        Raises
-        ------
-        AttributeError
-            If required attributes on self are missing.
-
-        FileNotFoundError
-            If a shapefile is requested but cannot be found.
-
-        ValueError
-            If provided spacings are invalid, or required inputs for a given mode
-            are missing.
         
-        ImportError
-            If the shapefile mode is requested but the PyShp library is not installed.
-        """
-
-        # Step 0: check for pre-existing .grd files in the input folder.
-        # If found (>= 2 files), standardize their names and return them,
-        # keeping backwards compatibility with workflows that supply grids.
-
         existing = self._load_existing_grid()
         if existing is not None:
             return existing
 
         input_folder = self.init.dict_folders["input"]
         run_folder = self.init.dict_folders["run"]
-
-        auto_extend_flag = getattr(self, "auto_extend", True)
-        as_n_cells_flag = getattr(self, "as_n_cells", False)
-
         dims = self.init.dict_ini_data.get("dims")
 
-        # Step 1: 1D case
-        if str(dims) == "1":
-            pass #TODO: add the 1D logic here
-
-        # Step 2: 2D case.
-        elif str(dims) == "2":
-            # Ensure dy is defined
+        if str(dims) == "2":
             if getattr(self, "dy", None) is None:
                 self.dy = self.dx
 
@@ -298,49 +206,23 @@ class GridMaker:
                     "For 2D grids (dims == 2) you must provide a shapefile"
                 )
 
-            shp_path = os.path.join(input_folder, source_file)
-            if not os.path.exists(shp_path):
-                raise FileNotFoundError(
-                    f"Shapefile not found at '{shp_path}'. Check input folder and name."
-                )
-        
-            try:
-                import shapefile
-            except ImportError as e:
-                raise ImportError(
-                    "PyShp (shapefile) is required for 2D grid generation. "
-                    "Install it via pip or conda."
-                ) from e
-            
-            sf = shapefile.Reader(shp_path)
-            shape = sf.shapes()[0]
-            min_lon, min_lat, max_lon, max_lat = shape.bbox
+            grid = Grid(dx=self.dx, dy=self.dy, xvar=xvar)
+            shp_path = Path(input_folder) / source_file
+            x_2d, y_2d = grid.build_from_shapefile(shp_path)
+            grid.export_to_grd_file(run_folder)
 
-            # in this case the user does not want to use variable spacing (xvar=False).
-            if not xvar:
-                # Values written to file are relative to (min_lon, min_lat).
-                x_points_flat = np.arange(min_lon, max_lon + self.dx, self.dx) - min_lon
-                y_points_flat = np.arange(min_lat, max_lat + self.dy, self.dy) - min_lat
+            self._grid_dict = {
+                "xfilepath": "x.grd",
+                "yfilepath": "y.grd",
+                "meshes_x": x_2d.shape[1] - 1, # number of columns - 1
+                "meshes_y": y_2d.shape[0] - 1, # number of rows - 1
+            }
 
-                x_points, y_points = np.meshgrid(x_points_flat, y_points_flat)
-
-                self._grid_dict = {
-                    "xfilepath": "x.grd",
-                    "yfilepath": "y.grd",
-                    "meshes_x": x_points.shape[1] - 1, # number of columns - 1
-                    "meshes_y": y_points.shape[0] - 1, # number of rows - 1
-                }
-
-                # files are written in the run folder with the specified names.
-                x_run_path = os.path.join(run_folder, self._grid_dict["xfilepath"])
-                y_run_path = os.path.join(run_folder, self._grid_dict["yfilepath"])
-
-                np.savetxt(x_run_path, x_points, fmt="%.4f")
-                np.savetxt(y_run_path, y_points, fmt="%.4f")
-            else: 
-                pass #TODO: implement xvar=True behaviour with or without segment dicts
         else:
-            raise ValueError(f"Unsupported dims value: {dims}. Expected 1 or 2 as int or str.")
+            raise ValueError(f"Unsupported dims value: {dims}. Expected 2 dimensions.")
+
+        
+
 
     def fill_grid_section(self):
         if self._grid_dict is None:

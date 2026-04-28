@@ -24,3 +24,4 @@ documentation for details.
    observations/index
    downloads/index
    models/index
+   gis/index
