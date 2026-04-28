@@ -23,7 +23,7 @@ class WaterLevelForcing:
     wl_info : dict or None, optional
         Dictionary containing water level information. If None, water level data must be provided via `get_waterlevel_from_UHSLC()`.
     filename : str or None, optional
-        Name of the water level ASCII file to create or link in the domain input directory. Defaults to None.
+        Name of a existing water level ASCII file to create or link in the domain input directory. Defaults to None.
     share_wl : bool, optional
         If True, water level data is shared across domains by linking to the domain 1 file. Defaults to True.
     use_link: bool, optional
@@ -134,36 +134,31 @@ class WaterLevelForcing:
         detrend_wl: bool = False,
     ) -> None:
         """
-        Parse a raw UHSLC hourly CSV file, clean the water-level series,
-        and write a time-varying water-level file in SWAN ASCII format.
+        Convert a UHSLC water-level DataFrame to SWAN ASCII grid format.
 
-        Processing steps applied to the raw data:
+        Processing steps:
 
-        1. Delegate CSV parsing, UTC→local (UTC−5) conversion, and mm→m
-           conversion to :meth:`~oceanicospy.downloads.UHSLCDownloader.clean_data`.
-        2. Flag UHSLC fill values (``depth[m] < -30.0``) as ``NaN``.
-        3. Apply a station datum correction of ``-2.0 m`` for the local-time
-           period 1997-01-01 00:00 – 2018-12-31 18:00 (≡ 1997-01-01 05:00 –
-           2018-12-31 23:00 UTC).
-        4. Optionally detrend the water-level signal.
-        5. Trim the series to ``[ini_date, end_date]``.
-        6. Write one timestamp header + a full spatial grid per time step.
+        1. Flag UHSLC fill values (``depth[m] < -30.0``) as ``NaN``.
+        2. Optionally detrend the water-level signal (NaN-safe).
+        3. Trim the series to ``[ini_date, end_date]``.
+        4. Write one timestamp header followed by a full 2-D water-level
+           grid per time step to the domain input folder.
 
-        The cleaned full series is stored in :attr:`dataset` and the
+        The full series is stored in :attr:`dataset` and the
         simulation-window subset in :attr:`dataset_filtered`.
 
         Parameters
         ----------
         UHSLC_dataframe : pd.DataFrame
-            The cleaned UHSLC data as a pandas DataFrame.
+            Cleaned UHSLC DataFrame with a datetime index and a ``depth[m]``
+            column, as returned by :meth:`get_waterlevel_from_UHSLC`.
         ascii_filename : str
-            Name of the SWAN water-level ASCII output file to create in
-            the same input directory (e.g. ``"water_levels.wl"``).
+            Name of the SWAN water-level ASCII output file to create in the
+            domain input directory (e.g. ``"water_levels.wl"``).
         detrend_wl : bool, optional
             If ``True``, apply :func:`scipy.signal.detrend` to the
-            ``depth[m]`` column after conversion.  ``NaN`` gaps are
-            excluded from the detrending and reinserted afterwards.
-            Default is ``False``.
+            ``depth[m]`` column.  ``NaN`` gaps are excluded from the
+            detrending and reinserted afterwards.  Default is ``False``.
 
         Returns
         -------
@@ -171,26 +166,25 @@ class WaterLevelForcing:
 
         Raises
         ------
-        FileNotFoundError
-            If *UHSLC_dataframe* is empty or the domain ``*.bot`` file cannot
-            be found.
+        IndexError
+            If no ``*.bot`` file is found in the domain input directory.
         """
+        df = UHSLC_dataframe.copy()
         domain_dir = Path(self.init.dict_folders["input"]) / f"domain_0{self.domain_number}"
 
-        UHSLC_dataframe.loc[UHSLC_dataframe["depth[m]"] < -30.0, "depth[m]"] = np.nan
+        df.loc[df["depth[m]"] < -30.0, "depth[m]"] = np.nan
 
-        # --- Optional linear detrending (NaN-safe) ---
         if detrend_wl:
-            valid_mask = np.isfinite(UHSLC_dataframe["depth[m]"])
-            detrended = np.full(len(UHSLC_dataframe), np.nan)
+            valid_mask = np.isfinite(df["depth[m]"])
+            detrended = np.full(len(df), np.nan)
             detrended[valid_mask.values] = detrend(
-                UHSLC_dataframe.loc[valid_mask, "depth[m]"].values
+                df.loc[valid_mask, "depth[m]"].values
             )
-            UHSLC_dataframe["depth[m]"] = detrended
+            df["depth[m]"] = detrended
 
-        self.dataset = UHSLC_dataframe
-        self.dataset_filtered = UHSLC_dataframe.loc[
-            (UHSLC_dataframe.index >= self.init.ini_date) & (UHSLC_dataframe.index <= self.init.end_date)
+        self.dataset = df
+        self.dataset_filtered = df.loc[
+            (df.index >= self.init.ini_date) & (df.index <= self.init.end_date)
         ]
 
         bathymetry_grid = self._load_bathymetry()
