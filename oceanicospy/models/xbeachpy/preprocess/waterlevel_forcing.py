@@ -122,6 +122,9 @@ class WaterLevelForcing:
             {"Time": time_to_write, "water_level[m]": self.dataset_filtered["depth[m]"]},
             index=self.dataset_filtered.index,
         )
+
+        df_to_save["water_level[m]"] = df_to_save["water_level[m]"].round(3)
+
         df_to_save.to_csv(
             input_dir / ascii_filename,
             sep=" ", header=False, index=False,

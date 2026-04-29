@@ -1,12 +1,13 @@
 import os
-import glob
 import numpy as np
 import pandas as pd
 
+from pathlib import Path
 from scipy.interpolate import griddata
 from scipy.spatial import cKDTree
 
 from .... import utils
+from ....gis import PointFileIO, XYZFormatSpec
 
 
 class BathyMaker:
@@ -69,123 +70,32 @@ class BathyMaker:
         """
         return self._bathy_dict
 
-    @staticmethod
-    def read_xyz_file(
-        xyz_path: str,
-    ) -> pd.DataFrame:
-        """
-        Read an XYZ point cloud file (topobathymetry).
+    def build_z_from_bathy(self,geometry_object):
+        pass
 
-        Automatically detects:
-        - **Delimiter**: comma-separated or whitespace-separated.
-        - **Header row**: whether the first non-comment line contains column
-          names (i.e. its first field cannot be parsed as a number) or raw
-          numeric data.
+        # if isinstance(geometry_object, ProfileAxis):
+        #     pass # profile interpolator - ProfileInterpolator(xyz,profileAxis)
+        # else:
+        #         raise TypeError("Invalid geometry object. Must be a ProfileAxis")
+    
 
-        Parameters
-        ----------
-        xyz_path : str
-            Path to an XYZ-like file.  Comment lines starting with ``#``
-            are always ignored.
-        col_names : list of str, optional
-            Column names to assign to the first three columns.  When
-            ``None`` (default) the names ``["X", "Y", "Z"]`` are used if
-            no header is detected, or the file's own header labels are kept
-            when a header row is found.
+    def build_z_from_existing_profile(self, xz_filepath):
+        # read xz_filepath
+        # entity with two columns (pd.DataFrame)
+        # compute distance along profile (s) (last_record - first record)
 
-        Returns
-        -------
-        df : pandas.DataFrame
-            DataFrame with at least three numeric columns.  The first three
-            columns are always renamed to ``["X", "Y", "Z"]`` (or to
-            *col_names* when provided).
-        """
-        # Detect delimiter by inspecting the first non-comment line.
-        with open(xyz_path, "r") as fh:
-            first_line = ""
-            for raw in fh:
-                stripped = raw.strip()
-                if stripped and not stripped.startswith("#"):
-                    first_line = stripped
-                    break
+        # compare length profile(profileAxis) with length of xz_filepath, round to one decimal.
+        # 
 
-        delimiter = "," if "," in first_line else r"\s+"
+        # if lengt_profileaxis == length xz_filepath:
+            # write .dep file with z values from xz_filepath with interpolation
+        # elif length_profileaxis < length xz_filepath:
+            # trim length xz_filepath to length of profileAxis and write .dep file with z values from xz_filepath with interpolation
+        # else:
+            # raise Error
 
-        # Detect whether the first line is a header.
-        first_token = first_line.split(",")[0] if "," in first_line else first_line.split()[0]
-        try:
-            float(first_token)
-            has_header = False
-        except ValueError:
-            has_header = True
+        pass
 
-        df = pd.read_csv(
-            xyz_path,
-            sep=delimiter,
-            header=0 if has_header else None,
-            comment="#",
-            engine="python",
-        )
-
-        if has_header:
-            for column in df.columns:
-                if "x" in column.lower():
-                    df.rename(columns={column: "X"}, inplace=True)
-                elif "y" in column.lower():
-                    df.rename(columns={column: "Y"}, inplace=True)
-                elif "z" in column.lower():
-                    df.rename(columns={column: "Z"}, inplace=True)
-        else:
-            df = df.iloc[:, :3]
-            df.columns = ["X", "Y", "Z"]
-
-        # coerce to numeric and drop unusable rows.
-        for col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors="coerce")
-        df = df.dropna().drop_duplicates().reset_index(drop=True)
-        return df
-
-    def convert_xyz2asc(self,xyz_filename):
-        """
-        Converts bathymetry data from XYZ format to ESRI ASCII Grid format.
-
-        Notes
-        -----
-        - The input file is automatically searched in
-        ``init.dict_folders["input"]`` using the pattern ``TopoBathy*.csv``.
-        - The CSV file is assumed to represent a regular grid and must
-        contain three columns corresponding to X, Y, and Z.
-        - Missing values (NaN) are written as empty fields in the DEP file,
-        following the legacy format.
-
-        Returns
-        -------
-        dict
-            Dictionary with metadata of the generated bathymetry:
-            - 'depfilepath' : str
-            - 'nelayerfilepath' : str
-        """
-        bathy_xyz_path = glob.glob(f'{self.init.dict_folders["input"]}{xyz_filename}.csv')[0]
-        ascfile = f'{self.init.dict_folders["run"]}{self.output_filename}.dep'
-
-        df_xyz = self.read_xyz_file(bathy_xyz_path)
-
-        grid = df_xyz.pivot_table(index="Y", columns="X", values="Z")
-        grid = grid.sort_index(ascending=False) # sort Y in descending order to match XBeach convention (origin at lower left corner)
-        grid = grid[grid.columns[::-1]]
-
-        arr = grid.values.astype(float)
-        out = np.empty(arr.shape, dtype='U16')
-        mask = np.isnan(arr)
-        out[~mask] = np.char.mod('%3.5f', arr[~mask])
-        out[mask] = ''
-        np.savetxt(ascfile, out, fmt='%s', delimiter=' ')
-
-        print('File %s saved successfuly.' % ascfile)
-
-        self._bathy_dict={'depfilepath':f'{self.output_filename}.dep'}
-        for key,value in self._bathy_dict.items():
-            self._bathy_dict[key] = str(value)
 
     def fill_bathy_section(self) -> None:
         """
@@ -202,3 +112,7 @@ class BathyMaker:
         print("\n*** Adding/Editing bathymetry information in params file ***\n")
         params_path = os.path.join(self.init.dict_folders["run"], "params.txt")
         utils.fill_files(params_path, self._bathy_dict)
+    
+    def load_existing_dep(self, dep_filename):
+        # read dep_filepath and store in self._bathy_dict
+        pass

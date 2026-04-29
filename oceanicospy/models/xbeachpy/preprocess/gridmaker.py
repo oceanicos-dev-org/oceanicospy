@@ -82,13 +82,20 @@ class _ProfileBuilder:
 
     def _export(self, profile: ProfileAxis) -> dict:
         run_folder = Path(self._gm.init.dict_folders["run"])
-        s = profile.distance_axis["s"].values
-        np.savetxt(run_folder / "x.grd", s, fmt="%.4f")
-        np.savetxt(run_folder / "y.grd", np.zeros_like(s), fmt="%.4f")
+
+        if self._gm.coordinate_type == "absolute":
+            x_coords = profile.coordinates["x"].values
+            y_coords = profile.coordinates["y"].values
+        else:
+            x_coords = profile.distance_axis["s"].values
+            y_coords = np.zeros_like(x_coords)
+
+        np.savetxt(run_folder / "x.grd", x_coords, fmt="%.4f")
+        np.savetxt(run_folder / "y.grd", y_coords, fmt="%.4f")
         return {
             "xfilepath": "x.grd",
             "yfilepath": "y.grd",
-            "meshes_x": len(s) - 1,
+            "meshes_x": len(x_coords) - 1,
             "meshes_y": 0,
         }
 
@@ -148,6 +155,7 @@ class _RectangularGridBuilder:
         else:
             np.savetxt(run_folder / "x.grd", grid.relative_x_coordinates, fmt="%.4f")
             np.savetxt(run_folder / "y.grd", grid.relative_y_coordinates, fmt="%.4f")
+        
         return {
             "xfilepath": "x.grd",
             "yfilepath": "y.grd",
@@ -168,30 +176,11 @@ class GridMaker:
         Project initialization object with folder configuration.
     coordinates_type : str, optional
         Type of coordinates to be written: "absolute" or "relative". "relative" is set as default
-
-    Examples
-    --------
-    1-D profile from coordinates::
-
-        gm = GridMaker(init)
-        gm.build_profile.from_coordinates(start=(0, 0), end=(500, 0), dx=5)
-        gm.fill_grid_section()
-
-    1-D profile from length::
-
-        gm = GridMaker(init)
-        gm.build_profile.from_length(length=500, dx=5)
-        gm.fill_grid_section()
-
-    2-D rectangular grid from shapefile::
-
-        gm = GridMaker(init)
-        gm.build_rectangular_grid.from_shapefile("domain.shp", dx=10, dy=10)
-        gm.fill_grid_section()
     """
 
-    def __init__(self, init, coordinates_type="relative"):
+    def __init__(self, init, grid_params: dict, coordinates_type: str = "relative"):
         self.init = init
+        self.grid_params = grid_params
         self.coordinate_type = coordinates_type.lower()
         self._grid_dict = None
         self._profile_axis = None
@@ -200,12 +189,6 @@ class GridMaker:
         if self.coordinate_type not in ["absolute", "relative"]:
             raise ValueError("Invalid coordinate_type. Choose 'absolute' or 'relative'.")
 
-        if self._load_existing_xb_grid() is not None:
-            warnings.warn(
-                "Existing grid files found in input folder and loaded.",
-                UserWarning,
-                stacklevel=3,
-            )
     @property
     def metadata(self) -> dict:
         """
@@ -229,7 +212,7 @@ class GridMaker:
         """Return a builder for 2-D rectangular grids."""
         return _RectangularGridBuilder(self)
     
-    def _load_existing_xb_grid(self) -> dict:
+    def load_existing_xbgrid(self,xgrid_filename,ygrid_filename) -> dict:
         """
         Load an existing grid from the configured input folder, validate it,
         copy the files into the run folder, and return a descriptor dictionary.
@@ -249,16 +232,15 @@ class GridMaker:
         input_folder = Path(self.init.dict_folders["input"])
         run_folder = Path(self.init.dict_folders["run"])
 
-        fixed_x = input_folder / "x_profile.grd"
-        fixed_y = input_folder / "y_profile.grd"
+        fixed_x = input_folder / xgrid_filename
+        fixed_y = input_folder / ygrid_filename
 
         if fixed_x.exists() and fixed_y.exists():
             x_file, y_file = fixed_x, fixed_y
         else:
-            grd_files = list(input_folder.glob("*.grd"))
-            if len(grd_files) < 2:
-                return None
-            x_file, y_file = grd_files[0], grd_files[1]
+            raise FileNotFoundError(
+                f"Grid files not found in input folder: {fixed_x}, {fixed_y}"
+            )
 
         x = np.loadtxt(x_file)
         y = np.loadtxt(y_file)
@@ -282,12 +264,13 @@ class GridMaker:
 
     def fill_grid_section(self) -> None:
         """Write the generated grid metadata to the params.txt file."""
-        print(self._grid_dict)
+
+        self._grid_dict.update(self.grid_params)
 
         for key in self._grid_dict:
             if isinstance(self._grid_dict[key], (int, float)):
                 self._grid_dict[key] = str(self._grid_dict[key])
-                
+
         if self._grid_dict is None:
             raise ValueError(
                 "Grid has not been generated yet. "

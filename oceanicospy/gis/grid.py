@@ -205,7 +205,7 @@ class Grid:
         """
         if self.x_1d is None:
             raise ValueError("x-component grid array is not available.")
-        return len(self.x_1d)
+        return len(self.x_1d)-1
 
     @property
     def ny(self) -> int:
@@ -224,7 +224,7 @@ class Grid:
         """
         if self.y_1d is None:
             raise ValueError("y-component grid array is not available.")
-        return len(self.y_1d)
+        return len(self.y_1d)-1
 
     @property
     def relative_x_coordinates(self) -> pd.DataFrame:

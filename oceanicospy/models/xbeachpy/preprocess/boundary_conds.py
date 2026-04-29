@@ -184,7 +184,7 @@ class BoundaryConditions:
         fdest.write('FACTOR\n')
         fdest.write('0.1E-05\n')
         for row in spec_matrix:
-            np.savetxt(fdest, row, fmt='%5.0f')
+            np.savetxt(fdest, row, fmt='%7.0f')
 
     def _write_sp2_file(self, site_idx, time_idx, lon, lat):
         """
@@ -215,7 +215,8 @@ class BoundaryConditions:
         The spectral energy is normalised by ``0.1E-05`` before being passed
         to :meth:`_write_sp2_spectrum`.
         """
-        spec_matrix = np.array(self.data_spectra[time_idx, site_idx, :, :]) / 0.1e-5
+        spec_matrix = np.matrix(self.data_spectra[time_idx, site_idx, :, :]) / 0.1e-5
+
         time_str = pd.to_datetime(self.dataset.time.values[time_idx]).strftime('%Y%m%d.%H%M%S')
         sp2_path = (
             f"{self.init.dict_folders['run']}"
@@ -268,7 +269,7 @@ class BoundaryConditions:
                     f"spec_time{idx_time}_point{site_idx}.sp2'\n"
                 )
 
-    def _write_loclist(self):
+    def _write_loclist(self, location_points):
         """
         Write ``loclist.txt`` mapping each boundary site to its filelist.
 
@@ -281,10 +282,11 @@ class BoundaryConditions:
         with open(loclist_path, "w") as floc:
             floc.write('LOCLIST\n')
             for idx_site in range(self.number_spectrum_locs):
-                floc.write(f"0 {-(idx_site) * 100} 'bounds_conds/filelist_{idx_site}.txt'\n")
+                x, y = location_points[idx_site]
+                floc.write(f"{x} {y} 'bounds_conds/filelist_{idx_site}.txt'\n")
 
 
-    def spectra_from_swan(self, input_filename, point_indexes=None):
+    def spectra_from_swan(self, input_filename,location_points, point_indexes=None):
         """
         Convert a SWAN spectral output file into XBeach boundary condition files.
 
@@ -321,19 +323,19 @@ class BoundaryConditions:
         self.data_spectra = self.dataset.efth
         self.number_spectrum_locs = len(self.dataset.site)
 
-        if self.number_spectrum_locs == 1:
-            print('delete the loclist section and the nspectrumloc command')
-        else:
-            self.dict_boundaries = {
-                'w_bc_version': 3,
-                'n_spectrum_loc': self.number_spectrum_locs,
-                'bcfilepath': 'bounds_conds/loclist.txt',
-            }
+        self.dict_boundaries = {
+            'w_bc_version': 3,
+            'n_spectrum_loc': self.number_spectrum_locs,
+            'bcfilepath': 'bounds_conds/loclist.txt',
+        }
 
         for idx_site in range(self.number_spectrum_locs):
             self._write_site_filelist(idx_site)
 
-        self._write_loclist()
+        if self.number_spectrum_locs != len(location_points):
+            raise ValueError(f"Number of location points ({len(location_points)}) does not match number of spectrum locations ({self.number_spectrum_locs}).")
+
+        self._write_loclist(location_points)
 
     def fill_boundaries_section(self):
         """
