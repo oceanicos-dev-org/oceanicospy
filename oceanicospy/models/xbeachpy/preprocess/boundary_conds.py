@@ -246,7 +246,9 @@ class BoundaryConditions:
         The output directory ``<run>/bounds_conds/point_<site_idx>/`` is created
         with ``exist_ok=True``, so re-running is safe.  The filelist is written to
         ``<run>/bounds_conds/filelist_<site_idx>.txt`` with one entry per time step
-        in the format expected by XBeach (``3600 0.2 '<relative_sp2_path>'``).
+        in the format expected by XBeach (``3600 0.2 '<relative_sp2_path>'``)
+        
+        Notice that the time step per site is defined as 0.2.
         """
         bounds_conds_path = os.path.join(
             self.init.dict_folders["run"], "bounds_conds", f"point_{site_idx}"
