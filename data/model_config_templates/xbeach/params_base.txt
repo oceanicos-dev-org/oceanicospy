@@ -23,11 +23,11 @@ depfile   = $depfilepath
 nx        = $meshes_x
 ny        = $meshes_y
 vardx     = 1
-thetamin  = 0
-thetamax  = 190
-dtheta    = 10
+thetamin  = $thetamin
+thetamax  = $thetamax
+dtheta    = $dtheta
 thetanaut = 1
-alfa      = 180
+alfa      = $alfa
 
 %%% Wave boundary condition parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -47,6 +47,7 @@ zs0file      = $sealevelfilepath
 tstart       = 0
 CFL          = 0.7
 tstop        = $tstop_value
+tstart       = $tstart_value
 tint         = $tint_value
 tintg        = $tintg_value
 

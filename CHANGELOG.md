@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0b5][0.1.0b5] - 2026-04-29
+
+### Added
+
+- `gis` subpackage promoted to beta — GIS-based geometry, grid construction, and spatial
+  I/O tools are considered feature-complete and undergoing stabilization before the final
+  0.1.0 release
+- `ProfileAxis` — cross-shore profile geometry with automatic extension and coordinate
+  transformation support
+- `Grid` — 2-D rectangular grid data class built from a shapefile boundary
+- `PointFileIO` — XYZ point-file reader/writer with configurable format specification
+  (`XYZFormatSpec`) and auto-detection of delimiter and header
+- `ProfileInterpolator` — bathymetry interpolation onto a profile axis from scattered
+  XYZ point data
+- RST API documentation for the `gis` subpackage under `docs/gis/`
+
 ## [0.1.0b4][0.1.0b4] - 2026-04-23
 
 ### Added
@@ -102,3 +118,4 @@ Initial scaffolding release.
 [0.1.0b2]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b1...0.1.0b2
 [0.1.0b3]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b2...0.1.0b3
 [0.1.0b4]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b3...0.1.0b4
+[0.1.0b5]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b4...0.1.0b5

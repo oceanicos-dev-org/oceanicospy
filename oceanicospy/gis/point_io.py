@@ -1,27 +1,18 @@
 from __future__ import annotations
 
+import geopandas as gpd
+import pandas as pd
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Union
-
-import pandas as pd
-
-try:
-    import geopandas as gpd
-    from shapely.geometry import Point  # noqa: F401 – used implicitly by gpd
-    _HAS_GEO = True
-except ImportError:
-    gpd = None  # type: ignore[assignment]
-    _HAS_GEO = False
 
 __all__ = [
     "XYZFormatSpec",
     "PointFileIO",
 ]
 
-# ---------------------------------------------------------------------------
 # Constants
-# ---------------------------------------------------------------------------
 
 #: Delimiters tried during format inference, in evaluation order.
 _CANDIDATE_DELIMITERS: List[str] = [",", ";", "\t", "|"]
@@ -32,9 +23,6 @@ _COMMENT_PREFIXES: tuple[str, ...] = ("#", "//")
 #: Vector file extensions handled directly by GeoPandas.
 _VECTOR_EXTENSIONS: tuple[str, ...] = (".shp", ".geojson", ".gpkg")
 
-# ---------------------------------------------------------------------------
-# Private helpers
-# ---------------------------------------------------------------------------
 
 def _is_float_token(token: str) -> bool:
     """
@@ -54,26 +42,6 @@ def _is_float_token(token: str) -> bool:
         return True
     except ValueError:
         return False
-
-def _check_geodeps(func_name: str) -> None:
-    """
-    Raise :exc:`ImportError` when GeoPandas is not available.
-
-    Parameters
-    ----------
-    func_name : str
-        Name of the calling function, used in the error message.
-
-    Raises
-    ------
-    ImportError
-        If ``geopandas`` or ``shapely`` could not be imported at module load.
-    """
-    if not _HAS_GEO:
-        raise ImportError(
-            f"{func_name} requires 'geopandas' and 'shapely'. "
-            "Install them with:  pip install geopandas shapely"
-        )
 
 def _normalize_epsg(crs: Union[str, int]) -> str:
     """
@@ -203,31 +171,26 @@ class XYZFormatSpec:
     All reading and writing operations in :class:`PointFileIO` accept an
     ``XYZFormatSpec`` so that format details are declared once and reused
     consistently across I/O calls.
-
-    Parameters
-    ----------
-    delimiter : str, optional
-        Column separator character.  Use ``" "`` for any whitespace
-        (the default), ``","`` for CSV, ``";"`` for semicolon-separated
-        files, or ``"\\t"`` for tab-separated files.
-    has_header : bool, optional
-        ``True`` if the first non-comment line contains column names.
-        ``False`` (the default) if the file starts directly with data.
-    x_column : str, optional
-        Name of the column that stores the X coordinate.
-    y_column : str, optional
-        Name of the column that stores the Y coordinate.
-    z_column : str, optional
-        Name of the column that stores the Z value (elevation or depth).
-    encoding : str, optional
-        File encoding passed to :func:`open` and :func:`pandas.read_csv`.
     """
 
+    #: Column separator. Use ``" "`` for whitespace, ``","`` for CSV,
+    #: ``";"`` for semicolon-separated, or ``"\\t"`` for tab-separated.
     delimiter: str = " "
+
+    #: ``True`` if the first non-comment line contains column names.
+    #: ``False`` if the file starts directly with data.
     has_header: bool = False
+
+    #: Name of the column that stores the X coordinate.
     x_column: str = "x"
+
+    #: Name of the column that stores the Y coordinate.
     y_column: str = "y"
+
+    #: Name of the column that stores the Z value (elevation or depth).
     z_column: str = "z"
+
+    #: File encoding passed to :func:`open` and :func:`pandas.read_csv`.
     encoding: str = "utf-8"
 
     def column_order(self) -> List[str]:
@@ -245,13 +208,6 @@ class PointFileIO:
     """
     Read and write point cloud data from XYZ or vector files.
 
-    Supported input formats
-    -----------------------
-    - XYZ text files (``.xyz``, ``.txt``): plain-text tables with X, Y, Z
-      columns separated by whitespace, comma, semicolon, tab or pipe.
-    - Vector files (``.shp``, ``.geojson``, ``.gpkg``): point layers
-      supported by GeoPandas.
-
     Parameters
     ----------
     path : str or pathlib.Path
@@ -265,14 +221,14 @@ class PointFileIO:
         ``"EPSG:9377"``.  For vector files the CRS is read from the
         file metadata.  When ``None`` no CRS is assigned.
 
-    Attributes
-    ----------
-    path : pathlib.Path
-        Resolved path to the file.
-    format_spec : XYZFormatSpec
-        Format descriptor in use, either provided or inferred.
-    crs : str or None
-        Canonical CRS string (e.g. ``"EPSG:9377"``) or ``None``.
+    Notes
+    -----
+    The supported file formats are:
+
+    - XYZ text files (``.xyz``, ``.txt``): plain-text tables with X, Y, Z
+      columns separated by whitespace, comma, semicolon, tab or pipe.
+    - Vector files (``.shp``, ``.geojson``, ``.gpkg``): point layers
+      supported by GeoPandas.
     """
 
     def __init__(
@@ -287,14 +243,10 @@ class PointFileIO:
         # Infer format only for XYZ files; vector files do not need it
         if format_spec is not None:
             self.format_spec = format_spec
-        elif self.path.suffix.lower() not in _VECTOR_EXTENSIONS:
+        elif self.path.suffix.lower() not in _VECTOR_EXTENSIONS and self.path.exists():
             self.format_spec = _infer_format(self.path)
         else:
             self.format_spec = XYZFormatSpec()
-
-    # ------------------------------------------------------------------
-    # Public methods — reading
-    # ------------------------------------------------------------------
 
     def read(self) -> pd.DataFrame:
         """
@@ -339,8 +291,6 @@ class PointFileIO:
         ValueError
             If loading an XYZ file and :attr:`crs` is ``None``.
         """
-        _check_geodeps("read_as_geodataframe")
-
         if self.path.suffix.lower() in _VECTOR_EXTENSIONS:
             return gpd.read_file(self.path)
 
@@ -360,13 +310,8 @@ class PointFileIO:
             crs=self.crs,
         )
 
-    # ------------------------------------------------------------------
-    # Public methods — writing
-    # ------------------------------------------------------------------
-
     def write(
         self,
-        output_path: Union[str, Path],
         df: pd.DataFrame,
         float_format: str = "%.3f",
         include_header: Optional[bool] = None,
@@ -374,10 +319,10 @@ class PointFileIO:
         """
         Write a :class:`pandas.DataFrame` to an XYZ plain-text file.
 
+        The output path is taken from :attr:`path` set at construction.
+
         Parameters
         ----------
-        output_path : str or pathlib.Path
-            Destination file path.
         df : pandas.DataFrame
             Source data.  Must contain the columns declared in
             :attr:`format_spec`.
@@ -405,7 +350,7 @@ class PointFileIO:
             )
 
         df[self.format_spec.column_order()].to_csv(
-            output_path,
+            self.path,
             sep=self.format_spec.delimiter,
             header=include_header,
             index=False,
@@ -415,7 +360,6 @@ class PointFileIO:
 
     def write_from_geodataframe(
         self,
-        output_path: Union[str, Path],
         gdf: "gpd.GeoDataFrame",
         z_column: str = "z",
         float_format: str = "%.3f",
@@ -425,12 +369,11 @@ class PointFileIO:
         Write a :class:`geopandas.GeoDataFrame` to an XYZ plain-text file.
 
         Coordinates are extracted from the geometry column (X and Y) and
-        from *z_column* (Z).
+        from *z_column* (Z).  The output path is taken from :attr:`path`
+        set at construction.
 
         Parameters
         ----------
-        output_path : str or pathlib.Path
-            Destination file path.
         gdf : geopandas.GeoDataFrame
             Source GeoDataFrame with Point geometries.
         z_column : str, optional
@@ -448,7 +391,6 @@ class PointFileIO:
         ValueError
             If *z_column* is not present in *gdf*.
         """
-        _check_geodeps("write_from_geodataframe")
 
         if z_column not in gdf.columns:
             raise ValueError(
@@ -462,12 +404,7 @@ class PointFileIO:
             self.format_spec.z_column: gdf[z_column].to_numpy(),
         })
 
-        self.write(output_path, df, float_format=float_format,
-                   include_header=include_header)
-
-    # ------------------------------------------------------------------
-    # Private helpers
-    # ------------------------------------------------------------------
+        self.write(df, float_format=float_format, include_header=include_header)
 
     def _read_xyz(self) -> pd.DataFrame:
         """Read an XYZ text file using :attr:`format_spec`."""
@@ -492,7 +429,6 @@ class PointFileIO:
         The geometry column is dropped; X and Y are extracted from it
         and added as explicit columns.
         """
-        _check_geodeps("_read_vector")
         gdf = gpd.read_file(self.path)
         df = pd.DataFrame(gdf.drop(columns="geometry"))
         df["x"] = gdf.geometry.x
