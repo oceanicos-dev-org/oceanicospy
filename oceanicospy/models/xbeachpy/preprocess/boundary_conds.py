@@ -40,23 +40,6 @@ class BoundaryConditions:
         print('*** Cleaning Boundary Conditions ***')
         os.system(f'rm -rf {self.init.dict_folders["run"]}bounds_conds')
 
-    # def create_filelist(self):
-    #     """
-    #     Create a list of files.
-    #     Returns:
-    #         list: A list of files.
-    #     """
-    #     time_s = pd.date_range(self.ini_date,self.end_date, freq='1h')
-
-    #     with open(f'{self.dict_folders["run"]}filelist.txt','w') as f:
-    #         f.write('FILELIST \n')
-    #         for idx_time in range(len(time_s)):
-    #             f.write(f'3600 0.2 spectra8_{idx_time+1:03d}.sp2\n')
-    #     f.close()
-    #     os.system(f'cp {self.dict_folders["input"]}spectra8*.sp2 {self.dict_folders["run"]}')
-    #     dict_boundaries={'bcfilepath':'filelist.txt'}
-    #     return dict_boundaries
-
     # -------------------------------------------------------------------------
     # spectra_from_swan helpers
     # -------------------------------------------------------------------------
@@ -157,7 +140,7 @@ class BoundaryConditions:
 
             # if the line has two numeric values separated by three spaces, we assume it's a coordinate line 
             # and skip it (except for the matching location line handled above)
-            elif all(x.strip()!= '' for x in line.split('   ')):
+            elif all(x.strip()!= '' and x.isdigit() for x in line.split('   ')):
                 continue
             else:
                 fdest.write(line)
