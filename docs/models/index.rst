@@ -6,3 +6,4 @@ Models
    :caption: Contents:
 
    swanpy/index
+   xbeachpy/index

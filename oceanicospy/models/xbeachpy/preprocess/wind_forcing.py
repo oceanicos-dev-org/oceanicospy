@@ -37,33 +37,37 @@ class WindForcing:
         self.use_link = use_link
         print(f'\n*** Initializing winds ***\n')
 
-    def _download_ERA5(self, difference_to_UTC, filepath=None):
+    def _download_ERA5(self, utc_offset_hours, filepath=None, format_localtime=False):
         """
         Download ERA5 wind data for the specified region and time period.
 
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             Time difference to UTC in hours for local time conversion.
         filepath : str or None, optional
             Full path where the downloaded ERA5 file will be saved.
+        format_localtime : bool, optional
+            If True, formats the time in local time. Defaults to False.
         """
-        download_era5_winds(self.wind_info, self.init.ini_date, self.init.end_date, difference_to_UTC, filepath)
+        download_era5_winds(self.wind_info, self.init.ini_date, self.init.end_date, utc_offset_hours, filepath, format_localtime)
 
-    def _download_CMDS(self, difference_to_UTC, filepath=None):
+    def _download_CMDS(self, utc_offset_hours, filepath=None, format_localtime=False):
         """
         Download CMDS wind data for the specified region and time period.
 
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             Time difference to UTC in hours for local time conversion.
         filepath : str or None, optional
             Full path where the downloaded CMDS file will be saved.
+        format_localtime : bool, optional
+            If True, formats the time in local time. Defaults to False.
         """
-        download_cmds_winds(self.wind_info, self.init.ini_date, self.init.end_date, difference_to_UTC, filepath)
+        download_cmds_winds(self.wind_info, self.init.ini_date, self.init.end_date, utc_offset_hours, filepath, format_localtime)
 
-    def get_winds_from_ERA5(self, difference_to_UTC, filename='winds_era5.nc', override=False):
+    def get_winds_from_ERA5(self, utc_offset_hours, filename='winds_era5.nc', format_localtime=False, override=False):
         """
         Download ERA5 wind data, or skip if already present.
 
@@ -72,11 +76,13 @@ class WindForcing:
 
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             Time difference to UTC in hours for local time conversion.
         filename : str, optional
             Name of the ERA5 NetCDF output file. Defaults to
             ``'winds_era5.nc'``.
+        format_localtime : bool, optional
+            If True, formats the time in local time. Defaults to False.
         override : bool, optional
             If ``True``, re-downloads the file even if it already exists.
             Defaults to ``False``.
@@ -85,11 +91,11 @@ class WindForcing:
         file_exists = utils.verify_file(filepath)
 
         if not file_exists or override:
-            self._download_ERA5(difference_to_UTC, filepath=filepath)
+            self._download_ERA5(utc_offset_hours, filepath=filepath, format_localtime=format_localtime)
         else:
             print("\t ERA5 wind data already exists, skipping download")
 
-    def get_winds_from_CMDS(self, difference_to_UTC, filename='winds_cmds.nc', override=False):
+    def get_winds_from_CMDS(self, utc_offset_hours, filename='winds_cmds.nc', format_localtime=False, override=False):
         """
         Download CMDS wind data, or skip if already present.
 
@@ -98,11 +104,13 @@ class WindForcing:
 
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             Time difference to UTC in hours for local time conversion.
         filename : str, optional
             Name of the CMDS NetCDF output file. Defaults to
             ``'winds_cmds.nc'``.
+        format_localtime : bool, optional
+            If True, formats the time in local time. Defaults to False.
         override : bool, optional
             If ``True``, re-downloads the file even if it already exists.
             Defaults to ``False``.
@@ -111,7 +119,7 @@ class WindForcing:
         file_exists = utils.verify_file(filepath)
 
         if not file_exists or override:
-            self._download_CMDS(difference_to_UTC, filepath=filepath)
+            self._download_CMDS(utc_offset_hours, filepath=filepath, format_localtime=format_localtime)
         else:
             print("\t CMDS wind data already exists, skipping download")
 
@@ -130,19 +138,22 @@ class WindForcing:
             located in the input folder.
         ascii_filename : str
             Name of the output ASCII file to write in the input folder.
-        lon_target : float or None, optional
-            Target longitude for single-point extraction.  When ``None``,
-            the last grid point is used.
-        lat_target : float or None, optional
-            Target latitude for single-point extraction.  When ``None``,
-            the last grid point is used.
+        lon_target : float
+            Target longitude for single-point extraction.
+        lat_target : float
+            Target latitude for single-point extraction.
 
-        Returns
-        -------
-        dict
-            Dictionary with key ``'windfilepath'`` pointing to
-            *ascii_filename*.
+        Raises
+        ------
+        ValueError
+            If no ERA5 data falls within the simulation dates, or if
+            ``lon_target`` or ``lat_target`` is ``None``.
         """
+        if lon_target is None or lat_target is None:
+            raise ValueError(
+                "lon_target and lat_target must be specified for ERA5 wind extraction."
+            )
+
         ds_era5 = xr.load_dataset(
             f'{self.init.dict_folders["input"]}{era5_filename}', engine='netcdf4'
         )
@@ -164,25 +175,90 @@ class WindForcing:
 
         wind_speed = np.sqrt(v10 ** 2 + u10 ** 2)
         wind_dir_cart = np.degrees(np.arctan2(v10, u10))
-        wind_dir_naut = (270 - wind_dir_cart) % 360 # TODO: check this conversion for correctness
+        wind_dir_naut = (270 - wind_dir_cart) % 360
 
-        if lon_target is None and lat_target is None:
-            # TODO: this default behavior is not ideal, as it may lead to silent errors if the user forgets to specify the target location. Consider raising an error or warning instead.
-            df_to_save = pd.DataFrame(
-                {'Time': time_to_write, 'Vel': wind_speed[:, -1, 0], 'Dir': wind_dir_naut[:, -1, 0]},
-                index=time,
+        lats = ds_era5.variables['latitude'].values
+        lons = ds_era5.variables['longitude'].values
+        if lon_target < 0:
+            lon_target += 360
+        lat_idx = np.argmin(np.abs(lats - lat_target))
+        lon_idx = np.argmin(np.abs(lons - lon_target))
+        df_to_save = pd.DataFrame(
+            {'Time': time_to_write, 'Vel': wind_speed[:, lat_idx, lon_idx], 'Dir': wind_dir_naut[:, lat_idx, lon_idx]},
+            index=time,
+        )
+
+        df_to_save.to_csv(
+            f'{self.init.dict_folders["input"]}{ascii_filename}',
+            sep=' ', header=False, index=False,
+        )
+
+    def _CMDS_nc_to_ascii(self, cmds_filename, ascii_filename, lon_target=None, lat_target=None):
+        """
+        Convert CMDS wind data from a NetCDF file to XBeach ASCII format.
+
+        Reads ``eastward_wind`` and ``northward_wind`` from the NetCDF file,
+        clips to the simulation period, computes wind speed and nautical
+        direction, and writes a space-separated time-series file suitable
+        for XBeach.
+
+        Parameters
+        ----------
+        cmds_filename : str
+            Name of the CMDS NetCDF file (``eastward_wind``, ``northward_wind``,
+            ``time``) located in the input folder.
+        ascii_filename : str
+            Name of the output ASCII file to write in the input folder.
+        lon_target : float
+            Target longitude for single-point extraction.
+        lat_target : float
+            Target latitude for single-point extraction.
+
+        Raises
+        ------
+        ValueError
+            If no CMDS data falls within the simulation dates, or if
+            ``lon_target`` or ``lat_target`` is ``None``.
+        """
+        if lon_target is None or lat_target is None:
+            raise ValueError(
+                "lon_target and lat_target must be specified for CMDS wind extraction."
             )
-        else:
-            lats = ds_era5.variables['latitude'].values
-            lons = ds_era5.variables['longitude'].values
-            if lon_target < 0:
-                lon_target += 360
-            lat_idx = np.argmin(np.abs(lats - lat_target))
-            lon_idx = np.argmin(np.abs(lons - lon_target))
-            df_to_save = pd.DataFrame(
-                {'Time': time_to_write, 'Vel': wind_speed[:, lat_idx, lon_idx], 'Dir': wind_dir_naut[:, lat_idx, lon_idx]},
-                index=time,
+
+        ds_cmds = xr.load_dataset(
+            f'{self.init.dict_folders["input"]}{cmds_filename}', engine='netcdf4'
+        )
+
+        v10 = ds_cmds.variables['northward_wind'].values
+        u10 = ds_cmds.variables['eastward_wind'].values
+        tcoord = 'time' if 'time' in ds_cmds.variables else 'valid_time'
+        time = pd.to_datetime(ds_cmds.variables[tcoord].values)
+
+        mask = (time >= self.init.ini_date) & (time <= self.init.end_date)
+        if not mask.any():
+            raise ValueError(
+                f"No CMDS data within simulation dates: "
+                f"{self.init.ini_date} – {self.init.end_date}"
             )
+        time = time[mask]
+        u10 = u10[mask]
+        v10 = v10[mask]
+        time_to_write = (time - time[0]).total_seconds().astype(int).tolist()
+
+        wind_speed = np.sqrt(v10 ** 2 + u10 ** 2)
+        wind_dir_cart = np.degrees(np.arctan2(v10, u10))
+        wind_dir_naut = (270 - wind_dir_cart) % 360
+
+        lats = ds_cmds.variables['latitude'].values
+        lons = ds_cmds.variables['longitude'].values
+        if lon_target < 0:
+            lon_target += 360
+        lat_idx = np.argmin(np.abs(lats - lat_target))
+        lon_idx = np.argmin(np.abs(lons - lon_target))
+        df_to_save = pd.DataFrame(
+            {'Time': time_to_write, 'Vel': wind_speed[:, lat_idx, lon_idx], 'Dir': wind_dir_naut[:, lat_idx, lon_idx]},
+            index=time,
+        )
 
         df_to_save.to_csv(
             f'{self.init.dict_folders["input"]}{ascii_filename}',
@@ -227,7 +303,7 @@ class WindForcing:
             return self.wind_info
         return None
 
-    def write_CMDS_ascii(self, cmds_filename, ascii_filename):
+    def write_CMDS_ascii(self, cmds_filename, ascii_filename, lon_target=None, lat_target=None):
         """
         Convert CMDS wind data to XBeach ASCII format and deploy it to the run folder.
 
@@ -241,6 +317,10 @@ class WindForcing:
             Name of the CMDS NetCDF wind file in the input folder.
         ascii_filename : str
             Name of the output ASCII file to generate and deploy.
+        lon_target : float or None, optional
+            Target longitude for single-point extraction.
+        lat_target : float or None, optional
+            Target latitude for single-point extraction.
 
         Returns
         -------
@@ -251,7 +331,7 @@ class WindForcing:
         input_dir = self.init.dict_folders["input"]
         run_dir = self.init.dict_folders["run"]
 
-        self._CMDS_nc_to_ascii(cmds_filename, ascii_filename)
+        self._CMDS_nc_to_ascii(cmds_filename, ascii_filename, lon_target, lat_target)
         print(f"\t CMDS wind data converted to ASCII format and saved as {ascii_filename}")
 
         utils.deploy_input_file(ascii_filename, input_dir, run_dir, self.use_link)

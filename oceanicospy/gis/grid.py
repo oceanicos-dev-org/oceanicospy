@@ -205,7 +205,7 @@ class Grid:
         """
         if self.x_1d is None:
             raise ValueError("x-component grid array is not available.")
-        return len(self.x_1d)
+        return len(self.x_1d)-1
 
     @property
     def ny(self) -> int:
@@ -224,7 +224,7 @@ class Grid:
         """
         if self.y_1d is None:
             raise ValueError("y-component grid array is not available.")
-        return len(self.y_1d)
+        return len(self.y_1d)-1
 
     @property
     def relative_x_coordinates(self) -> pd.DataFrame:
@@ -373,26 +373,3 @@ class Grid:
         else:
             #TODO: implement xvar=True behaviour with or without segment dicts
             pass
-
-    def export_to_grd_file(self, output_folder: Union[str, Path]) -> None:
-        """
-        Write the x and y grid arrays to ``.grd`` text files.
-
-        Parameters
-        ----------
-        output_folder : str or Path
-            Directory where ``x.grd`` and ``y.grd`` will be written.
-
-        Raises
-        ------
-        ValueError
-            If the grid has not been built yet.
-        """
-        if self.x_2d is None or self.y_2d is None:
-            raise ValueError(
-                "Grid arrays are not available. "
-                "Build the grid via from_coordinates or from_shapefile first."
-            )
-        output_folder = Path(output_folder)
-        np.savetxt(output_folder / "x.grd", self.x_2d, fmt="%.4f")
-        np.savetxt(output_folder / "y.grd", self.y_2d, fmt="%.4f")

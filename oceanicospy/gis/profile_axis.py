@@ -147,6 +147,10 @@ class ProfileAxis:
         -------
         ProfileAxis
 
+        Notes
+        -----
+        Profile is assumed to start at s=0 and extend along the profile distance.
+
         Raises
         ------
         ValueError
@@ -250,6 +254,23 @@ class ProfileAxis:
             "x_adjusted": float(end_point[0]),
             "y_adjusted": float(end_point[1]),
         }
+
+    @property
+    def length(self) -> float:
+        """
+        Total length of the profile axis.
+
+        Returns
+        -------
+        float
+            Total length in the same units as the spacing definition.
+        """
+        if self._has_coordinates:
+            length = np.sqrt((self._end[0] - self._start[0]) ** 2 + (self._end[1] - self._start[1]) ** 2)
+        else:
+            length = float(self._s_axis[-1])
+
+        return length
 
     def _build_axis(
         self,
