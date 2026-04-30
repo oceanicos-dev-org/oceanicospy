@@ -47,6 +47,7 @@ zs0file      = $sealevelfilepath
 tstart       = 0
 CFL          = 0.7
 tstop        = $tstop_value
+tstart       = $tstart_value
 tint         = $tint_value
 tintg        = $tintg_value
 

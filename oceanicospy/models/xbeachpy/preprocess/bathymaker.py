@@ -1,13 +1,12 @@
 import os
+import shutil
 import numpy as np
-import pandas as pd
 
 from pathlib import Path
-from scipy.interpolate import griddata
-from scipy.spatial import cKDTree
+from typing import Optional
 
 from .... import utils
-from ....gis import PointFileIO, XYZFormatSpec
+from ....gis import PointFileIO, XYZFormatSpec, ProfileAxis, ProfileInterpolator
 
 
 class BathyMaker:
@@ -70,32 +69,56 @@ class BathyMaker:
         """
         return self._bathy_dict
 
-    def build_z_from_bathy(self,geometry_object):
-        pass
+    def build_z_from_bathy(
+        self,
+        xyz_filepath: str,
+        geometry_object: ProfileAxis,
+        xyz_format: Optional[XYZFormatSpec] = None,
+    ) -> None:
+        """
+        Interpolate an XYZ point cloud onto a 1-D profile axis and write ``bed.dep``.
 
-        # if isinstance(geometry_object, ProfileAxis):
-        #     pass # profile interpolator - ProfileInterpolator(xyz,profileAxis)
-        # else:
-        #         raise TypeError("Invalid geometry object. Must be a ProfileAxis")
-    
+        Reads the topobathymetry point cloud with :class:`~oceanicospy.gis.PointFileIO`,
+        constructs a :class:`~oceanicospy.gis.ProfileInterpolator` from the axis and the
+        cloud, and saves the interpolated z values as a single-column ``bed.dep`` file
+        in ``run/``.
 
-    def build_z_from_existing_profile(self, xz_filepath):
-        # read xz_filepath
-        # entity with two columns (pd.DataFrame)
-        # compute distance along profile (s) (last_record - first record)
+        Parameters
+        ----------
+        xyz_filepath : str
+            Filename of the XYZ topobathymetry file relative to the project
+            ``input/`` folder (e.g. ``"TopoBathy.csv"``).
+        geometry_object : ProfileAxis
+            1-D profile axis built by :class:`~oceanicospy.models.xbeachpy.preprocess.GridMaker`.
+            Must have been constructed with :meth:`~oceanicospy.gis.ProfileAxis.from_coordinates`
+            (i.e. ``_has_coordinates`` must be ``True``).
+        xyz_format : XYZFormatSpec, optional
+            Explicit file-format descriptor passed to :class:`~oceanicospy.gis.PointFileIO`.
+            When ``None`` the format is inferred automatically.
 
-        # compare length profile(profileAxis) with length of xz_filepath, round to one decimal.
-        # 
+        Raises
+        ------
+        TypeError
+            If *geometry_object* is not a :class:`~oceanicospy.gis.ProfileAxis`.
+        ValueError
+            If *geometry_object* was built with
+            :meth:`~oceanicospy.gis.ProfileAxis.from_length` and therefore
+            lacks planar coordinates.
+        """
+        if not isinstance(geometry_object, ProfileAxis):
+            raise TypeError("Invalid geometry object. Must be a ProfileAxis")
 
-        # if lengt_profileaxis == length xz_filepath:
-            # write .dep file with z values from xz_filepath with interpolation
-        # elif length_profileaxis < length xz_filepath:
-            # trim length xz_filepath to length of profileAxis and write .dep file with z values from xz_filepath with interpolation
-        # else:
-            # raise Error
-
-        pass
-
+        bathy_xyz_path =  f'{self.init.dict_folders["input"]}{xyz_filepath}'
+        bathy_xyz_df = PointFileIO(bathy_xyz_path, xyz_format).read()
+        if not geometry_object._has_coordinates:
+            raise ValueError("Geometry object does not have coordinates.")
+        
+        interpolator = ProfileInterpolator(axis=geometry_object, xyz=bathy_xyz_df)
+        z_profile = interpolator.profile_sz["z"].values
+        np.savetxt(os.path.join(self.init.dict_folders["run"], "bed.dep"), z_profile, fmt="%.3f")
+        self._bathy_dict = {
+            "depfilepath": "bed.dep",
+        }
 
     def fill_bathy_section(self) -> None:
         """
@@ -113,6 +136,48 @@ class BathyMaker:
         params_path = os.path.join(self.init.dict_folders["run"], "params.txt")
         utils.fill_files(params_path, self._bathy_dict)
     
-    def load_existing_dep(self, dep_filename):
-        # read dep_filepath and store in self._bathy_dict
-        pass
+    def load_existing_dep(self, dep_filename: str) -> dict:
+        """
+        Load an existing ``.dep`` file from the input folder, validate it,
+        copy it into the run folder, and populate :attr:`metadata`.
+
+        Parameters
+        ----------
+        dep_filename : str
+            Name of the ``.dep`` file (e.g. ``"bed.dep"``) located in the
+            project ``input/`` folder.
+
+        Returns
+        -------
+        dict
+            Dictionary with key ``'depfilepath'`` set to *dep_filename*,
+            also stored in :attr:`metadata`.
+
+        Raises
+        ------
+        FileNotFoundError
+            If *dep_filename* does not exist in the input folder.
+        ValueError
+            If the file cannot be parsed as a numeric array by
+            :func:`numpy.loadtxt`.
+        """
+        input_folder = Path(self.init.dict_folders["input"])
+        run_folder = Path(self.init.dict_folders["run"])
+
+        dep_path = input_folder / dep_filename
+        if not dep_path.exists():
+            raise FileNotFoundError(
+                f"Bathymetry file '{dep_filename}' not found in {input_folder}."
+            )
+
+        try:
+            np.loadtxt(dep_path)
+        except ValueError as exc:
+            raise ValueError(
+                f"Could not parse '{dep_filename}' as a numeric array: {exc}"
+            ) from exc
+
+        shutil.copy(str(dep_path), str(run_folder / dep_filename))
+
+        self._bathy_dict = {"depfilepath": dep_filename}
+        return self._bathy_dict

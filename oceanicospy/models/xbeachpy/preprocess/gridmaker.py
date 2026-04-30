@@ -81,6 +81,26 @@ class _ProfileBuilder:
         return profile
 
     def _export(self, profile: ProfileAxis) -> dict:
+        """
+        Write the 1-D profile axis to ``x.grd`` / ``y.grd`` and return the grid metadata.
+
+        When ``GridMaker.coordinate_type`` is ``"absolute"``, the actual planar
+        (x, y) coordinates along the transect are written.  For ``"relative"``
+        (default), cumulative cross-shore distances are written to ``x.grd`` and
+        a zero array to ``y.grd``, which is the standard XBeach 1-D convention.
+
+        Parameters
+        ----------
+        profile : ProfileAxis
+            Axis object returned by :meth:`from_coordinates` or
+            :meth:`from_length`.
+
+        Returns
+        -------
+        dict
+            Keys ``xfilepath``, ``yfilepath``, ``meshes_x``, ``meshes_y``
+            (always ``0`` for 1-D profiles).
+        """
         run_folder = Path(self._gm.init.dict_folders["run"])
 
         if self._gm.coordinate_type == "absolute":
@@ -147,7 +167,27 @@ class _RectangularGridBuilder:
         self._gm._grid_dict = self._export(grid)
         return grid
 
-    def _export(self, grid:Grid) -> dict:
+    def _export(self, grid: Grid) -> dict:
+        """
+        Write the 2-D grid arrays to ``x.grd`` / ``y.grd`` and return the grid metadata.
+
+        The arrays written depend on ``GridMaker.coordinate_type``:
+
+        - ``"relative"`` (default) — coordinates measured from the lower-left
+          corner of the bounding box, so the origin is always ``(0, 0)``.
+        - ``"absolute"`` — coordinates in the original projected CRS units
+          (typically metres).
+
+        Parameters
+        ----------
+        grid : Grid
+            Grid object returned by :meth:`from_shapefile`.
+
+        Returns
+        -------
+        dict
+            Keys ``xfilepath``, ``yfilepath``, ``meshes_x``, ``meshes_y``.
+        """
         run_folder = Path(self._gm.init.dict_folders["run"])
         if self._gm.coordinate_type == "absolute":
             np.savetxt(run_folder / "x.grd", grid.absolute_x_coordinates, fmt="%.4f")
