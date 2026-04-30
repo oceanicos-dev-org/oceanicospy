@@ -26,10 +26,10 @@ class BoundaryConditions:
     """
     def __init__ (self,init):
         self.init = init
-        self.purger()
+        self._purger()
         print('*** Initializing Boundary Conditions ***')
 
-    def purger(self):
+    def _purger(self):
         """
         Remove any previously generated boundary-condition files.
 

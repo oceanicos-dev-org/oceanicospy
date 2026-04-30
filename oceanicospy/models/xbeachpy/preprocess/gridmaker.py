@@ -214,6 +214,14 @@ class GridMaker:
     ----------
     init : object
         Project initialization object with folder configuration.
+    grid_params : dict
+        Dictionary of additional grid parameters to be included in params.txt. The following keys must be included:
+
+        - ``thetamax``: maximum angle of grid rotation (degrees)
+        - ``thetamin``: minimum angle of grid rotation (degrees)
+        - ``dtheta``: angle increment for grid rotation (degrees)
+        - ``alfa``: grid stretching factor (dimensionless)
+
     coordinates_type : str, optional
         Type of coordinates to be written: "absolute" or "relative". "relative" is set as default
     """
