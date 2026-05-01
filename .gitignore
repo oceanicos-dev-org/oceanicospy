@@ -17,6 +17,7 @@ _build/
 **/.DS_Store
 
 # Byte-compiled / optimized / DLL files
+.pytest_cache
 __pycache__/
 *.py[cod]
 *$py.class
@@ -28,3 +29,4 @@ dist/
 
 # no tracking personal vs settings
 .vscode/
+requirements.txt
