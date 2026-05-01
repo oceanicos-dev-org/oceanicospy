@@ -37,7 +37,7 @@ class CastawayCTD(CTDBase):
     Expected per-cast file structure (``has_header=True``):
 
     - Lines beginning with ``%`` contain metadata as ``% Key,Value`` pairs.
-    - An empty ``% `` line acts as a separator before the data block.
+    - An empty ``%`` line acts as a separator before the data block.
     - The first non-``%`` line is the column header row.
 
     Data columns (both variants): Pressure (Decibar), Depth (Meter),
@@ -52,8 +52,6 @@ class CastawayCTD(CTDBase):
 
     The cleaned DataFrame is indexed by ``depth[m]``, reflecting the vertical
     profile nature of a CTD cast.
-
-    24-Mar-2026 : Origination - Franklin Ayala
     """
 
     _COLUMN_MAP = {

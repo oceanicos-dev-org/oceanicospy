@@ -15,6 +15,8 @@ class WeatherStationBase(ABC):
 
     Notes
     -----
+    **Development history**
+
     - 19-Mar-2025 : initial version - Franklin Ayala
     - 16-Jul-2025 : adding weathersens model - Daniela Rosero
     """

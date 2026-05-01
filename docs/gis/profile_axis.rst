@@ -2,7 +2,7 @@ Profile axis
 ============
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
 ``ProfileAxis`` constructs the 1D sampling axis of a straight-line
 profile.  It supports constant or piecewise-constant spacing and can be

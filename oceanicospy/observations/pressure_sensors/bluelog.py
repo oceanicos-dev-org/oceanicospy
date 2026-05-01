@@ -62,7 +62,7 @@ class Bluelog(BaseLogger):
         FileNotFoundError
             If the records file cannot be located via :meth:`_get_records_file`.
         ValueError
-            If the ``---`` data separator are not found in the file.
+            If the ``---`` data separator is not found in the file.
         UnboundLocalError
             If the ``---`` separator is found but the configured start time
             line has not been encountered before it.

@@ -3,6 +3,10 @@
 /data/observations/*
 /data/temp/*
 /data/model_config_templates/ww3
+/data/model_config_templates/swan/launcher*
+/data/model_config_templates/swan/swaninit
+/data/model_config_templates/xbeach/launcher*
+/data/gis
 
 # no tracking html files
 docs/_build/
@@ -12,10 +16,8 @@ _build/
 .DS_Store
 **/.DS_Store
 
-# no tracking under-dev files
-under_dev/
-
 # Byte-compiled / optimized / DLL files
+.pytest_cache
 __pycache__/
 *.py[cod]
 *$py.class
@@ -25,5 +27,6 @@ build/
 dist/
 *.egg-info/
 
-# no tracking personal vs settings
+# no tracking vs settings and requirements.txt
 .vscode/
+requirements.txt
