@@ -27,6 +27,3 @@ dist/
 
 # no tracking personal vs settings
 .vscode/
-generate_requirements.py
-nb_diff.txt
-py_diff.txt
