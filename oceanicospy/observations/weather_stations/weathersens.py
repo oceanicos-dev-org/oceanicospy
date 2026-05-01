@@ -78,17 +78,11 @@ class WeatherSens(WeatherStationBase):
         -------
         pandas.DataFrame
             Cleaned DataFrame indexed by ``date`` (``datetime64[ns]``) with
-            the following standardized columns (when present in the source
-            file):
-
-            .. code-block:: text
-
-                Rain       — precipitation in mm
-                Temp       — air temperature in °C
-                Hum        — relative humidity in %
-                Bar        — barometric pressure in hPa
-                Speed      — wind speed in m/s
-                Direction  — wind direction in decimal degrees (0–360)
+            standardized column names following the ``variable[unit]``
+            convention. Only the following columns are retained (when present):
+            ``rain[mm]``, ``air_temp[C]``, ``air_humidity[%]``,
+            ``pressure[hPa]``, ``wind_speed[m/s]``, ``wind_direction[°]``,
+            ``solar_radiation[W/m2]``.
 
         Notes
         -----
@@ -96,38 +90,28 @@ class WeatherSens(WeatherStationBase):
         become ``NaT`` rather than raising an exception. Numeric casting
         likewise uses ``errors='coerce'``, preserving ``NaN`` for any column
         values that cannot be converted.
-
-        Only columns present in the DataFrame are cast; missing columns are
-        silently skipped.
         """
-
-        # Standardize column names to Davis style
-        column_map = {
-            'Date/Time': 'DateTime',
-            'Precipitacion (mm)': 'rain[mm]',
-            'Temperatura Aire (°C)': 'temp[C]',
-            'Humedad Aire (%)': 'air_humidity[%]',
+        rename_map = {
+            'Precipitacion (mm)':        'rain[mm]',
+            'Temperatura Aire (°C)':     'air_temp[C]',
+            'Humedad Aire (%)':          'air_humidity[%]',
             'Presion Barometrica (hPa)': 'pressure[hPa]',
-            'Velocidad Viento (m/s)': 'wind_speed[m/s]',
-            'Direccion Viento (°)': 'wind_direction[°]',
-            'Radiacion Solar (W/m2)': 'solar_radiation[W/m2]',
-            'Bateria (V)': 'battery[V]',
-            'Panel  Supply (V)': 'panel_supply[V]',
-            'DAB (dBm)': 'dab[dBm]',
+            'Velocidad Viento (m/s)':    'wind_speed[m/s]',
+            'Direccion Viento (°)':      'wind_direction[°]',
+            'Radiacion Solar (W/m2)':    'solar_radiation[W/m2]',
         }
-        df.rename(columns=column_map, inplace=True)
+        df.rename(columns=rename_map, inplace=True)
 
-        # Convert DateTime to pandas datetime
-        df['date'] = pd.to_datetime(df['DateTime'], errors='coerce')
-
-        # Drop original DateTime column and set index
-        df = df.drop(['DateTime'], axis=1)
+        df['date'] = pd.to_datetime(df['Date/Time'], errors='coerce')
+        df = df.drop(['Date/Time'], axis=1)
         df = df.set_index('date')
 
-        # Convert numerical columns to float if possible
-        for col in list(column_map.values())[1:]:
-            if col in df.columns:
-                df[col] = pd.to_numeric(df[col], errors='coerce')
+        keep = [c for c in rename_map.values() if c in df.columns]
+        df = df[keep]
+
+        numeric_cols = [c for c in keep if c != 'wind_direction[°]']
+        df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric, errors='coerce')
+
         return df
 
     def _compute_direction_degrees(self, df):
@@ -142,8 +126,8 @@ class WeatherSens(WeatherStationBase):
         Parameters
         ----------
         df : pandas.DataFrame
-            DataFrame containing a ``Direction`` column with wind direction
-            values already in decimal degrees.
+            DataFrame containing a ``wind_direction[°]`` column with wind
+            direction values already in decimal degrees.
 
         Returns
         -------

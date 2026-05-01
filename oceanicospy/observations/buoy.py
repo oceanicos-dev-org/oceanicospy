@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import timezone, timedelta
 
-class Buoy():
+class WaveBuoy():
     """
     Read and process Spotter buoy data exported as CSV files.
 
@@ -26,6 +26,10 @@ class Buoy():
 
     * **Sofar** – contains an ``'Epoch Time'`` column (Unix timestamp, seconds).
     * **AQUAlink** – contains a ``'timestamp'`` column (ISO 8601 string, UTC).
+
+    
+    - 10-Sep-2025 : Origination - Daniela Rosero
+    - 05-Mar-2026 : Refactoring - Franklin Ayala
 
     """
 

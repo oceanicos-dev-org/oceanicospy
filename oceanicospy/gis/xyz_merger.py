@@ -1,272 +1,379 @@
 from __future__ import annotations
 
-import os
-import glob
-import math
-from typing import List, Optional, Dict, Tuple
-
 import numpy as np
 import pandas as pd
 import geopandas as gpd
-from scipy.spatial import cKDTree
+from shapely.geometry import Point
+from shapely.ops import unary_union
 
-from .io_xyz import read_xyz, write_xyz
-from .xyz_tile import XYZTile
+from pathlib import Path
+from typing import List, Optional, Union
 
+from .point_io import XYZFormatSpec, PointFileIO, _normalize_epsg
 
-class XYZMerger:
+__all__ = ["XYZMerger"]
+
+# Constants for internal use only. These are not part of the public API.
+
+#: Decimal places used when snapping XY coordinates to the coverage grid.
+_XY_ROUND_DECIMALS: int = 6
+
+#: Number of points sampled to estimate the coverage grid cell size.
+_SAMPLE_SIZE_COVERAGE: int = 2000
+
+#: Grid cell size as a multiple of the estimated point spacing.
+_GRID_FACTOR: float = 1.0
+
+#: Default buffer radius as a multiple of the estimated point spacing.
+_BUFFER_FACTOR: float = 0.75
+
+#: Default morphological closing factor applied after the buffer union.
+_CLOSING_FACTOR: float = 1.0
+
+class _XYZTile:
     """
-    Merge multiple XYZ tiles honoring user/manual priority or automatic priority
-    (by point-spacing, finer spacing = higher priority). Overlaps are resolved
-    by removing lower-priority points that fall within higher-priority coverage
-    polygons.
+    Internal container for a single XYZ tile.
 
-    This is an architectural refactor of the old XYZMerger:
-    - File I/O delegated to io_xyz (read_xyz / write_xyz).
-    - Tile representation handled by XYZTile.
-    - Coverage polygons and priority logic remain faithful to the old behavior.
+    Holds the point data, CRS, priority rank and coverage polygon for one
+    input file.  Instances are created and managed exclusively by
+    :class:`XYZMerger` and are never exposed to the caller.
+
+    Parameters
+    ----------
+    path : str or pathlib.Path
+        Original file path, kept for diagnostic messages only.
+    points : pandas.DataFrame
+        Point data with columns ``x``, ``y``, ``z``.
+    crs : str
+        Canonical CRS string (e.g. ``"EPSG:9377"``).
+    priority_rank : int
+        Rank assigned by :class:`XYZMerger`.  Rank ``0`` = highest priority.
+    buffer_factor : float, optional
+        Buffer radius as a multiple of the estimated point spacing.
+    closing_factor : float, optional
+        Morphological closing factor applied after the buffer union.
     """
 
     def __init__(
         self,
-        input_dir: str,
-        bathy_positive: bool = True,
-        manual_priority: Optional[List[str]] = None,
-        xy_round_decimals: int = 6,
-        sample_size_spacing: int = 5000,
-        crs_epsg: str = "EPSG:9377",
-    ):
+        path: Union[str, Path],
+        points: pd.DataFrame,
+        crs: str,
+        priority_rank: int,
+        buffer_factor: float = _BUFFER_FACTOR,
+        closing_factor: float = _CLOSING_FACTOR,
+    ) -> None:
+        self.path = Path(path)
+        self.points = points
+        self.crs = crs
+        self.priority_rank = priority_rank
+        self._buffer_factor = buffer_factor
+        self._closing_factor = closing_factor
+        self.coverage_polygon: gpd.GeoDataFrame = self._compute_coverage_polygon()
+
+    def _estimate_spacing(self) -> float:
         """
+        Estimate a representative XY point spacing from a random sample.
+
+        Uses the median nearest-neighbour distance over at most
+        ``_SAMPLE_SIZE_COVERAGE`` points.
+
+        Returns
+        -------
+        float
+            Estimated spacing in CRS units.  Returns ``1e-4`` when the
+            tile contains fewer than two points.
+        """
+        n = len(self.points)
+        if n < 2:
+            return 1e-4
+
+        sample = self.points.sample(
+            n=min(_SAMPLE_SIZE_COVERAGE, n),
+            random_state=42,
+            replace=False,
+        )
+        coords = sample[["x", "y"]].to_numpy()
+
+        from scipy.spatial import cKDTree  # local import — optional dependency
+        tree = cKDTree(coords)
+        dists, _ = tree.query(coords, k=2)
+        return float(np.median(dists[:, 1]))
+
+    def _compute_coverage_polygon(self) -> gpd.GeoDataFrame:
+        """
+        Build a concave-like coverage footprint via grid-snapping and
+        buffered union of unique grid cells.
+
+        Returns
+        -------
+        geopandas.GeoDataFrame
+            Single-row GeoDataFrame containing the coverage polygon in
+            ``self.crs``.
+        """
+        df = self.points[["x", "y"]].copy()
+        df["x"] = df["x"].round(_XY_ROUND_DECIMALS)
+        df["y"] = df["y"].round(_XY_ROUND_DECIMALS)
+
+        spacing = self._estimate_spacing()
+        cell = max(1e-12, _GRID_FACTOR * spacing)
+        buf_r = max(1e-12, self._buffer_factor * spacing)
+        close_r = buf_r * self._closing_factor
+
+        # --- edge cases ---------------------------------------------------
+        if len(df) == 0:
+            return gpd.GeoDataFrame({"geometry": []}, crs=self.crs)
+
+        if len(df) == 1:
+            point_buf = Point(
+                float(df["x"].iloc[0]),
+                float(df["y"].iloc[0]),
+            ).buffer(max(1e-12, 0.5 * buf_r))
+            return gpd.GeoDataFrame({"geometry": [point_buf]}, crs=self.crs)
+
+        # --- grid snapping ------------------------------------------------
+        grid_ix = np.floor(df["x"].to_numpy() / cell).astype(np.int64)
+        grid_iy = np.floor(df["y"].to_numpy() / cell).astype(np.int64)
+
+        unique_cells, _ = np.unique(
+            np.stack([grid_ix, grid_iy], axis=1),
+            axis=0,
+            return_index=True,
+        )
+
+        cell_cx = (unique_cells[:, 0].astype(float) + 0.5) * cell
+        cell_cy = (unique_cells[:, 1].astype(float) + 0.5) * cell
+
+        # --- buffered union + morphological closing -----------------------
+        geoms = [Point(xy).buffer(buf_r) for xy in zip(cell_cx, cell_cy)]
+        polygon = unary_union(geoms).buffer(close_r).buffer(-close_r)
+
+        return gpd.GeoDataFrame({"geometry": [polygon]}, crs=self.crs)
+    
+class XYZMerger:
+    """
+    Merge a collection of XYZ tiles into a single point dataset.
+
+    Overlapping regions are resolved by priority: points from
+    lower-priority tiles that fall within the coverage footprint of any
+    higher-priority tile are removed.  The caller declares the priority
+    order explicitly via the *priority* parameter.
+
+    All input tiles must share the same CRS and on-disk format.  Use
+    :mod:`point_io` and :mod:`crs` to standardize files beforehand.
+
+    Parameters
+    ----------
+    input_dir : str or pathlib.Path
+        Directory containing the ``.xyz`` files to merge.
+    priority : list of str
+        Filenames ordered from highest to lowest priority.  Only the
+        files listed here will be loaded; other ``.xyz`` files present
+        in *input_dir* are ignored.
+    crs : str or int
+        Common CRS of all input tiles (e.g. ``9377`` or ``"EPSG:9377"``).
+    format_spec : XYZFormatSpec, optional
+        On-disk layout shared by all input tiles.  Defaults to
+        :class:`~point_io.XYZFormatSpec` (space-delimited, no header,
+        columns ``x/y/z``).
+    buffer_factor : float, optional
+        Buffer radius used when building coverage polygons, expressed as a
+        multiple of the estimated point spacing.  Increase this value if
+        lower-priority points leak into high-priority areas; decrease it
+        if too many valid points are discarded.  Defaults to ``0.75``.
+    closing_factor : float, optional
+        Morphological closing factor applied after the buffer union.
+        Controls how aggressively small gaps inside a coverage polygon are
+        filled.  Defaults to ``1.0``.
+
+    Raises
+    ------
+    FileNotFoundError
+        If any file declared in *priority* is not found in *input_dir*.
+    ValueError
+        If any tile is missing the required ``x``, ``y``, ``z`` columns.
+    """
+
+    def __init__(
+        self,
+        input_dir: Union[str, Path],
+        priority: List[str],
+        crs: Union[str, int],
+        format_spec: Optional[XYZFormatSpec] = None,
+        buffer_factor: float = _BUFFER_FACTOR,
+        closing_factor: float = _CLOSING_FACTOR,
+    ) -> None:
+        self.input_dir = Path(input_dir)
+        self.priority = priority
+        self.crs = _normalize_epsg(crs)
+        self.format_spec = format_spec or XYZFormatSpec()
+        self.buffer_factor = buffer_factor
+        self.closing_factor = closing_factor
+
+        self._tiles: List[_XYZTile] = []
+        self._file_paths: List[Path] = []
+
+    def run_merge(self, output_path: Union[str, Path]) -> pd.DataFrame:
+        """
+        Run the full merge pipeline and export the result.
+
+        The pipeline executes five stages in order:
+
+        1. Discover files declared in *priority* within *input_dir*.
+        2. Load each file into an internal ``_XYZTile``.
+        3. Assign priority ranks from the *priority* list.
+        4. Merge tiles, discarding lower-priority points in overlap zones.
+        5. Export the merged dataset to *output_path*.
+
         Parameters
         ----------
-        input_dir : str
-            Directory containing .xyz files.
-        bathy_positive : bool, optional
-            If False, z values will be sign-inverted after loading.
-        manual_priority : list of str, optional
-            List of filenames or paths specifying highest priority first.
-        xy_round_decimals : int, optional
-            Decimal precision used for coverage polygon grid snapping.
-        sample_size_spacing : int, optional
-            Sample size used to estimate spacing.
-        crs_epsg : str, optional
-            CRS string, e.g., 'EPSG:32617' or 'EPSG:9377'.
-        """
-        self.input_dir = input_dir
-        self.bathy_positive_z = bathy_positive
-        self.manual_priority = manual_priority
-        self.xy_round_decimals = xy_round_decimals
-        self.sample_size_spacing = sample_size_spacing
-        self.crs = crs_epsg
+        output_path : str or pathlib.Path
+            Destination file path for the merged XYZ file.
 
-        self._file_list: List[str] = []
-        self._tiles: List[XYZTile] = []
-        self._merged_df: Optional[pd.DataFrame] = None
+        Returns
+        -------
+        pandas.DataFrame
+            Merged point data with columns ``x``, ``y``, ``z``.
 
-    # ------------------------------------------------------------------
-    # PUBLIC API
-    # ------------------------------------------------------------------
-    def run_merge(self, output_xyz_path: str) -> None:
-        """
-        Orchestrate the full workflow: discover, load, prioritize, merge, export.
+        Raises
+        ------
+        FileNotFoundError
+            If any file declared in *priority* is not found in *input_dir*.
+        ValueError
+            If any file is missing the required ``x``, ``y``, ``z`` columns.
         """
         self._discover_tiles()
-        self._load_all_tiles()
-        self._assign_priorities_to_tiles()
-        self._merge_tiles_respecting_priority_with_polygons()
-        self._export_merged_xyz(output_xyz_path)
+        self._load_tiles()
+        self._assign_priorities()
+        merged_df = self._merge()
+        self._export(merged_df, output_path)
+        return merged_df
 
-    # ------------------------------------------------------------------
-    # STAGE 1 — DISCOVER FILES
-    # ------------------------------------------------------------------
     def _discover_tiles(self) -> None:
         """
-        Populate the internal file list with all .xyz files in input_dir.
-        """
-        pattern = os.path.join(self.input_dir, "*.xyz")
-        self._file_list = sorted(glob.glob(pattern))
-        if not self._file_list:
-            raise FileNotFoundError(f"No XYZ files found in directory: {self.input_dir}")
+        Verify that all files declared in *priority* exist in *input_dir*
+        and populate the internal file path list in priority order.
 
-    # ------------------------------------------------------------------
-    # STAGE 2 — LOAD AND WRAP TILES
-    # ------------------------------------------------------------------
-    def _load_all_tiles(self) -> None:
+        Raises
+        ------
+        FileNotFoundError
+            If any file declared in *priority* is not found in *input_dir*.
         """
-        Load all XYZ files into XYZTile instances, estimate spacing,
-        and compute coverage polygons.
+        self._file_paths = []
+        missing_files = []
+        for ref in self.priority:
+            path = self.input_dir / Path(ref).name
+            if not path.exists():
+                missing_files.append(ref)
+            else:
+                self._file_paths.append(path)
+
+        if missing_files:
+            raise FileNotFoundError(
+                f"The following files declared in priority were not found "
+                f"in '{self.input_dir}': {missing_files}"
+            )
+
+    def _load_tiles(self) -> None:
+        """
+        Load each ``.xyz`` file via :class:`~point_io.PointFileIO` and
+        build an ``_XYZTile`` instance.
+
+        Raises
+        ------
+        ValueError
+            If a loaded file is missing the ``x``, ``y`` or ``z`` columns.
         """
         self._tiles = []
+        for path in self._file_paths:
+            df = PointFileIO(path, format_spec=self.format_spec).read()
 
-        for path in self._file_list:
-            df_tile = self._load_single_xyz(path)
+            missing = [c for c in ("x", "y", "z") if c not in df.columns]
+            if missing:
+                raise ValueError(
+                    f"'{path.name}' is missing required columns: {missing}. "
+                    "Verify that format_spec matches the file layout."
+                )
 
-            tile = XYZTile(
-                path=path,
-                points=df_tile,
-                crs=self.crs,
-                spacing_estimate=None,
-                priority_rank=-1,
+            self._tiles.append(
+                _XYZTile(
+                    path=path,
+                    points=df,
+                    crs=self.crs,
+                    priority_rank=-1,
+                    buffer_factor=self.buffer_factor,
+                    closing_factor=self.closing_factor,
+                )
             )
 
-            # Spacing estimation faithful to old behavior
-            tile.compute_spacing_estimate(sample_size=self.sample_size_spacing)
-
-            # Coverage polygon faithful to old XYZFileData.compute_coverage_polygon
-            tile.compute_coverage_polygon(
-                xy_round_decimals=self.xy_round_decimals,
-            )
-
-            self._tiles.append(tile)
-
-    def _load_single_xyz(self, filepath: str) -> pd.DataFrame:
+    def _assign_priorities(self) -> None:
         """
-        Load a single XYZ file into a DataFrame with columns ['x', 'y', 'z'].
+        Assign ``priority_rank`` to each tile from the *priority* list
+        and sort tiles by ascending rank.
 
-        If bathy_positive_z is False, invert the sign of 'z'.
-        Uses io_xyz.read_xyz to keep I/O consistent in the gis subpackage.
+        Rank ``0`` is highest priority.
         """
-        # Use default XYZFormatSpec inference (x, y, z without header is fine)
-        df = read_xyz(filepath)
-
-        # Ensure we have at least three columns
-        expected_cols = ["x", "y", "z"]
-        missing = [c for c in expected_cols if c not in df.columns]
-        if missing:
-            raise ValueError(
-                f"File {filepath} is missing required columns: {missing}"
-            )
-
-        if not self.bathy_positive_z:
-            df["z"] = -df["z"]
-
-        return df
-
-    # ------------------------------------------------------------------
-    # STAGE 3 — PRIORITY ASSIGNMENT
-    # ------------------------------------------------------------------
-    def _assign_priorities_to_tiles(self) -> None:
-        """
-        Assign priority_rank to each tile. Rank 0 = highest priority.
-
-        If manual_priority is provided, use its order first; remaining tiles
-        are ordered by spacing (finer first), exactly as in the old version.
-        """
-        path_to_tile: Dict[str, Tuple[float, XYZTile]] = {
-            t.path: (t.spacing_estimate if t.spacing_estimate is not None else math.inf, t)
-            for t in self._tiles
-        }
-        rank_map: Dict[str, int] = {}
-
-        # Manual priority by explicit path or filename
-        if self.manual_priority and len(self.manual_priority) > 0:
-            for manual_idx, user_ref in enumerate(self.manual_priority):
-                for tile_path in path_to_tile.keys():
-                    if (
-                        os.path.abspath(tile_path) == os.path.abspath(user_ref)
-                        or os.path.basename(tile_path) == os.path.basename(user_ref)
-                    ):
-                        rank_map[tile_path] = manual_idx
-
-            # Remaining tiles sorted by spacing (finer first)
-            next_rank = len(rank_map)
-            remaining: List[Tuple[str, float]] = [
-                (p, data[0]) for p, data in path_to_tile.items() if p not in rank_map
-            ]
-            remaining.sort(key=lambda t: t[1])
-
-            for (p, _) in remaining:
-                rank_map[p] = next_rank
-                next_rank += 1
-        else:
-            # Automatic: sort by spacing (finer first)
-            auto_sorted = sorted(path_to_tile.items(), key=lambda kv: kv[1][0])
-            for auto_idx, (tile_path, _) in enumerate(auto_sorted):
-                rank_map[tile_path] = auto_idx
-
-        # Apply and sort tiles by priority
+        rank_map = {Path(ref).name: rank for rank, ref in enumerate(self.priority)}
         for tile in self._tiles:
-            tile.priority_rank = rank_map[tile.path]
-
+            tile.priority_rank = rank_map[tile.path.name]
         self._tiles.sort(key=lambda t: t.priority_rank)
 
-    # ------------------------------------------------------------------
-    # STAGE 4 — MERGE USING COVERAGE POLYGONS
-    # ------------------------------------------------------------------
-    def _merge_tiles_respecting_priority_with_polygons(self) -> None:
+    def _merge(self) -> pd.DataFrame:
         """
-        Merge tiles by removing points from lower-priority tiles that fall
-        within any higher-priority coverage polygon.
+        Merge tiles by discarding lower-priority points inside
+        higher-priority coverage polygons.
 
-        The final merged DataFrame is stored in self._merged_df.
+        Returns
+        -------
+        pandas.DataFrame
+            Merged point data sorted by ``y`` then ``x``.
         """
-        # Ensure tiles are ordered by ascending priority_rank
-        self._tiles.sort(key=lambda t: t.priority_rank)
-
-        tile_points_gdf_list: List[gpd.GeoDataFrame] = []
-        tile_polygons_list: List[gpd.GeoDataFrame] = []
-
-        for tile in self._tiles:
-            gdf_points = gpd.GeoDataFrame(
-                tile.points.copy(),
+        tile_gdfs = [
+            gpd.GeoDataFrame(
+                tile.points[["x", "y", "z"]].copy(),
                 geometry=gpd.points_from_xy(tile.points["x"], tile.points["y"]),
                 crs=self.crs,
             )
-            tile_points_gdf_list.append(gdf_points)
-            tile_polygons_list.append(tile.coverage_polygon)
+            for tile in self._tiles
+        ]
+        coverage_gdfs = [tile.coverage_polygon for tile in self._tiles]
 
-        trimmed_points_list: List[pd.DataFrame] = []
+        kept: List[pd.DataFrame] = []
 
-        for i, _ in enumerate(self._tiles):
-            # Highest priority: keep all points
+        for i, gdf in enumerate(tile_gdfs):
             if i == 0:
-                trimmed_points_list.append(
-                    tile_points_gdf_list[i][["x", "y", "z"]].copy()
-                )
+                kept.append(gdf[["x", "y", "z"]].copy())
                 continue
 
-            # Combine coverage of all higher-priority tiles
-            higher_priority_polys = pd.concat(
-                [tile_polygons_list[j] for j in range(i)],
-                ignore_index=True,
-            )
+            higher_coverage = pd.concat(coverage_gdfs[:i], ignore_index=True)
 
-            if higher_priority_polys.empty:
-                trimmed_points_list.append(
-                    tile_points_gdf_list[i][["x", "y", "z"]].copy()
-                )
+            if higher_coverage.empty:
+                kept.append(gdf[["x", "y", "z"]].copy())
                 continue
 
-            gdf_points_i = tile_points_gdf_list[i]
+            joined = gpd.sjoin(gdf, higher_coverage, how="left", predicate="within")
+            outside_mask = joined["index_right"].isna()
+            kept.append(joined.loc[outside_mask, ["x", "y", "z"]].copy())
 
-            # Spatial join: mark points that fall within any higher-priority polygon
-            joined = gpd.sjoin(
-                gdf_points_i,
-                higher_priority_polys,
-                how="left",
-                predicate="within",
-            )
+        return (
+            pd.concat(kept, ignore_index=True)
+            .sort_values(by=["y", "x"])
+            .reset_index(drop=True)
+        )
 
-            # Keep only points not within higher-priority coverage
-            keep_mask = joined["index_right"].isna()
-            kept_points = joined.loc[keep_mask, ["x", "y", "z"]].copy()
-            trimmed_points_list.append(kept_points)
-
-        merged_df = pd.concat(trimmed_points_list, ignore_index=True)
-        merged_df = merged_df.sort_values(by=["y", "x"]).reset_index(drop=True)
-        self._merged_df = merged_df
-
-    # ------------------------------------------------------------------
-    # STAGE 5 — EXPORT
-    # ------------------------------------------------------------------
-    def _export_merged_xyz(self, output_xyz_path: str) -> None:
+    def _export(self, df: pd.DataFrame, output_path: Union[str, Path]) -> None:
         """
-        Save the merged XYZ data to disk with fixed numeric formatting.
-        Uses write_xyz to stay consistent with the gis I/O layer.
-        """
-        if self._merged_df is None:
-            raise RuntimeError("No merged data found. Run the merge pipeline before exporting.")
+        Write the merged DataFrame to an XYZ file via
+        :class:`~point_io.PointFileIO`.
 
-        # By default, write_xyz will use XYZFormatSpec() → x y z, no header, space-separated
-        write_xyz(self._merged_df, output_xyz_path, float_format="%.6f")
-        print(f"Merged XYZ exported to: {output_xyz_path}")
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            Merged point data.
+        output_path : str or pathlib.Path
+            Destination file path.
+        """
+        PointFileIO(
+            path=output_path,
+            format_spec=self.format_spec,
+        ).write(df, float_format="%.6f")

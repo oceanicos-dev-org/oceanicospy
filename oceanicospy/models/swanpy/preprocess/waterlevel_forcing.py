@@ -20,19 +20,19 @@ class WaterLevelForcing:
         An initialization object containing configuration data and folder paths.
     domain_number : int
         Identifier for the domain being processed.
-    dict_info : dict or None, optional
+    wl_info : dict or None, optional
         Dictionary containing water level information. If None, water level data must be provided via `get_waterlevel_from_UHSLC()`.
     filename : str or None, optional
-        Name of the water level ASCII file to create or link in the domain input directory. Defaults to None.
+        Name of a existing water level ASCII file to create or link in the domain input directory. Defaults to None.
     share_wl : bool, optional
         If True, water level data is shared across domains by linking to the domain 1 file. Defaults to True.
     use_link: bool, optional
         If True, creates symbolic links for water level files instead of copying them. Defaults to True
     """
-    def __init__ (self,init,domain_number,dict_info=None,filename=None,share_wl=True,use_link=None):
+    def __init__ (self,init,domain_number,wl_info=None,filename=None,share_wl=True,use_link=None):
         self.init = init
         self.domain_number = domain_number
-        self.dict_info = dict_info
+        self.wl_info = wl_info
         self.filename = filename
         self.share_wl = share_wl
         self.use_link = use_link
@@ -134,36 +134,31 @@ class WaterLevelForcing:
         detrend_wl: bool = False,
     ) -> None:
         """
-        Parse a raw UHSLC hourly CSV file, clean the water-level series,
-        and write a time-varying water-level file in SWAN ASCII format.
+        Convert a UHSLC water-level DataFrame to SWAN ASCII grid format.
 
-        Processing steps applied to the raw data:
+        Processing steps:
 
-        1. Delegate CSV parsing, UTC→local (UTC−5) conversion, and mm→m
-           conversion to :meth:`~oceanicospy.retrievals.UHSLCDownloader.clean_data`.
-        2. Flag UHSLC fill values (``depth[m] < -30.0``) as ``NaN``.
-        3. Apply a station datum correction of ``-2.0 m`` for the local-time
-           period 1997-01-01 00:00 – 2018-12-31 18:00 (≡ 1997-01-01 05:00 –
-           2018-12-31 23:00 UTC).
-        4. Optionally detrend the water-level signal.
-        5. Trim the series to ``[ini_date, end_date]``.
-        6. Write one timestamp header + a full spatial grid per time step.
+        1. Flag UHSLC fill values (``depth[m] < -30.0``) as ``NaN``.
+        2. Optionally detrend the water-level signal (NaN-safe).
+        3. Trim the series to ``[ini_date, end_date]``.
+        4. Write one timestamp header followed by a full 2-D water-level
+           grid per time step to the domain input folder.
 
-        The cleaned full series is stored in :attr:`dataset` and the
+        The full series is stored in :attr:`dataset` and the
         simulation-window subset in :attr:`dataset_filtered`.
 
         Parameters
         ----------
         UHSLC_dataframe : pd.DataFrame
-            The cleaned UHSLC data as a pandas DataFrame.
+            Cleaned UHSLC DataFrame with a datetime index and a ``depth[m]``
+            column, as returned by :meth:`get_waterlevel_from_UHSLC`.
         ascii_filename : str
-            Name of the SWAN water-level ASCII output file to create in
-            the same input directory (e.g. ``"water_levels.wl"``).
+            Name of the SWAN water-level ASCII output file to create in the
+            domain input directory (e.g. ``"water_levels.wl"``).
         detrend_wl : bool, optional
             If ``True``, apply :func:`scipy.signal.detrend` to the
-            ``depth[m]`` column after conversion.  ``NaN`` gaps are
-            excluded from the detrending and reinserted afterwards.
-            Default is ``False``.
+            ``depth[m]`` column.  ``NaN`` gaps are excluded from the
+            detrending and reinserted afterwards.  Default is ``False``.
 
         Returns
         -------
@@ -171,27 +166,25 @@ class WaterLevelForcing:
 
         Raises
         ------
-        FileNotFoundError
-            If *UHSLC_filename* or the domain ``*.bot`` file cannot be
-            found.
+        IndexError
+            If no ``*.bot`` file is found in the domain input directory.
         """
+        df = UHSLC_dataframe.copy()
         domain_dir = Path(self.init.dict_folders["input"]) / f"domain_0{self.domain_number}"
 
+        df.loc[df["depth[m]"] < -30.0, "depth[m]"] = np.nan
 
-        UHSLC_dataframe.loc[UHSLC_dataframe["depth[m]"] < -30.0, "depth[m]"] = np.nan
-
-        # --- Optional linear detrending (NaN-safe) ---
         if detrend_wl:
-            valid_mask = np.isfinite(UHSLC_dataframe["depth[m]"])
-            detrended = np.full(len(UHSLC_dataframe), np.nan)
+            valid_mask = np.isfinite(df["depth[m]"])
+            detrended = np.full(len(df), np.nan)
             detrended[valid_mask.values] = detrend(
-                UHSLC_dataframe.loc[valid_mask, "depth[m]"].values
+                df.loc[valid_mask, "depth[m]"].values
             )
-            UHSLC_dataframe["depth[m]"] = detrended
+            df["depth[m]"] = detrended
 
-        self.dataset = UHSLC_dataframe
-        self.dataset_filtered = UHSLC_dataframe.loc[
-            (UHSLC_dataframe.index >= self.init.ini_date) & (UHSLC_dataframe.index <= self.init.end_date)
+        self.dataset = df
+        self.dataset_filtered = df.loc[
+            (df.index >= self.init.ini_date) & (df.index <= self.init.end_date)
         ]
 
         bathymetry_grid = self._load_bathymetry()
@@ -216,7 +209,7 @@ class WaterLevelForcing:
         Returns
         -------
         pd.DataFrame
-            A DataFrame containing the cleanedwater level data for the specified station.
+            A DataFrame containing the cleaned water level data for the specified station.
         """
         filepath = f"{self.init.dict_folders['input']}domain_0{self.domain_number}/h{station_id}.csv"
         file_exists = utils.verify_file(filepath)
@@ -240,7 +233,7 @@ class WaterLevelForcing:
                 df_waterlevel = load_uhslc_waterlevel(station_id, filepath_domain1)
         return df_waterlevel
 
-    def write_UHSLC_ascii(self,UHSLC_dataframe,ascii_filename):
+    def write_UHSLC_ascii(self,UHSLC_dataframe,ascii_filename,detrend_wl=True):
         """
         Write the cleaned UHSLC water level data to a SWAN ASCII file, handling file management and optional sharing across domains.
 
@@ -250,36 +243,28 @@ class WaterLevelForcing:
             The cleaned UHSLC water level data as a pandas DataFrame.
         ascii_filename : str
             Name of the SWAN water-level ASCII output file to create in the same input directory (e.g. ``"water_levels.wl"``).
-
+        detrend_wl : bool, optional
+            If ``True``, apply linear detrending to the water level data before writing. Default is ``True``.
+            
         Notes
         -----
-        If *share_wl* is ``True``, the ASCII file is created in domain 1 and linked to other domains. If ``False``, each domain 
-        gets its own ASCII file created from the UHSLC data. In either case, the method updates the domain's water level
+        If *share_wl* is ``True``, the ASCII file is created in domain 1 and
+        linked to other domains.  If ``False``, each domain gets its own ASCII
+        file created from the UHSLC data.  In either case, ``wl_info`` is
+        updated with the path to the written file and returned.
         """
         run_domain_dir = f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/'
         origin_domain_dir = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/'
 
-        # verification of file existence and conversion to ascii format if needed 
-        if not self.share_wl:
-            self._UHSLC_csv_to_ascii(UHSLC_dataframe, ascii_filename)
-            print('\t UHSLC water level data converted to ASCII format and saved as', ascii_filename)
-        else:
-            if self.domain_number == 1:
-                self._UHSLC_csv_to_ascii(UHSLC_dataframe, ascii_filename)
-                print('\t UHSLC water level data converted to ASCII format and saved as', ascii_filename)
-            else:
-                origin_domain_dir = f'{self.init.dict_folders["input"]}domain_01/'
-                print(f"\t UHSLC water level data converted to ASCII format and saved as {ascii_filename} in domain 01, linking to domain {self.domain_number}")
+        self._UHSLC_csv_to_ascii(UHSLC_dataframe, ascii_filename,detrend_wl)
+        print('\t UHSLC water level data converted to ASCII format and saved as', ascii_filename)
         
         # validation of file creation and deployment to run directory
         utils.deploy_input_file(ascii_filename, origin_domain_dir, run_domain_dir, self.use_link)
 
-        if self.dict_info!=None:
-            if not self.share_wl:
-                self.dict_info.update({"wl_file":f"../../input/domain_0{self.domain_number}/{ascii_filename}"})
-            else:
-                self.dict_info.update({"wl_file":f"../../input/domain_01/{ascii_filename}"})
-            return self.dict_info
+        if self.wl_info!=None:
+            self.wl_info.update({"wl_file":f"../../input/domain_0{self.domain_number}/{ascii_filename}"})
+            return self.wl_info
         return None
 
     def fill_wl_section(self):
@@ -287,8 +272,8 @@ class WaterLevelForcing:
         Replaces and updates the .swn file with the water level configuration for a specific domain.
         """
 
-        if self.dict_info == None:
+        if self.wl_info == None:
             raise ValueError(f'Water level information is not provided for domain {self.domain_number}.')
 
         print (f'\n \t*** Adding/Editing water level information for domain {self.domain_number} in configuration file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_info)
+        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.wl_info)

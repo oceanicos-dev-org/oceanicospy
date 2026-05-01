@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import glob as glob
 from datetime import datetime
+from pathlib import Path
 from scipy.signal import detrend
 
 from .... import utils
@@ -57,18 +58,21 @@ class WaterLevelForcing:
             station_id, self.init.ini_date, self.init.end_date, filepath
         )
 
-    def _UHSLC_csv_to_ascii(self, UHSLC_dataframe, ascii_filename, detrend_wl=False):
+    def _UHSLC_csv_to_ascii(
+        self,
+        UHSLC_dataframe: pd.DataFrame,
+        ascii_filename: str,
+        detrend_wl: bool = False,
+    ) -> None:
         """
-        Convert a cleaned UHSLC water-level DataFrame to XBeach ASCII format.
+        Convert a UHSLC water-level DataFrame to XBeach ASCII format.
 
         Processing steps:
 
-        1. Flag fill values (``depth[m] < -30.0``) as ``NaN``.
-        2. Apply a station datum correction of ``-2.0 m`` for the local-time
-           period 1997-01-01 05:00 – 2018-12-31 23:00.
-        3. Optionally detrend the water-level signal (NaN-safe).
-        4. Trim the series to ``[ini_date, end_date]``.
-        5. Write a two-column space-separated file ``(elapsed_seconds, depth_m)``
+        1. Flag UHSLC fill values (``depth[m] < -30.0``) as ``NaN``.
+        2. Optionally detrend the water-level signal (NaN-safe).
+        3. Trim the series to ``[ini_date, end_date]``.
+        4. Write a two-column space-separated file ``(elapsed_seconds, depth_m)``
            to the input folder.
 
         The full series is stored in :attr:`dataset` and the simulation-window
@@ -76,30 +80,26 @@ class WaterLevelForcing:
 
         Parameters
         ----------
-        UHSLC_dataframe : pandas.DataFrame
-            Cleaned UHSLC DataFrame as returned by :meth:`_download_UHSLC` or
-            :meth:`get_waterlevel_from_UHSLC`.  Must have a datetime index and
-            a ``depth[m]`` column.
+        UHSLC_dataframe : pd.DataFrame
+            Cleaned UHSLC DataFrame with a datetime index and a ``depth[m]``
+            column, as returned by :meth:`get_waterlevel_from_UHSLC`.
         ascii_filename : str
             Name of the XBeach water-level ASCII output file to create in the
             input folder (e.g. ``"water_level.wl"``).
         detrend_wl : bool, optional
             If ``True``, apply :func:`scipy.signal.detrend` to the
-            ``depth[m]`` column after conversion.  ``NaN`` gaps are excluded
-            from the detrending and reinserted afterwards.  Default is
-            ``False``.
+            ``depth[m]`` column after the datum correction.  ``NaN`` gaps are
+            excluded from the detrending and reinserted afterwards.
+            Default is ``False``.
+
+        Returns
+        -------
+        None
         """
         df = UHSLC_dataframe.copy()
+        input_dir = Path(self.init.dict_folders["input"])
 
-        # Flag UHSLC fill values
         df.loc[df["depth[m]"] < -30.0, "depth[m]"] = np.nan
-
-        # Station-specific datum correction for 1997-2018 window
-        correction_mask = (
-            (df.index >= datetime(1997, 1, 1, 5)) &
-            (df.index <= datetime(2018, 12, 31, 23))
-        )
-        df.loc[correction_mask, "depth[m]"] -= 2.0
 
         if detrend_wl:
             valid_mask = np.isfinite(df["depth[m]"])
@@ -122,8 +122,11 @@ class WaterLevelForcing:
             {"Time": time_to_write, "water_level[m]": self.dataset_filtered["depth[m]"]},
             index=self.dataset_filtered.index,
         )
+
+        df_to_save["water_level[m]"] = df_to_save["water_level[m]"].round(3)
+
         df_to_save.to_csv(
-            f'{self.init.dict_folders["input"]}{ascii_filename}',
+            input_dir / ascii_filename,
             sep=" ", header=False, index=False,
         )
 
@@ -196,7 +199,7 @@ class WaterLevelForcing:
         else:
             self.wl_info = {"sealevelfilepath": ascii_filename}
 
-    def convert_data_from_CECOLDO(self, input_filename, output_filename):
+    def convert_data_from_CECOLDO(self, output_filename, input_filename=None):
         """
         Convert CECOLDO tide-gauge data to XBeach water-level format.
 
@@ -206,10 +209,16 @@ class WaterLevelForcing:
 
         Parameters
         ----------
-        input_filename : str
-            Name of the CECOLDO tab-separated file in the input folder.
         output_filename : str
             Name of the output file to write in the run folder.
+        input_filename : str or None, optional
+            Name of the CECOLDO tab-separated file in the input folder.
+            Defaults to ``self.input_filename`` when ``None``.
+
+        Raises
+        ------
+        ValueError
+            If no input filename is available (neither passed nor set at init).
 
         Returns
         -------
@@ -217,6 +226,12 @@ class WaterLevelForcing:
             Dictionary with key ``'sealevelfilepath'`` set to
             ``'sealevel.txt'``.
         """
+        if input_filename is None:
+            input_filename = self.input_filename
+        if input_filename is None:
+            raise ValueError(
+                "input_filename must be provided either at init or as a method argument."
+            )
         data_cecoldo = pd.read_csv(
             f'{self.init.dict_folders["input"]}{input_filename}',
             sep='\t', skiprows=[1], na_values=['-99999.00'],
@@ -255,7 +270,7 @@ class WaterLevelForcing:
 
         self.wl_info = {'sealevelfilepath': 'sealevel.txt'}
 
-    def constant_from_CECOLDO(self, input_filename):
+    def constant_from_CECOLDO(self, input_filename=None):
         """
         Extract a single constant water-level value from a CECOLDO file.
 
@@ -265,8 +280,14 @@ class WaterLevelForcing:
 
         Parameters
         ----------
-        input_filename : str
+        input_filename : str or None, optional
             Name of the CECOLDO tab-separated file in the input folder.
+            Defaults to ``self.input_filename`` when ``None``.
+
+        Raises
+        ------
+        ValueError
+            If no input filename is available (neither passed nor set at init).
 
         Returns
         -------
@@ -274,6 +295,12 @@ class WaterLevelForcing:
             Dictionary with key ``'sealevelvalue'`` set to the first
             de-meaned water-level value (rounded to three decimal places).
         """
+        if input_filename is None:
+            input_filename = self.input_filename
+        if input_filename is None:
+            raise ValueError(
+                "input_filename must be provided either at init or as a method argument."
+            )
         data_cecoldo = pd.read_csv(
             f'{self.init.dict_folders["input"]}{input_filename}',
             sep='\t', skiprows=[1], na_values=['-99999.00'],
@@ -297,28 +324,6 @@ class WaterLevelForcing:
         )
 
         self.wl_info = {'sealevelvalue': round(data_cecoldo['Nivel_mar [m]'].values[0], 3)}
-
-    def txt_from_user(self):
-        """
-        Link an existing ``.wl`` file from the input folder into the run folder.
-
-        Returns
-        -------
-        dict
-            Dictionary with key ``'sealevelfilepath'`` set to the
-            water-level filename.
-        """
-        sealevel_file_path = glob.glob(f'{self.init.dict_folders["input"]}*.wl')[0]
-        sealevel_filename = sealevel_file_path.split('/')[-1]
-
-        if not utils.verify_link(sealevel_filename, self.init.dict_folders["run"]):
-            utils.create_link(
-                sealevel_filename,
-                self.init.dict_folders["input"],
-                self.init.dict_folders["run"],
-            )
-
-        self.wl_info = {"sealevelfilepath": sealevel_filename}
 
     def fill_wl_section(self):
         """

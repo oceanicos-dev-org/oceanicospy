@@ -22,5 +22,6 @@ documentation for details.
    installing
    analysis/index
    observations/index
-   retrievals/index
+   downloads/index
    models/index
+   gis/index

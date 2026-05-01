@@ -20,53 +20,25 @@ class BoundaryConditions:
     ----------
     init : object
         Case initialization object.  Must expose ``ini_date``, ``end_date``,
-        and ``dict_folders`` (mapping with ``'input'`` and ``'run'`` keys).
-    input_filename : str, optional
-        Default input file name used by methods that don't take an explicit
-        filename argument.
-    dict_bounds_params : dict, optional
-        Pre-built boundary parameter dictionary.  When provided, methods can
-        update it rather than creating a new one.
-    """
+        and ``dict_folders`` (a mapping with at least ``"input"`` and ``"run"``
+        keys pointing to the respective directories).
 
-    def __init__(self, init, input_filename=None, dict_bounds_params=None):
+    """
+    def __init__ (self,init):
         self.init = init
-        self.input_filename = input_filename
-        self.dict_bounds_params = dict_bounds_params
+        self._purger()
         print('*** Initializing Boundary Conditions ***')
 
-    def purger(self):
+    def _purger(self):
         """
-        Build a ``filelist.txt`` from pre-existing ``.sp2`` files in the input folder.
+        Remove any previously generated boundary-condition files.
 
-        Creates a one-entry-per-hour filelist pointing to ``spectra8_NNN.sp2``
-        files in the input directory, copies them to ``run/``, and returns the
-        boundary parameter dict with ``bcfilepath`` set.
-
-        Returns
-        -------
-        dict
-            ``{'bcfilepath': 'filelist.txt'}``
+        Deletes the ``<run>/bounds_conds/`` directory and its entire contents
+        so that each run starts from a clean slate.  Called automatically by
+        :meth:`__init__`.
         """
         print('*** Cleaning Boundary Conditions ***')
         os.system(f'rm -rf {self.init.dict_folders["run"]}bounds_conds')
-
-    # def create_filelist(self):
-    #     """
-    #     Create a list of files.
-    #     Returns:
-    #         list: A list of files.
-    #     """
-    #     time_s = pd.date_range(self.ini_date,self.end_date, freq='1h')
-
-    #     with open(f'{self.dict_folders["run"]}filelist.txt','w') as f:
-    #         f.write('FILELIST \n')
-    #         for idx_time in range(len(time_s)):
-    #             f.write(f'3600 0.2 spectra8_{idx_time+1:03d}.sp2\n')
-    #     f.close()
-    #     os.system(f'cp {self.dict_folders["input"]}spectra8*.sp2 {self.dict_folders["run"]}')
-    #     dict_boundaries={'bcfilepath':'filelist.txt'}
-    #     return dict_boundaries
 
     # -------------------------------------------------------------------------
     # spectra_from_swan helpers
@@ -168,7 +140,7 @@ class BoundaryConditions:
 
             # if the line has two numeric values separated by three spaces, we assume it's a coordinate line 
             # and skip it (except for the matching location line handled above)
-            elif all(x.strip()!= '' for x in line.split('   ')):
+            elif all(x.strip()!= '' and x.isdigit() for x in line.split('   ')):
                 continue
             else:
                 fdest.write(line)
@@ -195,7 +167,7 @@ class BoundaryConditions:
         fdest.write('FACTOR\n')
         fdest.write('0.1E-05\n')
         for row in spec_matrix:
-            np.savetxt(fdest, row, fmt='%5.0f')
+            np.savetxt(fdest, row, fmt='%7.0f')
 
     def _write_sp2_file(self, site_idx, time_idx, lon, lat):
         """
@@ -226,7 +198,8 @@ class BoundaryConditions:
         The spectral energy is normalised by ``0.1E-05`` before being passed
         to :meth:`_write_sp2_spectrum`.
         """
-        spec_matrix = np.array(self.data_spectra[time_idx, site_idx, :, :]) / 0.1e-5
+        spec_matrix = np.matrix(self.data_spectra[time_idx, site_idx, :, :]) / 0.1e-5
+
         time_str = pd.to_datetime(self.dataset.time.values[time_idx]).strftime('%Y%m%d.%H%M%S')
         sp2_path = (
             f"{self.init.dict_folders['run']}"
@@ -257,7 +230,9 @@ class BoundaryConditions:
         The output directory ``<run>/bounds_conds/point_<site_idx>/`` is created
         with ``exist_ok=True``, so re-running is safe.  The filelist is written to
         ``<run>/bounds_conds/filelist_<site_idx>.txt`` with one entry per time step
-        in the format expected by XBeach (``3600 0.2 '<relative_sp2_path>'``).
+        in the format expected by XBeach (``3600 0.2 '<relative_sp2_path>'``)
+        
+        Notice that the time step per site is defined as 0.2.
         """
         bounds_conds_path = os.path.join(
             self.init.dict_folders["run"], "bounds_conds", f"point_{site_idx}"
@@ -277,7 +252,7 @@ class BoundaryConditions:
                     f"spec_time{idx_time}_point{site_idx}.sp2'\n"
                 )
 
-    def _write_loclist(self):
+    def _write_loclist(self, location_points):
         """
         Write ``loclist.txt`` mapping each boundary site to its filelist.
 
@@ -290,10 +265,11 @@ class BoundaryConditions:
         with open(loclist_path, "w") as floc:
             floc.write('LOCLIST\n')
             for idx_site in range(self.number_spectrum_locs):
-                floc.write(f"0 {-(idx_site) * 100} 'bounds_conds/filelist_{idx_site}.txt'\n")
+                x, y = location_points[idx_site]
+                floc.write(f"{x} {y} 'bounds_conds/filelist_{idx_site}.txt'\n")
 
 
-    def spectra_from_swan(self, input_filename, point_indexes=None):
+    def spectra_from_swan(self, input_filename,location_points, point_indexes=None):
         """
         Convert a SWAN spectral output file into XBeach boundary condition files.
 
@@ -330,19 +306,19 @@ class BoundaryConditions:
         self.data_spectra = self.dataset.efth
         self.number_spectrum_locs = len(self.dataset.site)
 
-        if self.number_spectrum_locs == 1:
-            print('delete the loclist section and the nspectrumloc command')
-        else:
-            self.dict_boundaries = {
-                'w_bc_version': 3,
-                'n_spectrum_loc': self.number_spectrum_locs,
-                'bcfilepath': 'bounds_conds/loclist.txt',
-            }
+        self.dict_boundaries = {
+            'w_bc_version': 3,
+            'n_spectrum_loc': self.number_spectrum_locs,
+            'bcfilepath': 'bounds_conds/loclist.txt',
+        }
 
         for idx_site in range(self.number_spectrum_locs):
             self._write_site_filelist(idx_site)
 
-        self._write_loclist()
+        if self.number_spectrum_locs != len(location_points):
+            raise ValueError(f"Number of location points ({len(location_points)}) does not match number of spectrum locations ({self.number_spectrum_locs}).")
+
+        self._write_loclist(location_points)
 
     def fill_boundaries_section(self):
         """

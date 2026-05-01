@@ -7,16 +7,18 @@ from ....utils.wind import download_era5_winds, download_cmds_winds
 
 class WindForcing:
     """
+    Utility class for generating and managing wind forcing files for SWAN.
+
     Parameters
     ----------
     init : object
         An initialization object containing configuration data and folder paths.
     domain_number : int
         Identifier for the domain being processed.
-    dict_info : dict or None, optional
+    wind_info : dict or None, optional
         Dictionary containing spatial wind information. If None, winds must be provided via `filename`.
     filename : str or None, optional
-        Path to the file containing wind data. If None, wind must be provided via `dict_info`.
+        Path to the file containing wind data. If None, wind must be provided via `wind_info`.
     share_winds : bool, optional
         If True, shares wind data across domains. Defaults to True.
     use_link : bool or None, optional
@@ -24,40 +26,44 @@ class WindForcing:
         If False, copies the files. If None, no file placement is performed.
     """
 
-    def __init__(self,init,domain_number,dict_info=None,filename=None,share_winds=True,use_link=None):
+    def __init__(self,init,domain_number,wind_info=None,filename=None,share_winds=True,use_link=None):
         self.init = init
         self.domain_number = domain_number
-        self.dict_info = dict_info
+        self.wind_info = wind_info
         self.filename = filename
         self.share_winds = share_winds
         self.use_link = use_link
         print(f'\n*** Initializing winds for domain {self.domain_number} ***\n')
 
-    def _download_ERA5(self, difference_to_UTC, filepath=None):
+    def _download_ERA5(self, utc_offset_hours, filepath=None, format_localtime=False):
         """
         Download ERA5 wind data for the specified region and time period.
 
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             Time difference to UTC in hours for local time conversion.
         filepath : str or None, optional
             Full path where the downloaded ERA5 file will be saved.
+        format_localtime : bool, optional
+            If True, formats the time in local time. Defaults to False.
         """
-        download_era5_winds(self.dict_info, self.init.ini_date, self.init.end_date, difference_to_UTC, filepath)
+        download_era5_winds(self.wind_info, self.init.ini_date, self.init.end_date, utc_offset_hours, filepath, format_localtime)
 
-    def _download_CMDS(self, difference_to_UTC, filepath=None):
+    def _download_CMDS(self, utc_offset_hours, filepath=None, format_localtime=False):
         """
         Download CMDS wind data for the specified region and time period.
 
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             Time difference to UTC in hours for local time conversion.
         filepath : str or None, optional
             Full path where the downloaded CMDS file will be saved.
+        format_localtime : bool, optional
+            If True, formats the time in local time. Defaults to False.
         """
-        download_cmds_winds(self.dict_info, self.init.ini_date, self.init.end_date, difference_to_UTC, filepath)
+        download_cmds_winds(self.wind_info, self.init.ini_date, self.init.end_date, utc_offset_hours, filepath, format_localtime)
 
     def _ERA5_nc_to_ascii(self,era5_filename,ascii_filename):
         """
@@ -117,7 +123,7 @@ class WindForcing:
             file.write(pd.DataFrame(v10_to_write).to_csv(index=False, header=False, na_rep=0, float_format='%7.3f').replace(',', ' '))
         file.close()
 
-    def get_winds_from_ERA5(self,difference_to_UTC,filename='winds_era5.nc',override=False):
+    def get_winds_from_ERA5(self,utc_offset_hours,filename='winds_era5.nc',format_localtime=False,override=False):
         """
         Download ERA5 wind data for the current domain, or skip if already present.
 
@@ -127,10 +133,12 @@ class WindForcing:
 
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             Time difference to UTC in hours for local time conversion.
         filename : str, optional
             Name of the ERA5 NetCDF output file. Defaults to ``'winds_era5.nc'``.
+        format_localtime : bool, optional
+            If True, formats the time in local time. Defaults to False.
         override : bool, optional
             If True, re-downloads the file even if it already exists. Defaults to False.
         """
@@ -139,19 +147,19 @@ class WindForcing:
 
         if not self.share_winds:
             if not file_exists or override:
-                self._download_ERA5(difference_to_UTC, filepath=filepath)
+                self._download_ERA5(utc_offset_hours, filepath=filepath, format_localtime=format_localtime)
             else:
                 print("\t ERA5 wind data already exists, skipping download")
         else:
             if self.domain_number == 1:
                 if not file_exists or override:
-                    self._download_ERA5(difference_to_UTC, filepath=filepath)
+                    self._download_ERA5(utc_offset_hours, filepath=filepath, format_localtime=format_localtime)
                 else:
                     print("\t ERA5 wind data already exists, skipping download")
             else:
                     print("\t ERA5 wind data already exists in domain 1, skipping download")
 
-    def get_winds_from_CMDS(self,difference_to_UTC,filename='winds_cmds.nc',override=False):
+    def get_winds_from_CMDS(self,utc_offset_hours,filename='winds_cmds.nc',format_localtime=False,override=False):
         """
         Download CMDS wind data for the current domain, or skip if already present.
 
@@ -161,10 +169,12 @@ class WindForcing:
 
         Parameters
         ----------
-        difference_to_UTC : int
+        utc_offset_hours : int
             Time difference to UTC in hours for local time conversion.
         filename : str, optional
             Name of the CMDS NetCDF output file. Defaults to ``'winds_cmds.nc'``.
+        format_localtime : bool, optional
+            If True, formats the time in local time. Defaults to False.
         override : bool, optional
             If True, re-downloads the file even if it already exists. Defaults to False.
         """
@@ -173,13 +183,13 @@ class WindForcing:
 
         if not self.share_winds:
             if not file_exists or override:
-                self._download_CMDS(difference_to_UTC, filepath=filepath)
+                self._download_CMDS(utc_offset_hours, filepath=filepath, format_localtime=format_localtime)
             else:
                 print("\t CMDS wind data already exists, skipping download")
         else:
             if self.domain_number == 1:
                 if not file_exists or override:
-                    self._download_CMDS(difference_to_UTC, filepath=filepath)
+                    self._download_CMDS(utc_offset_hours, filepath=filepath, format_localtime=format_localtime)
                 else:
                     print("\t CMDS wind data already exists, skipping download")
             else:
@@ -203,12 +213,13 @@ class WindForcing:
         Returns
         -------
         dict or None
-            Updated wind information dictionary if ``self.dict_info`` is not None,
+            Updated wind information dictionary if ``self.wind_info`` is not None,
             otherwise None.
         """
         
         run_domain_dir = f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/'
         origin_domain_dir = f'{self.init.dict_folders["input"]}domain_0{self.domain_number}/'
+
 
         if not self.share_winds:
             self._ERA5_nc_to_ascii(era5_filename, ascii_filename)
@@ -224,12 +235,12 @@ class WindForcing:
 
         utils.deploy_input_file(ascii_filename, origin_domain_dir, run_domain_dir, self.use_link)
 
-        if self.dict_info!=None:
+        if self.wind_info!=None:
             if not self.share_winds:
-                self.dict_info.update({"winds_file":f"../../input/domain_0{self.domain_number}/winds.wnd"})
+                self.wind_info.update({"winds_file":f"../../input/domain_0{self.domain_number}/winds.wnd"})
             else:
-                self.dict_info.update({"winds_file":f"../../input/domain_01/winds.wnd"})
-            return self.dict_info
+                self.wind_info.update({"winds_file":f"../../input/domain_01/winds.wnd"})
+            return self.wind_info
         return None
 
     def write_CMDS_ascii(self,cdms_filename,ascii_filename):
@@ -250,7 +261,7 @@ class WindForcing:
         Returns
         -------
         dict or None
-            Updated wind information dictionary if ``self.dict_info`` is not None,
+            Updated wind information dictionary if ``self.wind_info`` is not None,
             otherwise None.
         """
         
@@ -271,13 +282,13 @@ class WindForcing:
 
         utils.deploy_input_file(ascii_filename, origin_domain_dir, run_domain_dir, self.use_link)
 
-        if self.dict_info!=None:
+        if self.wind_info!=None:
             if not self.share_winds:
-                self.dict_info.update({"winds_file":f"../../input/domain_0{self.domain_number}/winds.wnd"})
+                self.wind_info.update({"winds_file":f"../../input/domain_0{self.domain_number}/winds.wnd"})
             else:
-                self.dict_info.update({"winds_file":f"../../input/domain_01/winds.wnd"})
+                self.wind_info.update({"winds_file":f"../../input/domain_01/winds.wnd"})
 
-            return self.dict_info
+            return self.wind_info
 
     def use_constant_wind(self,wind_speed,wind_dir):
         """
@@ -301,16 +312,16 @@ class WindForcing:
         """
         constant_wind_info =  {"wind_speed":wind_speed, "wind_dir":wind_dir}
 
-        if self.dict_info != None:
-            self.dict_info.update(constant_wind_info)
+        if self.wind_info != None:
+            self.wind_info.update(constant_wind_info)
         else:
-            self.dict_info = constant_wind_info
-        return self.dict_info
+            self.wind_info = constant_wind_info
+        return self.wind_info
 
     def fill_wind_section(self):
         """
         Write wind configuration into the SWAN run file for the current domain. 
-        Uses the information in ``self.dict_info`` to fill the appropriate section of the .swn file.
+        Uses the information in ``self.wind_info`` to fill the appropriate section of the .swn file.
 
         Raises
         ------
@@ -318,8 +329,8 @@ class WindForcing:
             If no wind information was provided at initialization.
         """
 
-        if self.dict_info == None:
+        if self.wind_info == None:
             raise ValueError(f'Wind information is not provided for domain {self.domain_number}.')
 
         print (f'\n \t*** Adding/Editing winds information for domain {self.domain_number} in configuration file ***\n')
-        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.dict_info)
+        utils.fill_files(f'{self.init.dict_folders["run"]}domain_0{self.domain_number}/run.swn',self.wind_info)

@@ -115,20 +115,6 @@ class CaseRunner():
             self.dict_comp_data['len_point_vars'] = 0
             self.dict_comp_data['point_vars'] = ''
 
-    # def fill_slurm_file(self, case_name):
-    #     """
-    #     Fills the SLURM script with the necessary parameters for running the XBeach model.
-    #     This includes paths, simulation name, number of domains, and parent domains.
-    #     """
-    #     self.script_dir = Path(__file__).resolve().parent.parent
-    #     self.data_dir = self.script_dir.parent.parent.parent / 'data'
-    #
-    #     shutil.copy(f'{self.data_dir}/model_config_templates/xbeach/launcher_xbeach_base.slurm',
-    #                 f'{self.init.dict_folders["run"]}launcher_xbeach.slurm')
-    #
-    #     launch_dict = dict(output_path_case=f'{self.init.dict_folders["output"]}', case_name=case_name)
-    #     utils.fill_files(f'{self.init.dict_folders["run"]}launcher_xbeach.slurm', launch_dict, strict=False)
-
     def fill_computation_section(self):
         """
         Compute the simulation duration and write all parameters to ``params.txt``.
@@ -142,6 +128,9 @@ class CaseRunner():
         """
         seconds = (self.init.end_date - self.init.ini_date).total_seconds()
         self.dict_comp_data['tstop_value'] = int(seconds)
+
+        if 'tstart_value' not in self.dict_comp_data:
+            self.dict_comp_data['tstart_value'] = 10800  # Default to 3 hours
 
         str_comp_data = {k: str(v) for k, v in self.dict_comp_data.items()}
         self.dict_comp_data.update(str_comp_data)

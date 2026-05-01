@@ -4,20 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "oceanicospy"
-version = "0.0.1"
-description = "A handle package for most of the programming tools in the research group OCEANICOS"
+version = "0.1.0b6"
+description = "A Python library for oceanographic data analysis, numerical model preprocessing, and data retrieval"
 readme = "README.md"
 authors = [
   { name = "OCEANICOS developer team", email = "oceanicos_med@unal.edu.co" }
 ]
-keywords = ["python", "first package"]
-license = {text = "MIT"}
+keywords = ["oceanography", "wave modeling", "XBeach", "SWAN", "coastal engineering", "spectral analysis", "ERA5"]
+license = {file= "LICENSE"}
 classifiers = [
-  "Development Status :: 3 - Alpha",
-  "Intended Audience :: Education",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Ocean Science",
   "Programming Language :: Python :: 3",
-  "Operating System :: MacOS :: MacOS X",
-  "Operating System :: Microsoft :: Windows"
+  "Programming Language :: Python :: 3.7",
+  "Operating System :: OS Independent",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"
 ]
 requires-python = ">=3.7"
 dependencies = [
@@ -58,4 +61,3 @@ where = ["."]
 
 [tool.esbonio.sphinx]
 buildCommand = ["sphinx-build", "-M", "html", "docs", "${defaultBuildDir}"]
-pythonCommand = ["/Users/franklinayala/venvs/oceanicospy/bin/python"]

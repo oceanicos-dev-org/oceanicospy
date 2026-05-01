@@ -1,12 +1,14 @@
-Bathymaker
+BathyMaker
 ==========
 
 .. toctree::
    :maxdepth: 4
 
-The ``bathymaker`` module handles the preprocessing of topobathymetric data for XBeach simulations.
-It converts regular-grid XYZ topobathymetry files into the ASCII ``.dep`` format expected by XBeach
-and registers the output file path in ``params.txt``.
+The ``bathymaker`` module is responsible for creating bathymetry depth files for XBeach
+simulations.
+
+Pre-existing ``.dep`` files placed in the ``input/`` folder can be loaded directly with
+:meth:`~oceanicospy.models.xbeachpy.preprocess.BathyMaker.load_existing_dep`.
 
 .. autoclass:: oceanicospy.models.xbeachpy.preprocess.BathyMaker
    :members:
