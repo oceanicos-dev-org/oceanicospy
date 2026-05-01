@@ -2,7 +2,7 @@ Wind Forcing
 ============
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 3
 
 The ``wind_forcing`` module preprocesses wind boundary conditions for XBeach simulations.
 It integrates with the **ERA5** reanalysis (via the CDS API) and the **CMDS** dataset

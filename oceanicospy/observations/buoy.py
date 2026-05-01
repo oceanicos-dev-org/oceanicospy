@@ -27,6 +27,7 @@ class WaveBuoy():
     * **Sofar** – contains an ``'Epoch Time'`` column (Unix timestamp, seconds).
     * **AQUAlink** – contains a ``'timestamp'`` column (ISO 8601 string, UTC).
 
+    **Development history**
     
     - 10-Sep-2025 : Origination - Daniela Rosero
     - 05-Mar-2026 : Refactoring - Franklin Ayala

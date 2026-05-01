@@ -2,9 +2,10 @@ Observations
 =============
 
 This subpackage contains classes for handling observations from various sensors. Each class is designed to interface 
-with a specific type of logger/sensor, providing methods for practical data retrieval. The sensors described here represent the whole existing set
-of sensors in OCEANICOS research group used in 2025, however, the package is designed to be easily extendable to include new sensors in the future. 
-The main goal of this subpackage is to provide a unified interface for accessing and processing data from different types of sensors, making it easier for researchers to work with their observational data.
+with a specific type of logger/sensor, providing methods for practical data retrieval. The sensors described here represent an existing set
+of sensors in OCEANICOS research group, however, the package is designed to be easily extendable to include new sensors in the future. 
+The main goal of this subpackage is to provide a unified interface for accessing and processing data from different types of sensors, 
+making it easier for researchers to work with their observational data.
 
 The sensors include:
 
@@ -47,7 +48,7 @@ All the classes in this subpackage are presented below and it can be imported as
    You can easily check the available classes and their methods in the documentation or by exploring the source code.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    pressure_sensors/index
@@ -56,4 +57,9 @@ All the classes in this subpackage are presented below and it can be imported as
    AWAC
    Buoy
    HOBO
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Example:
+   
    reading_field_data

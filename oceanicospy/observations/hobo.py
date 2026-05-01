@@ -60,6 +60,8 @@ class HOBOBase(ABC):
 
     Notes
     -----
+    **Development history**
+
     - 01-Jun-2025 : Origination — Daniela Rosero
     - 24-Mar-2026 : Refactored into abstract + concrete classes — Franklin Ayala
     """
@@ -247,9 +249,6 @@ class HOBO_Temp(HOBOBase):
     start_dt, end_dt, rules, encoding_main, encoding_fallback
         See :class:`HOBOBase`.
 
-    Notes
-    -----
-    24-Mar-2026 : Origination — Franklin Ayala
     """
 
     @property
@@ -273,7 +272,7 @@ class HOBO_Temp(HOBOBase):
         
         Notes
         -----
-        Date is uploaded in local time so no further timezone conversion is needed. The date column is parsed as datetime and set as index, sorted in chronological order.
+        Date is recorded in local time so no further timezone conversion is needed. The date column is parsed as datetime and set as index, sorted in chronological order.
         """
         norm = [self._normalize(c) for c in df.columns]
         cols = df.columns.tolist()
@@ -321,10 +320,6 @@ class HOBO_TempCond(HOBOBase):
         Path to the directory containing CL CSV files.
     start_dt, end_dt, rules, encoding_main, encoding_fallback
         See :class:`HOBOBase`.
-
-    Notes
-    -----
-    24-Mar-2026 : Origination — Franklin Ayala
     """
 
     @property

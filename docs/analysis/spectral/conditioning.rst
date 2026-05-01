@@ -2,7 +2,7 @@ Signal conditioning
 ===================
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 3
 
 Most of the time series recorded by different devices need to be conditioned before
 using them in spectral analysis. Different key concepts will be explained in this section
@@ -87,7 +87,10 @@ Notice that the end part of the time series does not match the beginning part. T
 the beginning and end of the time series will generate spurious amplitudes in the adjacent frequencies. We can compute
 the Power Spectral Density (PSD) as follows:
 
-INSERT EQUATION HERE
+.. math::
+    PSD (f) = \frac{1}{N} \left| \mathrm{FFT}\{ x[n] \} \right|^2
+
+Where :math:`x[n]` is the time-domain signal and :math:`N` is the length of the signal. 
 
 A quick way to visualize this effect is then plotted in the following figure:
 

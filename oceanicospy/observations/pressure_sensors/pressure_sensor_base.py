@@ -9,12 +9,18 @@ from oceanicospy.utils import constants
 
 class BaseLogger(ABC):
     """
-    Initializes the BaseLogger class with the given directory path, sampling data.
+    Abstract base class for field pressure sensor data loggers.
+
+    Provides a common interface for reading, standardising, and burst-segmenting
+    raw pressure records collected by submerged oceanographic instruments in the
+    field.  Subclasses implement the instrument-specific file parsing by
+    overriding :meth:`_load_raw_dataframe`, :meth:`_standardize_columns`, and
+    :meth:`_assign_burst_id`.
 
     Parameters
     ----------
     directory_path : str
-        Path to the directory containing the sensor pressure files.
+        Path to the directory containing the pressure sensor data files.
     sampling_data : dict
         Dictionary containing information on device installation, including:
         
@@ -29,6 +35,8 @@ class BaseLogger(ABC):
 
     Notes
     -----
+    **Development history**
+
     - 23-Sep-2025 : Origination - Franklin Ayala
     - 12-Oct-2025 : Adding AQUAlogger logic - Juan Diego Toro
     - 10-Dec-2025 : Bluelog support - Daniela Rosero 

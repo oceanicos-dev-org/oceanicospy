@@ -371,5 +371,4 @@ class Grid:
         if not xvar:
             self._build_uniform(min_easting, max_easting, min_northing, max_northing, dx, dy)
         else:
-            #TODO: implement xvar=True behaviour with or without segment dicts
-            pass
+            raise NotImplementedError("Variable x-spacing is not yet implemented.")

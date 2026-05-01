@@ -2,7 +2,7 @@ Boundary Conditions
 ===================
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 3
 
 The ``boundary_conds`` module generates XBeach spectral boundary condition files from
 SWAN output. Starting from a ``SpecSWAN.out`` file it converts the wave spectra to

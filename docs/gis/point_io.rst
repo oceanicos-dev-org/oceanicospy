@@ -2,7 +2,7 @@ Point file I/O
 ==============
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
 ``PointFileIO`` reads and writes XYZ plain-text files and point vector
 files (e.g. shapefiles).  The on-disk layout is described by an

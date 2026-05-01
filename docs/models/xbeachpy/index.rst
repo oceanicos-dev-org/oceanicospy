@@ -1,10 +1,11 @@
 xbeachpy
 ========
 
-xbeachpy is a Python subpackage designed to preprocess all the required input files for XBeach simulations and postprocess their outputs. Its structure follows a typical workflow for nearshore coastal modelling, from case initialisation through forcing setup to output analysis.
+*xbeachpy* is a Python subpackage designed to preprocess all the required input files for XBeach simulations and postprocess their outputs. 
+Its structure follows a typical workflow for nearshore coastal modelling, from case initialisation through forcing setup to output analysis.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    initializer
@@ -12,7 +13,7 @@ xbeachpy is a Python subpackage designed to preprocess all the required input fi
    execution/index
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Examples:
 
    xbeach_1D_case

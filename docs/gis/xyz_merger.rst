@@ -2,7 +2,7 @@ XYZ tile merging
 ================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
 ``XYZMerger`` combines multiple XYZ tiles into a single point dataset.
 Overlapping regions are resolved by priority: points from lower-priority

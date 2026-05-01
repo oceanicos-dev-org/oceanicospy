@@ -2,7 +2,7 @@ XYZ masking
 ===========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
 ``XYZRectangleMask`` filters an XYZ dataset by one or more axis-aligned
 rectangular regions.  Two modes are available: ``"keep"`` retains only
