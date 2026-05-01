@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0b6][0.1.0b6] - 2026-04-30
+
+### Added
+
+- `xbeachpy` subpackage promoted to beta — XBeach case preparation tools are considered
+  feature-complete and undergoing stabilization before the final 0.1.0 release
+- `Initializer` — creates the project folder tree (`input/`, `pros/`, `run/`, `output/`)
+  and stamps `params.txt` from the bundled template with user-supplied configuration flags
+- `GridMaker` — unified grid builder for 1D profiles and 2D rectangular domains;
+  delegates coordinate geometry to `ProfileAxis` (`build_profile`) and `Grid`
+  (`build_rectangular_grid`) from the `gis` subpackage
+- `BathyMaker` — cross-shore bathymetry interpolation from scattered XYZ data onto the
+  profile axis, and direct loading of pre-built `.dep` files
+- `BoundaryConditions` — processes SWAN spectral output (`SpecSWAN.out`) into per-timestep
+  `.sp2` files and generates the `filelist_<i>.txt` / `loclist.txt` file structure required
+  by XBeach for both 1D and 2D non-stationary boundary conditions
+- `WindForcing` — integrates with `ERA5Downloader` to fetch hourly U10/V10 winds and
+  convert them to the XBeach single-point ASCII wind file format
+- `WaterLevelForcing` — downloads UHSLC research-quality tide-gauge records and converts
+  them to the XBeach water level ASCII format
+- `Vegetation` — vegetation parameter file preparation for surf-beat simulations
+- `CaseRunner` (`execution`) — finalises `params.txt` with output filenames, field and
+  point variable selection, gauge coordinates, and the computation time window
+- RST API documentation for the `xbeachpy` subpackage under `docs/models/xbeachpy/`
+- 1D walkthrough example notebook (`xbeach_1D_case.ipynb`) covering a non-stationary
+  Caribbean coast profile case including full pre-processing and post-processing steps
+- 2D walkthrough example notebook (`xbeach_2D_case.ipynb`) covering a non-stationary
+  Sound Bay domain case with spatial field plots and point time-series post-processing
+
+### Fixed
+
+- `BoundaryConditions.spectra_from_swan` — parsing guard now correctly skips only
+  all-digit tokens, preventing valid spectral data lines from being silently dropped
+  when processing multi-point SWAN output files
+
 ## [0.1.0b5][0.1.0b5] - 2026-04-29
 
 ### Added
@@ -119,3 +154,4 @@ Initial scaffolding release.
 [0.1.0b3]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b2...0.1.0b3
 [0.1.0b4]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b3...0.1.0b4
 [0.1.0b5]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b4...0.1.0b5
+[0.1.0b6]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b5...0.1.0b6
