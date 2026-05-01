@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -26,4 +29,3 @@ jobs:
           git checkout integration -- .gitignore
           
           git push origin integration
-T
