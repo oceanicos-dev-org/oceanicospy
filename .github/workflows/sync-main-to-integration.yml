@@ -1,0 +1,28 @@
+name: Sync main to integration
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge main into integration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout integration
+          git merge main --no-edit
+
+          # Restore integration's own .gitignore after merge
+          git checkout integration -- .gitignore
+          
+          git push origin integration
