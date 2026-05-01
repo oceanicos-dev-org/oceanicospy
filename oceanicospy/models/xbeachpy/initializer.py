@@ -27,24 +27,28 @@ class Initializer:
     Parameters
     ----------
     root_path : str
-        Root directory path where the project structure is created.
+        Root directory of the case.  All sub-folders are created inside this
+        path.  Must end with a trailing slash (e.g. ``'path/to/case/'``).
     dict_ini_data : dict
-        Dictionary with case metadata and configuration parameters for XBeach.
-        Expected keys:
+        Case-level flags that override the package defaults in
+        ``xbeachpy/utils/defaults.py`` and are substituted into
+        ``params.txt``.  Typical keys:
 
-        * ``case_description`` (*str*) – free-text description of the case.
-        * ``act_morf`` (*int*) – morphological updating flag (``0`` = off).
-        * ``act_sedtrans`` (*int*) – sediment transport flag (``0`` = off).
-        * ``act_wavemodel`` (*int*) – spectral wave model flag (``1`` = surfbeat).
-        * ``dims`` (*int*) – dimensionality (``2`` = 2D).
+        - ``case_description`` — free-form label (not used by XBeach)
+        - ``act_morf`` — morphological updating (``0`` = off)
+        - ``act_sedtrans`` — sediment transport (``0`` = off)
+        - ``act_wavemodel`` — spectral wave model (``1`` = surfbeat)
+        - ``dims`` — number of dimensions (``2`` = 2D)
 
-    ini_date : datetime or None
-        Start date of the model run. Default is ``None``.
-    end_date : datetime or None
-        End date of the model run. Default is ``None``.
+    ini_date : datetime, optional
+        Simulation start date.  Used downstream by preprocessing and
+        execution classes to slice forcing datasets and compute ``tstop``.
+    end_date : datetime, optional
+        Simulation end date.  Same usage as ``ini_date``.
     """
 
     def __init__(self, root_path, dict_ini_data, ini_date=None, end_date=None):
+
         self.root_path = root_path
         self.ini_date = ini_date
         self.end_date = end_date
@@ -104,12 +108,18 @@ class Initializer:
 
     def replace_ini_data(self):
         """
-        Generate the ``params.txt`` file from the bundled XBeach template.
+        Copy the base ``params.txt`` template into ``run/`` and substitute case flags.
 
-        Reads the base template ``params_base.txt`` from the package data
-        directory, fills it using :meth:`_generate_baseline_XBeach` with
-        ``dict_ini_data`` merged on top of the package defaults (user values
-        take precedence), and writes the result to ``run/params.txt``.
+        Locates the bundled ``params_base.txt`` template (under
+        ``data/model_config_templates/xbeach/``), merges the package defaults
+        from ``xbeachpy/utils/defaults.py`` with the user-supplied
+        ``dict_ini_data`` (user values take precedence), and writes the
+        rendered file to ``<run>/params.txt``.
+
+        All values in ``dict_ini_data`` are cast to ``str`` before substitution
+        as required by the :class:`string.Template` engine.
+
+        Must be called after :meth:`create_folders` so that ``run/`` exists.
         """
         print('\n\t*** Copying base XBeach configuration file into run folder ***\n')
 

@@ -2,7 +2,7 @@ BathyMaker
 ==========
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 3
 
 The ``bathymaker`` module is responsible for creating bathymetry depth files for XBeach
 simulations.

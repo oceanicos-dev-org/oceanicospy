@@ -38,7 +38,7 @@ def create_link(file_name,source_path,target_path):
     """
     Creates a symbolic link from the source path to the target path.
 
-    PArameters:
+    Parameters:
         file_name (str): The name of the file to be linked.
         source_path (str): The path where the file is located.
         target_path (str): The path where the symbolic link will be created.
@@ -81,7 +81,7 @@ def deploy_input_file(
     use_link: bool | None,
 ) -> None:
     """
-    Deploy a input file from an input directory to a run directory,
+    Deploy an input file from an input directory to a run directory,
     either as a symbolic link or as a physical copy.
 
     Parameters
@@ -119,7 +119,7 @@ def deploy_input_file(
 def fill_files(file_path: str, replacements: dict):
     """
     Replaces placeholders in an existing .swn file with given values.
-    If a value is empty string, replaces placeholder with whitespace.
+    If a value is an empty string, replaces placeholder with whitespace.
     """
     text = Path(file_path).read_text()
 

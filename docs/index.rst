@@ -6,17 +6,17 @@
 oceanicospy documentation
 =========================
 
-This is the documentation for oceanicospy, a Python package for handling
+This is the documentation for **oceanicospy**, a python package for handling
 most of the programming tasks related with analysis of in-situ data,
 reading observations from a set of differentes sensors, automatize
-the modelling worfkflow and plotting some common and practical figures.
+the modelling worfkflow, download data from common sources and deal with GIS data.
 
 Add your content using ``reStructuredText`` syntax. See the
 `reStructuredText <https://www.sphinx-doc.org/en∏/master/usage/restructuredtext/index.html>`_
 documentation for details.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Contents:
 
    installing

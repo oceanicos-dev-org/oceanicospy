@@ -2,7 +2,7 @@ Case Runner
 ===========
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 3
 
 The ``run_case`` module provides functionality to finalise the XBeach ``params.txt``
 configuration file. After all forcing and bathymetry inputs have been written,

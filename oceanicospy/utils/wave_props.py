@@ -5,8 +5,8 @@ np.seterr(divide = 'ignore')
 
 def wavelength(T,h):
     """
-    Computes the wavelength for intermediate waters
-    
+    Computes the wavelength for intermediate waters.
+
     Parameters
     ----------
     T: float
@@ -36,7 +36,7 @@ def wavelength(T,h):
 
 def direction(vn,ve):
     """
-    Computes the direction w.r.t north
+    Computes the direction w.r.t. north
     
     Parameters
     ----------

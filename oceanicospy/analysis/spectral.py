@@ -28,6 +28,8 @@ class WaveSpectralAnalyzer():
 
         Notes
         -----
+        **Development history**
+
         - 01-Ago-2025 : Origination - Franklin Ayala
         - 01-Sep-2025 : FFT method - Juan Diego Toro
         - 10-Oct-2025 : Kp correction - Franklin Ayala/Juan Diego Toro/Camilo Cabrera
@@ -176,7 +178,7 @@ class WaveSpectralAnalyzer():
         return PSD_smoothed
 
     def _compute_nonadaptive_Kp(self,freqs):
-        """Compute non-adaptive Kp correction factor based on linear wave theory
+        """Compute non-adaptive Kp correction factor based on linear wave theory.
 
         Parameters
         ----------
@@ -202,7 +204,7 @@ class WaveSpectralAnalyzer():
         return Kp
     
     def _compute_adaptive_Kp(self,freqs,PSD):
-        """Compute adaptive Kp correction factor based on the spectrum shape
+        """Compute adaptive Kp correction factor based on the spectrum shape.
         Parameters
         ----------
         freqs : ndarray
@@ -281,7 +283,7 @@ class WaveSpectralAnalyzer():
         return freqs, PSD_Kp, PSD
 
     def _compute_hs_ig_band(self,PSD,freqs,freq_split):
-        """Computes significant wave height in the infragravity and short-wave band
+        """Computes significant wave height in the infragravity and short-wave band.
         Parameters
         ----------
         PSD : ndarray
@@ -412,7 +414,7 @@ class WaveSpectralAnalyzer():
         Parameters
         ----------
         signal : list or ndarray
-            An array of the signal
+            An array containing the signal
         kp_correction : bool
             If True, applies Kp correction to the spectrum.     
         
@@ -451,7 +453,7 @@ class WaveSpectralAnalyzer():
     @extras.timing_decorator
     def compute_spectrum_from_welch(self,signal,kp_correction,window_type,window_length,overlap=None):
         """
-        Compute PSD using Welch method and smooth across frequency bins.
+        Compute PSD using Welch's method and smooth across frequency bins.
 
         Parameters
         ----------
@@ -587,7 +589,7 @@ class WaveSpectralAnalyzer():
         mother_wavelet : str
             The mother wavelet to use (e.g., ``'morl'``, ``'cmor'``, etc.).
         points_scale : int
-            The number of frequency points
+            The number of frequency points.
         burst_mode : bool, optional
             If True, computes scalograms for each burst separately using overlapping windows. Default is False.
             If False, computes a single scalogram for the entire measurement signal without windowing.

@@ -22,11 +22,14 @@ class WaveTemporalAnalyzer:
                 - ``burst_length_s`` (float): Duration of each burst in seconds.
         surface_level_column : str, optional
             The name of the column in measured_signal that contains surface level data (default is ``eta[m]``).
-        zero_centered: Boolean
-            Indicate if the measured signal is centered in zero, if not, measured signal is centered at zero (default is ``False``).
+        zero_centered: bool
+            Indicates whether the measured signal is centred at zero; if not, the signal is centred at zero (default is ``False``).
 
         Notes
         -----
+
+        **Development history**
+        
         - 23-Feb-2014 : First Matlab version - Daniel Peláez
         - 01-Sep-2023 : First Python version - Alejandro Henao
         - 10-Dec-2025 : Empirical Mode Decomposition - Franklin Ayala
