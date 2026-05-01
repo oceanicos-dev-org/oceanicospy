@@ -27,6 +27,6 @@ build/
 dist/
 *.egg-info/
 
-# no tracking personal vs settings
+# no tracking vs settings and requirements.txt
 .vscode/
 requirements.txt

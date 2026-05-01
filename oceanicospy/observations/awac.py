@@ -21,6 +21,8 @@ class AWAC:
 
     Notes
     -----
+    **Development history**
+    
     - 04-Jan-2018 : Origination - Daniel Peláez
     - 01-Sep-2023 : Migration to Python - Alejandro Henao
     - 10-Dec-2024 : Class implementation - Franklin Ayala

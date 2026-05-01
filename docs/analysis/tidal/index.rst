@@ -5,14 +5,14 @@ This section covers the tools available for tidal harmonic analysis of sea level
 including constituent estimation and tidal signal decomposition using the UTide method.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
 
    theoretical_foundations
    tide_harmonic_decomposition
 
 .. toctree::
-   :maxdepth: 3
-   :caption: Examples:
+   :maxdepth: 1
+   :caption: Example:
 
    harmonic_tide_decomposition
 

@@ -2,8 +2,7 @@ Installation
 ============
 
 .. note::
-   **oceanicospy** is currently in beta. The test PyPI version is the recommended
-   installation for users. Follow this guide for either user or developer setups.
+   **oceanicospy** is currently in beta. Follow this guide for either user or developer setups.
 
 .. contents:: On this page
    :local:
@@ -19,11 +18,11 @@ Google Colab (recommended)
 The easiest way to get started is through `Google Colab <https://colab.research.google.com>`_,
 which provides a ready-to-use Python environment with most scientific libraries pre-installed.
 
-Install the latest beta release from Test PyPI:
+Install the latest pre-release from PyPI:
 
 .. code-block:: bash
 
-   !pip install --upgrade --index-url https://test.pypi.org/simple/ oceanicospy==0.0.1
+   !pip install --pre oceanicospy
 
 This will also install the required dependencies. Verify the installation:
 
@@ -34,7 +33,7 @@ This will also install the required dependencies. Verify the installation:
 You should see output similar to::
 
    Name: oceanicospy
-   Version: 0.0.1
+   Version: 0.1.0rc1
    Summary: A handle package for most of the programming tools in the research group OCEANICOS
    Author-email: OCEANICOS developer team <oceanicos_med@unal.edu.co>
    License: MIT
@@ -47,7 +46,7 @@ just drop the leading ``!``:
 
 .. code-block:: bash
 
-   pip install --upgrade --index-url https://test.pypi.org/simple/ oceanicospy==0.0.1
+   pip install --pre oceanicospy
 
 
 Importing the library
@@ -59,7 +58,7 @@ Global import with alias (recommended for interactive work):
 
 .. code-block:: python
 
-   import oceanicospy as ocpy
+   import oceanicospy
 
 Subpackage-level import:
 
@@ -98,11 +97,11 @@ Running ``help(oceanicospy)`` shows the top-level subpackages:
 Each subpackage is described briefly below:
 
 - **analysis** — temporal and spectral techniques for oceanographic data (e.g. ``WaveSpectralAnalyzer``).
-- **gis** — geospatial utilities for working with coastal data (e.g. shapefiles, raster data).
-- **models** — preprocessing automation for numerical models such as SWAN, WW3, and XBeach.
+- **gis** — geospatial utilities for working with coastal data (e.g. shapefiles, XYZ data).
+- **models** — preprocessing automation for numerical models such as SWAN and XBeach.
 - **observations** — readers for oceanographic instruments (RBR, AQUAlogger, AWAC, CTD, weather stations, etc.).
 - **plots** — visualization utilities.
-- **retrievals** — automated data retrieval from reanalysis products (ERA5) and real-time sources (UHSLC).
+- **retrievals** — automated data retrieval from reanalysis products (ERA5, CMDS) and real-time sources (UHSLC).
 - **utils** — shared helper functions used across subpackages.
 
 For developers
@@ -120,7 +119,7 @@ email.
 1. Fork the repository
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Go to https://github.com/oceanicos/oceanicospy and click **Fork** (top-right corner).
+Go to https://github.com/oceanicos-dev-org/oceanicospy and click **Fork** (top-right corner).
 This creates your own copy under your GitHub account:
 
 .. code-block:: text
@@ -174,7 +173,7 @@ so you can pull in changes from the original repo:
 
 .. code-block:: bash
 
-   git remote add upstream git@github.com:oceanicos/oceanicospy.git
+   git remote add upstream git@github.com:oceanicos-dev-org/oceanicospy.git
 
 5. Install in editable mode
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -186,12 +185,13 @@ immediately without reinstalling:
 
    pip install -e .
 
-To also install the dependencies needed to build the documentation, use the
-``docs`` optional dependency group defined in ``pyproject.toml``:
+To also install the dependencies needed to build the documentation and development dependencies, use the
+``docs`` and ``dev`` optional dependency groups defined in ``pyproject.toml``:
 
 .. code-block:: bash
 
    pip install -e ".[docs]"
+   pip install -e ".[dev]"
 
 This installs:
 
@@ -200,8 +200,11 @@ This installs:
 - ``sphinx-book-theme`` — alternative book-style theme.
 - ``nbsphinx`` — embeds Jupyter notebooks in Sphinx docs.
 - ``myst-nb`` — MyST Markdown and notebook support for Sphinx.
+- ``pytest`` — testing framework.
+- ``build`` — PEP 517 build frontend.
+- ``twine`` — utility for publishing packages to PyPI.
 
-6. Create a feature branch
+1. Create a feature branch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Never commit directly to ``main`` or ``integration``. Create a descriptive branch instead:
@@ -234,7 +237,7 @@ Push your branch to your fork:
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 On GitHub, navigate to your fork and click **Contribute → Open a pull request**.
-GitHub will show a diff between your branch and ``oceanicos:main``.
+GitHub will show a diff between your branch and ``oceanicospy:main``.
 
 Provide a clear title and description explaining *what* changed and *why*.
 A maintainer will review and merge your contribution.
