@@ -3,6 +3,10 @@
 /data/observations/*
 /data/temp/*
 /data/model_config_templates/ww3
+/data/model_config_templates/swan/launcher*
+/data/model_config_templates/swan/swaninit
+/data/model_config_templates/xbeach/launcher*
+/data/gis
 
 # no tracking html files
 docs/_build/
