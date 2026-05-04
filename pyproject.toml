@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "oceanicospy"
-version = "0.1.0rc2"
+version = "0.1.0rc3"
 description = "A Python library for oceanographic data analysis, numerical model preprocessing, and data retrieval"
 readme = "README.md"
 authors = [
@@ -28,7 +28,6 @@ dependencies = [
   "EMD-signal==1.6.4",
   "geopandas>=0.14",
   "h5py>=3.0",
-  "ipywidgets>=8.0.0",
   "matplotlib>=3.9.2",
   "netcdf4>=1.6.3",
   "numpy>=1.22",
