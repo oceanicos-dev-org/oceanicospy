@@ -8,21 +8,18 @@ Installation
    :local:
    :depth: 2
 
-
 For users
 ---------
 
-Google Colab (recommended)
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Local environment
+~~~~~~~~~~~~~~~~~
 
-The easiest way to get started is through `Google Colab <https://colab.research.google.com>`_,
-which provides a ready-to-use Python environment with most scientific libraries pre-installed.
-
-Install the latest pre-release from PyPI:
+In a local Python environment (create with conda, venv, etc.) the library can be installed from PyPI using pip. 
+A pre-release version is available, so make sure to include the ``--pre`` flag to get the latest features and fixes:
 
 .. code-block:: bash
 
-   !pip install --pre oceanicospy
+   pip install --pre oceanicospy
 
 This will also install the required dependencies. Verify the installation:
 
@@ -33,21 +30,24 @@ This will also install the required dependencies. Verify the installation:
 You should see output similar to::
 
    Name: oceanicospy
-   Version: 0.1.0rc1
-   Summary: A handle package for most of the programming tools in the research group OCEANICOS
+   Version: 0.1.0rc3
+   Summary: A Python library for oceanographic data analysis, numerical model preprocessing, and data retrieval
    Author-email: OCEANICOS developer team <oceanicos_med@unal.edu.co>
    License: MIT
 
-Local environment
-~~~~~~~~~~~~~~~~~
+Google Colab
+~~~~~~~~~~~~
 
-In a local Python environment (conda, venv, etc.) the same pip command applies —
-just drop the leading ``!``:
+Another way to get familiarized with the library is through `Google Colab <https://colab.research.google.com>`_,
+which provides a ready-to-use Python environment with most scientific libraries pre-installed.
+
+Install the latest pre-release from PyPI:
 
 .. code-block:: bash
 
-   pip install --pre oceanicospy
+   !pip install --pre oceanicospy
 
+This can generate some conflicts with pre-installed packages by Colab, so you may need to restart the runtime after installation.
 
 Importing the library
 ---------------------

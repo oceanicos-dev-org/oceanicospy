@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0rc3][0.1.0rc3] - 2026-05-04
+
+### Changed
+
+- Version promoted from beta (`0.1.0b6`) to release candidate (`0.1.0rc3`); the full
+  public API is considered feature-complete and entering final stabilization before the
+  `0.1.0` stable release
+- Dependency version constraints relaxed across the board to improve compatibility with a
+  wider range of Python environments (Colab, conda, user-managed envs):
+  - `geopandas==1.1.3` → `geopandas>=0.14`
+  - `h5py==3.16.0` → `h5py>=3.0`
+  - `numpy>=2.1.3` → `numpy>=1.22`
+  - `pandas>=2.2.3` → `pandas>=1.5.0`
+  - `scipy>=1.14.1` → `scipy>=1.9`
+  - `shapely==2.1.2` → `shapely>=2.0`
+- `geopandas` and `shapely` promoted to explicit runtime dependencies (previously implied
+  transitively through the `gis` subpackage)
+- `utide>=0.3.1` added as an explicit runtime dependency for tidal harmonic analysis
+- `ipywidgets` and `setuptools` removed from runtime `dependencies`; both are environment
+  concerns that should not be imposed on library users
+- `[project.dev]` optional-dependency group added (`pytest>=8.0`, `pytest-cov`, `build`,
+  `twine`) to support local development and PyPI publishing workflows
+- `[tool.pytest.ini_options]` block added to `pyproject.toml` with `testpaths = ["tests"]`
+- Removed `"Topic :: Scientific/Engineering :: Ocean Science"` PyPI trove classifier
+  (not an approved classifier in the current PyPI taxonomy)
+- README expanded with full installation walkthrough, verified `pip show` expected output,
+  and a Google Colab quick-start section
+- Installation guide (`docs/installing.rst`) updated to reflect the `--pre` flag requirement
+  and the Colab workflow
+
 ## [0.1.0b6][0.1.0b6] - 2026-04-30
 
 ### Added
@@ -154,4 +184,5 @@ Initial scaffolding release.
 [0.1.0b3]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b2...0.1.0b3
 [0.1.0b4]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b3...0.1.0b4
 [0.1.0b5]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b4...0.1.0b5
+[0.1.0rc3]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b6...0.1.0rc3
 [0.1.0b6]: https://github.com/oceanicos/oceanicospy/compare/0.1.0b5...0.1.0b6
