@@ -1,13 +1,11 @@
 # oceanicospy
 
-**A Python library for oceanographic data analysis, numerical model preprocessing, and data retrieval.**
+**`oceanicospy` is an open-source, user-friendly Python library that serves as a framework for automating and standardizing the scientific workflow in numerical wave and hydrodynamic modelling at the coastal scale**
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15725746.svg)](https://doi.org/10.5281/zenodo.15725746)
 ![Version](https://img.shields.io/badge/version-0.1.0rc3-blue)
 ![Status](https://img.shields.io/badge/status-beta-orange)
 ![License](https://img.shields.io/badge/license-GPLv3-green)
-
-`oceanicospy` centralizes and standardizes the code produced by the **OCEANICOS** research group, turning recurring tasks in oceanography and coastal engineering into reusable, well-tested building blocks.
 
 ---
 
