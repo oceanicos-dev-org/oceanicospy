@@ -104,6 +104,8 @@ Each subpackage is described briefly below:
 - **retrievals** — automated data retrieval from reanalysis products (ERA5, CMDS) and real-time sources (UHSLC).
 - **utils** — shared helper functions used across subpackages.
 
+.. _for-developers:
+
 For developers
 --------------
 
@@ -116,7 +118,7 @@ The workflow is based on the standard GitHub fork-and-pull-request model.
 Sign up at https://github.com/signup. You can create an educational account linked to your university
 email.
 
-1. Fork the repository
+2. Fork the repository
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Go to https://github.com/oceanicos-dev-org/oceanicospy and click **Fork** (top-right corner).
@@ -144,7 +146,7 @@ This creates your own copy under your GitHub account:
 
       https://github.com/YOUR-USERNAME/project
 
-1. Set up SSH authentication
+3. Set up SSH authentication
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 SSH is the recommended protocol for pushing and pulling commits. Generate a key
@@ -203,41 +205,3 @@ This installs:
 - ``pytest`` — testing framework.
 - ``build`` — PEP 517 build frontend.
 - ``twine`` — utility for publishing packages to PyPI.
-
-1. Create a feature branch
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Never commit directly to ``main`` or ``integration``. Create a descriptive branch instead:
-
-.. code-block:: bash
-
-   git branch YOUR-USERNAME/my-feature
-   git checkout YOUR-USERNAME/my-feature
-
-Branch names should start with your username while the team is getting familiar
-with the workflow (e.g. ``jdoe/add-feature1``).
-
-7. Make changes and commit
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Stage and commit your changes with a short, descriptive message:
-
-.. code-block:: bash
-
-   git add path/to/changed_file.py
-   git commit -m "add some particular feature to certain module"
-
-Push your branch to your fork:
-
-.. code-block:: bash
-
-   git push origin YOUR-USERNAME/my-feature
-
-8. Open a pull request
-~~~~~~~~~~~~~~~~~~~~~~~
-
-On GitHub, navigate to your fork and click **Contribute → Open a pull request**.
-GitHub will show a diff between your branch and ``oceanicospy:main``.
-
-Provide a clear title and description explaining *what* changed and *why*.
-A maintainer will review and merge your contribution.
