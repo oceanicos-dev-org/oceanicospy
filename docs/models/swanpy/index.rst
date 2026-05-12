@@ -5,7 +5,7 @@ swanpy
 is based on a typical worflow for numerical wave modeling.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    initializer
@@ -14,7 +14,7 @@ is based on a typical worflow for numerical wave modeling.
    postprocess/index
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Examples:
 
    swan_stationary_case

@@ -5,7 +5,7 @@ xbeachpy
 Its structure follows a typical workflow for nearshore coastal modelling, from case initialisation through forcing setup to output analysis.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    initializer
@@ -13,7 +13,7 @@ Its structure follows a typical workflow for nearshore coastal modelling, from c
    execution/index
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Examples:
 
    xbeach_1D_case

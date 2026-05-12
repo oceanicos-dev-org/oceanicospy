@@ -48,7 +48,7 @@ All the classes in this subpackage are presented below and it can be imported as
    You can easily check the available classes and their methods in the documentation or by exploring the source code.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Contents:
 
    pressure_sensors/index
@@ -59,7 +59,7 @@ All the classes in this subpackage are presented below and it can be imported as
    HOBO
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Example:
    
    reading_field_data
