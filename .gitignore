@@ -30,4 +30,5 @@ dist/
 # no tracking vs settings and requirements.txt
 .vscode/
 requirements.txt
+.venv/
 under_dev/
