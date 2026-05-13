@@ -22,29 +22,45 @@ Library can be installed into a local Python environment (conda, venv, etc.):
 
    pip install oceanicospy
 
-Verify the installation:
+Google Colab
+~~~~~~~~~~~~
+
+Install the library in a Colab notebook cell usually at the beginning of the notebook. 
+
+.. code-block:: bash
+
+   !pip install oceanicospy
+
+.. warning::
+   You may need to restart the runtime after installation to resolve package conflicts with pre-installed libraries in Colab.
+
+Verifying the installation
+--------------------------
+To verify that the library is installed correctly, you can run the following command in your terminal or Python environment:
 
 .. code-block:: bash
 
    pip show oceanicospy
 
-You should see output similar to::
-
-   Name: oceanicospy
-   Version: 0.1.0
-   Summary: A Python library for oceanographic data analysis, numerical model preprocessing, and data retrieval
-   Author-email: OCEANICOS developer team <oceanicos_med@unal.edu.co>
-   License: MIT
-
-Google Colab
-~~~~~~~~~~~~
-
-Install the library in a Colab notebook cell. You may need to restart
-the runtime after installation to resolve package conflicts:
+or 
 
 .. code-block:: bash
 
-   !pip install oceanicospy
+   !pip show oceanicospy
+
+if you are using Colab.
+
+That command should display the package information, including the version number and installation path. Similar to:
+
+.. code-block:: bash
+
+   Name: oceanicospy
+   Version: 0.1.0b6
+   Summary: A Python library for oceanographic data analysis, numerical model preprocessing, and data retrieval
+   Home-page:
+   Author: 
+   Author-email: OCEANICOS developer team <oceanicos_med@unal.edu.co>
+   License: GNU GENERAL PUBLIC LICENSE
 
 Importing the library
 ---------------------

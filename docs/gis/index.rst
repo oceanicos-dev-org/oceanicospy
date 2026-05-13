@@ -7,7 +7,7 @@ sampling bathymetric profiles.  It covers the full preprocessing pipeline
 from raw survey files to analysis-ready inputs for numerical models.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: API reference:
 
    point_io

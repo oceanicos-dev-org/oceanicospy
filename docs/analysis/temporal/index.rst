@@ -5,12 +5,12 @@ This section covers the tools and methods available for temporal analysis of oce
 time series, including wave-by-wave analysis and statistical characterization in the time domain.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    wave_temporal_analyzer
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Example:
 
    temporal_analysis

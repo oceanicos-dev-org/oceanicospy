@@ -2,7 +2,7 @@ Pressure Sensors
 ================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    BaseLogger
    AQUAlogger

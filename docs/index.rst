@@ -5,7 +5,7 @@ oceanicospy documentation
 reading observations from a diverse set of sensors, automating numerical modelling
 workflows, downloading data from common sources, and working with GIS data.
 
-In the folloing diagram, we show the high-level structure of the library, which is organized into subpackages
+In the following diagram, the high-level structure of the library is shown, **oceanicospy** is organized into subpackages
 that group related functionality together.
 
 .. code-block:: text
