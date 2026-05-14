@@ -1,7 +1,7 @@
-/data/model_runs/*
+/data/model_runs
 /data/nc_data/*
-/data/observations/*
-/data/temp/*
+/data/observations
+/data/temp
 /data/model_config_templates/ww3
 /data/model_config_templates/swan/launcher*
 /data/model_config_templates/swan/swaninit
@@ -21,9 +21,6 @@ _build/
 __pycache__/
 *.py[cod]
 *$py.class
-
-# no trackin under-dev
-under_dev
 
 # Build system / packaging
 build/
