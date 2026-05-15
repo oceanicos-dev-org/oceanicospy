@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "oceanicospy"
-version = "0.1.0rc3"
+version = "0.1.0"
 description = "Python library that serves as a framework for automating and standardizing the scientific workflow in numerical wave and hydrodynamic modelling at the coastal scale"
 readme = "README.md"
 authors = [

@@ -3,8 +3,8 @@
 **`oceanicospy` is an open-source, user-friendly Python library that serves as a framework for automating and standardizing the scientific workflow in numerical wave and hydrodynamic modelling at the coastal scale**
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15725746.svg)](https://doi.org/10.5281/zenodo.15725746)
-![Version](https://img.shields.io/badge/version-0.1.0rc3-blue)
-![Status](https://img.shields.io/badge/status-beta-orange)
+![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Status](https://img.shields.io/badge/status-stable-green)
 ![License](https://img.shields.io/badge/license-GPLv3-green)
 
 ---
@@ -43,7 +43,7 @@ Expected output:
 
 ```
 Name: oceanicospy
-Version: 0.1.0rc3
+Version: 0.1.0
 Summary: Python library that serves as a framework for automating and standardizing the scientific workflow in numerical wave and hydrodynamic modelling at the coastal scale.
 Home-page: https://github.com/oceanicos-dev-org/oceanicospy
 Author: 
