@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-import numpy as np
 import xarray as xr
 import rioxarray
 from rasterio.enums import Resampling
@@ -31,11 +30,24 @@ class WindForcing:
 
     Notes
     -----
-    El resultado (:meth:`from_era5_nc`) es un NetCDF con las variables:
-        - amu (componente zonal del viento) [m/s]
-        - amv (componente meridional del viento) [m/s]
+    :meth:`from_era5_nc` **no escribe el NetCDF directamente** - registra el
+    campo de viento vía ``model.set_forcing`` (variables ``wind10_u``/
+    ``wind10_v``, nombres internos de HydroMT-SFINCS) y dejar que
+    ``model.write()`` lo escriba, con las variables CF que el motor real de
+    SFINCS lee del ``netamuamvfile``: ``eastward_wind``/``northward_wind``.
 
-    en el formato FEWS que espera SFINCS (``netamuamvfile``).
+    Una versión anterior escribía el archivo ella misma con variables
+    ``amu``/``amv`` y tiempo en "segundos desde tref" - un formato
+    plausible pero **incorrecto**: al correr un caso real en el clúster,
+    el motor de SFINCS (``sfincs_ncinput.F90``) reportó "Variable not
+    found" repetidamente (una vez por cada lectura periódica del archivo,
+    según ``dtwnd``) porque nunca encontraba ``eastward_wind``/
+    ``northward_wind`` - el error no es fatal (SFINCS sigue corriendo),
+    así que el viento simplemente no se aplicaba, sin ningún aviso visible
+    en la simulación. Confirmado también del lado de HydroMT-SFINCS:
+    ``SfincsModel._FORCING_NET["wind_2d"]`` mapea exactamente
+    ``{"eastward_wind": "wind10_u", "northward_wind": "wind10_v"}``, y
+    ``write_forcing``/``read_forcing`` usan ese mapeo en ambas direcciones.
     """
 
     def __init__(self, model: SfincsModel) -> None:
@@ -131,7 +143,10 @@ class WindForcing:
         Returns
         -------
         str
-            Ruta completa del archivo NetCDF generado.
+            Ruta donde quedará el archivo NetCDF **una vez que se llame a
+            ``model.write()``** (p. ej. vía
+            :meth:`~oceanicospy.models.sfincspy.preprocess.prepare_case.SfincsCaseBuilder.write`)
+            - este método solo registra el forzante, no escribe el archivo.
 
         Raises
         ------
@@ -148,10 +163,12 @@ class WindForcing:
         4. Corrección de longitudes (0-360 -> -180-180).
         5. Reproyección al CRS del modelo (UTM).
         6. Interpolación a la malla SFINCS.
-        7. Conversión de tiempo a segundos desde ``tref``.
-        8. Reorganización de dimensiones (time, y, x).
+        7. Renombrado a las variables internas de HydroMT (``wind10_u``/``wind10_v``).
+        8. Reorganización de dimensiones (time, y, x) - el tiempo se deja
+           como fecha real; la codificación CF ("minutes since tref") la
+           hace ``model.write()``, no este método.
         9. Limpieza de valores NaN.
-        10. Escritura del NetCDF final.
+        10. Registro del forzante en el modelo (``model.set_forcing``).
 
         Examples
         --------
@@ -239,33 +256,22 @@ class WindForcing:
         )
 
         # --------------------------------------------------
-        # 7) Renombrar variables
+        # 7) Renombrar variables a los nombres internos de HydroMT-SFINCS
         # --------------------------------------------------
+        # "wind10_u"/"wind10_v" son las claves que
+        # SfincsModel._FORCING_NET["wind_2d"] espera encontrar en
+        # `model.forcing` para poder escribir el netamuamvfile con las
+        # variables CF reales que lee el motor de SFINCS
+        # ("eastward_wind"/"northward_wind") - ver Notes de la clase.
         ds_utm = ds_utm.rename(
             {
-                u_var: "amu",
-                v_var: "amv",
+                u_var: "wind10_u",
+                v_var: "wind10_v",
             }
         )
 
         # --------------------------------------------------
-        # 8) Conversión temporal
-        # --------------------------------------------------
-        time_seconds = (
-            (ds_utm.time.values - np.datetime64(tref))
-            / np.timedelta64(1, "s")
-        ).astype("float64")
-
-        ds_utm = ds_utm.assign_coords(
-            time=("time", time_seconds)
-        )
-
-        ds_utm.time.attrs["units"] = (
-            f"seconds since {tref:%Y-%m-%d %H:%M:%S}"
-        )
-
-        # --------------------------------------------------
-        # 9) Ajuste de coordenadas espaciales
+        # 8) Ajuste de coordenadas espaciales
         # --------------------------------------------------
         # Aquí sí es correcto volver a usar grid.x/grid.y (los índices de
         # celda): es la misma convención que usa internamente HydroMT-SFINCS
@@ -282,29 +288,31 @@ class WindForcing:
         ds_utm["y"].attrs["units"] = "m"
 
         # --------------------------------------------------
-        # 10) Orden requerido por SFINCS
+        # 9) Orden requerido por SFINCS
         # --------------------------------------------------
         ds_utm = ds_utm.transpose("time", "y", "x")
 
         # --------------------------------------------------
-        # 11) Limpieza de datos
+        # 10) Limpieza de datos
         # --------------------------------------------------
-        ds_utm["amu"] = ds_utm["amu"].fillna(0.0).astype("float32")
-        ds_utm["amv"] = ds_utm["amv"].fillna(0.0).astype("float32")
+        ds_utm["wind10_u"] = ds_utm["wind10_u"].fillna(0.0).astype("float32")
+        ds_utm["wind10_v"] = ds_utm["wind10_v"].fillna(0.0).astype("float32")
 
-        ds_utm["amu"].attrs["units"] = "m s-1"
-        ds_utm["amv"].attrs["units"] = "m s-1"
+        ds_utm["wind10_u"].attrs["units"] = "m s-1"
+        ds_utm["wind10_v"].attrs["units"] = "m s-1"
 
         # --------------------------------------------------
-        # 12) Guardar NetCDF
+        # 11) Registrar en el modelo (NO se escribe el archivo aquí)
         # --------------------------------------------------
+        # `model.write()` -> `write_forcing()` es quien realmente escribe
+        # el netamuamvfile, usando las variables CF correctas
+        # ("eastward_wind"/"northward_wind") y la codificación de tiempo
+        # ("minutes since tref") que espera el motor de SFINCS - ver Notes
+        # de la clase. Se fija `netamuamvfile` en config ANTES de que
+        # `write_forcing()` decida un nombre por defecto, para respetar
+        # `out_filename`.
         out_path = os.path.join(self.model.root, out_filename)
-        ds_utm.to_netcdf(out_path)
-
-        # --------------------------------------------------
-        # 13) Registrar en SFINCS
-        # --------------------------------------------------
-        self.model.set_forcing(ds_utm, name="netamuamv")
         self.model.set_config("netamuamvfile", out_filename)
+        self.model.set_forcing(ds_utm, split_dataset=True)
 
         return out_path

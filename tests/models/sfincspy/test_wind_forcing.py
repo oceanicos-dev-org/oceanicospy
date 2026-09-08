@@ -89,16 +89,18 @@ class TestFromEra5Nc:
 
         wind = WindForcing(model)
         out_path = wind.from_era5_nc(str(nc_path))
+        model.write_forcing()  # from_era5_nc only registers the forcing
 
         written = xr.open_dataset(out_path)
 
         # Regression check: interpolating against model.grid.x/.y (bare cell
         # indices on a rotated grid, not real coordinates) silently produced
-        # amu == amv == 0.0 everywhere. A correct fix must diverge from that.
-        assert float(written["amu"].mean()) != 0.0
-        assert float(written["amv"].mean()) != 0.0
-        assert 3.0 < float(written["amu"].mean()) < 7.0  # close to the synthetic u_mean=5.0
-        assert 1.0 < float(written["amv"].mean()) < 5.0  # close to the synthetic v_mean=3.0
+        # eastward_wind == northward_wind == 0.0 everywhere. A correct fix
+        # must diverge from that.
+        assert float(written["eastward_wind"].mean()) != 0.0
+        assert float(written["northward_wind"].mean()) != 0.0
+        assert 3.0 < float(written["eastward_wind"].mean()) < 7.0  # close to synthetic u_mean=5.0
+        assert 1.0 < float(written["northward_wind"].mean()) < 5.0  # close to synthetic v_mean=3.0
 
     def test_output_shape_matches_grid(self, built_model, tmp_path):
         model, _ = built_model
@@ -107,10 +109,11 @@ class TestFromEra5Nc:
 
         wind = WindForcing(model)
         out_path = wind.from_era5_nc(str(nc_path))
+        model.write_forcing()
 
         written = xr.open_dataset(out_path)
-        assert written["amu"].sizes["y"] == GRID_KWARGS["nmax"]
-        assert written["amu"].sizes["x"] == GRID_KWARGS["mmax"]
+        assert written["eastward_wind"].sizes["y"] == GRID_KWARGS["nmax"]
+        assert written["eastward_wind"].sizes["x"] == GRID_KWARGS["mmax"]
 
     def test_selects_only_model_time_window(self, built_model, tmp_path):
         model, _ = built_model
@@ -120,6 +123,7 @@ class TestFromEra5Nc:
 
         wind = WindForcing(model)
         out_path = wind.from_era5_nc(str(nc_path))
+        model.write_forcing()
 
         written = xr.open_dataset(out_path)
         assert written.sizes["time"] == 13
@@ -146,6 +150,31 @@ class TestFromEra5Nc:
         wind.from_era5_nc(str(nc_path), out_filename="wind_era5.nc")
 
         assert model.config.get("netamuamvfile") == "wind_era5.nc"
+
+    def test_written_file_uses_the_cf_variable_names_sfincs_actually_reads(
+        self, built_model, tmp_path
+    ):
+        # Regression guard for the bug found running a real case on the
+        # cluster: SFINCS's own Fortran reader (sfincs_ncinput.F90) looks
+        # for "eastward_wind"/"northward_wind" in netamuamvfile - a
+        # previous version of this method wrote "amu"/"amv" instead, which
+        # the engine could not find (non-fatal "Variable not found",
+        # repeated every dtwnd read - the run kept going with no wind
+        # applied and no visible error). HydroMT-SFINCS's own
+        # SfincsModel._FORCING_NET["wind_2d"] confirms the expected names.
+        model, _ = built_model
+        nc_path = tmp_path / "era5_local.nc"
+        _write_era5_localtime_nc(nc_path)
+
+        wind = WindForcing(model)
+        out_path = wind.from_era5_nc(str(nc_path))
+        model.write_forcing()
+
+        written = xr.open_dataset(out_path)
+        assert "eastward_wind" in written.data_vars
+        assert "northward_wind" in written.data_vars
+        assert "amu" not in written.data_vars
+        assert "amv" not in written.data_vars
 
 
 class TestGetWindsFromERA5:
