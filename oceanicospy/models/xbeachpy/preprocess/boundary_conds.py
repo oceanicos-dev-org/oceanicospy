@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 import re
 import os
+import glob
+import shutil
 
 from .... import utils
 
@@ -345,6 +347,21 @@ class BoundaryConditions:
             'w_bc_version': 3,
             'n_spectrum_loc': 0,
             'bcfilepath': txt_name,
+            }
+
+    def reuse(self, reuse_dir):
+        "copy bcf files to current directory"
+        files = glob.glob(reuse_dir+'*.bcf')
+        list_file = [f for f in files if 'list.bcf' in f]
+
+        for f in files:
+            shutil.copy2(f,self.init.dict_folders['run'])
+
+        self.dict_boundaries = {
+            'bctype': 'reuse',
+            'w_bc_version': 3,
+            'n_spectrum_loc': 0,
+            'bcfilepath': list_file[0].split('/')[-1],
             }
         
     def fill_boundaries_section(self):
