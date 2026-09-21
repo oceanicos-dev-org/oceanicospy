@@ -361,7 +361,7 @@ class BoundaryConditions:
             'bctype': 'reuse',
             'w_bc_version': 3,
             'n_spectrum_loc': 0,
-            'bcfilepath': list_file[0].split('/')[-1],
+            'bcfilepath': list_file[0].replace('\\','/').split('/')[-1],
             }
         
     def fill_boundaries_section(self):
