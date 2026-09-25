@@ -233,7 +233,7 @@ class WaterLevelForcing:
                 df_waterlevel = load_uhslc_waterlevel(station_id, filepath_domain1)
         return df_waterlevel
 
-    def write_UHSLC_ascii(self,UHSLC_dataframe,ascii_filename,detrend_wl=True):
+    def write_UHSLC_ascii(self,UHSLC_dataframe,ascii_filename,detrend_wl=False):
         """
         Write the cleaned UHSLC water level data to a SWAN ASCII file, handling file management and optional sharing across domains.
 
