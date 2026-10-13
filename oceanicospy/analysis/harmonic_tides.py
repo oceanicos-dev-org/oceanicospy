@@ -77,8 +77,12 @@ def tide_harmonic_decomposition(data, time, lat, trend=False, method='ols', conf
 
         # Build a DataFrame depending on the type of the input data
         if isinstance(data, pd.Series):
-            # pandas Series: use the provided time vector as the index directly
-            dataset = pd.DataFrame(data, columns=['data'], index=time)
+            # pandas Series: pd.DataFrame(data, columns=['data'], index=...)
+            # would treat 'data' as a column *selector* against the Series
+            # (which has no such label), silently producing an all-NaN
+            # object-dtype column instead of raising -- build from the
+            # raw values instead.
+            dataset = pd.DataFrame({'data': data.to_numpy()}, index=time)
         else:
             # numpy array: convert time to DatetimeIndex before indexing
             time_index = pd.to_datetime(time)
@@ -104,15 +108,19 @@ def tide_harmonic_decomposition(data, time, lat, trend=False, method='ols', conf
             'residual': dataset['data'].values - tide.h  # non-tidal residual
         })
 
-        # Assemble the constituent table with amplitudes, phases, and fit statistics
+        # Assemble the constituent table with amplitudes, phases, and fit statistics.
+        # A_ci/g_ci/SNR only exist when conf_int != 'none' -- UTide's Bunch object
+        # simply omits them otherwise, so fall back to NaN rather than raising.
+        n_constit = len(coef.name)
+        nan_fill = [float('nan')] * n_constit
         coefTable = pd.DataFrame({
             'name': coef.name,
             'Amplitude': coef.A,
-            'A_ci': coef.A_ci,    # 95% confidence interval on amplitude
+            'A_ci': getattr(coef, 'A_ci', nan_fill),    # 95% confidence interval on amplitude
             'Phase': coef.g,
-            'P_ci': coef.g_ci,    # 95% confidence interval on phase
+            'P_ci': getattr(coef, 'g_ci', nan_fill),    # 95% confidence interval on phase
             'PE': coef.PE,        # percentage of variance explained
-            'SNR': coef.SNR       # signal-to-noise ratio
+            'SNR': getattr(coef, 'SNR', nan_fill)       # signal-to-noise ratio
         })
 
         return serieTable, coefTable
