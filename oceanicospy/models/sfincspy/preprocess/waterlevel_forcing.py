@@ -7,6 +7,7 @@ from hydromt_sfincs import SfincsModel, utils as hydromt_utils
 
 from .... import utils as oceanicospy_utils
 from ....utils.waterlevel import download_uhslc_waterlevel, load_uhslc_waterlevel
+from ....analysis.harmonic_tides import tide_harmonic_decomposition
 
 
 class WaterLevelForcing:
@@ -85,6 +86,106 @@ class WaterLevelForcing:
 
         print("\t UHSLC water level data already exists, skipping download")
         return load_uhslc_waterlevel(station_id, filepath)
+
+    # --------------------------------------------------
+    # DESCOMPOSICIÓN ARMÓNICA (marea astronómica pura)
+    # --------------------------------------------------
+    def to_astronomical_tide(
+        self,
+        df: pd.DataFrame,
+        column_name: str,
+        lat: float = 12.57,
+        method: str = "ols",
+        out_column: str = "tide[m]",
+        min_plausible_value: Optional[float] = -10.0,
+    ) -> pd.DataFrame:
+        """
+        Descompone una serie de nivel del mar ya preparada en su
+        componente puramente astronómica, vía análisis armónico (UTide),
+        quitando el residual meteorológico/storm surge real de esa fecha.
+
+        Pensado para el caso "P" (pluvial-only) del esquema C/P/CP: usar
+        el nivel del mar total observado como frontera de marea de "P"
+        dejaría filtrar el residual meteorológico real de la fecha del
+        evento (varios de estos eventos SON tormentas costeras en la
+        definición de otro escenario, p. ej. S1/S4) - justo el mecanismo
+        costero que "P" no debe incluir. Ver project memory
+        (`project_sfincs_swmm_coupling_option4`) para la discusión
+        completa. **No** se usa para C/CP, donde el nivel total observado
+        (con su residual) sí corresponde, al ser ese el mecanismo costero
+        que se está evaluando.
+
+        El ajuste armónico se hace sobre **todo** el registro dado en
+        `df` - debe ser el registro largo multianual (p. ej. el devuelto
+        por :meth:`get_waterlevel_from_UHSLC`, sin recortar), no solo la
+        ventana corta del evento, para obtener constituyentes robustos.
+        Aplica cualquier corrección de datum sobre `df` **antes** de
+        llamar a este método (mismo principio que en
+        :meth:`from_dataframe`) - un salto de datum sin corregir en medio
+        del registro sesgaría el ajuste armónico.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            Serie de nivel del mar ya preparada (índice de tiempo, con
+            cualquier corrección de datum ya aplicada), normalmente el
+            registro multianual completo.
+        column_name : str
+            Nombre de la columna de nivel del mar en `df`.
+        lat : float, optional
+            Latitud de la estación, requerida por UTide para la
+            frecuencia de Coriolis. Por defecto 12.57 (San Andrés,
+            estación UHSLC 737).
+        method : str, optional
+            Método de regresión de UTide (ver
+            :func:`oceanicospy.analysis.harmonic_tides.tide_harmonic_decomposition`).
+            Por defecto ``"ols"``.
+        out_column : str, optional
+            Nombre de la columna de salida. Por defecto ``"tide[m]"``.
+        min_plausible_value : float or None, optional
+            Umbral de plausibilidad física (m) para descartar el valor
+            centinela de datos faltantes de UHSLC (p. ej. estación 737
+            usa ``-32.767``) antes del ajuste armónico - sin esto, ~25%
+            del registro de h737.csv queda contaminado y UTide diverge
+            (amplitudes sin sentido físico, ver project memory). Se usa
+            un umbral ("< min_plausible_value" se descarta) en vez de
+            comparar contra el valor centinela exacto porque cualquier
+            corrección de datum ya aplicada por quien llama (p. ej. el
+            ajuste de -2.0 m de la estación 737) desplaza ese valor
+            exacto -- un umbral generoso (-10 m, muy por debajo de
+            cualquier nivel del mar real) lo captura de todas formas sin
+            necesitar conocer el desplazamiento. Si es ``None``, no se
+            aplica ningún filtro.
+
+        Returns
+        -------
+        pandas.DataFrame
+            Índice de tiempo, una columna (`out_column`) con la
+            reconstrucción astronómica - lista para pasar a
+            :meth:`from_dataframe`.
+
+        Raises
+        ------
+        ValueError
+            Si `column_name` no existe en `df`, o si la serie queda
+            vacía tras quitar nulos/valores centinela.
+        """
+        if column_name not in df.columns:
+            raise ValueError(f"No existe columna '{column_name}' en df")
+
+        valid = df[column_name].dropna()
+        if min_plausible_value is not None:
+            valid = valid[valid > min_plausible_value]
+        if valid.empty:
+            raise ValueError("La serie quedó vacía tras quitar nulos/valores centinela")
+
+        serie_table, _ = tide_harmonic_decomposition(
+            data=valid, time=valid.index, lat=lat, method=method, conf_int="none",
+        )
+        return (
+            serie_table.set_index("time")[["tide"]]
+            .rename(columns={"tide": out_column})
+        )
 
     # --------------------------------------------------
     # ESCRITURA DEL FORZANTE

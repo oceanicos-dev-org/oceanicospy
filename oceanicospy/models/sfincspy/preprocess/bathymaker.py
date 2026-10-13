@@ -54,6 +54,8 @@ class BathyMaker:
         zmin_active: float = -4,
         zmax_bounds: float = -2,
         btype: str = "waterlevel",
+        mask: Optional[str] = None,
+        drop_area: float = 0.0,
         reset_mask: bool = True,
         reset_bounds: bool = True,
         plot: bool = False,
@@ -101,6 +103,18 @@ class BathyMaker:
         btype : str, optional
             Tipo de frontera hidráulica (``"waterlevel"`` u
             ``"outflow"``). Por defecto ``"waterlevel"``.
+        mask : str, optional
+            Polígono del dominio (nombre de un ``GeoDataFrame`` en el
+            `data_catalog` o ruta a un archivo vectorial). Solo las celdas
+            dentro de él pueden quedar activas; fuera de él el modelo es
+            inactivo y sus bordes en tierra quedan cerrados. Si es None,
+            todo el rectángulo de la malla es candidato (comportamiento
+            anterior).
+        drop_area : float, optional
+            Área máxima (km²) de las zonas activas aisladas que se
+            descartan (p. ej. cayos o bajos sueltos que, si no, quedarían
+            como islas activas con frontera propia). Por defecto 0.0 (no
+            descarta nada).
         reset_mask : bool, optional
             Si es True, reinicia la máscara activa existente.
         reset_bounds : bool, optional
@@ -140,7 +154,9 @@ class BathyMaker:
         # 2) Definición de máscara activa
         # --------------------------------------------------
         self.model.setup_mask_active(
+            mask=mask,
             zmin=zmin_active,
+            drop_area=drop_area,
             reset_mask=reset_mask,
         )
 

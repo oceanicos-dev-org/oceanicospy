@@ -186,3 +186,71 @@ class UniformMetForcingClassic:
             print("\t Presión incluida (sfincs.patm generado)")
         else:
             print("\t No se encontró presión, no se genera sfincs.patm")
+
+    def from_dataframe(
+        self,
+        df: pd.DataFrame,
+        precip_col: str,
+    ) -> str:
+        """
+        Genera el forzante de precipitación uniforme (``sfincs.prcp``) a
+        partir de un DataFrame ya preparado (hora local, índice de
+        tiempo), sin pasar por Excel.
+
+        Es el equivalente, para precipitación, de
+        :meth:`WaterLevelForcing.from_dataframe` - pensado para fuentes
+        que no son la estación AG5/generada en Excel, p. ej. el registro
+        horario genérico del proyecto
+        (``data/data_analysis/scenarios/step2_hourly-rain/rain_hourly_MOF_1997_2025.csv``,
+        leído con ``data.hourly_rain.load_hourly_rain`` en los casos de
+        SWMM). No escribe viento ni presión - a diferencia de
+        :meth:`from_excel`, esta fuente no trae esas columnas.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            Índice de tiempo en hora local y una columna de precipitación
+            (mm, acumulada por intervalo).
+        precip_col : str
+            Nombre de la columna de precipitación en `df`.
+
+        Returns
+        -------
+        str
+            Ruta completa de ``sfincs.prcp`` generado.
+
+        Raises
+        ------
+        RuntimeError
+            Si la serie queda vacía tras el recorte temporal o la
+            limpieza de nulos.
+        """
+        tref = utils.parse_datetime(self.model.config["tref"])
+        tstart = utils.parse_datetime(self.model.config["tstart"])
+        tstop = utils.parse_datetime(self.model.config["tstop"])
+
+        df = df.sort_index().loc[tstart:tstop]
+
+        if df.empty:
+            raise RuntimeError(
+                "La serie de precipitación quedó vacía tras recortar por tstart-tstop"
+            )
+
+        time_sec = (df.index - tref).total_seconds().astype(int)
+
+        prcp = pd.DataFrame(
+            {
+                "time": time_sec,
+                "prcp": df[precip_col].astype(float),
+            }
+        ).dropna()
+
+        if prcp.empty:
+            raise RuntimeError("Archivo de precipitación quedó vacío")
+
+        prcp_path = os.path.join(self.model.root, "sfincs.prcp")
+        prcp.to_csv(prcp_path, sep=" ", index=False, header=False)
+
+        self.model.set_config("precipfile", "sfincs.prcp")
+
+        return prcp_path

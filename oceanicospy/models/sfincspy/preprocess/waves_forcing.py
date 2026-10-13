@@ -201,3 +201,67 @@ class WavesForcing:
         self.model.set_config("bzifile", out_filename)
 
         return out_path
+
+    def from_dataframe(
+        self,
+        df: pd.DataFrame,
+        column_name: str,
+        out_filename: str = "sfincs.bzi",
+    ) -> str:
+        """
+        Genera el forzante de oleaje a partir de una serie ya preparada
+        (p. ej. una anomalía de XBeach reescalada por SFA para un
+        escenario sintético), en vez de leerla directo de un NetCDF.
+
+        A diferencia de :meth:`from_xbeach`, **no centra la señal en
+        cero** - se asume que `df[column_name]` ya es una anomalía
+        centrada (p. ej. la salida de `from_xbeach`'s paso 5, ya
+        reescalada por quien llama). Reescalar una anomalía ya centrada
+        por un factor constante la mantiene centrada; solo hace falta
+        recortar al periodo del modelo y convertir a segundos desde
+        `tref`, igual que el resto de `from_xbeach`.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            Índice de tiempo (hora local, mismo tref/tstart/tstop que el
+            resto del caso), con una columna de anomalía de nivel de agua
+            ya centrada en cero, en metros.
+        column_name : str
+            Nombre de la columna con la anomalía.
+        out_filename : str, optional
+            Nombre del archivo de salida (por defecto ``"sfincs.bzi"``).
+
+        Returns
+        -------
+        str
+            Ruta completa del archivo generado dentro del modelo.
+
+        Raises
+        ------
+        RuntimeError
+            Si la serie queda vacía tras el recorte temporal.
+        """
+        tref = utils.parse_datetime(self.model.config["tref"])
+        tstart = utils.parse_datetime(self.model.config["tstart"])
+        tstop = utils.parse_datetime(self.model.config["tstop"])
+
+        if column_name not in df.columns:
+            raise ValueError(f"No existe columna '{column_name}' en df")
+
+        serie = df[[column_name]].copy()
+        serie = serie.loc[tstart:tstop]
+
+        if serie.empty:
+            raise RuntimeError("La serie de oleaje quedó vacía tras el recorte temporal")
+
+        time_sec = (serie.index - tref).total_seconds().astype(int)
+
+        df_out = pd.DataFrame({"time": time_sec, "bzi": serie[column_name].values})
+
+        out_path = os.path.join(self.model.root, out_filename)
+        df_out.to_csv(out_path, sep=" ", index=False, header=False, float_format="%.6f")
+
+        self.model.set_config("bzifile", out_filename)
+
+        return out_path
