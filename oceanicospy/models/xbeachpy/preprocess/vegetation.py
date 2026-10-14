@@ -53,7 +53,7 @@ class Vegetation():
         self.dict_locations = dict_locations
         self.run_path = run_path
         self.xfile_name = xfile_name
-        self.dict_veggie = {'Cm': Cm, 'Kp': Kp}
+        self.dict_veggie = {'Cm': f"{Cm:.6f}", 'Kp': f"{Kp:.6f}"}
 
     def definition_species(self):
         """
@@ -77,7 +77,7 @@ class Vegetation():
         })
 
         for key, value in self.dict_veggie.items():
-            self.dict_veggie[key] = str(value)
+            self.dict_veggie[key] = f"{value:.6f}" if isinstance(value, float) else str(value)
 
     def params_per_specie(self):
         """
@@ -140,5 +140,5 @@ class Vegetation():
         :meth:`create_veggie_map`) have populated :attr:`dict_veggie`.
         """
         for param in self.dict_veggie:
-            self.dict_veggie[param] = str(self.dict_veggie[param])
+            self.dict_veggie[param] = f"{self.dict_veggie[param]:.6f}" if isinstance(self.dict_veggie[param], float) else str(self.dict_veggie[param])
         utils.fill_files(f'{self.run_path}params.txt', self.dict_veggie)
