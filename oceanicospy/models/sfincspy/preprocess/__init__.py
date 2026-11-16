@@ -6,6 +6,6 @@ from .infiltration import *
 from .waterlevel_forcing import *
 from .waves_forcing import *
 from .wind_forcing import *
-from .meteo_forcing import *
+from .precipitation import *
 from .discharge_forcing import *
 from .prepare_case import *

@@ -27,17 +27,6 @@ REAL_E1_XBEACH_NC = Path(
 )
 
 
-def _write_synthetic_precip_excel(path, start, hours):
-    idx = pd.date_range(start, periods=hours, freq="h")
-    pd.DataFrame(
-        {
-            "Date/Time": idx,
-            "Precipitacion (mm)": np.abs(np.random.default_rng(0).normal(0.5, 1.0, hours)),
-            "Presion Barometrica (hPa)": np.random.default_rng(1).normal(1010, 2, hours),
-        }
-    ).to_excel(path, index=False)
-
-
 @pytest.mark.skipif(
     not (REAL_TOPOBATHY.exists() and REAL_E1_XBEACH_NC.exists()),
     reason="Real Los Almendros backup data not available on this machine",
@@ -83,9 +72,8 @@ class TestSfincsCaseBuilderEndToEnd:
 
         builder.waves.from_xbeach(str(REAL_E1_XBEACH_NC), point_index=0)
 
-        precip_xlsx = init.dict_folders["input"] + "precip.xlsx"
-        _write_synthetic_precip_excel(precip_xlsx, "2008-11-20", hours=120)
-        builder.meteo.from_excel(precip_xlsx)
+        rain_idx = pd.date_range("2008-11-20", periods=120, freq="h")
+        builder.precipitation.uniform(pd.Series(np.linspace(0, 5, 120), index=rain_idx))
 
         builder.write()
 

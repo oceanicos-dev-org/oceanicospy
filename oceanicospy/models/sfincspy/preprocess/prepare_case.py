@@ -8,7 +8,7 @@ from .infiltration import Infiltration
 from .waterlevel_forcing import WaterLevelForcing
 from .waves_forcing import WavesForcing
 from .wind_forcing import WindForcing
-from .meteo_forcing import UniformMetForcingClassic
+from .precipitation import Precipitation
 from .discharge_forcing import DischargeForcing
 
 
@@ -18,7 +18,7 @@ class SfincsCaseBuilder:
 
     Creates one ``SfincsModel`` and exposes each preprocessing module bound
     to it (``grid``, ``bathy``, ``structures``, ``friction``,
-    ``infiltration``, ``waterlevel``, ``waves``, ``wind``, ``meteo``,
+    ``infiltration``, ``waterlevel``, ``waves``, ``wind``, ``precipitation``,
     ``discharge``). The case script calls them explicitly and in order, so
     every input of a run stays traceable; there is no single method that
     builds the whole case from a dictionary.
@@ -46,7 +46,7 @@ class SfincsCaseBuilder:
     waterlevel : WaterLevelForcing
     waves : WavesForcing
     wind : WindForcing
-    meteo : UniformMetForcingClassic
+    precipitation : Precipitation
     discharge : DischargeForcing
 
     Examples
@@ -59,7 +59,7 @@ class SfincsCaseBuilder:
     >>> builder.waterlevel.from_dataframe(df_tide, column_name="depth[m]", x_bnd=x_bnd, y_bnd=y_bnd)
     >>> builder.waves.from_xbeach(nc_path="xbeach_output.nc", point_index=0)
     >>> builder.wind.from_era5_nc(nc_path=local_era5_nc)
-    >>> builder.meteo.from_dataframe(df_rain, precip_col="rain[mm]")
+    >>> builder.precipitation.uniform(rain_series)  # mm/h
     >>> builder.write()
     """
 
@@ -86,7 +86,7 @@ class SfincsCaseBuilder:
         self.waterlevel = WaterLevelForcing(self.model)
         self.waves = WavesForcing(self.model)
         self.wind = WindForcing(self.model)
-        self.meteo = UniformMetForcingClassic(self.model)
+        self.precipitation = Precipitation(self.model)
         self.discharge = DischargeForcing(self.model)
 
     def setup_time(self, tref: str, tstart: str, tstop: str) -> None:

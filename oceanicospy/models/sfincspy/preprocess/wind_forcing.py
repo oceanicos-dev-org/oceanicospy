@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
+from typing import Union
 
+import pandas as pd
 import xarray as xr
 import rioxarray  # noqa: F401  (registers the .rio accessor)
 from rasterio.enums import Resampling
@@ -13,7 +15,7 @@ from ....utils.wind import download_era5_winds
 
 class WindForcing:
     """
-    Spatially varying wind forcing for SFINCS from ERA5.
+    Wind forcing for SFINCS: uniform series or spatially varying ERA5.
 
     ERA5 is downloaded with the shared downloader (``oceanicospy.utils.wind``)
     and shifted to local time, as in ``xbeachpy.preprocess.WindForcing``, so
@@ -26,15 +28,62 @@ class WindForcing:
 
     Notes
     -----
-    :meth:`from_era5_nc` registers the wind field in ``model.forcing`` as
+    - :meth:`uniform` writes a single series for the whole domain
+      (``wndfile``).
+    - :meth:`from_era5_nc` registers the wind field in ``model.forcing`` as
     ``wind10_u``/``wind10_v``; the file is written by ``model.write()``,
     which maps them to the variables SFINCS reads from the
-    ``netamuamvfile`` (``eastward_wind``/``northward_wind``) and encodes the
-    time as minutes since ``tref``.
+      ``netamuamvfile`` (``eastward_wind``/``northward_wind``) and encodes
+      the time as minutes since ``tref``.
     """
 
     def __init__(self, model: SfincsModel) -> None:
         self.model = model
+
+
+    def uniform(
+        self,
+        speed: Union[float, pd.Series],
+        direction: Union[float, pd.Series],
+    ) -> None:
+        """
+        Set a spatially uniform wind (``wndfile``).
+
+        Parameters
+        ----------
+        speed : float or pandas.Series
+            Wind speed (m/s); a series needs a datetime index.
+        direction : float or pandas.Series
+            Direction the wind comes from, in nautical degrees (0 = north,
+            90 = east), with the same index as ``speed``.
+
+        Raises
+        ------
+        ValueError
+            If the series have no values within the model period.
+
+        Examples
+        --------
+        >>> wind = WindForcing(model)
+        >>> wind.uniform(10.0, 45.0)
+        >>> wind.uniform(df["speed"], df["dir"])
+        """
+        self.model.config.pop("netamuamvfile", None)
+        for key in ("wind10_u", "wind10_v"):
+            self.model.forcing.pop(key, None)
+        if isinstance(speed, (int, float)) and isinstance(direction, (int, float)):
+            self.model.setup_wind_forcing(magnitude=float(speed), direction=float(direction))
+            return
+        tstart, tstop = self.model.get_model_time()
+        df = pd.DataFrame({"mag": speed, "dir": direction}).sort_index()
+        df = df.loc[tstart:tstop].astype(float).dropna()
+        if df.empty:
+            raise ValueError("The wind series have no values within the model period.")
+        da = xr.DataArray(
+            df.values, dims=("time", "index"),
+            coords={"time": df.index.values, "index": ["mag", "dir"]},
+        )
+        self.model.set_forcing(da, name="wnd")
 
     def get_winds_from_ERA5(
         self,
