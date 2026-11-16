@@ -12,37 +12,29 @@ from .discharge_forcing import DischargeForcing
 
 class SfincsCaseBuilder:
     """
-    Punto de entrada para armar un caso SFINCS.
+    Entry point to build a SFINCS case.
 
-    Crea el ``SfincsModel`` compartido y expone cada módulo de
-    preprocesamiento ya conectado a él (`grid`, `bathy`, `friction`,
-    `waterlevel`, `waves`, `wind`, `meteo`, `discharge`) para llamarlos
-    explícitamente, en orden, desde el script del caso - el mismo patrón
-    que ya usa ``main_xbeach.py`` con ``xbeachpy.preprocess.*``.
-
-    Deliberadamente **no** ofrece un método único que arme "todo el
-    caso" a partir de un diccionario de parámetros: cada forzante se
-    decide y se llama a mano en el script, para que sea trazable qué
-    insumo, qué rugosidad y qué fuente se usó en cada corrida - esto
-    importa especialmente al reconstruir casos de calibración ya
-    existentes, donde se necesita poder auditar cada decisión.
+    Creates one ``SfincsModel`` and exposes each preprocessing module bound
+    to it (``grid``, ``bathy``, ``friction``, ``waterlevel``, ``waves``,
+    ``wind``, ``meteo``, ``discharge``). The case script calls them
+    explicitly and in order, so every input of a run stays traceable; there
+    is no single method that builds the whole case from a dictionary.
 
     Parameters
     ----------
     root : str
-        Directorio raíz donde se construirá el modelo SFINCS (típicamente
-        ``<caso>/run/``, creado antes con
-        :class:`~oceanicospy.models.sfincspy.Initializer`).
+        Folder where the SFINCS model is written (usually the case ``run/``
+        folder created by :class:`~oceanicospy.models.sfincspy.Initializer`).
     data_catalog : str, optional
-        Ruta al ``data_catalog.yml`` del caso (ver
+        Path to the case ``data_catalog.yml`` (see
         :meth:`~oceanicospy.models.sfincspy.Initializer.write_data_catalog`).
     mode : str, optional
-        Modo de escritura del modelo (por defecto ``"w+"``).
+        HydroMT model mode.
 
     Attributes
     ----------
     model : SfincsModel
-        Instancia compartida por todos los módulos siguientes.
+        Model shared by all the modules below.
     grid : GridMaker
     bathy : BathyMaker
     friction : BottomFriction
@@ -54,15 +46,15 @@ class SfincsCaseBuilder:
 
     Examples
     --------
-    >>> builder = SfincsCaseBuilder(root="CasoX/run", data_catalog="CasoX/input/data_catalog.yml")
+    >>> builder = SfincsCaseBuilder(root="case/run", data_catalog="case/input/data_catalog.yml")
     >>> builder.setup_time(tref="20250618 000000", tstart="20250618 000000", tstop="20250626 230000")
-    >>> builder.grid.setup_grid(plot=False, x0=..., y0=..., dx=1, dy=1, mmax=..., nmax=..., rotation=38, epsg=32617)
+    >>> builder.grid.setup_grid(plot=False, x0=x0, y0=y0, dx=1, dy=1, mmax=mmax, nmax=nmax, rotation=38, epsg=32617)
     >>> builder.bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2, plot=False)
     >>> builder.friction.setup_uniform(manning_land=0.04, manning_sea=0.02)
-    >>> builder.waterlevel.from_dataframe(df_tide, column_name="depth[m]", x_bnd=423820, y_bnd=1389625)
-    >>> builder.waves.from_xbeach(nc_path="E1_profile1D_Nov2008.nc", point_index=0)
+    >>> builder.waterlevel.from_dataframe(df_tide, column_name="depth[m]", x_bnd=x_bnd, y_bnd=y_bnd)
+    >>> builder.waves.from_xbeach(nc_path="xbeach_output.nc", point_index=0)
     >>> builder.wind.from_era5_nc(nc_path=local_era5_nc)
-    >>> builder.meteo.from_excel("AG5-0359.xlsx")
+    >>> builder.meteo.from_dataframe(df_rain, precip_col="rain[mm]")
     >>> builder.write()
     """
 
@@ -92,23 +84,31 @@ class SfincsCaseBuilder:
 
     def setup_time(self, tref: str, tstart: str, tstop: str) -> None:
         """
-        Configura el dominio temporal del modelo.
+        Set the model reference, start and stop times.
 
-        Debe llamarse antes que cualquier forzante (todos leen
-        ``tref``/``tstart``/``tstop`` de ``model.config``).
+        Call it before any forcing: they all read ``tref``, ``tstart`` and
+        ``tstop`` from ``model.config``.
 
         Parameters
         ----------
-        tref : str
-            Tiempo de referencia del modelo (``"AAAAMMDD HHMMSS"``).
-        tstart : str
-            Tiempo de inicio de la simulación.
-        tstop : str
-            Tiempo de fin de la simulación.
+        tref, tstart, tstop : str
+            Times as ``"YYYYMMDD HHMMSS"``.
         """
         self.model.setup_config(tref=tref, tstart=tstart, tstop=tstop)
 
     def write(self) -> None:
-        """Escribe todos los archivos nativos de SFINCS a `root`."""
+        """
+        Write all SFINCS input files to ``root``.
+
+        Notes
+        -----
+        ``sfincs.dis`` is rewritten with six decimals. HydroMT-SFINCS writes
+        it with ``%7.2f`` by default (0.01 m3/s resolution), which rounds
+        small discharges to zero and loses volume at small sources and sinks.
+        """
         self.model.write()
+        # forcing["dis"] holds the series; "discharge" is the group name
+        # write_forcing expects in data_vars
+        if "dis" in self.model.forcing:
+            self.model.write_forcing(data_vars=["discharge"], fmt="%12.6f")
         self.model.write_config()
