@@ -3,6 +3,7 @@ from hydromt_sfincs import SfincsModel
 from .gridmaker import GridMaker
 from .bathymaker import BathyMaker
 from .bottom_friction import BottomFriction
+from .infiltration import Infiltration
 from .waterlevel_forcing import WaterLevelForcing
 from .waves_forcing import WavesForcing
 from .wind_forcing import WindForcing
@@ -15,10 +16,11 @@ class SfincsCaseBuilder:
     Entry point to build a SFINCS case.
 
     Creates one ``SfincsModel`` and exposes each preprocessing module bound
-    to it (``grid``, ``bathy``, ``friction``, ``waterlevel``, ``waves``,
-    ``wind``, ``meteo``, ``discharge``). The case script calls them
-    explicitly and in order, so every input of a run stays traceable; there
-    is no single method that builds the whole case from a dictionary.
+    to it (``grid``, ``bathy``, ``friction``, ``infiltration``,
+    ``waterlevel``, ``waves``, ``wind``, ``meteo``, ``discharge``). The case
+    script calls them explicitly and in order, so every input of a run
+    stays traceable; there is no single method that builds the whole case
+    from a dictionary.
 
     Parameters
     ----------
@@ -38,6 +40,7 @@ class SfincsCaseBuilder:
     grid : GridMaker
     bathy : BathyMaker
     friction : BottomFriction
+    infiltration : Infiltration
     waterlevel : WaterLevelForcing
     waves : WavesForcing
     wind : WindForcing
@@ -76,6 +79,7 @@ class SfincsCaseBuilder:
         self.grid = GridMaker(self.model)
         self.bathy = BathyMaker(self.model, data_catalog)
         self.friction = BottomFriction(self.model)
+        self.infiltration = Infiltration(self.model)
         self.waterlevel = WaterLevelForcing(self.model)
         self.waves = WavesForcing(self.model)
         self.wind = WindForcing(self.model)

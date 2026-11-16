@@ -1,6 +1,7 @@
 from .gridmaker import *
 from .bathymaker import *
 from .bottom_friction import *
+from .infiltration import *
 from .waterlevel_forcing import *
 from .waves_forcing import *
 from .wind_forcing import *
