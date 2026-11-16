@@ -54,6 +54,28 @@ def _write_era5_localtime_nc(path, start="2025-06-18 00:00", hours=48, u_mean=5.
     ds.to_netcdf(path)
 
 
+def _sfincs_bilinear(ds, var, x, y, it=0):
+    """Replicates how SFINCS samples a FEWS meteo grid at points (x, y)
+    (``sfincs_meteo.f90``): value i sits at x(i) + dx/2, rows read with y
+    ascending; a point is inside when 1 < iy < nrows and 0 < ix < ncols."""
+    px, py = ds["x"].values, ds["y"].values
+    dx, dy = px[1] - px[0], py[1] - py[0]
+    data = ds[var].isel(time=it).values[::-1]  # SFINCS flips rows: row 1 = top
+    nrows, ncols = data.shape
+    yul = py[0] + (nrows - 1) * dy + 0.5 * dy
+    xll = px[0] + 0.5 * dx
+    iy = ((yul - y) / dy).astype(int) + 1
+    ix = ((x - xll) / dx).astype(int) + 1
+    inside = (iy > 1) & (iy < nrows) & (ix > 0) & (ix < ncols)
+    out = np.zeros(len(x))
+    i0, j0 = iy[inside] - 1, ix[inside] - 1
+    dj = (yul - (iy[inside] - 1) * dy - y[inside]) / dy
+    di = (x[inside] - (xll + (ix[inside] - 1) * dx)) / dx
+    out[inside] = ((1 - dj) * (1 - di) * data[i0, j0] + (1 - dj) * di * data[i0, j0 + 1]
+                   + dj * di * data[i0 + 1, j0 + 1] + dj * (1 - di) * data[i0 + 1, j0])
+    return out, inside
+
+
 @pytest.fixture
 def built_model(tmp_path):
     src_raster = tmp_path / "topobathy.tif"
@@ -102,7 +124,7 @@ class TestFromEra5Nc:
         assert 3.0 < float(written["eastward_wind"].mean()) < 7.0  # close to synthetic u_mean=5.0
         assert 1.0 < float(written["northward_wind"].mean()) < 5.0  # close to synthetic v_mean=3.0
 
-    def test_output_shape_matches_grid(self, built_model, tmp_path):
+    def test_wind_grid_is_regular_with_real_coordinates(self, built_model, tmp_path):
         model, _ = built_model
         nc_path = tmp_path / "era5_local.nc"
         _write_era5_localtime_nc(nc_path)
@@ -112,8 +134,43 @@ class TestFromEra5Nc:
         model.write_forcing()
 
         written = xr.open_dataset(out_path)
-        assert written["eastward_wind"].sizes["y"] == GRID_KWARGS["nmax"]
-        assert written["eastward_wind"].sizes["x"] == GRID_KWARGS["mmax"]
+        x, y = written["x"].values, written["y"].values
+        # Regression check: the previous version labelled x/y with cell
+        # indices (0, 1, 2, ...); SFINCS reads them as coordinates, so the
+        # domain fell outside the wind grid and the wind was zero everywhere.
+        assert x.min() > 1e5 and y.min() > 1e6  # real UTM metres, not indices
+        assert np.all(np.diff(x) > 0) and np.all(np.diff(y) > 0)  # ascending, as SFINCS expects
+        assert np.allclose(np.diff(x), np.diff(x)[0]) and np.allclose(np.diff(y), np.diff(y)[0])
+
+    def test_sfincs_reads_the_wind_at_every_cell_centre(self, built_model, tmp_path):
+        model, _ = built_model
+        nc_path = tmp_path / "era5_local.nc"
+        _write_era5_localtime_nc(nc_path, u_mean=5.0, v_mean=3.0)
+
+        wind = WindForcing(model)
+        out_path = wind.from_era5_nc(str(nc_path))
+        model.write_forcing()
+
+        written = xr.open_dataset(out_path)
+        coords = model.reggrid.coordinates
+        xc, yc = np.asarray(coords["xc"][1]).ravel(), np.asarray(coords["yc"][1]).ravel()
+        u, inside = _sfincs_bilinear(written, "eastward_wind", xc, yc)
+        v, _ = _sfincs_bilinear(written, "northward_wind", xc, yc)
+        assert inside.all()  # every cell centre falls inside the wind grid
+        assert 4.0 < float(u.mean()) < 6.0  # synthetic u_mean = 5.0
+        assert 2.0 < float(v.mean()) < 4.0  # synthetic v_mean = 3.0
+
+    def test_raises_when_wind_grid_does_not_cover_domain(self, built_model, tmp_path):
+        model, _ = built_model
+        nc_path = tmp_path / "era5_far.nc"
+        _write_era5_localtime_nc(nc_path)
+        far = xr.open_dataset(nc_path).load()
+        far = far.assign_coords(latitude=far.latitude + 5.0)  # 5 degrees north of the domain
+        far.to_netcdf(tmp_path / "era5_far2.nc")
+
+        wind = WindForcing(model)
+        with pytest.raises(ValueError):
+            wind.from_era5_nc(str(tmp_path / "era5_far2.nc"))
 
     def test_selects_only_model_time_window(self, built_model, tmp_path):
         model, _ = built_model
