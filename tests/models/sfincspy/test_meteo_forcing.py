@@ -22,7 +22,7 @@ REAL_XLSX_PATH = Path("c:/Users/Daniela/00_OCEANICOS/000_tesis/tesis/data/raw/AG
 @pytest.fixture
 def model(tmp_path):
     m = SfincsModel(root=str(tmp_path / "run"), mode="w+")
-    GridMaker(m).setup_grid(plot=False, **GRID_KWARGS)
+    GridMaker(m).setup_grid(**GRID_KWARGS)
     m.setup_config(tref="20250618 000000", tstart="20250618 060000", tstop="20250618 180000")
     return m
 
@@ -110,7 +110,7 @@ class TestFromExcel:
 class TestFromExcelRealData:
     def test_precip_and_pressure_from_real_station_file(self, tmp_path):
         m = SfincsModel(root=str(tmp_path / "run"), mode="w+")
-        GridMaker(m).setup_grid(plot=False, **GRID_KWARGS)
+        GridMaker(m).setup_grid(**GRID_KWARGS)
         # A window known to fall within the station's real coverage (~2024-04 to 2025-07).
         m.setup_config(tref="20250618 000000", tstart="20250618 000000", tstop="20250626 230000")
 

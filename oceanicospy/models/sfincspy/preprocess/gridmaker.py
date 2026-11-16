@@ -1,88 +1,72 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Tuple
 
 import numpy as np
-import matplotlib.pyplot as plt
-from pathlib import Path
 
 from hydromt_sfincs import SfincsModel
+
+from oceanicospy.utils.plots import cell_corners
 
 
 class GridMaker:
     """
-    Constructor de la malla computacional (regular) para modelos SFINCS.
+    Builder of the regular computational grid of a SFINCS model.
 
-    Delega la construcción de la malla a HydroMT-SFINCS
-    (``SfincsModel.setup_grid``) y conserva los parámetros usados para
-    poder visualizarla.
+    Delegates the grid construction to HydroMT-SFINCS
+    (``SfincsModel.setup_grid``) and keeps the parameters used, so the grid
+    geometry can be recovered later (e.g. for plotting).
 
     Parameters
     ----------
     model : SfincsModel
-        Instancia del modelo SFINCS inicializada con HydroMT.
+        SFINCS model instance initialised with HydroMT.
 
     Attributes
     ----------
     grid_info : dict
-        Parámetros de la malla: ``x0, y0, dx, dy, nmax, mmax, rotation,
-        epsg``.
+        Grid parameters: ``x0, y0, dx, dy, nmax, mmax, rotation, epsg``.
 
     Notes
     -----
-    - Malla regular (no quadtree, no subgrid); es el modo usado en todas las
-      corridas de referencia de este proyecto.
-    - ``x0``/``y0`` son la esquina del primer punto de grilla, **no** el
-      centro de la primera celda (convención de HydroMT-SFINCS/SFINCS).
-    - **Convención de ejes** (confirmada contra la documentación oficial de
-      HydroMT-SFINCS): ``mmax`` es el número de celdas en dirección **x**
-      (va con ``dx``), y ``nmax`` es el número de celdas en dirección **y**
-      (va con ``dy``). Es fácil confundirlos porque hay documentación/código
-      de referencia de este mismo proyecto que los intercambia.
+    - Regular grid only (no quadtree, no subgrid).
+    - ``x0``/``y0`` are the grid origin (corner of the first cell), not the
+      centre of the first cell, following the HydroMT-SFINCS convention.
+    - ``mmax`` is the number of cells along the local **x** axis (paired
+      with ``dx``) and ``nmax`` the number along the local **y** axis
+      (paired with ``dy``).
     """
 
     def __init__(self, model: SfincsModel) -> None:
         self.model = model
         self.grid_info: Dict[str, Any] = {}
 
-    def setup_grid(
-        self,
-        plot: bool = True,
-        plot_kwargs: Optional[Dict[str, Any]] = None,
-        **grid_kwargs,
-    ) -> Dict[str, Any]:
+    def setup_grid(self, **grid_kwargs) -> Dict[str, Any]:
         """
-        Configura la malla del modelo SFINCS.
+        Set up the SFINCS model grid.
 
         Parameters
         ----------
-        plot : bool, optional
-            Si es True, genera una visualización de la malla.
-        plot_kwargs : dict, optional
-            Argumentos adicionales para :meth:`plot_grid`.
         **grid_kwargs : dict
-            Parámetros de la malla, pasados tal cual a
-            ``SfincsModel.setup_grid``:
+            Grid parameters, passed unchanged to ``SfincsModel.setup_grid``:
 
-            - x0, y0 : float — esquina del primer punto de grilla (m,
-              sistema proyectado).
-            - dx, dy : float — resolución espacial en x/y (m).
-            - mmax : int — número de celdas en dirección **x**.
-            - nmax : int — número de celdas en dirección **y**.
-            - rotation : float — rotación antihoraria desde el eje x/este
-              (grados).
-            - epsg : int — código EPSG del sistema de referencia.
+            - x0, y0 : float — grid origin (m, projected CRS).
+            - dx, dy : float — cell size along x/y (m).
+            - mmax : int — number of cells along **x**.
+            - nmax : int — number of cells along **y**.
+            - rotation : float — counter-clockwise rotation from the x/east
+              axis (degrees).
+            - epsg : int — EPSG code of the coordinate reference system.
 
         Returns
         -------
         dict
-            Diccionario con los parámetros de la malla.
+            Grid parameters (also stored in :attr:`grid_info`).
 
         Notes
         -----
-        HydroMT-SFINCS recomienda limitar el número total de celdas activas
-        a un orden de ~3 millones; ``mmax * nmax`` es el número de celdas
-        totales (antes de descontar las inactivas por la máscara), así que
-        aquí solo se emite una advertencia informativa si se excede ese
-        orden de magnitud - no es un límite estricto.
+        HydroMT-SFINCS recommends keeping the number of active cells in the
+        order of ~3 million. ``mmax * nmax`` is the total number of cells
+        before masking, so a warning is printed if it exceeds that order of
+        magnitude; it is not a hard limit.
 
         Examples
         --------
@@ -98,19 +82,13 @@ class GridMaker:
         nmax = grid_kwargs.get("nmax")
         if mmax is not None and nmax is not None and mmax * nmax > 3_000_000:
             print(
-                f"[GridMaker] Aviso: mmax*nmax = {mmax * nmax:,} celdas. "
-                "HydroMT-SFINCS recomienda mantener el total de celdas "
-                "activas en un orden de ~3 millones."
+                f"[GridMaker] Warning: mmax*nmax = {mmax * nmax:,} cells. "
+                "HydroMT-SFINCS recommends keeping the number of active "
+                "cells in the order of ~3 million."
             )
 
-        # --------------------------------------------------
-        # 1) Construcción de la malla con HydroMT
-        # --------------------------------------------------
         self.model.setup_grid(**grid_kwargs)
 
-        # --------------------------------------------------
-        # 2) Guardar parámetros de la malla
-        # --------------------------------------------------
         self.grid_info = {
             "x0": grid_kwargs.get("x0"),
             "y0": grid_kwargs.get("y0"),
@@ -121,101 +99,35 @@ class GridMaker:
             "rotation": grid_kwargs.get("rotation"),
             "epsg": grid_kwargs.get("epsg"),
         }
-
-        # --------------------------------------------------
-        # 3) Visualización opcional
-        # --------------------------------------------------
-        if plot:
-            self.plot_grid(**(plot_kwargs or {}))
-
         return self.grid_info
 
-    def plot_grid(
-        self,
-        filename: str = "grid.png",
-        subdir: str = "figures",
-        figsize: tuple = (6, 5),
-        line_width: float = 0.3,
-    ) -> str:
+    def cell_corners(self) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Genera una visualización (solo malla, sin rotación) de los bordes
-        de celda del modelo SFINCS.
-
-        Parameters
-        ----------
-        filename : str, optional
-            Nombre del archivo de salida.
-        subdir : str, optional
-            Subdirectorio (relativo a la raíz del modelo) donde se guardará
-            la figura.
-        figsize : tuple, optional
-            Tamaño de la figura en pulgadas.
-        line_width : float, optional
-            Grosor de las líneas de la malla.
+        Return the corner coordinates of the grid cells, rotation included.
 
         Returns
         -------
-        str
-            Ruta completa de la imagen generada.
+        X, Y : numpy.ndarray
+            Arrays of shape ``(nmax + 1, mmax + 1)`` in the model CRS, ready
+            for :func:`oceanicospy.utils.plots.plot_grid` and
+            :func:`oceanicospy.utils.plots.plot_field`.
 
         Raises
         ------
         RuntimeError
-            Si la malla no ha sido configurada previamente.
+            If :meth:`setup_grid` has not been called.
 
-        Notes
-        -----
-        Es una visualización simplificada: dibuja los bordes de celda en
-        los ejes locales x/y de la malla (sin aplicar la ``rotation`` de
-        vuelta a coordenadas UTM), solo para inspección rápida de
-        resolución y extensión.
+        Examples
+        --------
+        >>> from oceanicospy.utils.plots import plot_field
+        >>> X, Y = grid.cell_corners()
+        >>> plot_field(X, Y, model.grid["dep"].values, label="z [m]")
         """
         if not self.grid_info:
-            raise RuntimeError(
-                "grid_info está vacío. Llama primero a setup_grid() antes de plot_grid()."
-            )
+            raise RuntimeError("Grid not set up. Call setup_grid() first.")
 
-        x0 = self.grid_info["x0"]
-        y0 = self.grid_info["y0"]
-        dx = self.grid_info["dx"]
-        dy = self.grid_info["dy"]
-        nmax = self.grid_info["nmax"]
-        mmax = self.grid_info["mmax"]
-
-        # --------------------------------------------------
-        # 1) Calcular bordes de celdas
-        #    mmax celdas en x (van con dx), nmax celdas en y (van con dy)
-        # --------------------------------------------------
-        x_edges = x0 + np.arange(mmax + 1) * dx
-        y_edges = y0 + np.arange(nmax + 1) * dy
-
-        # --------------------------------------------------
-        # 2) Crear figura
-        # --------------------------------------------------
-        fig, ax = plt.subplots(figsize=figsize)
-        ax.set_aspect("equal")
-
-        for xe in x_edges:
-            ax.plot([xe, xe], [y_edges[0], y_edges[-1]], "k-", lw=line_width)
-
-        for ye in y_edges:
-            ax.plot([x_edges[0], x_edges[-1]], [ye, ye], "k-", lw=line_width)
-
-        ax.set_xlabel("x [m]")
-        ax.set_ylabel("y [m]")
-        ax.set_title("Malla SFINCS")
-
-        ax.set_xlim(x_edges[0], x_edges[-1])
-        ax.set_ylim(y_edges[0], y_edges[-1])
-
-        # --------------------------------------------------
-        # 3) Guardado
-        # --------------------------------------------------
-        outdir = Path(self.model.root) / subdir
-        outdir.mkdir(parents=True, exist_ok=True)
-        fpath = outdir / filename
-
-        fig.savefig(fpath, dpi=300, bbox_inches="tight")
-        plt.close(fig)
-
-        return str(fpath)
+        info = self.grid_info
+        return cell_corners(
+            info["x0"], info["y0"], info["dx"], info["dy"],
+            nx=info["mmax"], ny=info["nmax"], rotation=info["rotation"] or 0.0,
+        )

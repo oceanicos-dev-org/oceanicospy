@@ -48,8 +48,8 @@ class SfincsCaseBuilder:
     --------
     >>> builder = SfincsCaseBuilder(root="case/run", data_catalog="case/input/data_catalog.yml")
     >>> builder.setup_time(tref="20250618 000000", tstart="20250618 000000", tstop="20250626 230000")
-    >>> builder.grid.setup_grid(plot=False, x0=x0, y0=y0, dx=1, dy=1, mmax=mmax, nmax=nmax, rotation=38, epsg=32617)
-    >>> builder.bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2, plot=False)
+    >>> builder.grid.setup_grid(x0=x0, y0=y0, dx=1, dy=1, mmax=mmax, nmax=nmax, rotation=38, epsg=32617)
+    >>> builder.bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2)
     >>> builder.friction.setup_uniform(manning_land=0.04, manning_sea=0.02)
     >>> builder.waterlevel.from_dataframe(df_tide, column_name="depth[m]", x_bnd=x_bnd, y_bnd=y_bnd)
     >>> builder.waves.from_xbeach(nc_path="xbeach_output.nc", point_index=0)

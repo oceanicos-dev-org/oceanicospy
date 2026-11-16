@@ -1,53 +1,40 @@
 from typing import Any, Dict, List, Optional
-from pathlib import Path
-
-import numpy as np
-import matplotlib.pyplot as plt
-import rasterio
 
 from hydromt_sfincs import SfincsModel
 
 
 class BathyMaker:
     """
-    Configuración de topobatimetría y máscaras para modelos SFINCS.
+    Topobathymetry and mask setup for SFINCS models.
 
-    Esta clase se encarga de:
-        - Construir el raster de elevación (`dep`), opcionalmente
-          combinando varias capas topobatimétricas con las reglas de
-          fusión nativas de HydroMT-SFINCS.
-        - Definir la máscara activa del modelo (`msk == 1`)
-        - Definir las celdas de frontera hidráulica (`msk == 2`)
-        - Generar visualizaciones de los rasters del modelo
-
-    Utiliza las herramientas de HydroMT-SFINCS para preparar el dominio
-    espacial a partir de datasets definidos en el `data_catalog`.
+    Builds the elevation raster (``dep``), optionally merging several
+    topobathymetric datasets with the native HydroMT-SFINCS merge rules, and
+    defines the active cells (``msk == 1``) and the boundary cells
+    (``msk == 2`` or ``3``). The datasets are read from a HydroMT
+    ``data_catalog``.
 
     Parameters
     ----------
     model : SfincsModel
-        Instancia del modelo SFINCS inicializada con HydroMT.
+        SFINCS model instance initialised with HydroMT.
     data_catalog : str
-        Ruta al archivo `data_catalog.yml` donde se definen los datasets
-        (por ejemplo, topografía y batimetría).
+        Path to the ``data_catalog.yml`` file defining the datasets
+        (e.g. topography and bathymetry).
 
     Notes
     -----
-    - El raster `dep` contiene elevaciones (positivas en tierra, negativas en mar).
-    - La máscara (`msk`) define:
-        * 0 : celda inactiva
-        * 1 : celda activa
-        * 2 : frontera de entrada (waterlevel)
-        * 3 : frontera de salida
+    - ``dep`` holds elevations (positive on land, negative at sea).
+    - ``msk`` values: 0 inactive, 1 active, 2 water-level boundary,
+      3 outflow boundary.
+    - The resulting rasters live in ``model.grid`` and can be plotted with
+      :func:`oceanicospy.utils.plots.plot_field` together with
+      ``GridMaker.cell_corners``.
     """
 
     def __init__(self, model: SfincsModel, data_catalog: str) -> None:
         self.model = model
         self.data_catalog = data_catalog
 
-    # --------------------------------------------------
-    # SETUP BATIMETRÍA Y MÁSCARAS
-    # --------------------------------------------------
     def setup_bathy(
         self,
         datasets_dep: Optional[List[Dict[str, Any]]] = None,
@@ -58,72 +45,55 @@ class BathyMaker:
         drop_area: float = 0.0,
         reset_mask: bool = True,
         reset_bounds: bool = True,
-        plot: bool = False,
-        plot_kwargs: Optional[Dict[str, Any]] = None,
     ) -> None:
         """
-        Configura la topobatimetría y las máscaras del modelo SFINCS.
+        Set up the topobathymetry and masks of the SFINCS model.
 
-        Este método realiza:
-            1. Generación del raster de elevación (`dep`)
-            2. Definición de celdas activas
-            3. Definición de celdas de frontera hidráulica
+        Runs, in order: elevation raster (``dep``), active cells and
+        hydraulic boundary cells.
 
         Parameters
         ----------
         datasets_dep : list of dict, optional
-            Lista de datasets topobatimétricos a fusionar, en el formato
-            que espera ``SfincsModel.setup_dep`` - cada entrada es un dict
-            con la clave ``"elevtn"`` (nombre del dataset en el
-            ``data_catalog``) y, opcionalmente, argumentos de fusión como
-            ``zmin``, ``zmax``, ``offset``, ``merge_method`` o
-            ``reproj_method`` (ver
-            :py:func:`hydromt.workflows.merge_multi_dataarrays`). Por
-            ejemplo, para dar prioridad a un levantamiento fino sobre un
-            DEM de relleno más grueso::
+            Topobathymetric datasets to merge, in the format expected by
+            ``SfincsModel.setup_dep``: each entry is a dict with the key
+            ``"elevtn"`` (dataset name in the ``data_catalog``) and,
+            optionally, merge arguments such as ``zmin``, ``zmax``,
+            ``offset``, ``merge_method`` or ``reproj_method`` (see
+            :py:func:`hydromt.workflows.merge_multi_dataarrays`). For
+            example, to give priority to a fine survey over a coarser
+            filler DEM::
 
                 [
-                    {"elevtn": "topobathy_fino"},
-                    {"elevtn": "topobathy_grueso", "merge_method": "first"},
+                    {"elevtn": "topobathy_fine"},
+                    {"elevtn": "topobathy_coarse", "merge_method": "first"},
                 ]
 
-            Si no se especifica, se usa un único dataset llamado
-            ``"topobathy"`` (comportamiento por defecto, para
-            compatibilidad con un `data_catalog` que ya trae un único
-            ráster pre-fusionado).
+            Defaults to a single dataset named ``"topobathy"``.
         zmin_active : float, optional
-            Elevación mínima (m) para definir celdas activas.
-            Las celdas con elevación mayor o igual a este valor se
-            consideran activas.
+            Minimum elevation (m) of active cells; cells at or above this
+            value are active. Default is -4.
         zmax_bounds : float, optional
-            Elevación máxima (m) para definir las celdas de frontera de
-            nivel del mar. El manual de SFINCS recomienda ubicar la
-            frontera costera en la zona de swash, aproximadamente a 2 m de
-            profundidad - de ahí el valor por defecto de -2.
+            Maximum elevation (m) of the boundary cells. The SFINCS manual
+            recommends placing the offshore boundary around the swash zone,
+            roughly 2 m deep, hence the default of -2.
         btype : str, optional
-            Tipo de frontera hidráulica (``"waterlevel"`` u
-            ``"outflow"``). Por defecto ``"waterlevel"``.
+            Boundary type, ``"waterlevel"`` (default) or ``"outflow"``.
         mask : str, optional
-            Polígono del dominio (nombre de un ``GeoDataFrame`` en el
-            `data_catalog` o ruta a un archivo vectorial). Solo las celdas
-            dentro de él pueden quedar activas; fuera de él el modelo es
-            inactivo y sus bordes en tierra quedan cerrados. Si es None,
-            todo el rectángulo de la malla es candidato (comportamiento
-            anterior).
+            Domain polygon (name of a ``GeoDataFrame`` in the
+            ``data_catalog`` or path to a vector file). Only cells inside it
+            can be active; outside it the model is inactive and its land
+            edges are closed. If None, the whole grid rectangle is a
+            candidate.
         drop_area : float, optional
-            Área máxima (km²) de las zonas activas aisladas que se
-            descartan (p. ej. cayos o bajos sueltos que, si no, quedarían
-            como islas activas con frontera propia). Por defecto 0.0 (no
-            descarta nada).
+            Maximum area (km²) of isolated active regions to discard (e.g.
+            small cays or shoals that would otherwise remain as active
+            islands with their own boundary). Default is 0.0 (none).
         reset_mask : bool, optional
-            Si es True, reinicia la máscara activa existente.
+            If True (default), reset the existing active mask.
         reset_bounds : bool, optional
-            Si es True, reinicia las fronteras existentes del tipo
-            `btype` antes de fijar las nuevas.
-        plot : bool, optional
-            Si es True, genera una visualización del raster `dep`.
-        plot_kwargs : dict, optional
-            Argumentos adicionales para :meth:`plot_sfincs_raster`.
+            If True (default), reset existing boundaries of type ``btype``
+            before setting the new ones.
 
         Returns
         -------
@@ -131,28 +101,19 @@ class BathyMaker:
 
         Notes
         -----
-        - Cada dataset referenciado en `datasets_dep` debe estar definido
-          en el `data_catalog` (ver ``Initializer.write_data_catalog``).
-        - La máscara activa controla dónde se simula la inundación.
-        - Las fronteras (`msk == 2`) definen dónde se aplican forzantes
-          como nivel del mar.
+        Every dataset referenced in ``datasets_dep`` must be defined in the
+        ``data_catalog`` (see ``Initializer.write_data_catalog``).
 
         Examples
         --------
         >>> bathy = BathyMaker(model, "data_catalog.yml")
-        >>> bathy.setup_bathy(zmin_active=-5, zmax_bounds=-2, plot=True)
+        >>> bathy.setup_bathy(zmin_active=-5, zmax_bounds=-2)
         """
         if datasets_dep is None:
             datasets_dep = [{"elevtn": "topobathy"}]
 
-        # --------------------------------------------------
-        # 1) Construcción del raster de elevación (dep)
-        # --------------------------------------------------
         self.model.setup_dep(datasets_dep=datasets_dep)
 
-        # --------------------------------------------------
-        # 2) Definición de máscara activa
-        # --------------------------------------------------
         self.model.setup_mask_active(
             mask=mask,
             zmin=zmin_active,
@@ -160,142 +121,8 @@ class BathyMaker:
             reset_mask=reset_mask,
         )
 
-        # --------------------------------------------------
-        # 3) Definición de fronteras hidráulicas
-        # --------------------------------------------------
         self.model.setup_mask_bounds(
             btype=btype,
             zmax=zmax_bounds,
             reset_bounds=reset_bounds,
         )
-
-        # --------------------------------------------------
-        # 4) Visualización opcional
-        # --------------------------------------------------
-        # plot_sfincs_raster reads <root>/gis/<name>.tif, which HydroMT only
-        # writes to disk on model.write() - without this, plot=True would
-        # always raise FileNotFoundError. Safe to call here: at this point
-        # in the pipeline only grid/dep/msk are set (no forcings yet), and
-        # SfincsCaseBuilder.build_basic_case already calls model.write()
-        # again right after setup_bathy(), so writing twice is harmless.
-        if plot:
-            self.model.write()
-            self.plot_sfincs_raster("dep", **(plot_kwargs or {}))
-
-    # --------------------------------------------------
-    # PLOT DE RASTERS HYDROMT
-    # --------------------------------------------------
-    def plot_sfincs_raster(
-        self,
-        raster_name: str,
-        filename: Optional[str] = None,
-        subdir: Optional[str] = "figures",
-        figsize: tuple = (7, 6),
-        cmap: Optional[str] = None,
-        vmin: Optional[float] = None,
-        vmax: Optional[float] = None,
-        add_colorbar: bool = True,
-    ) -> str:
-        """
-        Genera una visualización de un raster del modelo SFINCS.
-
-        Parameters
-        ----------
-        raster_name : str
-            Nombre del raster (por ejemplo: ``"dep"``, ``"msk"``, ``"man"``).
-        filename : str, optional
-            Nombre del archivo de salida. Si no se especifica,
-            se usa ``<raster_name>.png``.
-        subdir : str or None, optional
-            Subdirectorio (relativo a la raíz del modelo, salvo que sea
-            una ruta absoluta) donde se guardará la figura.
-        figsize : tuple, optional
-            Tamaño de la figura en pulgadas.
-        cmap : str, optional
-            Colormap de matplotlib.
-        vmin, vmax : float, optional
-            Valores mínimo y máximo para la escala de colores.
-        add_colorbar : bool, optional
-            Si es True, añade barra de color.
-
-        Returns
-        -------
-        str
-            Ruta completa de la imagen generada.
-
-        Raises
-        ------
-        FileNotFoundError
-            Si el raster no existe.
-
-        Notes
-        -----
-        - El raster se busca en: ``<model.root>/gis/<raster_name>.tif``.
-        - **La malla del proyecto está rotada** (``rotation`` != 0 en todos
-          los casos conocidos), y HydroMT-SFINCS escribe los `.tif` de
-          salida con esa rotación genuina en la transformación afín (no
-          "north-up"). ``matplotlib.imshow`` no puede representar una
-          transformación afín rotada - solo coloca la imagen en una caja
-          alineada a los ejes -, así que aquí se calculan las coordenadas
-          x/y de cada celda a partir de la afín del ráster y se dibuja con
-          ``pcolormesh``, que sí soporta una malla rotada.
-        - Reemplaza la implementación previa (``rasterio`` + ``cartopy`` +
-          ``imshow(extent=...)``), que para una malla rotada como la de
-          este proyecto distorsionaba/deformaba la figura y no
-          representaba la geometría real del dominio. Ya no depende de
-          ``cartopy``.
-
-        Examples
-        --------
-        >>> bathy.plot_sfincs_raster("dep", cmap="terrain")
-        """
-        raster_path = Path(self.model.root) / "gis" / f"{raster_name}.tif"
-        if not raster_path.exists():
-            raise FileNotFoundError(f"No existe {raster_name}.tif en {raster_path}")
-
-        with rasterio.open(raster_path) as src:
-            data = src.read(1, masked=True)
-            transform = src.transform
-
-        rows, cols = np.indices(data.shape)
-        x_coords, y_coords = transform @ (cols + 0.5, rows + 0.5)
-
-        fig, ax = plt.subplots(figsize=figsize)
-        ax.set_aspect("equal")
-
-        mesh = ax.pcolormesh(
-            x_coords,
-            y_coords,
-            data,
-            cmap=cmap,
-            vmin=vmin,
-            vmax=vmax,
-            shading="auto",
-        )
-
-        ax.set_xlabel("x [m]")
-        ax.set_ylabel("y [m]")
-        ax.set_title(raster_name)
-
-        if add_colorbar:
-            plt.colorbar(mesh, ax=ax, shrink=0.8)
-
-        # --------------------------------------------------
-        # Guardado de figura
-        # --------------------------------------------------
-        if subdir is None:
-            outdir = Path(self.model.root) / "figures"
-        else:
-            subdir_path = Path(subdir)
-            outdir = subdir_path if subdir_path.is_absolute() else Path(self.model.root) / subdir_path
-
-        outdir.mkdir(parents=True, exist_ok=True)
-
-        if filename is None:
-            filename = f"{raster_name}.png"
-
-        outpath = outdir / filename
-        fig.savefig(outpath, dpi=300, bbox_inches="tight")
-        plt.close(fig)
-
-        return str(outpath)

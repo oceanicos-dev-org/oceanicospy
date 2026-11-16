@@ -20,7 +20,7 @@ GRID_KWARGS = dict(
 @pytest.fixture
 def model(tmp_path):
     m = SfincsModel(root=str(tmp_path / "run"), mode="w+")
-    GridMaker(m).setup_grid(plot=False, **GRID_KWARGS)
+    GridMaker(m).setup_grid(**GRID_KWARGS)
     m.setup_config(tref="20250618 000000", tstart="20250618 000000", tstop="20250626 000000")
     return m
 

@@ -58,7 +58,7 @@ def built_case(tmp_path):
     )
 
     model = SfincsModel(data_libs=[catalog_path], root=init.dict_folders["run"], mode="w+")
-    GridMaker(model).setup_grid(plot=False, **GRID_KWARGS)
+    GridMaker(model).setup_grid(**GRID_KWARGS)
 
     return model, catalog_path, init
 
@@ -67,7 +67,7 @@ class TestSetupBathy:
     def test_default_single_dataset_matches_previous_behaviour(self, built_case):
         model, catalog_path, _ = built_case
         bathy = BathyMaker(model, catalog_path)
-        bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2, plot=False)
+        bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2)
 
         assert "dep" in model.grid.data_vars
         assert not np.isnan(model.grid["dep"].values).all()
@@ -75,7 +75,7 @@ class TestSetupBathy:
     def test_active_and_boundary_cells_follow_thresholds(self, built_case):
         model, catalog_path, _ = built_case
         bathy = BathyMaker(model, catalog_path)
-        bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2, plot=False)
+        bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2)
 
         msk = model.grid["msk"].values
         dep = model.grid["dep"].values
@@ -90,39 +90,19 @@ class TestSetupBathy:
         assert boundary.any()
         assert np.nanmax(dep[boundary]) <= -2
 
-    def test_plot_true_writes_model_and_figure(self, built_case):
-        model, catalog_path, init = built_case
-        bathy = BathyMaker(model, catalog_path)
-
-        # Regression test: plot=True used to always raise FileNotFoundError
-        # because plot_sfincs_raster reads <root>/gis/dep.tif, which HydroMT
-        # only writes to disk on model.write() - setup_bathy(plot=True)
-        # never called write() first.
-        bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2, plot=True)
-
-        from pathlib import Path
-        fig_path = Path(init.dict_folders["run"]) / "figures" / "dep.png"
-        assert fig_path.is_file()
-
-
-class TestPlotSfincsRaster:
-    def test_raises_if_raster_missing(self, built_case):
+    def test_dep_can_be_plotted_on_grid_corners(self, built_case, tmp_path):
         model, catalog_path, _ = built_case
-        bathy = BathyMaker(model, catalog_path)
-        with pytest.raises(FileNotFoundError):
-            bathy.plot_sfincs_raster("dep")
+        BathyMaker(model, catalog_path).setup_bathy(zmin_active=-4, zmax_bounds=-2)
 
-    def test_handles_rotated_grid_without_cartopy(self, built_case):
-        model, catalog_path, _ = built_case
-        bathy = BathyMaker(model, catalog_path)
-        bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2, plot=False)
-        model.write()
+        matplotlib = pytest.importorskip("matplotlib")
+        matplotlib.use("Agg")
+        from oceanicospy.utils.plots import plot_field
 
-        # This must not raise even though the grid is rotated (rotation=38)
-        # and the written dep.tif therefore has a genuinely rotated affine
-        # transform (not north-up) - pcolormesh over per-cell coordinates
-        # handles that; imshow(extent=...) would silently distort it.
-        out_path = bathy.plot_sfincs_raster("dep", filename="dep_rotated.png")
+        grid = GridMaker(model)
+        grid.grid_info = dict(GRID_KWARGS)
+        X, Y = grid.cell_corners()
 
-        from pathlib import Path
-        assert Path(out_path).is_file()
+        # dep lives in memory (model.grid); no model.write() is needed to plot it
+        out = tmp_path / "dep.png"
+        plot_field(X, Y, model.grid["dep"].values, output_path=out)
+        assert out.is_file()

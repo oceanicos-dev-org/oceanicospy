@@ -96,8 +96,8 @@ def built_model(tmp_path):
     )
 
     model = SfincsModel(data_libs=[catalog_path], root=init.dict_folders["run"], mode="w+")
-    GridMaker(model).setup_grid(plot=False, **GRID_KWARGS)
-    BathyMaker(model, catalog_path).setup_bathy(zmin_active=-4, zmax_bounds=-2, plot=False)
+    GridMaker(model).setup_grid(**GRID_KWARGS)
+    BathyMaker(model, catalog_path).setup_bathy(zmin_active=-4, zmax_bounds=-2)
     model.setup_config(tref="20250618 000000", tstart="20250618 060000", tstop="20250618 180000")
 
     return model, init

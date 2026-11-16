@@ -49,8 +49,8 @@ def built_model(tmp_path):
     )
 
     model = SfincsModel(data_libs=[str(catalog_path)], root=str(tmp_path / "run"), mode="w+")
-    GridMaker(model).setup_grid(plot=False, **GRID_KWARGS)
-    BathyMaker(model, str(catalog_path)).setup_bathy(zmin_active=-4, zmax_bounds=-2, plot=False)
+    GridMaker(model).setup_grid(**GRID_KWARGS)
+    BathyMaker(model, str(catalog_path)).setup_bathy(zmin_active=-4, zmax_bounds=-2)
     return model
 
 

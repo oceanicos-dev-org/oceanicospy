@@ -27,14 +27,14 @@ def model(tmp_path):
 class TestSetupGrid:
     def test_stores_axis_specific_grid_info(self, model):
         grid = GridMaker(model)
-        info = grid.setup_grid(plot=False, **GRID_KWARGS)
+        info = grid.setup_grid(**GRID_KWARGS)
 
         assert info["mmax"] == GRID_KWARGS["mmax"]
         assert info["nmax"] == GRID_KWARGS["nmax"]
 
     def test_writes_expected_grid_shape_to_model(self, model):
         grid = GridMaker(model)
-        grid.setup_grid(plot=False, **GRID_KWARGS)
+        grid.setup_grid(**GRID_KWARGS)
 
         # HydroMT's own RegularGrid is the ground truth GridMaker.plot_grid
         # must stay consistent with: mmax cells in x, nmax cells in y.
@@ -47,36 +47,33 @@ class TestSetupGrid:
         # by calling setup_grid with mocked model.setup_grid as a no-op.
         model_stub.setup_grid = lambda **kwargs: None
         grid = GridMaker(model_stub)
-        grid.setup_grid(plot=False, mmax=2000, nmax=2000, x0=0, y0=0, dx=1, dy=1)
+        grid.setup_grid(mmax=2000, nmax=2000, x0=0, y0=0, dx=1, dy=1)
         captured = capsys.readouterr()
-        assert "3 millones" in captured.out
+        assert "3 million" in captured.out
 
 
-class TestPlotGrid:
-    def test_edge_counts_match_axis_specific_dims(self, model):
+class TestCellCorners:
+    def test_shape_follows_mmax_nmax(self, model):
         grid = GridMaker(model)
-        grid.setup_grid(plot=False, **GRID_KWARGS)
+        grid.setup_grid(**GRID_KWARGS)
+        X, Y = grid.cell_corners()
 
-        # Recompute the same edges plot_grid uses, without touching matplotlib,
-        # to confirm mmax pairs with dx (x) and nmax pairs with dy (y).
-        x_edges = grid.grid_info["x0"] + np.arange(grid.grid_info["mmax"] + 1) * grid.grid_info["dx"]
-        y_edges = grid.grid_info["y0"] + np.arange(grid.grid_info["nmax"] + 1) * grid.grid_info["dy"]
+        assert X.shape == Y.shape == (GRID_KWARGS["nmax"] + 1, GRID_KWARGS["mmax"] + 1)
 
-        assert len(x_edges) == GRID_KWARGS["mmax"] + 1
-        assert len(y_edges) == GRID_KWARGS["nmax"] + 1
-        assert len(x_edges) != len(y_edges)  # guards against an nmax/mmax swap
-
-    def test_plot_grid_writes_png(self, model):
+    def test_cell_centres_match_hydromt(self, model):
+        # HydroMT's RegularGrid is the ground truth: the centres of the
+        # corner quadrilaterals must match its (rotated) cell centres.
         grid = GridMaker(model)
-        grid.setup_grid(plot=False, **GRID_KWARGS)
+        grid.setup_grid(**GRID_KWARGS)
+        X, Y = grid.cell_corners()
 
-        out_path = grid.plot_grid(filename="grid_test.png")
+        xc = 0.25 * (X[:-1, :-1] + X[1:, :-1] + X[:-1, 1:] + X[1:, 1:])
+        yc = 0.25 * (Y[:-1, :-1] + Y[1:, :-1] + Y[:-1, 1:] + Y[1:, 1:])
+        coords = model.reggrid.coordinates
 
-        from pathlib import Path
-        assert Path(out_path).is_file()
-        assert Path(out_path).name == "grid_test.png"
+        np.testing.assert_allclose(xc, coords["xc"][1])
+        np.testing.assert_allclose(yc, coords["yc"][1])
 
-    def test_plot_grid_without_setup_raises(self, model):
-        grid = GridMaker(model)
+    def test_raises_without_setup(self, model):
         with pytest.raises(RuntimeError):
-            grid.plot_grid()
+            GridMaker(model).cell_corners()

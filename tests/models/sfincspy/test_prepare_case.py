@@ -69,8 +69,8 @@ class TestSfincsCaseBuilderEndToEnd:
 
         builder = SfincsCaseBuilder(root=init.dict_folders["run"], data_catalog=catalog_path)
         builder.setup_time(**E1_TIME_KWARGS)
-        builder.grid.setup_grid(plot=False, **E1_GRID_KWARGS)
-        builder.bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2, plot=False)
+        builder.grid.setup_grid(**E1_GRID_KWARGS)
+        builder.bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2)
         builder.friction.setup_uniform(manning_land=0.04, manning_sea=0.02)
 
         tide_idx = pd.date_range("2008-11-20", periods=200, freq="h")
@@ -131,8 +131,8 @@ class TestSfincsCaseBuilderEndToEnd:
 
         builder = SfincsCaseBuilder(root=init.dict_folders["run"], data_catalog=catalog_path)
         builder.setup_time(**E1_TIME_KWARGS)
-        builder.grid.setup_grid(plot=False, **E1_GRID_KWARGS)
-        builder.bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2, plot=False)
+        builder.grid.setup_grid(**E1_GRID_KWARGS)
+        builder.bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2)
         builder.friction.setup_uniform(manning_land=0.0777, manning_sea=0.0222)
 
         # setup_uniform() folds manning_land/manning_sea into a spatial
