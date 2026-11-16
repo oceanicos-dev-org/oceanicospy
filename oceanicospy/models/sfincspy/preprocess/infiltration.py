@@ -134,10 +134,10 @@ class Infiltration:
 
         Notes
         -----
-        The rate applies to every wet active cell, sea cells included. In
-        coastal domains a uniform value therefore also removes water from
-        the sea; use a raster or :meth:`setup_constant_from_landcover` with
-        0 mm/h outside the pervious areas.
+        SFINCS applies a uniform rate only to cells with bed level above
+        ``qinf_zmin`` (``sfincs.inp``, 0 m by default), so sea cells below
+        that level do not infiltrate. A gridded rate is applied as given, to
+        every wet cell: set it to 0 mm/h where no infiltration is wanted.
 
         Examples
         --------
