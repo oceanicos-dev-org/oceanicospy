@@ -45,7 +45,7 @@ class Initializer:
 
     def create_folders(self):
         """
-        Create the full project folder structure.
+        Create the case folder structure.
 
         Creates the four standard sub-directories under ``root_path``:
         ``input/``, ``pros/``, ``run/``, and ``output/``. On a re-run,
@@ -58,7 +58,7 @@ class Initializer:
         exist_ok=True)``, so missing intermediate paths are handled
         automatically.
         """
-        print('\n\t*** Creating project folder structure ***\n')
+        print('\n\t*** Creating case folder structure ***\n')
 
         for folder_name in self.folder_names:
             folder_path = Path(self.dict_folders[folder_name])
@@ -88,9 +88,9 @@ class Initializer:
                     "topobathy": {
                         "data_type": "RasterDataset",
                         "driver": "raster",
-                        "path": "new_topobathy_SAI_1m_n.tif",
+                        "path": "topobathy.tif",
                         "crs": 32617,
-                        "nodata": -3.4028235e+38,
+                        "nodata": -9999,
                     }
                 }
 

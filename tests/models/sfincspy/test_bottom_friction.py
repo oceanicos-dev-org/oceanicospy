@@ -135,7 +135,7 @@ class TestSetupFromLandcover:
             crs="EPSG:32617",
         )
         reclass_path = BottomFriction.write_reclass_table(
-            BottomFriction.DEFAULT_LANDCOVER_MANNING, tmp_path / "reclass.csv"
+            {1: 0.035, 2: 0.015}, tmp_path / "reclass.csv"
         )
 
         BottomFriction(built_model).setup_from_landcover(

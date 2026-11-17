@@ -18,7 +18,7 @@ class TestFillSlurmFile:
         (tmp_path / "output").mkdir()
         runner = CaseRunner(_dict_folders(str(tmp_path)))
 
-        out_path = runner.fill_slurm_file(case_name="CasoE1", ntasks=60)
+        out_path = runner.fill_slurm_file(case_name="CaseA", ntasks=60)
 
         assert Path(out_path).is_file()
         assert Path(out_path).name == "launcher_sfincs.slurm"
@@ -30,11 +30,11 @@ class TestFillSlurmFile:
         runner = CaseRunner(_dict_folders(str(tmp_path)))
 
         out_path = runner.fill_slurm_file(
-            case_name="CasoE1", ntasks=60, image_name="sfincs-cpu_sfincs-v2.3.0-mt-Faber-Release.sif",
+            case_name="CaseA", ntasks=60, image_name="sfincs-cpu_sfincs-v2.3.0-mt-Faber-Release.sif",
         )
         text = Path(out_path).read_text()
 
-        assert '#SBATCH --job-name="CasoE1"' in text
+        assert '#SBATCH --job-name="CaseA"' in text
         assert "#SBATCH --ntasks-per-node=60" in text
         assert f'--output={tmp_path}/output/%j.out' in text
         assert f'--error={tmp_path}/output/%j.err' in text
@@ -48,24 +48,22 @@ class TestFillSlurmFile:
         (tmp_path / "output").mkdir()
         runner = CaseRunner(_dict_folders(str(tmp_path)))
 
-        out_path = runner.fill_slurm_file(case_name="CasoE1", ntasks=60)
+        out_path = runner.fill_slurm_file(case_name="CaseA", ntasks=60)
         text = Path(out_path).read_text()
 
         for bash_var in ["$HOSTNAME", "$SLURM_JOB_ACCOUNT", "$SLURM_JOB_USER", "$SLURM_JOB_ID"]:
             assert bash_var in text
 
     def test_no_mpi_launcher_and_no_result_file_relocation(self, tmp_path):
-        """Regression guard: SFINCS runs OpenMP-only inside the container
-        (confirmed against the real slurm_launch.sh files in this project's
-        SFINCS backup - no MPI launcher command is used, unlike the XBeach
-        template) and keeps its own output files (sfincs_map.nc /
-        sfincs_his.nc / sfincs.log) in run/ rather than moving them to
-        output/ like the XBeach template does."""
+        """SFINCS runs OpenMP-only inside the container (no MPI launcher,
+        unlike the XBeach template) and keeps its output files
+        (sfincs_map.nc / sfincs_his.nc / sfincs.log) in run/ instead of
+        moving them to output/."""
         (tmp_path / "run").mkdir()
         (tmp_path / "output").mkdir()
         runner = CaseRunner(_dict_folders(str(tmp_path)))
 
-        out_path = runner.fill_slurm_file(case_name="CasoE1", ntasks=60)
+        out_path = runner.fill_slurm_file(case_name="CaseA", ntasks=60)
         text = Path(out_path).read_text()
 
         mpi_launcher_token = "mpi" + "run"  # split to avoid a pytest assertion-diff quirk with this token
@@ -77,7 +75,7 @@ class TestFillSlurmFile:
         (tmp_path / "output").mkdir()
         runner = CaseRunner(_dict_folders(str(tmp_path)))
 
-        out_path = runner.fill_slurm_file(case_name="CasoE1", ntasks=60)
+        out_path = runner.fill_slurm_file(case_name="CaseA", ntasks=60)
         text = Path(out_path).read_text()
 
         assert "sfincs-cpu_sfincs-v2.3.0-mt-Faber-Release.sif" in text

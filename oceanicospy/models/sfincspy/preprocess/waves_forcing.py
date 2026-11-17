@@ -9,32 +9,25 @@ from hydromt_sfincs import SfincsModel, utils
 
 class WavesForcing:
     """
-    Generador de forzante de oleaje (`bzifile`) para SFINCS a partir de
-    salidas de XBeach (1D).
+    Wave forcing at the water-level boundary (``bzifile``) for SFINCS, from
+    1D XBeach output.
 
-    Transforma la elevación de superficie libre calculada por XBeach en
-    un punto del perfil en la señal ``bzi`` que espera SFINCS: una
-    variación de nivel de agua **centrada en cero**, superpuesta al nivel
-    lento de ``bzs``.
+    Turns the free-surface elevation computed by XBeach at a profile point
+    into the ``bzi`` signal SFINCS expects: a water-level oscillation
+    **centred on zero**, added to the slow level of ``bzsfile``.
 
     Parameters
     ----------
     model : SfincsModel
-        Instancia del modelo SFINCS inicializada con HydroMT.
+        SFINCS model instance initialised with HydroMT.
 
     Notes
     -----
-    - El forzante generado corresponde a `bzifile` en SFINCS.
-    - Se asume que el NetCDF proviene de una simulación XBeach 1D.
-    - Se extrae una serie temporal en un punto específico del dominio.
-    - **No se transfiere el wave setup de XBeach hacia `bzs`.** Esa pieza
-      (sumar el nivel medio/setup calculado por XBeach al nivel de marea,
-      con separación entrante/saliente y una corrección de setup
-      calibrada por sitio - ver Gaido-Lasserre 2024, Nederhoff 2024)
-      queda pendiente como trabajo futuro: requiere un punto de
-      referencia de mayor fidelidad (p. ej. XBeach-2D) o mediciones
-      independientes de nivel/runup para calibrarla, que este proyecto no
-      tiene todavía.
+    - The XBeach wave setup is **not** transferred to ``bzsfile``. Doing so
+      (adding the XBeach mean level to the tide, with an incoming/outgoing
+      split and a site-calibrated setup correction) needs a higher-fidelity
+      reference or independent level/run-up data to calibrate it.
+    - SFINCS uses one ``bzi`` series for all boundary points.
     """
 
     def __init__(self, model: SfincsModel) -> None:
@@ -48,158 +41,91 @@ class WavesForcing:
         out_filename: str = "sfincs.bzi",
     ) -> str:
         """
-        Genera el forzante de oleaje a partir de un archivo NetCDF de XBeach.
+        Write the wave forcing from an XBeach NetCDF output.
 
         Parameters
         ----------
         nc_path : str
-            Ruta al archivo NetCDF de salida de XBeach.
+            XBeach NetCDF output (1D run).
         point_index : int, optional
-            Índice sobre ``ds["pointx"]`` - las coordenadas de los puntos
-            de salida tipo "point" que se hayan configurado en XBeach
-            (típicamente solo el `nrugauge`, casi siempre 1 solo punto).
-            Se usa para hallar, por cercanía, el índice correspondiente en
-            el arreglo espacial global (``globalx``/``nx``) del que
-            realmente se extrae ``zs``. **No es un índice directo sobre el
-            perfil completo** - si el `.nc` solo tiene 1 punto (el caso en
-            todos los casos existentes del proyecto), `point_index` solo
-            puede ser 0, y el punto real usado es el del runup gauge, no
-            necesariamente el que se quiere para forzar SFINCS. Ignorado
-            si se da `nx_index`.
+            Index into ``pointx``, the XBeach "point" outputs (often a single
+            run-up gauge). It is used to find the nearest position on the
+            global profile (``globalx``), where ``zs`` is read. Ignored if
+            ``nx_index`` is given.
         nx_index : int, optional
-            Índice directo sobre el perfil espacial completo (``globalx``/
-            ``nx``, todos los puntos guardados vía `nglobalvar` - no solo
-            los puntos tipo "point"). Úsalo para forzar con un punto
-            específico del perfil (p. ej. donde la batimetría cruza una
-            profundidad dada) sin depender de qué puntos "point" haya
-            configurado el caso de XBeach. Tiene prioridad sobre
-            `point_index` si se da.
+            Direct index on the global profile (``globalx`` / ``nx``), to
+            force SFINCS from a chosen profile position (e.g. where the bed
+            crosses a given depth) regardless of the XBeach point outputs.
+            Takes precedence over ``point_index``.
         out_filename : str, optional
-            Nombre del archivo de salida (por defecto ``"sfincs.bzi"``).
+            Output file name (default ``"sfincs.bzi"``).
 
         Returns
         -------
         str
-            Ruta completa del archivo generado.
+            Path of the written file.
 
         Raises
         ------
-        RuntimeError
-            Si la serie queda vacía tras el recorte temporal.
         KeyError
-            Si la variable ``zs`` no existe en el NetCDF.
+            If ``zs`` is not in the NetCDF.
+        RuntimeError
+            If no values are left within the model period.
 
         Notes
         -----
-        Procesamiento realizado:
+        Steps:
 
-        1. Lectura del NetCDF de XBeach.
-        2. Extracción de la elevación de superficie libre (``zs``) - no
-           la altura de ola (``H``): ``bzi`` es una variación de nivel de
-           agua, no una magnitud de ola, y el manual de SFINCS exige que
-           oscile alrededor de cero.
-        3. Selección del punto espacial más cercano.
-        4. Recorte al periodo del modelo ``[tstart, tstop]``.
-        5. Resta de la media de ``zs`` calculada **sobre esa misma
-           ventana recortada** (no sobre todo el NetCDF), para que la
-           señal quede centrada en cero como exige SFINCS.
-        6. Conversión de tiempo a segundos desde ``tref``.
-        7. Escritura en formato ASCII requerido por SFINCS.
-
-        El archivo generado tiene formato:
-
-        ``time[s]  bzi[m]``
-
-        donde `bzi` representa la variación (anomalía) de nivel de agua
-        inducida por el oleaje, alrededor de cero.
+        1. Read the free-surface elevation ``zs`` (not the wave height
+           ``H``: ``bzi`` is a water-level oscillation and must oscillate
+           around zero).
+        2. Take the selected profile point.
+        3. Clip to the model period ``[tstart, tstop]``. The XBeach time is
+           taken as seconds since ``tref``, so the XBeach run must start at
+           the SFINCS reference time.
+        4. Subtract the mean of ``zs`` over that clipped window, so the
+           signal is centred on zero.
+        5. Write ``time [s since tref]  bzi [m]`` in the ASCII format SFINCS
+           reads, and register ``bzifile``.
 
         Examples
         --------
         >>> waves = WavesForcing(model)
-        >>> waves.from_xbeach(
-        ...     nc_path="xbeach_output.nc",
-        ...     point_index=0
-        ... )
+        >>> waves.from_xbeach("xboutput.nc", nx_index=120)
         """
-
-        # --------------------------------------------------
-        # 1) Tiempos del modelo
-        # --------------------------------------------------
         tref = utils.parse_datetime(self.model.config["tref"])
         tstart = utils.parse_datetime(self.model.config["tstart"])
         tstop = utils.parse_datetime(self.model.config["tstop"])
 
-        # --------------------------------------------------
-        # 2) Abrir NetCDF XBeach
-        # --------------------------------------------------
         ds = xr.open_dataset(nc_path)
-
         if "zs" not in ds:
-            raise KeyError("La variable 'zs' no existe en el NetCDF")
+            raise KeyError("Variable 'zs' not found in the NetCDF.")
 
         zs = ds["zs"]                        # (globaltime, ny, nx)
-        time = ds["globaltime"].values       # segundos desde inicio
+        time = ds["globaltime"].values       # seconds since the start of the run
         X = ds["globalx"].values[0, :]
 
-        # --------------------------------------------------
-        # 3) Selección del punto espacial
-        # --------------------------------------------------
         if nx_index is not None:
             ix = nx_index
         else:
-            px = ds["pointx"].values
-            xp = px[point_index]
+            xp = ds["pointx"].values[point_index]
             ix = np.argmin(np.abs(X - xp))
         zs_p = zs.isel(nx=ix, ny=0).values
 
-        # --------------------------------------------------
-        # 4) Tiempo absoluto y recorte al periodo del modelo
-        # --------------------------------------------------
         time_dt = pd.to_datetime(time, unit="s", origin=tref)
-
-        df = pd.DataFrame({"zs": zs_p}, index=time_dt)
-        df = df.loc[tstart:tstop]
-
+        df = pd.DataFrame({"zs": zs_p}, index=time_dt).loc[tstart:tstop]
         if df.empty:
-            raise RuntimeError(
-                "La serie de nivel de agua (zs) de XBeach quedó vacía tras el recorte temporal"
-            )
+            raise RuntimeError("The XBeach water-level series is empty within the model period.")
 
-        # --------------------------------------------------
-        # 5) Anomalía centrada en cero, sobre la ventana ya recortada
-        # --------------------------------------------------
         df["bzi"] = df["zs"] - df["zs"].mean()
 
-        # --------------------------------------------------
-        # 6) Tiempo en segundos desde tref
-        # --------------------------------------------------
         time_sec = (df.index - tref).total_seconds().astype(int)
+        df_out = pd.DataFrame({"time": time_sec, "bzi": df["bzi"].values})
 
-        df_out = pd.DataFrame(
-            {
-                "time": time_sec,
-                "bzi": df["bzi"].values,
-            }
-        )
-
-        # --------------------------------------------------
-        # 7) Escritura del archivo sfincs.bzi
-        # --------------------------------------------------
         out_path = os.path.join(self.model.root, out_filename)
+        df_out.to_csv(out_path, sep=" ", index=False, header=False, float_format="%.6f")
 
-        df_out.to_csv(
-            out_path,
-            sep=" ",
-            index=False,
-            header=False,
-            float_format="%.6f",
-        )
-
-        # --------------------------------------------------
-        # 8) Registro en configuración SFINCS
-        # --------------------------------------------------
         self.model.set_config("bzifile", out_filename)
-
         return out_path
 
     def from_dataframe(
@@ -209,59 +135,51 @@ class WavesForcing:
         out_filename: str = "sfincs.bzi",
     ) -> str:
         """
-        Genera el forzante de oleaje a partir de una serie ya preparada
-        (p. ej. una anomalía de XBeach reescalada por SFA para un
-        escenario sintético), en vez de leerla directo de un NetCDF.
+        Write the wave forcing from a prepared series.
 
-        A diferencia de :meth:`from_xbeach`, **no centra la señal en
-        cero** - se asume que `df[column_name]` ya es una anomalía
-        centrada (p. ej. la salida de `from_xbeach`'s paso 5, ya
-        reescalada por quien llama). Reescalar una anomalía ya centrada
-        por un factor constante la mantiene centrada; solo hace falta
-        recortar al periodo del modelo y convertir a segundos desde
-        `tref`, igual que el resto de `from_xbeach`.
+        Unlike :meth:`from_xbeach`, the signal is **not** re-centred: the
+        column must already be an oscillation centred on zero (e.g. the
+        output of :meth:`from_xbeach` scaled by a constant factor, which
+        keeps it centred).
 
         Parameters
         ----------
         df : pandas.DataFrame
-            Índice de tiempo (hora local, mismo tref/tstart/tstop que el
-            resto del caso), con una columna de anomalía de nivel de agua
-            ya centrada en cero, en metros.
+            Datetime index in local time (the model times) and a water-level
+            oscillation column (m), centred on zero.
         column_name : str
-            Nombre de la columna con la anomalía.
+            Oscillation column.
         out_filename : str, optional
-            Nombre del archivo de salida (por defecto ``"sfincs.bzi"``).
+            Output file name (default ``"sfincs.bzi"``).
 
         Returns
         -------
         str
-            Ruta completa del archivo generado dentro del modelo.
+            Path of the written file.
 
         Raises
         ------
+        ValueError
+            If ``column_name`` is not in ``df``.
         RuntimeError
-            Si la serie queda vacía tras el recorte temporal.
+            If no values are left within the model period.
         """
         tref = utils.parse_datetime(self.model.config["tref"])
         tstart = utils.parse_datetime(self.model.config["tstart"])
         tstop = utils.parse_datetime(self.model.config["tstop"])
 
         if column_name not in df.columns:
-            raise ValueError(f"No existe columna '{column_name}' en df")
+            raise ValueError(f"Column '{column_name}' not found in df.")
 
-        serie = df[[column_name]].copy()
-        serie = serie.loc[tstart:tstop]
-
+        serie = df[[column_name]].copy().loc[tstart:tstop]
         if serie.empty:
-            raise RuntimeError("La serie de oleaje quedó vacía tras el recorte temporal")
+            raise RuntimeError("The wave series is empty within the model period.")
 
         time_sec = (serie.index - tref).total_seconds().astype(int)
-
         df_out = pd.DataFrame({"time": time_sec, "bzi": serie[column_name].values})
 
         out_path = os.path.join(self.model.root, out_filename)
         df_out.to_csv(out_path, sep=" ", index=False, header=False, float_format="%.6f")
 
         self.model.set_config("bzifile", out_filename)
-
         return out_path

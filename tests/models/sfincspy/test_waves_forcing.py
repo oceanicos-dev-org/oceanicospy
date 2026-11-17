@@ -17,13 +17,6 @@ GRID_KWARGS = dict(
     x0=423966, y0=1389496, dx=15, dy=15, mmax=75, nmax=65, rotation=38, epsg=32617,
 )
 
-# Real XBeach output already inspected during the SFINCS audit: contains both
-# 'zs' (~0.42-0.90 m) and 'H' (~0.0-0.125 m) at the boundary point.
-REAL_NC_PATH = Path(
-    "D:/04_BACKUP_SERVER/daguirreos_sfincs/sfincs/DANIEL_AGUIRRE/data/E1/E1_profile1D_Nov2008.nc"
-)
-
-
 @pytest.fixture
 def model(tmp_path):
     m = SfincsModel(root=str(tmp_path / "run"), mode="w+")
@@ -166,21 +159,14 @@ class TestFromXbeach:
             waves.from_xbeach(str(nc_path))
 
 
-@pytest.mark.skipif(not REAL_NC_PATH.exists(), reason="Real XBeach output not available on this machine")
-class TestFromXbeachRealData:
-    def test_uses_zs_not_h_on_real_e1_output(self, model, tmp_path):
-        # E1's real event window: 2008-11-20 11:00 to 2008-11-24 21:00.
-        model.setup_config(
-            tref="20081120 110000", tstart="20081120 110000", tstop="20081124 210000",
-        )
+class TestUsesFreeSurfaceNotWaveHeight:
+    def test_bzi_is_demeaned_zs_not_h(self, model, tmp_path):
+        nc_path = tmp_path / "xb.nc"
+        _write_synthetic_xbeach_nc(nc_path, n_time=48, mean_before=0.6, mean_after=0.6)
 
-        waves = WavesForcing(model)
-        out_path = waves.from_xbeach(str(REAL_NC_PATH), point_index=0)
-
+        out_path = WavesForcing(model).from_xbeach(str(nc_path), point_index=0)
         written = pd.read_csv(out_path, sep=" ", header=None, names=["time", "bzi"])
 
-        # Regression check: H at this boundary point never exceeds ~0.125 m
-        # and is always >= 0 (it's a wave-height magnitude); a correctly
-        # demeaned zs anomaly should span a visibly wider, zero-centered range.
-        assert (written["bzi"] < 0).any(), "bzi must cross zero - it must not still be H"
+        # H is a non-negative magnitude; the demeaned zs crosses zero
+        assert (written["bzi"] < 0).any()
         assert abs(written["bzi"].mean()) < 1e-6

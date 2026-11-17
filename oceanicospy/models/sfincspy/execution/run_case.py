@@ -6,34 +6,25 @@ from .... import utils
 
 class CaseRunner:
     """
-    Genera y envía el script SLURM para correr un caso SFINCS ya armado
-    (ver :class:`~oceanicospy.models.sfincspy.preprocess.prepare_case.SfincsCaseBuilder`)
-    en el clúster `fisica`, vía Singularity.
+    Write the SLURM script that runs a built SFINCS case on an HPC cluster
+    through a Singularity container.
 
-    Sigue el mismo patrón que
-    ``xbeachpy.execution.CaseRunner.fill_slurm_file``, pero con una
-    plantilla propia (``launcher_sfincs_cecc_base.slurm``) - a diferencia
-    de XBeach, SFINCS se ejecuta con OpenMP dentro del contenedor
-    Singularity, **sin** `mpirun` (confirmado contra los
-    `slurm_launch.sh` reales de este proyecto en
-    `SFINCSPY/Casos/*/run/slurm_launch.sh`), y no mueve archivos de
-    resultado al terminar: `sfincs_map.nc`/`sfincs_his.nc`/`sfincs.log`
-    quedan en la misma carpeta `run/` donde corrió (esa es la
-    convención real ya usada en el proyecto), y solo la salida propia de
-    SLURM (`.out`/`.err`) va a `output/`.
+    Follows ``xbeachpy.execution.CaseRunner.fill_slurm_file``, with its own
+    template (``data/hpc_slurm_templates/launcher_sfincs_cecc_base.slurm``).
+    SFINCS runs with OpenMP inside the container, without ``mpirun``, and
+    writes its output (``sfincs_map.nc``, ``sfincs_his.nc``, ``sfincs.log``)
+    in the ``run/`` folder; only the SLURM log files go to ``output/``.
 
     Parameters
     ----------
     dict_folders : dict
-        Diccionario de carpetas del caso, con al menos las llaves
-        ``"run"`` y ``"output"`` (ver
-        :class:`~oceanicospy.models.sfincspy.Initializer`).
+        Case folders, with at least the keys ``"run"`` and ``"output"``
+        (see :class:`~oceanicospy.models.sfincspy.Initializer`).
 
     Notes
     -----
-    SFINCS lee ``sfincs.inp`` del directorio de trabajo actual (no recibe
-    la ruta del caso como argumento) - por eso la plantilla hace ``cd``
-    a `run_path_case` antes de invocar el ejecutable.
+    SFINCS reads ``sfincs.inp`` from the working directory, so the template
+    changes to the run folder before calling the executable.
     """
 
     def __init__(self, dict_folders: dict) -> None:
@@ -47,26 +38,23 @@ class CaseRunner:
         image_name: str = "sfincs-cpu_sfincs-v2.3.0-mt-Faber-Release.sif",
     ) -> str:
         """
-        Copia la plantilla `.slurm` de SFINCS a la carpeta `run/` del
-        caso y rellena sus campos.
+        Copy the SFINCS SLURM template to the case ``run/`` folder and fill it.
 
         Parameters
         ----------
         case_name : str
-            Nombre del caso (usado como ``--job-name``).
+            Case name, used as ``--job-name``.
         ntasks : int
-            Número de tareas por nodo (``--ntasks-per-node``) - en la
-            práctica, el número de hilos OpenMP disponibles para SFINCS.
+            Tasks per node (``--ntasks-per-node``), i.e. the OpenMP threads
+            available to SFINCS.
         image_name : str, optional
-            Nombre del contenedor Singularity en ``/localapps`` (por
-            defecto la imagen v2.3.0 "Faber" ya usada en producción para
-            este proyecto).
+            Singularity image in ``/localapps`` on the cluster. Default is
+            the SFINCS v2.3.0 "Faber" CPU image.
 
         Returns
         -------
         str
-            Ruta completa del script `.slurm` generado, listo para
-            enviarse con ``sbatch``.
+            Path of the ``.slurm`` script, ready for ``sbatch``.
         """
         script_dir = Path(__file__).resolve().parent.parent.parent.parent
         data_dir = script_dir.parent / 'data'

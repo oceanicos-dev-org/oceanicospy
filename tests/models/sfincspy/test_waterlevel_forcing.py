@@ -52,10 +52,9 @@ class TestGetWaterlevelFromUHSLC:
 
 
 class TestDatumCorrectionPattern:
-    def test_pre_2019_correction_matches_main_xbeach_pattern(self, model, tmp_path):
-        """Reproduces the exact correction applied in this project's
-        main_xbeach.py scripts for UHSLC station 737: -2.0 m for any
-        timestamp on/before 2018-12-31 18:00, untouched after."""
+    def test_caller_datum_correction_on_returned_dataframe(self, model, tmp_path):
+        """A station datum step (here -2.0 m up to a cutoff date) is applied
+        by the caller on the returned DataFrame; the reader leaves it alone."""
         input_dir = str(tmp_path) + "/"
         _write_raw_uhslc_csv(tmp_path / "h737.csv", start="2018-12-31 10:00", hours=20)
 

@@ -12,52 +12,30 @@ from hydromt_sfincs import SfincsModel
 
 class BottomFriction:
     """
-    Rugosidad de Manning para modelos SFINCS.
+    Manning roughness for SFINCS models.
 
-    Ofrece dos niveles, ambos delegados a
-    ``SfincsModel.setup_manning_roughness``:
+    Two levels, both through ``SfincsModel.setup_manning_roughness``:
 
-    - :meth:`setup_uniform` - un único valor para tierra y otro para mar,
-      separados por una elevación de referencia (equivalente físicamente a
-      fijar ``manning_land``/``manning_sea`` a mano, pero por la vía oficial
-      del paquete, que además deja registrado ``manningfile`` en vez de
-      solo las claves escalares).
-    - :meth:`setup_from_landcover` - rugosidad espacialmente variable a
-      partir de un ráster de cobertura de suelo categórico + una tabla de
-      reclasificación (clase -> Manning n). Cualquier celda sin dato en el
-      ráster de cobertura (p. ej. fuera de la cuenca delimitada) se rellena
-      con ``manning_land``/``manning_sea`` según la elevación, igual que en
-      :meth:`setup_uniform`.
+    - :meth:`setup_uniform`: one value on land and one at sea, split by a
+      reference elevation (written as ``manningfile``).
+    - :meth:`setup_from_landcover`: spatially varying roughness from a
+      categorical land-cover raster and a reclassification table
+      (class -> Manning n). Cells without land cover get the land or sea
+      value according to their elevation, as in :meth:`setup_uniform`.
 
-    :meth:`rasterize_landcover` y :meth:`write_reclass_table` son
-    utilidades genéricas para construir esos dos insumos a partir de
-    polígonos (p. ej. las subcuencas y zonas impermeables ya delimitadas
-    para SWMM) - no son específicas de ningún proyecto en particular.
+    :meth:`rasterize_landcover` and :meth:`write_reclass_table` build those
+    two inputs from polygons. The same land-cover raster can be reused for
+    infiltration (``Infiltration.setup_cn_from_landcover``).
 
     Parameters
     ----------
     model : SfincsModel
-        Instancia del modelo SFINCS inicializada con HydroMT.
+        SFINCS model instance initialised with HydroMT.
     """
-
-    #: Valores de Manning por defecto para un esquema de 2 clases
-    #: verde/permeable vs. impermeable (calles y techos), como los delimitados
-    #: para la cuenca de Los Almendros a partir de las subcuencas de SWMM.
-    #: - Impermeable: rango "pavimentado" (0.010-0.015) referenciado en la
-    #:   calibración manual de Manning ya hecha para este proyecto.
-    #: - Verde/permeable: 0.035, el mismo valor de "manning_land" usado por
-    #:   Gaido-Lasserre (2024) para un dominio SFINCS costero comparable.
-    DEFAULT_LANDCOVER_MANNING: Dict[int, float] = {
-        1: 0.035,  # verde / permeable
-        2: 0.015,  # impermeable (calles, techos)
-    }
 
     def __init__(self, model: SfincsModel) -> None:
         self.model = model
 
-    # --------------------------------------------------
-    # NIVEL 2: rugosidad uniforme tierra/mar
-    # --------------------------------------------------
     def setup_uniform(
         self,
         manning_land: float = 0.04,
@@ -65,17 +43,17 @@ class BottomFriction:
         rgh_lev_land: float = 0.0,
     ) -> None:
         """
-        Configura rugosidad uniforme, diferenciada tierra/mar.
+        Set a uniform roughness, different on land and at sea.
 
         Parameters
         ----------
         manning_land : float, optional
-            Manning n para celdas con elevación >= `rgh_lev_land`.
+            Manning n for cells with elevation >= ``rgh_lev_land``.
         manning_sea : float, optional
-            Manning n para celdas con elevación < `rgh_lev_land`.
+            Manning n for cells with elevation < ``rgh_lev_land``.
         rgh_lev_land : float, optional
-            Elevación de referencia (m, mismo datum que `dep`) que separa
-            tierra de mar para este propósito. Por defecto 0.0.
+            Elevation (m, same datum as ``dep``) separating land and sea.
+            Default 0.0.
         """
         self.model.setup_manning_roughness(
             manning_land=manning_land,
@@ -83,9 +61,6 @@ class BottomFriction:
             rgh_lev_land=rgh_lev_land,
         )
 
-    # --------------------------------------------------
-    # NIVEL 3: rugosidad espacial por cobertura de suelo
-    # --------------------------------------------------
     def setup_from_landcover(
         self,
         lulc_path: Union[str, Path],
@@ -95,35 +70,28 @@ class BottomFriction:
         rgh_lev_land: float = 0.0,
     ) -> None:
         """
-        Configura rugosidad espacialmente variable a partir de un ráster
-        de cobertura de suelo categórico.
+        Set a spatially varying roughness from a categorical land-cover raster.
 
         Parameters
         ----------
         lulc_path : str or Path
-            Ráster categórico de cobertura de suelo (una clase entera por
-            celda, p. ej. generado con :meth:`rasterize_landcover`). No
-            necesita estar registrado en el `data_catalog` - HydroMT acepta
-            una ruta de archivo directamente.
+            Land-cover raster (one integer class per cell, e.g. from
+            :meth:`rasterize_landcover`). A file path is accepted directly;
+            it does not need to be in the data catalog.
         reclass_table : str or Path
-            CSV con el mapeo clase -> Manning n (p. ej. generado con
+            CSV with the class -> Manning n mapping (e.g. from
             :meth:`write_reclass_table`).
         manning_land, manning_sea : float, optional
-            Valores de respaldo para celdas fuera de la cobertura de suelo
-            dada (nodata en `lulc_path`), separados por `rgh_lev_land`.
-            Por defecto 0.035/0.02 - ver :attr:`DEFAULT_LANDCOVER_MANNING`
-            para la justificación del valor de tierra.
+            Fallback values for cells without land cover (nodata in
+            ``lulc_path``), split by ``rgh_lev_land``.
         rgh_lev_land : float, optional
-            Elevación de referencia (m) para el respaldo tierra/mar.
+            Reference elevation (m) for the land/sea fallback.
 
         Notes
         -----
-        HydroMT interpola linealmente (``interp_method="linear"``) al
-        remuestrear el ráster de cobertura sobre la malla SFINCS, así que
-        las celdas justo en el borde entre dos clases pueden salir con un
-        valor de Manning intermedio, no un salto abrupto entre los dos
-        valores de la tabla de reclasificación. Esto es un comportamiento
-        de HydroMT, no configurable desde aquí.
+        HydroMT resamples the land cover to the model grid with linear
+        interpolation, so cells on the border between two classes can get an
+        intermediate Manning value.
         """
         self.model.setup_manning_roughness(
             datasets_rgh=[{"lulc": str(lulc_path), "reclass_table": str(reclass_table)}],
@@ -132,9 +100,6 @@ class BottomFriction:
             rgh_lev_land=rgh_lev_land,
         )
 
-    # --------------------------------------------------
-    # UTILIDADES GENÉRICAS DE CONSTRUCCIÓN DE INSUMOS
-    # --------------------------------------------------
     @staticmethod
     def rasterize_landcover(
         class_polygons: Dict[int, List[gpd.GeoDataFrame]],
@@ -146,43 +111,37 @@ class BottomFriction:
         dtype: str = "uint8",
     ) -> str:
         """
-        Quema capas de polígonos en un ráster de cobertura de suelo
-        categórico, para usar con :meth:`setup_from_landcover`.
+        Burn polygon layers into a categorical land-cover raster, for
+        :meth:`setup_from_landcover` (and ``Infiltration``).
 
-        Las clases se queman en el orden en que aparecen en
-        `class_polygons`: una clase posterior sobreescribe a una anterior
-        donde se superpongan. Esto permite, por ejemplo, quemar primero el
-        polígono completo de una subcuenca como clase "verde" y luego
-        encima su parte impermeable como clase "impermeable", sin tener
-        que calcular explícitamente la diferencia geométrica entre ambas
-        capas.
+        Classes are burned in the order of ``class_polygons``: a later class
+        overwrites an earlier one where they overlap. For example, a whole
+        catchment can be burned as "pervious" and then its impervious part
+        on top, without computing the geometric difference.
 
         Parameters
         ----------
         class_polygons : dict of {int: list of GeoDataFrame}
-            Mapeo de id de clase (entero > 0; 0 queda reservado para
-            `nodata`) a una lista de GeoDataFrames con los polígonos de esa
-            clase. Cada GeoDataFrame se reproyecta a `crs` si su CRS
-            declarado es distinto.
+            Class id (integer > 0; 0 is reserved for ``nodata``) to the
+            GeoDataFrames with its polygons. Each GeoDataFrame is reprojected
+            to ``crs`` if needed.
         out_path : str or Path
-            Ruta del GeoTIFF de salida.
+            Output GeoTIFF.
         resolution : float
-            Tamaño de celda (m) del ráster de salida.
+            Cell size (m) of the output raster.
         bounds : tuple of (xmin, ymin, xmax, ymax)
-            Extensión del ráster de salida, en el sistema de referencia
-            `crs`.
+            Extent of the output raster, in ``crs``.
         crs : CRS-like
-            Sistema de referencia del ráster de salida (p. ej. ``32617`` o
-            ``"EPSG:32617"``).
+            Output CRS (e.g. ``32617`` or ``"EPSG:32617"``).
         nodata : int, optional
-            Valor de celda sin cobertura asignada (por defecto 0).
+            Value of cells without a class (default 0).
         dtype : str, optional
-            Tipo de dato del ráster de salida (por defecto ``"uint8"``).
+            Output data type (default ``"uint8"``).
 
         Returns
         -------
         str
-            Ruta del GeoTIFF generado.
+            Path of the written GeoTIFF.
         """
         xmin, ymin, xmax, ymax = bounds
         width = int(np.ceil((xmax - xmin) / resolution))
@@ -226,22 +185,21 @@ class BottomFriction:
         out_path: Union[str, Path],
     ) -> str:
         """
-        Escribe una tabla de reclasificación clase -> Manning n en el
-        formato que espera HydroMT-SFINCS (CSV con el id de clase como
-        índice y una columna ``N`` con el valor de Manning).
+        Write a class -> Manning n reclassification table in the format
+        HydroMT-SFINCS expects (CSV with the class id as index and an ``N``
+        column).
 
         Parameters
         ----------
         mapping : dict of {int: float}
-            Mapeo de id de clase a valor de Manning n. Por defecto puede
-            usarse :attr:`DEFAULT_LANDCOVER_MANNING`.
+            Class id to Manning n.
         out_path : str or Path
-            Ruta del CSV de salida.
+            Output CSV.
 
         Returns
         -------
         str
-            Ruta del CSV generado.
+            Path of the written CSV.
         """
         out_path = Path(out_path)
         lines = [",N"] + [f"{class_id},{n}" for class_id, n in mapping.items()]
