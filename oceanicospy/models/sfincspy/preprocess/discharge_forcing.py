@@ -1,242 +1,190 @@
-import os
-from typing import Dict, Optional, Tuple
+from typing import Dict, Tuple, Union
 
+import geopandas as gpd
 import numpy as np
 import pandas as pd
-import geopandas as gpd
-from hydromt_sfincs import SfincsModel, utils
+from hydromt_sfincs import SfincsModel
 
-GRAVITY = 9.81
-
-
-# --------------------------------------------------
-# FÍSICA DEL INTERCAMBIO 1D-2D (funciones puras, sin SWMM)
-# --------------------------------------------------
-def orifice_discharge(head_diff: float, area: float, cd: float = 0.6) -> float:
-    """
-    Caudal de orificio sumergido, según la formulación clásica
-    (la misma usada por SFINCS para su propio `drnfile` tipo "culvert",
-    ``par1 = Cd * A * sqrt(2g)``, y por Iber-SWMM para la condición
-    sumergida en la conexión pozo-superficie: Sañudo et al. 2025).
-
-    Parameters
-    ----------
-    head_diff : float
-        Diferencia de carga entre los dos lados de la conexión (m).
-        Puede ser negativa - el signo del resultado sigue el de
-        `head_diff` (caudal positivo en la dirección de mayor a menor
-        carga).
-    area : float
-        Área efectiva de la abertura (m²) - p. ej. el área de la rejilla
-        o tapa del pozo.
-    cd : float, optional
-        Coeficiente de descarga adimensional. Por defecto 0.6 - valor de
-        uso general para orificios, coincide con el que el manual de
-        SFINCS recomienda para su formulación de weir (``Cd = 0.6``).
-
-    Returns
-    -------
-    float
-        Caudal (m³/s), con el mismo signo que `head_diff`.
-    """
-    return np.sign(head_diff) * cd * area * np.sqrt(2 * GRAVITY * abs(head_diff))
+__all__ = ["DischargeForcing"]
 
 
-def weir_discharge(head: float, length: float, cw: float = 1.7) -> float:
-    """
-    Caudal de vertedero de pared delgada, para la condición no sumergida
-    (el nivel del lado receptor está por debajo de la cresta/cota de
-    referencia).
-
-    Parameters
-    ----------
-    head : float
-        Carga sobre la cresta del vertedero (m). Valores <= 0 devuelven
-        caudal 0 (no hay flujo si el nivel no supera la cresta).
-    length : float
-        Longitud efectiva de la cresta (m) - p. ej. el perímetro de la
-        rejilla o tapa del pozo.
-    cw : float, optional
-        Coeficiente de vertedero. Por defecto 1.7 (rango típico para
-        vertedero de pared delgada en unidades SI, 1.7-1.84).
-
-    Returns
-    -------
-    float
-        Caudal (m³/s), siempre >= 0.
-    """
-    if head <= 0:
-        return 0.0
-    return cw * length * head**1.5
-
-
-def compute_exchange_discharge(
-    node_hgl: float,
-    rim_elevation: float,
-    surface_level: float,
-    area: float,
-    length: float,
-    cd: float = 0.6,
-    cw: float = 1.7,
-) -> float:
-    """
-    Caudal de intercambio pozo-superficie en un instante dado, replicando
-    la lógica de Iber-SWMM (Sañudo et al. 2025): vertedero cuando la
-    superficie está por debajo de la cota del pozo/rejilla (no sumergido),
-    orificio cuando ambos lados están sumergidos.
-
-    Convención de signo: **positivo = desborde del pozo hacia la
-    superficie** (agua saliendo de la red hacia la calle); **negativo =
-    reingreso** (agua de la calle entrando de vuelta a la red, una vez
-    hay capacidad).
-
-    Parameters
-    ----------
-    node_hgl : float
-        Línea de energía (nivel de agua) en el nodo SWMM, en el mismo
-        datum vertical que `rim_elevation`/`surface_level`.
-    rim_elevation : float
-        Cota de la tapa/rejilla del pozo (mismo datum).
-    surface_level : float
-        Nivel de agua en la superficie junto al pozo (p. ej. calculado
-        por SFINCS en la celda correspondiente), mismo datum.
-    area : float
-        Área efectiva de la abertura (m²), para el régimen de orificio.
-    length : float
-        Longitud efectiva de la cresta (m), para el régimen de vertedero.
-    cd, cw : float, optional
-        Coeficientes de descarga de orificio y vertedero.
-
-    Returns
-    -------
-    float
-        Caudal de intercambio (m³/s). Positivo = desborde hacia la
-        superficie; negativo = reingreso hacia la red.
-
-    Notes
-    -----
-    Esta función es independiente de SWMM y de SFINCS - solo necesita
-    los tres niveles como argumentos. Quien la use es responsable de
-    obtener `node_hgl` (p. ej. de ``pyswmm``) y `surface_level` (p. ej.
-    de la salida de SFINCS) en el mismo datum vertical que el DEM.
-    """
-    surface_submerged = surface_level > rim_elevation
-
-    if not surface_submerged:
-        # Calle seca (o a lo sumo al nivel de la tapa): solo puede haber
-        # flujo si el nodo se satura por encima de la cota del pozo -
-        # vertedero no sumergido. Si el nodo tampoco supera la cota, no
-        # hay ninguna conexión activa.
-        if node_hgl > rim_elevation:
-            return weir_discharge(node_hgl - rim_elevation, length, cw=cw)
-        return 0.0
-
-    # Calle ya inundada (nivel superficial por encima de la cota del pozo):
-    # orificio sumergido en ambos lados, con signo dado por quién tiene
-    # mayor carga - esto cubre tanto que el desborde continúe (nodo más
-    # alto) como el reingreso (nodo baja por debajo del nivel de la calle).
-    return orifice_discharge(node_hgl - surface_level, area, cd=cd)
-
-
-# --------------------------------------------------
-# FORZANTE DE DESCARGA PUNTUAL PARA SFINCS (genérico, sin SWMM)
-# --------------------------------------------------
 class DischargeForcing:
     """
-    Generador de forzante de descarga puntual (`srcfile`/`disfile`) para
-    SFINCS, a partir de una o más series de tiempo de caudal.
+    Point discharges for SFINCS (``srcfile`` / ``disfile``).
 
-    Es completamente genérico respecto al origen de la serie: puede venir
-    de un intercambio con SWMM (ver :func:`compute_exchange_discharge`),
-    de una prueba sintética, o de cualquier otra fuente - esta clase solo
-    necesita la serie y las coordenadas del punto. Esto permite probar el
-    forzante de SFINCS de forma aislada, sin necesidad de tener SWMM
-    corriendo.
+    Each point has a discharge series in m³/s: positive values add water to
+    the model cell that contains the point, negative values remove it.
 
     Parameters
     ----------
     model : SfincsModel
-        Instancia del modelo SFINCS inicializada con HydroMT.
+        SFINCS model instance initialised with HydroMT, with grid and model
+        times already set.
+
+    Attributes
+    ----------
+    point_ids : dict
+        ``{point name: SFINCS point number}`` for every point set so far
+        (HydroMT numbers the points with integers).
+
+    Notes
+    -----
+    - SFINCS limits an extraction to the water present in the cell
+      (``sfincs_continuity.f90``): when a negative discharge asks for more,
+      only the available volume is removed and the rest is not reported.
+    - HydroMT writes ``sfincs.dis`` with two decimals (``%7.2f``), which
+      rounds small discharges to zero. Write the case with
+      ``SfincsCaseBuilder.write`` (six decimals), or call
+      ``model.write_forcing(data_vars=["discharge"], fmt="%12.6f")``.
     """
 
     def __init__(self, model: SfincsModel) -> None:
         self.model = model
-        #: Mapeo {id_punto original -> índice entero SFINCS}, poblado por
-        #: la última llamada a :meth:`from_dataframe`.
         self.point_ids: Dict[object, int] = {}
 
     def from_dataframe(
         self,
         df: pd.DataFrame,
         locations: Dict[object, Tuple[float, float]],
-    ) -> str:
+        merge: bool = True,
+    ) -> Dict[object, int]:
         """
-        Registra uno o más puntos de descarga a partir de un DataFrame.
+        Add discharge points from a table of series.
 
         Parameters
         ----------
         df : pandas.DataFrame
-            Índice de tiempo (hora local) y una columna de caudal (m³/s)
-            por cada punto, con el mismo nombre que las llaves de
-            `locations`.
+            Datetime index and one discharge column (m³/s) per point, named
+            as the keys of ``locations``.
         locations : dict
-            Mapeo ``{id_punto: (x, y)}`` en el CRS del modelo. `id_punto`
-            debe coincidir con el nombre de la columna correspondiente en
-            `df` (p. ej. los nombres de nodo de SWMM: ``"R1"``, ``"R2"``...).
-            HydroMT-SFINCS exige que las columnas de la serie y el índice
-            de `locations` sean enteros (misma convención que usa SFINCS
-            internamente para numerar puntos de frontera/descarga) - esta
-            función hace la conversión por dentro, así que `id_punto`
-            puede ser cualquier identificador legible (p. ej. el nombre
-            del nodo SWMM); el mapeo usado queda en
-            :attr:`point_ids` para poder rastrear qué índice SFINCS
-            corresponde a cada punto original.
+            ``{point name: (x, y)}`` in the model CRS.
+        merge : bool, optional
+            If True (default), keep the points set by earlier calls (a point
+            with the same name is replaced); otherwise replace them all.
 
         Returns
         -------
-        str
-            Nombre del archivo de descarga (``disfile``) que SFINCS
-            escribirá al llamar a ``model.write()`` - HydroMT controla el
-            nombre real, no se escribe nada en esta llamada.
+        dict
+            :attr:`point_ids`.
 
         Raises
         ------
         ValueError
-            Si algún id en `locations` no tiene columna correspondiente
-            en `df`.
-        RuntimeError
-            Si la serie queda vacía tras el recorte temporal.
+            If a point has no column in ``df``, or the series have no values
+            within the model period.
+
+        Examples
+        --------
+        >>> dq = DischargeForcing(model)
+        >>> dq.from_dataframe(df, locations={"outfall": (423630.4, 1390276.2)})
         """
         missing = [pid for pid in locations if pid not in df.columns]
         if missing:
-            raise ValueError(
-                f"Faltan columnas en df para los puntos: {missing}"
-            )
-
-        tstart = utils.parse_datetime(self.model.config["tstart"])
-        tstop = utils.parse_datetime(self.model.config["tstop"])
-
-        ids = list(locations.keys())
-        self.point_ids = {pid: i + 1 for i, pid in enumerate(ids)}
-
-        df_out = df[ids].loc[tstart:tstop].dropna()
-
+            raise ValueError(f"No discharge column for points {missing}.")
+        tstart, tstop = self.model.get_model_time()
+        ids = list(locations)
+        df_out = df[ids].sort_index().loc[tstart:tstop].astype(float).dropna()
         if df_out.empty:
-            raise RuntimeError(
-                "La serie de descarga quedó vacía tras el recorte temporal"
-            )
+            raise ValueError("The discharge series have no values within the model period.")
 
-        df_out = df_out.rename(columns=self.point_ids)
+        if not merge:
+            self.point_ids = {}
+            self.model.forcing.pop("dis", None)
+        for pid in ids:
+            if pid not in self.point_ids:
+                self.point_ids[pid] = max(self.point_ids.values(), default=0) + 1
 
+        numbers = [self.point_ids[pid] for pid in ids]
         gdf = gpd.GeoDataFrame(
-            index=[self.point_ids[pid] for pid in ids],
-            geometry=gpd.points_from_xy(
-                [locations[pid][0] for pid in ids],
-                [locations[pid][1] for pid in ids],
-            ),
+            index=numbers,
+            geometry=gpd.points_from_xy([locations[p][0] for p in ids], [locations[p][1] for p in ids]),
             crs=self.model.crs,
         )
+        self.model.setup_discharge_forcing(
+            timeseries=df_out.rename(columns=self.point_ids), locations=gdf, merge=True
+        )
+        return self.point_ids
 
-        self.model.setup_discharge_forcing(timeseries=df_out, locations=gdf)
+    def distributed(
+        self,
+        series: pd.DataFrame,
+        cells: Union[pd.DataFrame, gpd.GeoDataFrame],
+        group_col: str = "group",
+        weight_col: str = "weight",
+        sign: float = -1.0,
+        merge: bool = True,
+        tol: float = 1e-3,
+    ) -> pd.DataFrame:
+        """
+        Spread each group discharge over several cells with weights.
 
-        return self.model.config.get("disfile", "sfincs.dis")
+        For every row of ``cells`` a point discharge
+        ``sign * weight * series[group]`` is added. Typical use: the inflow
+        to a drainage inlet, computed by a sewer model, removed from the
+        street cells that drain to it (``sign=-1``, so a negative inflow, a
+        surcharge, returns water to those cells).
+
+        Parameters
+        ----------
+        series : pandas.DataFrame
+            Datetime index and one discharge column (m³/s) per group.
+        cells : DataFrame or GeoDataFrame
+            One row per cell with the group name (``group_col``), the
+            weight (``weight_col``) and the position: ``x`` and ``y``
+            columns in the model CRS, or point geometries.
+        group_col, weight_col : str, optional
+            Column names in ``cells``. Defaults ``"group"`` and ``"weight"``.
+        sign : float, optional
+            Factor applied to the group discharge. Default -1 (a positive
+            group discharge leaves the model).
+        merge : bool, optional
+            Keep the points set by earlier calls (default).
+        tol : float, optional
+            Allowed deviation from 1 of the sum of weights of each group.
+
+        Returns
+        -------
+        pandas.DataFrame
+            The points added: name, group, x, y and weight.
+
+        Raises
+        ------
+        ValueError
+            If a group has no column in ``series``, its weights do not add up
+            to 1, or a point is outside the active model cells.
+
+        Examples
+        --------
+        >>> cells = pd.read_csv("capture_cells.csv")   # group, x, y, weight
+        >>> dq.distributed(inlet_inflow, cells)
+        """
+        tab = pd.DataFrame(cells).copy()
+        if isinstance(cells, gpd.GeoDataFrame):
+            pts = cells.to_crs(self.model.crs).geometry
+            tab["x"], tab["y"] = pts.x.values, pts.y.values
+        missing = sorted(set(tab[group_col]) - set(series.columns))
+        if missing:
+            raise ValueError(f"No discharge column for groups {missing}.")
+        sums = tab.groupby(group_col)[weight_col].sum()
+        bad = sums[(sums - 1.0).abs() > tol]
+        if not bad.empty:
+            raise ValueError(f"Weights do not add up to 1 for groups: {bad.round(4).to_dict()}.")
+
+        # every point must fall in an active cell
+        msk = self.model.grid["msk"].values
+        m, n = ~self.model.reggrid.transform * (tab["x"].values, tab["y"].values)
+        m, n = np.floor(m).astype(int), np.floor(n).astype(int)
+        nmax, mmax = msk.shape
+        ok = (m >= 0) & (m < mmax) & (n >= 0) & (n < nmax)
+        ok[ok] = msk[n[ok], m[ok]] > 0
+        if not ok.all():
+            raise ValueError(f"{int((~ok).sum())} points are outside the active model cells.")
+
+        tab["name"] = [f"{g}_{k:03d}" for k, g in enumerate(tab[group_col])]
+        df = pd.DataFrame(
+            {r.name: sign * getattr(r, weight_col) * series[getattr(r, group_col)]
+             for r in tab.itertuples()},
+            index=series.index,
+        )
+        self.from_dataframe(df, {r.name: (r.x, r.y) for r in tab.itertuples()}, merge=merge)
+        return tab[["name", group_col, "x", "y", weight_col]]

@@ -70,7 +70,6 @@ slides = [
 ]
 sfincs = [
   "hydromt_sfincs>=1.2.2",
-  "pyswmm>=2.1.0",
 ]
 
 [tool.pytest.ini_options]
