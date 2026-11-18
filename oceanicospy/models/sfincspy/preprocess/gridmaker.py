@@ -27,7 +27,8 @@ class GridMaker:
 
     Notes
     -----
-    - Regular grid only (no quadtree, no subgrid).
+    - Regular grid (no quadtree). For a coarse grid with the fine
+      topography in subgrid tables, see ``BathyMaker.setup_subgrid``.
     - ``x0``/``y0`` are the grid origin (corner of the first cell), not the
       centre of the first cell, following the HydroMT-SFINCS convention.
     - ``mmax`` is the number of cells along the local **x** axis (paired

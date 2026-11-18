@@ -9,6 +9,9 @@ from rasterio.transform import from_origin
 
 from hydromt_sfincs import SfincsModel
 
+#: Model attribute where the roughness choice is kept for subgrid tables
+ROUGHNESS_ATTR = "_oceanicospy_roughness"
+
 
 class BottomFriction:
     """
@@ -22,6 +25,12 @@ class BottomFriction:
       categorical land-cover raster and a reclassification table
       (class -> Manning n). Cells without land cover get the land or sea
       value according to their elevation, as in :meth:`setup_uniform`.
+
+    With subgrid tables (``BathyMaker.setup_subgrid``) SFINCS takes the
+    roughness from the tables, not from ``manningfile``. Each method also
+    records its choice in the model, and ``setup_subgrid`` uses it to build
+    the tables; call this class **before** ``setup_subgrid``. Models without
+    subgrid are not affected.
 
     :meth:`rasterize_landcover` and :meth:`write_reclass_table` build those
     two inputs from polygons. The same land-cover raster can be reused for
@@ -54,12 +63,20 @@ class BottomFriction:
         rgh_lev_land : float, optional
             Elevation (m, same datum as ``dep``) separating land and sea.
             Default 0.0.
+
+        Raises
+        ------
+        ValueError
+            If the model already has subgrid tables.
         """
+        self._check_no_subgrid()
         self.model.setup_manning_roughness(
             manning_land=manning_land,
             manning_sea=manning_sea,
             rgh_lev_land=rgh_lev_land,
         )
+        self._record(datasets_rgh=[], manning_land=manning_land,
+                     manning_sea=manning_sea, rgh_lev_land=rgh_lev_land)
 
     def setup_from_landcover(
         self,
@@ -92,13 +109,33 @@ class BottomFriction:
         HydroMT resamples the land cover to the model grid with linear
         interpolation, so cells on the border between two classes can get an
         intermediate Manning value.
+
+        Raises
+        ------
+        ValueError
+            If the model already has subgrid tables.
         """
+        self._check_no_subgrid()
+        datasets_rgh = [{"lulc": str(lulc_path), "reclass_table": str(reclass_table)}]
         self.model.setup_manning_roughness(
-            datasets_rgh=[{"lulc": str(lulc_path), "reclass_table": str(reclass_table)}],
+            datasets_rgh=datasets_rgh,
             manning_land=manning_land,
             manning_sea=manning_sea,
             rgh_lev_land=rgh_lev_land,
         )
+        self._record(datasets_rgh=datasets_rgh, manning_land=manning_land,
+                     manning_sea=manning_sea, rgh_lev_land=rgh_lev_land)
+
+    def _check_no_subgrid(self) -> None:
+        if "sbgfile" in self.model.config:
+            raise ValueError(
+                "The model already has subgrid tables, which hold the roughness. "
+                "Set the roughness before BathyMaker.setup_subgrid and build the "
+                "subgrid again."
+            )
+
+    def _record(self, **roughness) -> None:
+        setattr(self.model, ROUGHNESS_ATTR, roughness)
 
     @staticmethod
     def rasterize_landcover(

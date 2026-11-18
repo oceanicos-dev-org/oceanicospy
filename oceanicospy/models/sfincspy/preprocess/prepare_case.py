@@ -61,6 +61,15 @@ class SfincsCaseBuilder:
     >>> builder.wind.from_era5_nc(nc_path=local_era5_nc)
     >>> builder.precipitation.uniform(rain_series)  # mm/h
     >>> builder.write()
+
+    The same case on a coarse grid with subgrid tables only adds one call,
+    after the roughness:
+
+    >>> builder.grid.setup_grid(x0=x0, y0=y0, dx=80, dy=80, mmax=mmax, nmax=nmax, epsg=32618)
+    >>> builder.bathy.setup_bathy([{"elevtn": "dem_10m", "reproj_method": "average"}],
+    ...                           zmin_active=-2, zmax_bounds=0)
+    >>> builder.friction.setup_uniform(manning_land=0.04, manning_sea=0.02)
+    >>> builder.bathy.setup_subgrid()  # 80 m cells, 10 m DEM -> 8 subgrid pixels
     """
 
     def __init__(
@@ -112,8 +121,15 @@ class SfincsCaseBuilder:
         ``sfincs.dis`` is rewritten with six decimals. HydroMT-SFINCS writes
         it with ``%7.2f`` by default (0.01 m3/s resolution), which rounds
         small discharges to zero and loses volume at small sources and sinks.
+
+        With subgrid tables, ``depfile`` and ``manningfile`` are left out of
+        ``sfincs.inp``: SFINCS does not read them, and HydroMT would list them
+        without writing the files.
         """
         self.model.write()
+        if "sbgfile" in self.model.config:
+            for key in ("depfile", "manningfile"):
+                self.model.config.pop(key, None)
         # forcing["dis"] holds the series; "discharge" is the group name
         # write_forcing expects in data_vars
         if "dis" in self.model.forcing:

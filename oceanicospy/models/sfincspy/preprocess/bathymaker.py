@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Union
 
+import warnings
+
 import geopandas as gpd
 import numpy as np
 from affine import Affine
@@ -10,6 +12,8 @@ from scipy.ndimage import maximum_filter
 from shapely.ops import transform as shp_transform
 
 from hydromt_sfincs import SfincsModel
+
+from .bottom_friction import ROUGHNESS_ATTR
 
 LinesLike = Union[str, Path, gpd.GeoDataFrame]
 
@@ -42,11 +46,16 @@ class BathyMaker:
       ``GridMaker.cell_corners``.
     - :meth:`preserve_crests` is an optional extra step for narrow linear
       barriers (walls, curbs) that the cell averaging would dilute.
+    - :meth:`setup_subgrid` builds subgrid tables from the fine DEM, so a
+      coarse grid keeps the effect of the fine topography and roughness.
+      It cannot be combined with :meth:`preserve_crests`.
     """
 
     def __init__(self, model: SfincsModel, data_catalog: str) -> None:
         self.model = model
         self.data_catalog = data_catalog
+        self.datasets_dep: Optional[List[Dict[str, Any]]] = None
+        self.crests_applied = False
 
     def setup_bathy(
         self,
@@ -126,6 +135,7 @@ class BathyMaker:
             datasets_dep = [{"elevtn": "topobathy"}]
 
         self.model.setup_dep(datasets_dep=datasets_dep)
+        self.datasets_dep = datasets_dep
 
         self.model.setup_mask_active(
             mask=mask,
@@ -180,20 +190,28 @@ class BathyMaker:
             ``cells_raised``, ``cells_exempt``, ``mean_rise`` and
             ``max_rise`` (m).
 
+        Raises
+        ------
+        ValueError
+            If the model already has subgrid tables.
+
         Notes
         -----
         - The active mask and boundaries are not recomputed.
-        - Intended for regular grids without subgrid tables. Alternatives
-          that do not alter ``dep`` are subgrid tables
-          (``SfincsModel.setup_subgrid``) and weir structures
-          (``Structures.setup_weirs``); do not combine them with this step
-          on the same lines.
+        - For regular grids without subgrid tables. Weir structures
+          (``Structures.setup_weirs``) represent barriers without changing
+          ``dep``; do not combine both on the same lines.
 
         Examples
         --------
         >>> bathy.setup_bathy(zmin_active=-4, zmax_bounds=-2)
         >>> bathy.preserve_crests(["walls.shp", "curbs.shp"], "dem_1m.tif")
         """
+        if "sbgfile" in self.model.config:
+            raise ValueError(
+                "preserve_crests changes dep, which SFINCS does not use with subgrid "
+                "tables. Represent the barriers with weirs (Structures.setup_weirs)."
+            )
         da_dep = self.model.grid["dep"]
         dep = da_dep.values.astype("float32")
         nmax, mmax = dep.shape
@@ -254,6 +272,7 @@ class BathyMaker:
         raise_ = touched & ~exempt
         rise = (crest - dep)[raise_]
         self.model.set_grid(da_dep.copy(data=np.where(raise_, crest, dep)), name="dep")
+        self.crests_applied = True
 
         return {
             "cells_raised": int(raise_.sum()),
@@ -261,3 +280,131 @@ class BathyMaker:
             "mean_rise": round(float(rise.mean()), 3) if rise.size else 0.0,
             "max_rise": round(float(rise.max()), 3) if rise.size else 0.0,
         }
+
+    def setup_subgrid(
+        self,
+        nr_subgrid_pixels: Optional[int] = None,
+        datasets_dep: Optional[List[Dict[str, Any]]] = None,
+        rivers: Optional[Union[str, Path, gpd.GeoDataFrame, List[Dict[str, Any]]]] = None,
+        nlevels: int = 10,
+        **kwargs,
+    ) -> int:
+        """
+        Build subgrid tables from the fine topobathymetry.
+
+        With subgrid tables, each model cell stores how volume, wet fraction
+        and conveyance vary with the water level, computed from the fine
+        DEM pixels inside it. A coarse grid then keeps the storage and flow
+        paths of the fine topography. Wraps ``SfincsModel.setup_subgrid``.
+
+        Call order: grid → :meth:`setup_bathy` (coarse ``dep`` and masks) →
+        roughness (``BottomFriction``) → this method.
+
+        Parameters
+        ----------
+        nr_subgrid_pixels : int, optional
+            Subgrid pixels per cell side; must be even (HydroMT
+            requirement). Default: cell size / resolution of the first
+            elevation dataset, which keeps the DEM pixels without resampling.
+        datasets_dep : list of dict, optional
+            Elevation datasets, as in :meth:`setup_bathy`. Default: the ones
+            used there.
+        rivers : str, Path, GeoDataFrame or list of dict, optional
+            River centrelines burnt into the subgrid, with attributes
+            ``rivwth`` (width, m) and ``rivdph`` (depth, m) or ``rivbed``
+            (bed level, m). A list of dict is passed unchanged as
+            ``datasets_riv`` (see ``SfincsModel.setup_subgrid``).
+        nlevels : int, optional
+            Water levels per table. Default 10.
+        **kwargs
+            Other ``SfincsModel.setup_subgrid`` arguments (e.g.
+            ``nrmax``, ``max_gradient``, ``q_table_option``,
+            ``write_dep_tif``).
+
+        Returns
+        -------
+        int
+            The ``nr_subgrid_pixels`` used.
+
+        Raises
+        ------
+        ValueError
+            If :meth:`preserve_crests` was applied, no elevation datasets are
+            known, or ``nr_subgrid_pixels`` is not even.
+
+        Notes
+        -----
+        - Roughness: SFINCS takes it from the tables and ignores
+          ``manningfile``. The choice made with ``BottomFriction`` before
+          this call is built into the tables; without it, HydroMT defaults
+          are used (0.04 land, 0.02 sea) and a warning is issued.
+        - Masks: ``zmin_active`` and ``zmax_bounds`` of :meth:`setup_bathy`
+          act on the coarse ``dep``. Pass ``reproj_method="average"`` in
+          ``datasets_dep`` so that ``dep`` is the cell mean rather than the
+          value at the cell centre.
+        - ``depfile`` and ``manningfile`` are not used with subgrid;
+          ``SfincsCaseBuilder.write`` leaves them out of ``sfincs.inp``.
+
+        Examples
+        --------
+        >>> bathy.setup_bathy([{"elevtn": "dem_10m", "reproj_method": "average"}],
+        ...                   zmin_active=-2, zmax_bounds=0)
+        >>> friction.setup_uniform(manning_land=0.04, manning_sea=0.02)
+        >>> bathy.setup_subgrid()          # 80 m cells, 10 m DEM -> 8 pixels
+        """
+        if self.crests_applied:
+            raise ValueError(
+                "preserve_crests was applied to dep, which SFINCS does not use with "
+                "subgrid tables. Rebuild the bathymetry without it and use weirs."
+            )
+        datasets_dep = datasets_dep if datasets_dep is not None else self.datasets_dep
+        if not datasets_dep:
+            raise ValueError("No elevation datasets: call setup_bathy first or pass datasets_dep.")
+
+        dx = abs(float(self.model.config["dx"]))
+        if nr_subgrid_pixels is None:
+            first = datasets_dep[0]["elevtn"]
+            dem = self.model.data_catalog.get_rasterdataset(first, bbox=self.model.bbox, buffer=2)
+            ratio = dx / abs(float(dem.raster.res[0]))
+            nr_subgrid_pixels = max(2, int(round(ratio / 2.0)) * 2)
+            if not np.isclose(ratio, nr_subgrid_pixels):
+                warnings.warn(
+                    f"Cell size / DEM resolution = {ratio:.2f}; using nr_subgrid_pixels = "
+                    f"{nr_subgrid_pixels} (the DEM is resampled to {dx / nr_subgrid_pixels:.2f} m).",
+                    stacklevel=2,
+                )
+        nr_subgrid_pixels = int(nr_subgrid_pixels)
+        if nr_subgrid_pixels < 2 or nr_subgrid_pixels % 2:
+            raise ValueError(
+                f"nr_subgrid_pixels must be an even number >= 2 (got {nr_subgrid_pixels}). "
+                "Choose a cell size that is an even multiple of the DEM resolution."
+            )
+
+        roughness = getattr(self.model, ROUGHNESS_ATTR, None)
+        if roughness is None:
+            warnings.warn(
+                "No roughness set with BottomFriction; the subgrid tables use the HydroMT "
+                "defaults (manning_land 0.04, manning_sea 0.02).",
+                stacklevel=2,
+            )
+            roughness = {}
+
+        if rivers is None:
+            datasets_riv = []
+        elif isinstance(rivers, list):
+            datasets_riv = rivers
+        else:
+            datasets_riv = [{"centerlines": rivers if isinstance(rivers, gpd.GeoDataFrame) else str(rivers)}]
+
+        self.model.setup_subgrid(
+            datasets_dep=datasets_dep,
+            datasets_riv=datasets_riv,
+            nr_subgrid_pixels=nr_subgrid_pixels,
+            nlevels=nlevels,
+            **roughness,
+            **kwargs,
+        )
+        # roughness now lives in the tables: drop the unused manning map
+        if "manning" in self.model.grid:
+            self.model._grid = self.model.grid.drop_vars("manning")
+        return nr_subgrid_pixels
