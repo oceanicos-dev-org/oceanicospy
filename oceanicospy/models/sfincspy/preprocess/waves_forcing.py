@@ -27,7 +27,12 @@ class WavesForcing:
       (adding the XBeach mean level to the tide, with an incoming/outgoing
       split and a site-calibrated setup correction) needs a higher-fidelity
       reference or independent level/run-up data to calibrate it.
-    - SFINCS uses one ``bzi`` series for all boundary points.
+    - The ``bzi`` file written here has a single column with its own times.
+      SFINCS reads ``bzifile`` with exactly as many rows as ``bzsfile``,
+      ignores its times and expects one column per boundary point. It is
+      therefore valid only with a single water-level boundary point and the
+      same times as ``bzsfile``; otherwise SFINCS reads it wrongly without
+      an error.
     """
 
     def __init__(self, model: SfincsModel) -> None:
